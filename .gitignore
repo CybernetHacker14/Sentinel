@@ -1,32 +1,23 @@
-# Prerequisites
-*.d
+# Directories
+bin/
+!Premake/bin/
+bin-int/
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+#CMake
+build/
+cmake-build-debug/
 
-# Precompiled Headers
-*.gch
-*.pch
+# Files
+*.user
+*.json
+*.log
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# Visual Studio files and folder
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
 
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# Rider files and folders
+.idea/
