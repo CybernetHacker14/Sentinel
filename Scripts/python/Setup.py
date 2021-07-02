@@ -10,8 +10,8 @@ from SetupPremake import PremakeConfiguration as PremakeRequirements
 from SetupCMake import CMakeConfiguration as CMakeRequirements
 
 buildSystemList = [
-	'premake',
-	'cmake'
+	'Premake',
+	'CMake'
 ]
 
 
@@ -46,63 +46,54 @@ def main():
 
 
 def ConstructOptionUI():
-	if not IsStateDataPresent() or (IsStateDataPresent() and not buildSystemDict['premake'] and not buildSystemDict['cmake']):
-		print("1 - Generate Project files with Premake")
-		print("2 - Generate Project files with CMake")
-		print("")
-		reply = str(input("Enter an option: ")).lower().strip()[:1]
+	stateDataPresent = IsStateDataPresent()
+	dictDataPresent = False
+	usedBuildSystem = None
 
-		if not reply == '1' and not reply == '2':
+	if stateDataPresent:
+		for entry in buildSystemList:
+			if buildSystemDict[entry]:
+				dictDataPresent = True
+				usedBuildSystem = entry
+				break
+
+	if not stateDataPresent or (stateDataPresent and not dictDataPresent):
+		i = 1
+		for entry in buildSystemList:
+			print(f"{i} - Generate Project files with {entry}")
+			i += 1
+		print("")
+		reply = int(str(input("Enter an option: ")).lower().strip()[:1])
+
+		if 1 <= reply <= len(buildSystemList):
+			print(f"\n{buildSystemList[reply-1]} selected.\n")
+			ExecuteBuildSystemOperation(buildSystemList[reply-1], Action.GENERATE)
+			SaveStateDataAsJson(buildSystemList[reply-1])
+		else:
 			print("\nInvalid option selected. Aborting...")
 			return
-
-		if reply == '1':
-			print("\nPremake selected.\n")
-			ExecuteBuildSystemOperation('premake', Action.GENERATE)
-			SaveStateDataAsJson('premake')
-		elif reply == '2':
-			print("\nCMake selected.\n")
-			ExecuteBuildSystemOperation('cmake', Action.GENERATE)
-			SaveStateDataAsJson('cmake')
-
 	else:
-		if buildSystemDict['premake']:
-			print("1 - Regenerate Project files with Premake")
-			print("2- Clean Premake generated project files")
-			print("")
-			reply = str(input("Enter an option: ")).lower().strip()[:1]
+		ConstructRegenOrCleanUI(usedBuildSystem)
 
-			if not reply == '1' and not reply == '2':
-				print("\n Invalid option selected. Aborting...")
-				return
 
-			if reply == '1':
-				print("\nRegenerating with Premake...\n")
-				ExecuteBuildSystemOperation('premake', Action.GENERATE)
-				SaveStateDataAsJson('premake')
-			elif reply == '2':
-				print("\nCleaning project files...\n")
-				ExecuteBuildSystemOperation('premake', Action.CLEAN)
-				SaveStateDataAsJson('premake', generated=False)
+def ConstructRegenOrCleanUI(buildsystem):
+	print(f"1 - Regenerate Project files with {buildsystem}")
+	print(f"2 - Clean {buildsystem} generated project files")
+	print("")
+	reply = str(input("Enter an option: ")).lower().strip()[:1]
 
-		elif buildSystemDict['cmake']:
-			print("1 - Regenerate Project files with CMake")
-			print("2 - Clean CMake generated project files")
-			print("")
-			reply = str(input("Enter an option: ")).lower().strip()[:1]
+	if not reply == '1' and not reply == '2':
+		print("\n Invalid option selected. Aborting...")
+		return
 
-			if not reply == '1' and not reply == '2':
-				print("\n Invalid option selected. Aborting...")
-				return
-
-			if reply == '1':
-				print("\nRegenerating with CMake...\n")
-				ExecuteBuildSystemOperation('cmake', Action.GENERATE)
-				SaveStateDataAsJson('cmake')
-			elif reply == '2':
-				print("\nCleaning project files...\n")
-				ExecuteBuildSystemOperation('cmake', Action.CLEAN)
-				SaveStateDataAsJson('cmake', generated=False)
+	if reply == '1':
+		print(f"\nRegenerating with {buildsystem}...")
+		ExecuteBuildSystemOperation(buildsystem, Action.GENERATE)
+		SaveStateDataAsJson(buildsystem)
+	elif reply == '2':
+		print(f"\nCleaning project files...\n")
+		ExecuteBuildSystemOperation(buildsystem, Action.CLEAN)
+		SaveStateDataAsJson(buildsystem, generated=False)
 
 
 def IsStateDataPresent():
@@ -147,11 +138,8 @@ def ExecuteBuildSystemOperation(buildsystem, operation):
 	premakeInstalled = PremakeRequirements.Validate()
 	cmakeInstalled = CMakeRequirements.Validate()
 
-	if buildsystem == 'premake' and not premakeInstalled:
-		print("Premake installation not found\n\n")
-		return False
-	elif buildsystem == 'cmake' and not cmakeInstalled:
-		print("CMake installation not found\n\n")
+	if (buildsystem == 'Premake' and not premakeInstalled) or (buildsystem == 'CMake' and not cmakeInstalled):
+		print(f"{buildsystem} installation not found\n\n")
 		return False
 
 	if operation == Action.GENERATE:

@@ -3,6 +3,7 @@ from pathlib import Path
 
 import Utils
 
+
 class PremakeConfiguration:
 	premakeVersion = "5.0.0-alpha16"
 	premakeZipUrls = f"https://github.com/premake/premake-core/releases/download/v{premakeVersion}/premake-{premakeVersion}-windows.zip"
@@ -21,7 +22,6 @@ class PremakeConfiguration:
 	@classmethod
 	def CheckIfPremakeInstalled(cls):
 		premakeExe = Path(f"{cls.premakeDirectory}/premake5.exe")
-		print(premakeExe)
 		if not premakeExe.exists():
 			return cls.InstallPremake()
 
@@ -45,7 +45,7 @@ class PremakeConfiguration:
 			print(f"Premake {cls.premakeVersion} has been downloaded to '{cls.premakeDirectory}'")
 
 			premakeLicensePath = f"{cls.premakeDirectory}/LICENSE.txt"
-			print("Donwloading {0:s} tp {1:s}".format(cls.premakeLicenseUrl, premakeLicensePath))
+			print("Downloading {0:s} tp {1:s}".format(cls.premakeLicenseUrl, premakeLicensePath))
 			Utils.DownloadFile(cls.premakeLicenseUrl, premakeLicensePath)
 			print(f"Premake License file has been downloaded to '{cls.premakeDirectory}'")
 
