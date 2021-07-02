@@ -1,6 +1,7 @@
 import subprocess
 import importlib.util as importlib_util
 
+
 class CMakeConfiguration:
 	@classmethod
 	def Validate(cls):

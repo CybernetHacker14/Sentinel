@@ -11,7 +11,7 @@ from SetupCMake import CMakeConfiguration as CMakeRequirements
 
 buildSystemList = [
 	'Premake',
-	'CMake'
+	'CMake',
 ]
 
 
@@ -66,9 +66,8 @@ def ConstructOptionUI():
 		reply = int(str(input("Enter an option: ")).lower().strip()[:1])
 
 		if 1 <= reply <= len(buildSystemList):
-			print(f"\n{buildSystemList[reply-1]} selected.\n")
-			ExecuteBuildSystemOperation(buildSystemList[reply-1], Action.GENERATE)
-			SaveStateDataAsJson(buildSystemList[reply-1])
+			print(f"\n{buildSystemList[reply - 1]} selected.\n")
+			ExecuteBuildSystemOperation(buildSystemList[reply - 1], Action.GENERATE)
 		else:
 			print("\nInvalid option selected. Aborting...")
 			return
@@ -89,11 +88,9 @@ def ConstructRegenOrCleanUI(buildsystem):
 	if reply == '1':
 		print(f"\nRegenerating with {buildsystem}...")
 		ExecuteBuildSystemOperation(buildsystem, Action.GENERATE)
-		SaveStateDataAsJson(buildsystem)
 	elif reply == '2':
 		print(f"\nCleaning project files...\n")
 		ExecuteBuildSystemOperation(buildsystem, Action.CLEAN)
-		SaveStateDataAsJson(buildsystem, generated=False)
 
 
 def IsStateDataPresent():
@@ -102,6 +99,44 @@ def IsStateDataPresent():
 
 def IsFilePresent(filePath):
 	return os.path.exists(os.path.abspath(filePath))
+
+
+def ExecuteBuildSystemOperation(buildsystem, operation):
+	if not isinstance(operation, Action):
+		raise TypeError("Parameter 'operation' must be of type Action\n")
+
+	try:
+		installed = globals()[f"{buildsystem}Requirements"]().Validate()
+	except KeyError as e:
+		print(f"Build system {buildsystem} validation methods missing. Aborting...\n")
+		return False
+
+	if not installed:
+		print(f"{buildsystem} installation not found\n")
+		return False
+
+	if operation == Action.GENERATE:
+		filepath = f"./Scripts/bat/{platform.system()}-{buildsystem}-GenerateProjectFiles.bat"
+	elif operation == Action.CLEAN:
+		filepath = f"./Scripts/bat/{platform.system()}-{buildsystem}-RemoveProjectFiles.bat"
+	else:
+		print("Unknown build system operation encountered. Aborting...\n")
+		return False
+
+	print(f"Running {buildsystem}...\n")
+	filePresent = IsFilePresent(filepath)
+
+	if filePresent and operation == Action.GENERATE:
+		subprocess.call([os.path.abspath(filepath), "nopause"])
+		SaveStateDataAsJson(buildsystem)
+		return True
+	elif filePresent and operation == Action.CLEAN:
+		subprocess.call([os.path.abspath(filepath), "nopause"])
+		SaveStateDataAsJson(buildsystem, generated=False)
+		return True
+	else:
+		print("Appropriate script file not found. Check your Scripts directory")
+		return False
 
 
 def SaveStateDataAsJson(selectedBuildSystem, generated=True):
@@ -129,35 +164,6 @@ def LoadStateDataFromJson():
 
 		for entry in data[jsonFormatRoot]:
 			buildSystemDict[entry[jsonBuildSystemAttribute]] = entry[jsonGeneratedAttribute]
-
-
-def ExecuteBuildSystemOperation(buildsystem, operation):
-	if not isinstance(operation, Action):
-		raise TypeError("Parameter 'operation' must be of type Action")
-
-	premakeInstalled = PremakeRequirements.Validate()
-	cmakeInstalled = CMakeRequirements.Validate()
-
-	if (buildsystem == 'Premake' and not premakeInstalled) or (buildsystem == 'CMake' and not cmakeInstalled):
-		print(f"{buildsystem} installation not found\n\n")
-		return False
-
-	if operation == Action.GENERATE:
-		filepath = f"./Scripts/bat/{platform.system()}-{buildsystem}-GenerateProjectFiles.bat"
-	elif operation == Action.CLEAN:
-		filepath = f"./Scripts/bat/{platform.system()}-{buildsystem}-RemoveProjectFiles.bat"
-	else:
-		print("Unknown build system operation encountered. Aborting...\n\n")
-		return False
-
-	print("Running build system...\n")
-	if not IsFilePresent(filepath):
-		print(filepath)
-		print("Appropriate script file not found. Check your Scripts directory")
-		return False
-	else:
-		subprocess.call([os.path.abspath(filepath), "nopause"])
-		return True
 
 
 if __name__ == "__main__":
