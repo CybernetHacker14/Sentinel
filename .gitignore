@@ -1,7 +1,8 @@
 # Directories
 bin/
-!Premake/bin/
 bin-int/
+__pycache__/
+Scripts/__state__/
 
 #CMake
 build/
