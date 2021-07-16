@@ -26,7 +26,7 @@
 
 #define BIT(x) (1 << x)
 
-#define ST_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(Sentinel::forward<decltype(args)>(args)...);}
+#define ST_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(Sentinel::STL::forward<decltype(args)>(args)...); }
 
 namespace Sentinel
 {

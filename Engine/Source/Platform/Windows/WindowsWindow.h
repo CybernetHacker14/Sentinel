@@ -7,9 +7,6 @@
 
 namespace Sentinel
 {
-	// TODO : Write Implementations of these functions, plus
-	// The switchable context creation code between Rendering APIs will go here
-
 	class WindowsWindow : public Window {
 	public:
 		WindowsWindow(const WindowProps& props);

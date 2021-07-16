@@ -1,59 +1,83 @@
-#pragma once
-
-#include "Sentinel/Events/Event.h"
-
-namespace Sentinel
-{
-	// TODO: Design an input system which will define internal Key Code data
-	// And add that keycode data to corresponding event classes
-
-	class KeyEvent : public Event {
-	protected:
-		KeyEvent() = default;
-
-		EventCategory GetEventCategoryFlags() const override {
-			return EventCategory::Keyboard | EventCategory::Input;
-		}
-	};
-
-	class KeyPressedEvent : public KeyEvent {
-	public:
-		uint16_t GetRepeatCount() const { return m_RepeatCount; }
-
-		EventType GetEventType() const override { return EventType::KeyPressed; }
-		const char* GetName() const override { return "KeyPressedEvent"; }
-
-		STL::string ToString() const override {
-			std::stringstream stream;
-			stream << "KeyPressedEvent: " << " (" << m_RepeatCount << " repeats";
-			return stream.str();
-		}
-
-	private:
-		uint16_t m_RepeatCount;
-	};
-
-	class KeyReleasedEvent : public KeyEvent {
-	public:
-		EventType GetEventType() const override { return EventType::KeyReleased; }
-		const char* GetName() const override { return "KeyReleasedEvent"; }
-
-		STL::string ToString() const override {
-			std::stringstream stream;
-			stream << "KeyReleasedEvent: ";
-			return stream.str();
-		}
-	};
-
-	class KeyTypedEvent : public KeyEvent {
-	public:
-		EventType GetEventType() const override { return EventType::KeyTyped; }
-		const char* GetName() const override { return "KeyTypedEvent"; }
-
-		STL::string ToString() const override {
-			std::stringstream stream;
-			stream << "KeyTypedEvent: ";
-			return stream.str();
-		}
-	};
-}
+//#pragma once
+//
+//#include "Sentinel/Events/Event.h"
+//#include "Sentinel/Input/KeyCodes.h"
+//
+//namespace Sentinel
+//{
+//	class KeyEvent : public Event {
+//	public:
+//		public KeyCode GetKeyCode() const { return m_KeyCode; }
+//
+//		EventCategory GetEventCategoryFlags() const final {
+//			return EventCategory::Keyboard | EventCategory::Input;
+//		}
+//
+//	protected:
+//		KeyEvent(const KeyCode keycode)
+//			: m_KeyCode(keycode) {}
+//
+//		KeyCode m_KeyCode;
+//	};
+//
+//	class KeyPressedEvent final : public KeyEvent {
+//	public:
+//		KeyPressedEvent(const KeyCode keycode, const uint16_t repeatCount)
+//			: KeyEvent(keycode), m_RepeatCount(repeatCount) {}
+//
+//		uint16_t GetRepeatCount() const { return m_RepeatCount; }
+//
+//		EventType GetEventType() const final { return EventType::KeyPressed; }
+//		const char* GetName() const final { return "KeyPressedEvent"; }
+//
+//		STL::string ToString() const final {
+//			STL::string stream;
+//			stream += "KeyPressedEvent: ";
+//			stream += m_KeyCode;
+//			stream += " (";
+//			stream += m_RepeatCount;
+//			stream += " repeats)";
+//			return stream;
+//		}
+//
+//		EVENT_STATIC_TYPE(KeyPressed)
+//	private:
+//		uint16_t m_RepeatCount;
+//	};
+//
+//	class KeyReleasedEvent final : public KeyEvent {
+//	public:
+//		KeyReleasedEvent(const KeyCode keycode)
+//			: KeyEvent(keycode) {}
+//
+//		EventType GetEventType() const final { return EventType::KeyReleased; }
+//		const char* GetName() const final { return "KeyReleasedEvent"; }
+//
+//		STL::string ToString() const final {
+//			STL::string stream;
+//			stream += "KeyReleasedEvent: ";
+//			stream += m_KeyCode;
+//			return stream;
+//		}
+//
+//		EVENT_STATIC_TYPE(KeyReleased)
+//	};
+//
+//	class KeyTypedEvent final : public KeyEvent {
+//	public:
+//		KeyTypedEvent(const KeyCode keycode)
+//			: KeyEvent(keycode) {}
+//
+//		EventType GetEventType() const final { return EventType::KeyTyped; }
+//		const char* GetName() const final { return "KeyTypedEvent"; }
+//
+//		STL::string ToString() const final {
+//			STL::string stream;
+//			stream += "KeyTypedEvent: ";
+//			stream += m_KeyCode;
+//			return stream;
+//		}
+//
+//		EVENT_STATIC_TYPE(KeyTyped)
+//	};
+//}

@@ -1,6 +1,8 @@
 #include "stpch.h"
 #include "Platform/Windows/WindowsWindow.h"
 
+#include "Sentinel/Events/Categories/WindowEvent.h"
+
 #include "Sentinel/Renderer/Core/RendererAPI.h"
 
 namespace Sentinel
@@ -47,6 +49,21 @@ namespace Sentinel
 		SetVSync(true);
 
 		// GLFWCallbacks
+		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			data.Width = width;
+			data.Height = height;
+
+			Scope<Event> event(new WindowResizeEvent(width, height));
+			data.EventCallback(STL::move(event));
+			});
+
+		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			Scope<Event> event(new WindowCloseEvent());
+			data.EventCallback(STL::move(event));
+			});
 	}
 	void WindowsWindow::Shutdown() {
 		glfwDestroyWindow(m_Window);

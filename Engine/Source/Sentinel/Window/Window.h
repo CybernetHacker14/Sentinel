@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
-#include "Sentinel/Events/Event.h"
+#include "Sentinel/Events/Categories/WindowEvent.h"
 
 namespace Sentinel
 {
@@ -20,7 +19,8 @@ namespace Sentinel
 	// Interface representing a desktop system based Window
 	class Window {
 	public:
-		using EventCallbackFn = STL::function<void(Event&)>;
+
+		using EventCallbackFn = STL::function<void(Scope<Event>)>;
 
 		virtual ~Window() = default;
 
