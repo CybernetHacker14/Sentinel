@@ -2,7 +2,7 @@
 
 // Preprocessor directive defined here, because then it needs to be
 // entered in all premake and cmake scripts for the definition to get evaluated
-#define USE_EASTL 0
+#define USE_EASTL 1
 
 #if USE_EASTL == 1
 #include <EASTL/vector.h>
@@ -219,4 +219,4 @@ namespace Sentinel
 
 	#endif // USE_EASTL
 	}
-}
+	}

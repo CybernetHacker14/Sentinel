@@ -12,8 +12,8 @@ namespace Sentinel
 		m_Window = Window::Create(WindowProps(name));
 		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
-		m_EventBus.SubscribeToEvent("Sentinel::WindowCloseEvent", ST_BIND_EVENT_FN(Application::OnWindowClose));
-		m_EventBus.SubscribeToEvent("Sentinel::WindowResizeEvent", ST_BIND_EVENT_FN(Application::OnWindowResize));
+		SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
+		SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
 
 		Renderer::Init();
 	}
@@ -30,10 +30,16 @@ namespace Sentinel
 		m_LayerStack.PushOverlay(overlay);
 	}
 
+	void Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
+		m_EventBus.SubscribeToEvent(eventType, STL::move(callback));
+	}
+
 	void Application::Run() {
 		ST_ENGINE_INFO("Starting Application Loop");
 		while (m_Running)
 		{
+			m_EventBus.ProcessEventsDeferred();
+
 			if (!m_Minimized)
 			{
 				// Update logic
@@ -46,33 +52,8 @@ namespace Sentinel
 	}
 
 	void Application::RaiseEvent(Scope<Event> eventData) {
-		m_EventBus.RegisterEvent(STL::move(eventData));
+		m_EventBus.NotifyAboutEvent(STL::move(eventData));
 		m_EventBus.ProcessEventsImmediate();
-	}
-
-	void Application::ProcessEventData() {
-		// If there are no events or layers, then no need to execute extra for loops
-		/*if (m_EventBus.GetSize() == 0 || m_LayerStack.GetSize() == 0)
-		{
-			return;
-		}*/
-
-		//m_EventBus.ProcessEvents();
-
-		//for (auto layerStackIterator = m_LayerStack.rbegin();
-		//	layerStackIterator != m_LayerStack.rend(); ++layerStackIterator)
-		//{
-		//	/*for (auto eventBusIterator = m_EventBus.begin();
-		//		eventBusIterator != m_EventBus.end(); ++eventBusIterator)
-		//	{
-		//		OnEvent(*eventBusIterator);
-		//		(*layerStackIterator)->OnEvent(*eventBusIterator);
-		//		if ((**eventBusIterator).Handled)
-		//		{
-		//			m_EventBus.PopEvent(*eventBusIterator);
-		//		}
-		//	}*/
-		//}
 	}
 
 	void Application::ProcessLayerUpdate() {
@@ -88,11 +69,13 @@ namespace Sentinel
 			(*layerStackIterator)->OnUpdate();
 		}
 	}
+
 	void Application::OnWindowClose(Event& event) {
 		WindowCloseEvent e = static_cast<WindowCloseEvent&>(event);
-		event.Handled = true;
 		m_Running = false;
+		event.Handled = true;
 	}
+
 	void Application::OnWindowResize(Event& event) {
 		WindowResizeEvent e = static_cast<WindowResizeEvent&>(event);
 		ST_ENGINE_INFO("{0} {1}", e.GetWidth(), e.GetHeight());

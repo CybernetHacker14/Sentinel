@@ -20,6 +20,9 @@ namespace Sentinel
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
+		void SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
+		//void UnsubscribeFromEvent(const STL::string& eventCallbackString, const EventBus::EventCallbackFn& callback);
+
 		// Returns the Instance of the Application, since it's a singleton
 		static Application& Get() { return *s_Instance; }
 	private:
@@ -28,12 +31,10 @@ namespace Sentinel
 
 		void RaiseEvent(Scope<Event> eventData);
 
-		// All events will be sent to each layer one by one in order to be evaluated
-		void ProcessEventData();
-
 		// Each layer's OnUpdate() function will be called one by one
 		void ProcessLayerUpdate();
 
+	private:
 		void OnWindowClose(Event& event);
 		void OnWindowResize(Event& event);
 

@@ -5,36 +5,35 @@ namespace Sentinel
 {
 	EventBus::~EventBus() {}
 
-	void EventBus::SubscribeToEvent(const STL::string& eventCallbackString, const EventCallbackFn& callback) {
-		m_CallbackMap[eventCallbackString].emplace_back(callback);
+	void EventBus::SubscribeToEvent(const EventType& eventType, const EventCallbackFn& callback) {
+		m_CallbackMap[eventType].emplace_back(callback);
 	}
 
-	void EventBus::RegisterEvent(Scope<Event> eventData) {
+	void EventBus::NotifyAboutEvent(Scope<Event> eventData) {
 		m_EventBus.emplace_back(STL::move(eventData));
 	}
 
 	void EventBus::ProcessEventsImmediate() {
+		ProcessEvents(s_ImmediateFilter);
+	}
+
+	void EventBus::ProcessEventsDeferred() {
+		ProcessEvents(s_DeferredFilter);
+	}
+
+	void EventBus::ProcessEvents(const STL::vector<EventType>& typeFilter) {
 		if (m_EventBus.size() == 0)
 			return;
 
 		for (auto it = m_EventBus.begin(); it != m_EventBus.end();)
 		{
-			switch ((*it)->GetEventType())
+			if (STL::find(typeFilter.begin(), typeFilter.end(), (*it)->GetEventType()) == typeFilter.end())
+				continue;
+
+			for (auto callIt = m_CallbackMap[(*it)->GetEventType()].begin();
+				callIt != m_CallbackMap[(*it)->GetEventType()].end(); ++callIt)
 			{
-				case EventType::WindowClose:
-					for (auto callIt = m_CallbackMap[STL::string(WINDOW_CLOSE_EVENT)].begin();
-						callIt != m_CallbackMap[STL::string(WINDOW_CLOSE_EVENT)].end(); ++callIt)
-					{
-						(*callIt)((**it));
-					}
-					break;
-				case EventType::WindowResize:
-					for (auto callIt = m_CallbackMap[STL::string(WINDOW_RESIZE_EVENT)].begin();
-						callIt != m_CallbackMap[STL::string(WINDOW_RESIZE_EVENT)].end(); ++callIt)
-					{
-						(*callIt)((**it));
-					}
-					break;
+				(*callIt)((**it));
 			}
 
 			if ((*it)->Handled)
@@ -46,10 +45,4 @@ namespace Sentinel
 				++it;
 		}
 	}
-
-	void EventBus::ProcessEventsImmediate(const Layer& layer) {}
-
-	void EventBus::ProcessEventsDeferred() {}
-
-	void EventBus::ProcessEventsDeferred(const Layer& layer) {}
 }
