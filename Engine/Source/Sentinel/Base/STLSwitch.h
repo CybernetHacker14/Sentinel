@@ -33,6 +33,7 @@
 #include <type_traits>
 #include <utility>
 #include <functional>
+#include <utility>
 #endif // USE_EASTL
 
 // The purpose of this header file is to provide an abstraction between types like string, vector, etc.
@@ -139,6 +140,9 @@ namespace Sentinel
 		template<typename T1, typename T2>
 		using is_base_of = eastl::is_base_of<T1, T2>;
 
+		template<typename T1, typename T2>
+		using pair = eastl::pair<T1, T2>;
+
 	#else
 
 		template<typename T>
@@ -217,6 +221,9 @@ namespace Sentinel
 		template<typename T1, typename T2>
 		using is_base_of = std::is_base_of<T1, T2>;
 
+		template<typename T1, typename T2>
+		using pair = std::pair<T1, T2>;
+
 	#endif // USE_EASTL
 	}
-	}
+}

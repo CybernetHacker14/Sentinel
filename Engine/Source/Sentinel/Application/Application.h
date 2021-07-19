@@ -5,6 +5,8 @@
 #include "Sentinel/Base/Define.h"
 #include "Sentinel/Events/EventBus.h"
 #include "Sentinel/Events/Categories/WindowEvent.h"
+#include "Sentinel/Events/Categories/KeyEvent.h"
+#include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Layers/LayerStack.h"
 #include "Sentinel/Window/Window.h"
 
@@ -20,8 +22,8 @@ namespace Sentinel
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
-		void SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
-		//void UnsubscribeFromEvent(const STL::string& eventCallbackString, const EventBus::EventCallbackFn& callback);
+		const uint32_t SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
+		void UnsubscribeFromEvent(const EventType& eventType, const uint32_t& callback);
 
 		// Returns the Instance of the Application, since it's a singleton
 		static Application& Get() { return *s_Instance; }
@@ -31,16 +33,34 @@ namespace Sentinel
 
 		void RaiseEvent(Scope<Event> eventData);
 
-		// Each layer's OnUpdate() function will be called one by one
 		void ProcessLayerUpdate();
 
 	private:
 		void OnWindowClose(Event& event);
 		void OnWindowResize(Event& event);
 
+		void OnKeyPressed(Event& event);
+		void OnKeyReleased(Event& event);
+		void OnKeyTyped(Event& event);
+
+		void OnMouseButtonPressed(Event& event);
+		void OnMouseButtonReleased(Event& event);
+		void OnMouseButtonScrolled(Event& event);
+		void OnMouseMoved(Event& event);
+
 	private:
 		bool m_Running = true;
 		bool m_Minimized = false;
+
+		uint32_t m_WindowResizeCallbackIndex = 0;
+		uint32_t m_WindowCloseCallbackIndex = 0;
+		uint32_t m_KeyPressedCallbackIndex = 0;
+		uint32_t m_KeyReleasedCallbackIndex = 0;
+		uint32_t m_KeyTypedCallbackIndex = 0;
+		uint32_t m_MouseButtonPressedCallbackIndex = 0;
+		uint32_t m_MouseButtonReleasedCllbackIndex = 0;
+		uint32_t m_MouseButtonScrollCallbackIndex = 0;
+		uint32_t m_MouseMovedCallbackIndex = 0;
 	private:
 		Scope<Window> m_Window;
 		LayerStack m_LayerStack;

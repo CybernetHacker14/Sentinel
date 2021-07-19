@@ -12,40 +12,62 @@ namespace Sentinel
 		m_Window = Window::Create(WindowProps(name));
 		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
-		SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
-		SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
+		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
+		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
+		m_KeyPressedCallbackIndex = SubscribeToEvent(EventType::KeyPressed, ST_BIND_EVENT_FN(Application::OnKeyPressed));
+		m_KeyReleasedCallbackIndex = SubscribeToEvent(EventType::KeyReleased, ST_BIND_EVENT_FN(Application::OnKeyReleased));
+		m_KeyTypedCallbackIndex = SubscribeToEvent(EventType::KeyTyped, ST_BIND_EVENT_FN(Application::OnKeyTyped));
+		m_MouseButtonPressedCallbackIndex =
+			SubscribeToEvent(EventType::MouseButtonPressed, ST_BIND_EVENT_FN(Application::OnMouseButtonPressed));
+		m_MouseButtonReleasedCllbackIndex =
+			SubscribeToEvent(EventType::MouseButtonReleased, ST_BIND_EVENT_FN(Application::OnMouseButtonReleased));
+		m_MouseButtonScrollCallbackIndex =
+			SubscribeToEvent(EventType::MouseScrolled, ST_BIND_EVENT_FN(Application::OnMouseButtonScrolled));
+		m_MouseMovedCallbackIndex =
+			SubscribeToEvent(EventType::MouseMoved, ST_BIND_EVENT_FN(Application::OnMouseMoved));
 
 		Renderer::Init();
 	}
 
 	Application::~Application() {
+		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
+		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
+		UnsubscribeFromEvent(EventType::KeyPressed, m_KeyPressedCallbackIndex);
+		UnsubscribeFromEvent(EventType::KeyReleased, m_KeyReleasedCallbackIndex);
+		UnsubscribeFromEvent(EventType::KeyTyped, m_KeyTypedCallbackIndex);
+		UnsubscribeFromEvent(EventType::MouseButtonPressed, m_MouseButtonPressedCallbackIndex);
+		UnsubscribeFromEvent(EventType::MouseButtonReleased, m_MouseButtonReleasedCllbackIndex);
+		UnsubscribeFromEvent(EventType::MouseScrolled, m_MouseButtonScrollCallbackIndex);
+		UnsubscribeFromEvent(EventType::MouseMoved, m_MouseMovedCallbackIndex);
 		Renderer::Shutdown();
 	}
 
 	void Application::PushLayer(Layer* layer) {
 		m_LayerStack.PushLayer(layer);
+		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* overlay) {
 		m_LayerStack.PushOverlay(overlay);
+		overlay->OnAttach();
 	}
 
-	void Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
-		m_EventBus.SubscribeToEvent(eventType, STL::move(callback));
+	const uint32_t Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
+		return m_EventBus.SubscribeToEvent(eventType, STL::move(callback));
+	}
+
+	void Application::UnsubscribeFromEvent(const EventType& eventType, const uint32_t& callbackIndex) {
+		m_EventBus.UnsubscribeFromEvent(eventType, callbackIndex);
 	}
 
 	void Application::Run() {
 		ST_ENGINE_INFO("Starting Application Loop");
 		while (m_Running)
 		{
-			m_EventBus.ProcessEventsDeferred();
-
 			if (!m_Minimized)
 			{
-				// Update logic
 				ProcessLayerUpdate();
 
-				// Render stuff
 				m_Window->OnUpdate();
 			}
 		}
@@ -53,11 +75,10 @@ namespace Sentinel
 
 	void Application::RaiseEvent(Scope<Event> eventData) {
 		m_EventBus.NotifyAboutEvent(STL::move(eventData));
-		m_EventBus.ProcessEventsImmediate();
+		m_EventBus.ProcessEvents();
 	}
 
 	void Application::ProcessLayerUpdate() {
-		// If there are no layers, then no need to execute extra for loops
 		if (m_LayerStack.GetSize() == 0)
 		{
 			return;
@@ -78,7 +99,49 @@ namespace Sentinel
 
 	void Application::OnWindowResize(Event& event) {
 		WindowResizeEvent e = static_cast<WindowResizeEvent&>(event);
-		ST_ENGINE_INFO("{0} {1}", e.GetWidth(), e.GetHeight());
+		ST_ENGINE_INFO("{0}", e.ToString().c_str());
+		event.Handled = true;
+	}
+
+	void Application::OnKeyPressed(Event& event) {
+		KeyPressedEvent e = static_cast<KeyPressedEvent&>(event);
+		ST_ENGINE_INFO("{0}", e.ToString().c_str());
+		event.Handled = true;
+	}
+
+	void Application::OnKeyReleased(Event& event) {
+		KeyReleasedEvent e = static_cast<KeyReleasedEvent&>(event);
+		ST_ENGINE_INFO("{0}", e.ToString().c_str());
+		event.Handled = true;
+	}
+
+	void Application::OnKeyTyped(Event& event) {
+		KeyTypedEvent e = static_cast<KeyTypedEvent&>(event);
+		ST_ENGINE_INFO("{0}", e.ToString().c_str());
+		event.Handled = true;
+	}
+
+	void Application::OnMouseButtonPressed(Event& event) {
+		MouseButtonPressedEvent e = static_cast<MouseButtonPressedEvent&>(event);
+		ST_ENGINE_INFO("{0}", e.ToString().c_str());
+		event.Handled = true;
+	}
+
+	void Application::OnMouseButtonReleased(Event& event) {
+		MouseButtonReleasedEvent e = static_cast<MouseButtonReleasedEvent&>(event);
+		ST_ENGINE_INFO("{0}", e.ToString().c_str());
+		event.Handled = true;
+	}
+
+	void Application::OnMouseButtonScrolled(Event& event) {
+		MouseScrolledEvent e = static_cast<MouseScrolledEvent&>(event);
+		ST_ENGINE_INFO("{0}", e.ToString().c_str());
+		event.Handled = true;
+	}
+
+	void Application::OnMouseMoved(Event& event) {
+		MouseMovedEvent e = static_cast<MouseMovedEvent&>(event);
+		ST_ENGINE_INFO("{0}", e.ToString().c_str());
 		event.Handled = true;
 	}
 }
