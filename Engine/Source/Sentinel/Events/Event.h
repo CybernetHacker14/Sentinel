@@ -33,8 +33,10 @@ namespace Sentinel
 	EventCategory& operator &=(EventCategory& lhs, EventCategory rhs);
 	EventCategory& operator ^=(EventCategory& lhs, EventCategory rhs);
 
-	// A pure virtual Event class.
-	// Derived classes from Event will store event data for their respective events
+	//#define EVENT_STATIC_TYPE(type) static EventType GetStaticType() { return EventType::type; }
+
+	//// A pure virtual Event class.
+	//// Derived classes from Event will store event data for their respective events
 	class Event {
 	public:
 		virtual ~Event() = default;
@@ -47,7 +49,6 @@ namespace Sentinel
 		bool IsInCategory(EventCategory category) {
 			return static_cast<bool>(GetEventCategoryFlags() & category);
 		}
-
 	public:
 		bool Handled = false;
 	};

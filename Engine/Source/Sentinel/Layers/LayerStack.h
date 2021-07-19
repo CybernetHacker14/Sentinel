@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Sentinel/Layers/Layer.h"
-#include "Sentinel/Base/STLSwitch.h"
 
 namespace Sentinel
 {

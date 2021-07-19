@@ -1,6 +1,10 @@
 #pragma once
 
-#ifdef USE_EASTL
+// Preprocessor directive defined here, because then it needs to be
+// entered in all premake and cmake scripts for the definition to get evaluated
+#define USE_EASTL 1
+
+#if USE_EASTL == 1
 #include <EASTL/vector.h>
 #include <EASTL/string.h>
 #include <EASTL/unordered_map.h>
@@ -29,12 +33,13 @@
 #include <type_traits>
 #include <utility>
 #include <functional>
+#include <utility>
 #endif // USE_EASTL
 
 // The purpose of this header file is to provide an abstraction between types like string, vector, etc.
 // so that we can replace the underlying type with std version or eastl version
 
-#ifdef USE_EASTL
+#if USE_EASTL == 1
 #ifndef DEFINE_OVERLOADS
 #define DEFINE_OVERLOADS
 inline void* __cdecl operator new[](size_t size, const char* name, int flags, unsigned int debugFlags, const char* file, int line) {
@@ -53,7 +58,7 @@ namespace Sentinel
 	// Namespace to switch C++ STL with other STLs
 	namespace STL
 	{
-	#ifdef USE_EASTL
+	#if USE_EASTL == 1
 
 		template<typename T>
 		using vector = eastl::vector<T>;
@@ -64,6 +69,8 @@ namespace Sentinel
 		using string = eastl::string;
 
 		using wstring = eastl::wstring;
+
+		using string_view = eastl::string_view;
 
 		inline eastl::string to_string(int value) {
 			return eastl::to_string(value);
@@ -104,12 +111,12 @@ namespace Sentinel
 
 		template<typename T>
 		inline T&& forward(typename eastl::remove_reference<T>::type& x) {
-			return eastl::forward<T>(x);
+			return static_cast<T&&>(eastl::forward<T>(x));
 		}
 
 		template<typename T>
 		inline T&& forward(typename eastl::remove_reference<T>::type&& x) {
-			return eastl::forward<T>(x);
+			return static_Cast<T&&>(eastl::forward<T>(x));
 		}
 
 		template<typename Container>
@@ -127,14 +134,14 @@ namespace Sentinel
 			return eastl::move(x);
 		}
 
-		template<typename>
-		class function;
-
-		template<typename T, typename... Args>
-		class function<T(Args...)> : public eastl::function<T(Args...)> {};
+		template<typename T>
+		using function = eastl::function<T>;
 
 		template<typename T1, typename T2>
 		using is_base_of = eastl::is_base_of<T1, T2>;
+
+		template<typename T1, typename T2>
+		using pair = eastl::pair<T1, T2>;
 
 	#else
 
@@ -147,6 +154,8 @@ namespace Sentinel
 		using string = std::string;
 
 		using wstring = std::wstring;
+
+		using string_view = std::string_view;
 
 		template<typename T>
 		using shared_ptr = std::shared_ptr<T>;
@@ -206,15 +215,15 @@ namespace Sentinel
 			return std::move(x);
 		}
 
-		template<typename>
-		class function;
-
-		template<typename T, typename... Args>
-		class function<T(Args...)> : public std::function<T(Args...)> {};
+		template<typename T>
+		using function = std::function<T>;
 
 		template<typename T1, typename T2>
 		using is_base_of = std::is_base_of<T1, T2>;
 
+		template<typename T1, typename T2>
+		using pair = std::pair<T1, T2>;
+
 	#endif // USE_EASTL
 	}
-	}
+}

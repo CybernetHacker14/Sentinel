@@ -1,33 +1,32 @@
 #pragma once
 
-#include "Sentinel/Events/Event.h"
+#include "Sentinel/Base/Define.h"
+#include "Sentinel/Layers/Layer.h"
 
 namespace Sentinel
 {
-	// This class is actually a management class around
-	// an std::vector, which is the actual bus
 	class EventBus {
 	public:
-		EventBus() = default;
+		using EventCallbackFn = STL::function<void(Event&)>;
+
+		EventBus();
 		~EventBus();
 
-		void PushEvent(Event* event);
-		void PopEvent(Event* event);
+	private:
+		friend class Application;
 
-		const uint32_t GetSize() const { return static_cast<uint32_t>(m_EventBus.size()); }
+		const uint32_t SubscribeToEvent(const EventType& eventType, const EventCallbackFn& callback);
+		void UnsubscribeFromEvent(const EventType& eventType, const uint32_t& callbackIndex);
+		void NotifyAboutEvent(Scope<Event> eventData);
 
-		// Iterators
-
-		STL::vector<Event*>::iterator begin() { return m_EventBus.begin(); }
-		STL::vector<Event*>::iterator end() { return m_EventBus.end(); }
-
-		// Const iterators
-
-		STL::vector<Event*>::const_iterator begin() const { return m_EventBus.begin(); }
-		STL::vector<Event*>::const_iterator end() const { return m_EventBus.end(); }
+		void ProcessEvents();
 
 	private:
-		// The actual event bus data structure
-		STL::vector<Event*> m_EventBus;
+		STL::vector<Scope<Event>> m_EventBus;
+
+		using CallbackMap = STL::unordered_map<EventType, STL::vector<STL::pair<uint32_t, EventCallbackFn>>>;
+
+		CallbackMap m_CallbackMap;
+		uint32_t m_CallbackMapInsertIndex = 0;
 	};
 }

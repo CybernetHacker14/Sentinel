@@ -8,12 +8,10 @@ namespace Sentinel
 	class Layer {
 	public:
 		Layer(const STL::string& debugName = "Layer");
-		Layer(const char* debugName = "Layer");
 		virtual ~Layer() = default;
 
 		virtual void OnAttach() = 0;
 		virtual void OnDetach() = 0;
-		virtual void OnEvent(Event& event) = 0;
 		virtual void OnUpdate() = 0;
 		virtual void OnRender() = 0;
 		virtual void OnImGuiRender() = 0;

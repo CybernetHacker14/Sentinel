@@ -16,4 +16,4 @@ namespace Sentinel
 		return nullptr;
 	#endif // ST_PLATFORM_WINDOWS
 	}
-	}
+}

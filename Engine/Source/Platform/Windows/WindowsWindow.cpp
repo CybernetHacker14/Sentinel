@@ -1,6 +1,10 @@
 #include "stpch.h"
 #include "Platform/Windows/WindowsWindow.h"
 
+#include "Sentinel/Events/Categories/WindowEvent.h"
+#include "Sentinel/Events/Categories/MouseEvent.h"
+#include "Sentinel/Events/Categories/KeyEvent.h"
+
 #include "Sentinel/Renderer/Core/RendererAPI.h"
 
 namespace Sentinel
@@ -47,6 +51,90 @@ namespace Sentinel
 		SetVSync(true);
 
 		// GLFWCallbacks
+		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			data.Width = width;
+			data.Height = height;
+
+			Scope<Event> event(new WindowResizeEvent(width, height));
+			data.EventCallback(STL::move(event));
+			});
+
+		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			Scope<Event> event(new WindowCloseEvent());
+			data.EventCallback(STL::move(event));
+			});
+
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			switch (action)
+			{
+				case GLFW_PRESS:
+				{
+					Scope<Event> event(new KeyPressedEvent(key, 0));
+					data.EventCallback(STL::move(event));
+					break;
+				}
+
+				case GLFW_RELEASE:
+				{
+					Scope<Event> event(new KeyReleasedEvent(key));
+					data.EventCallback(STL::move(event));
+					break;
+				}
+
+				case GLFW_REPEAT:
+				{
+					Scope<Event> event(new KeyPressedEvent(key, 1));
+					data.EventCallback(STL::move(event));
+					break;
+				}
+			}
+			});
+
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			Scope<Event> event(new KeyTypedEvent(keycode));
+			data.EventCallback(STL::move(event));
+			});
+
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			switch (action)
+			{
+				case GLFW_PRESS:
+				{
+					Scope<Event> event(new MouseButtonPressedEvent(button));
+					data.EventCallback(STL::move(event));
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					Scope<Event> event(new MouseButtonReleasedEvent(button));
+					data.EventCallback(STL::move(event));
+					break;
+				}
+			}
+			});
+
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			Scope <Event> event(new MouseScrolledEvent(xOffset, yOffset));
+			data.EventCallback(STL::move(event));
+			});
+
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			Scope<Event> event(new MouseMovedEvent(xPos, yPos));
+			data.EventCallback(STL::move(event));
+			});
 	}
 	void WindowsWindow::Shutdown() {
 		glfwDestroyWindow(m_Window);

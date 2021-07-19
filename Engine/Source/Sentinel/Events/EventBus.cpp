@@ -3,22 +3,60 @@
 
 namespace Sentinel
 {
+	EventBus::EventBus()
+		:m_CallbackMapInsertIndex(0) {}
+
 	EventBus::~EventBus() {
-		for (Event* event : m_EventBus)
+		m_EventBus.clear();
+		m_CallbackMap.clear();
+	}
+
+	const uint32_t EventBus::SubscribeToEvent(const EventType& eventType, const EventCallbackFn& callback) {
+		uint32_t index = m_CallbackMapInsertIndex;
+		m_CallbackMap[eventType].emplace_back(index, callback);
+		m_CallbackMapInsertIndex++;
+		return index;
+	}
+
+	void EventBus::UnsubscribeFromEvent(const EventType& eventType, const uint32_t& callbackIndex) {
+		for (auto it = m_CallbackMap[eventType].begin(); it != m_CallbackMap[eventType].end(); ++it)
 		{
-			delete event;
+			if ((*it).first == callbackIndex)
+			{
+				m_CallbackMap[eventType].erase(it);
+				break;
+			}
 		}
 	}
 
-	void EventBus::PushEvent(Event* event) {
-		m_EventBus.emplace_back(event);
+	void EventBus::NotifyAboutEvent(Scope<Event> eventData) {
+		m_EventBus.emplace_back(STL::move(eventData));
 	}
 
-	void EventBus::PopEvent(Event* event) {
-		auto iterator = STL::find(m_EventBus.begin(), m_EventBus.end(), event);
-		if (iterator != m_EventBus.end())
+	void EventBus::ProcessEvents() {
+		if (m_EventBus.empty())
+			return;
+
+		for (auto it = m_EventBus.begin(); it != m_EventBus.end();)
 		{
-			m_EventBus.erase(iterator);
+			for (auto callIt = m_CallbackMap[(*it)->GetEventType()].begin();
+				callIt != m_CallbackMap[(*it)->GetEventType()].end(); ++callIt)
+			{
+				(*callIt).second(**it);
+
+				if ((*it)->Handled)
+					break;
+			}
+
+			if ((*it)->Handled)
+				m_EventBus.erase(it);
+
+			if (m_EventBus.empty())
+				return;
+			else
+				++it;
 		}
+
+		m_EventBus.clear();
 	}
 }
