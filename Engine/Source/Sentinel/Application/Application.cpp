@@ -1,5 +1,7 @@
 #include "stpch.h"
+
 #include "Sentinel/Application/Application.h"
+#include "Sentinel/Input/Input.h"
 #include "Sentinel/Renderer/Core/Renderer.h"
 
 namespace Sentinel
@@ -13,6 +15,8 @@ namespace Sentinel
 		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
 		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
+
+		/*m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
 		m_KeyPressedCallbackIndex = SubscribeToEvent(EventType::KeyPressed, ST_BIND_EVENT_FN(Application::OnKeyPressed));
 		m_KeyReleasedCallbackIndex = SubscribeToEvent(EventType::KeyReleased, ST_BIND_EVENT_FN(Application::OnKeyReleased));
@@ -24,13 +28,15 @@ namespace Sentinel
 		m_MouseButtonScrollCallbackIndex =
 			SubscribeToEvent(EventType::MouseScrolled, ST_BIND_EVENT_FN(Application::OnMouseButtonScrolled));
 		m_MouseMovedCallbackIndex =
-			SubscribeToEvent(EventType::MouseMoved, ST_BIND_EVENT_FN(Application::OnMouseMoved));
+			SubscribeToEvent(EventType::MouseMoved, ST_BIND_EVENT_FN(Application::OnMouseMoved));*/
 
 		Renderer::Init();
 	}
 
 	Application::~Application() {
 		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
+
+		/*UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
 		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
 		UnsubscribeFromEvent(EventType::KeyPressed, m_KeyPressedCallbackIndex);
 		UnsubscribeFromEvent(EventType::KeyReleased, m_KeyReleasedCallbackIndex);
@@ -38,7 +44,7 @@ namespace Sentinel
 		UnsubscribeFromEvent(EventType::MouseButtonPressed, m_MouseButtonPressedCallbackIndex);
 		UnsubscribeFromEvent(EventType::MouseButtonReleased, m_MouseButtonReleasedCllbackIndex);
 		UnsubscribeFromEvent(EventType::MouseScrolled, m_MouseButtonScrollCallbackIndex);
-		UnsubscribeFromEvent(EventType::MouseMoved, m_MouseMovedCallbackIndex);
+		UnsubscribeFromEvent(EventType::MouseMoved, m_MouseMovedCallbackIndex);*/
 		Renderer::Shutdown();
 	}
 
@@ -61,7 +67,6 @@ namespace Sentinel
 	}
 
 	void Application::Run() {
-		ST_ENGINE_INFO("Starting Application Loop");
 		while (m_Running)
 		{
 			if (!m_Minimized)
@@ -70,6 +75,8 @@ namespace Sentinel
 
 				m_Window->OnUpdate();
 			}
+
+			Input::OnUpdate();
 		}
 	}
 
