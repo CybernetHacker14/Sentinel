@@ -1,12 +1,16 @@
 [submodule "Engine/Vendor/GLFW/module"]
 	path = Engine/Vendor/GLFW/module
 	url = https://github.com/glfw/glfw.git
+	branch = master
 [submodule "Engine/Vendor/spdlog/module"]
 	path = Engine/Vendor/spdlog/module
 	url = https://github.com/gabime/spdlog.git
+	branch = v1.x
 [submodule "Engine/Vendor/EASTL/module"]
 	path = Engine/Vendor/EASTL/module
 	url = https://github.com/electronicarts/EASTL.git
+	branch = master
 [submodule "Engine/Vendor/glm/module"]
 	path = Engine/Vendor/glm/module
 	url = https://github.com/g-truc/glm.git
+	branch = master
