@@ -12,7 +12,12 @@ void ExampleLayer::OnAttach() {}
 
 void ExampleLayer::OnDetach() {}
 
-void ExampleLayer::OnUpdate() {}
+void ExampleLayer::OnUpdate() {
+	if (Sentinel::Input::IsKeyDown(Sentinel::Key::Q))
+	{
+		ST_INFO("Q is down");
+	}
+}
 
 void ExampleLayer::OnRender() {}
 

@@ -125,7 +125,7 @@ namespace Sentinel
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			Scope <Event> event(new MouseScrolledEvent(xOffset, yOffset));
+			Scope<Event> event(new MouseScrolledEvent(xOffset, yOffset));
 			data.EventCallback(STL::move(event));
 			});
 

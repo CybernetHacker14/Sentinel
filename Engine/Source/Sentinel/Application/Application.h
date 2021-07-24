@@ -19,6 +19,8 @@ namespace Sentinel
 		Application(const STL::string& name = "Sentinel Engine");
 		virtual ~Application();
 
+		Window& GetWindow() { return *m_Window; }
+
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
