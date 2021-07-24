@@ -15,11 +15,11 @@ project "Sandbox"
 
     includedirs
     {
-        "%{IncludeDir.Sentinel_Source}",
-        "%{IncludeDir.glm}",
-        "%{IncludeDir.EASTL}",
-        "%{IncludeDir.EABase}",
-        "%{IncludeDir.spdlog}"
+        "%{IncludeInternalDir.Sentinel_Source}",
+        "%{IncludeExternalDir.glm}",
+        "%{IncludeExternalDir.EASTL}",
+        "%{IncludeExternalDir.EABase}",
+        "%{IncludeExternalDir.spdlog}"
     }
 
     links

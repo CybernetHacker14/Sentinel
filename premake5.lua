@@ -1,5 +1,7 @@
 include "Premake/customization/solution_items.lua"
 include "Premake/customization/clean_project.lua"
+include "Premake/customization/internal_dependencies.lua"
+include "Premake/customization/external_dependencies.lua"
 
 workspace "Sentinel"
     architecture "x86_64"
@@ -23,17 +25,6 @@ workspace "Sentinel"
     }
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-
--- Include directories relative to root folder (solution directory)
-IncludeDir = {}
-IncludeDir["Sentinel_Source"] = "%{wks.location}/Engine/Source"
-IncludeDir["Sentinel_Vendor"] = "%{wks.location}/Engine/Vendor"
-IncludeDir["GLFW"] = "%{wks.location}/Engine/Vendor/GLFW/module/include"
-IncludeDir["Glad"] = "%{wks.location}/Engine/Vendor/Glad/module/include"
-IncludeDir["glm"] = "%{wks.location}/Engine/Vendor/glm/module"
-IncludeDir["spdlog"] = "%{wks.location}/Engine/Vendor/spdlog/module/include"
-IncludeDir["EASTL"] = "%{wks.location}/Engine/Vendor/EASTL/module/include"
-IncludeDir["EABase"] = "%{wks.location}/Engine/Vendor/EASTL/module/test/packages/EABase/include/Common"
 
 -- Include dependencies
 group "Dependencies"
