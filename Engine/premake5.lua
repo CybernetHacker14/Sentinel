@@ -27,12 +27,12 @@ project "Sentinel"
     includedirs
     {
         "Source",
-        "%{IncludeDir.GLFW}",
-        "%{IncludeDir.Glad}",
-        "%{IncludeDir.glm}",
-        "%{IncludeDir.EABase}",
-        "%{IncludeDir.EASTL}",
-        "%{IncludeDir.spdlog}"
+        "%{IncludeExternalDir.GLFW}",
+        "%{IncludeExternalDir.Glad}",
+        "%{IncludeExternalDir.glm}",
+        "%{IncludeExternalDir.EABase}",
+        "%{IncludeExternalDir.EASTL}",
+        "%{IncludeExternalDir.spdlog}"
     }
 
     links
