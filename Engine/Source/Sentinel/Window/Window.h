@@ -11,7 +11,7 @@ namespace Sentinel
 
 		WindowProps(
 			const STL::string& title = "Sentinel-Engine",
-			uint32_t width = 1600,
+			uint32_t width = 900,
 			uint32_t height = 900)
 			:Title(title), Width(width), Height(height) {}
 	};
