@@ -1,8 +1,8 @@
 #include "stpch.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 namespace Sentinel
 {
@@ -14,6 +14,7 @@ namespace Sentinel
 	void OpenGLContext::Init() {
 		glfwMakeContextCurrent(m_WindowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
 		ST_ENGINE_ASSERT(status, "Failed to initialize Glad!");
 
 		m_ContextInfo.Vendor = (unsigned char*)glGetString(GL_VENDOR);
@@ -26,7 +27,8 @@ namespace Sentinel
 		ST_ENGINE_INFO("API      : {0}", m_ContextInfo.API);
 		ST_ENGINE_INFO("VERSION  : {0}", m_ContextInfo.Version);
 
-		ST_ENGINE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5), "Sentinel requires atleast OpenGL version 4.5!");
+		ST_ENGINE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5),
+			"Sentinel requires atleast OpenGL version 4.5!");
 	}
 
 	void OpenGLContext::SwapBuffers() {
