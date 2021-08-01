@@ -23,7 +23,8 @@ namespace Sentinel
 		STL::string vendor, major, minor, release, build, version;
 		LARGE_INTEGER driverVersion;
 
-		wcstombs_s(NULL, videoCardDescription, 128, DirectX11Internal::GetInternalHandle()->GetDirectX11AdapterDescription()->Description, 128);
+		wcstombs_s(NULL, videoCardDescription, 128,
+			DirectX11Internal::GetInternalHandle()->GetDirectX11AdapterDescription()->Description, 128);
 
 		if (DirectX11Internal::GetInternalHandle()->GetDirectX11AdapterDescription()->VendorId == 0x10DE)
 			vendor = "NVIDIA Corporation";

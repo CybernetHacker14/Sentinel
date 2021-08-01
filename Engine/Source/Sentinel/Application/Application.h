@@ -64,7 +64,7 @@ namespace Sentinel
 		uint32_t m_MouseButtonScrollCallbackIndex = 0;
 		uint32_t m_MouseMovedCallbackIndex = 0;
 
-		uint32_t m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		//uint32_t m_VertexArray, m_VertexBuffer, m_IndexBuffer;
 	private:
 		Scope<Window> m_Window;
 		LayerStack m_LayerStack;

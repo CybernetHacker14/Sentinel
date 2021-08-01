@@ -33,8 +33,9 @@ namespace Sentinel
 			SubscribeToEvent(EventType::MouseMoved, ST_BIND_EVENT_FN(Application::OnMouseMoved));*/
 
 		Renderer::Init();
+		RenderCommand::SetClearColor({ 0.0f, 0.2f, 0.4f, 1.0f });
 
-		glGenVertexArrays(1, &m_VertexArray);
+		/*glGenVertexArrays(1, &m_VertexArray);
 		glBindVertexArray(m_VertexArray);
 
 		glGenBuffers(1, &m_VertexBuffer);
@@ -55,7 +56,7 @@ namespace Sentinel
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 
 		unsigned int indices[3] = { 0, 1, 2 };
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
 	}
 
 	Application::~Application() {
@@ -96,10 +97,12 @@ namespace Sentinel
 		{
 			if (!m_Minimized)
 			{
-				glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+				/*glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 				glBindVertexArray(m_VertexArray);
-				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);*/
+
+				RenderCommand::Clear();
 
 				ProcessLayerUpdate();
 

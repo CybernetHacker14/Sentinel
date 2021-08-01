@@ -10,6 +10,16 @@ namespace Sentinel
 	DirectX11Internal* DirectX11Internal::s_Internal = new DirectX11Internal();
 
 	DirectX11Internal::~DirectX11Internal() {
+		m_Swapchain->Release();
+		m_BackBuffer->Release();
+		m_Device->Release();
+		m_Context->Release();
+
+		delete m_Swapchain;
+		delete m_BackBuffer;
+		delete m_Device;
+		delete m_Context;
+
 		delete m_AdapterDescription;
 		delete s_Internal;
 	}
@@ -20,13 +30,13 @@ namespace Sentinel
 
 		description.BufferDesc.Width = 0;
 		description.BufferDesc.Height = 0;
-		description.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		description.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		description.BufferDesc.RefreshRate.Numerator = 0;
 		description.BufferDesc.RefreshRate.Denominator = 0;
 		description.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		description.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 
-		description.SampleDesc.Count = 1;
+		description.SampleDesc.Count = 4;
 		description.SampleDesc.Quality = 0;
 
 		description.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -56,17 +66,22 @@ namespace Sentinel
 			&m_Context
 		);
 
-		m_Device->QueryInterface(__uuidof(IDXGIDevice), (void**)&m_DXGIDevice);
-		m_DXGIDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&m_Adapter);
+		m_Device->QueryInterface(__uuidof(IDXGIDevice), (LPVOID*)&m_DXGIDevice);
+		m_DXGIDevice->GetParent(__uuidof(IDXGIAdapter), (LPVOID*)&m_Adapter);
 
 		m_AdapterDescription = new DXGI_ADAPTER_DESC();
 		m_Adapter->GetDesc(m_AdapterDescription);
 
-		Microsoft::WRL::ComPtr<ID3D11Resource> backBuffer = nullptr;
+		Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer = nullptr;
 
-		// In the GetBuffer function, 0 will give us the backbuffer
-		m_Swapchain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer);
-		m_Device->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_Target);
+		// Get the address of the back buffer
+		m_Swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
+
+		// use the back buffer address to create the render target
+		m_Device->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_BackBuffer);
+		//backBuffer->Release();
+
+		m_Context->OMSetRenderTargets(1, &m_BackBuffer, nullptr);
 	}
 
 	DirectX11Internal* DirectX11Internal::GetInternalHandle() {
