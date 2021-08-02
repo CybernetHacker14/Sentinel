@@ -8,12 +8,17 @@ namespace Sentinel
 		STL::string Title;
 		uint32_t Width;
 		uint32_t Height;
+		bool FullScreen;
+		bool WindowedMaximized;
 
 		WindowProps(
 			const STL::string& title = "Sentinel-Engine",
-			uint32_t width = 900,
-			uint32_t height = 900)
-			:Title(title), Width(width), Height(height) {}
+			uint32_t width = 1920,
+			uint32_t height = 1080,
+			bool fullscreen = false,
+			bool windowedMaximized = true)
+			:Title(title), Width(width), Height(height),
+			FullScreen(fullscreen), WindowedMaximized(windowedMaximized) {}
 	};
 
 	// Interface representing a desktop system based Window

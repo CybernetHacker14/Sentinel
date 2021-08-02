@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Sentinel/Renderer/Core/GraphicsContext.h"
+#include "Sentinel/Renderer/Components/GraphicsContext.h"
 
 // Forward declaration
 struct GLFWwindow;
 
 namespace Sentinel
 {
-	class OpenGLContext : public GraphicsContext {
+	class DirectX11Context : public GraphicsContext {
 	public:
-		OpenGLContext(GLFWwindow* windowHandle);
+		DirectX11Context(GLFWwindow* windowHandle);
 
 		virtual void Init() override;
 		virtual void SwapBuffers() override;

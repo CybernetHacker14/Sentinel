@@ -1,11 +1,11 @@
 #include "stpch.h"
-#include "Sentinel/Renderer/Core/GraphicsContext.h"
-#include "Sentinel/Renderer/Core/RendererAPI.h"
+#include "Sentinel/Renderer/Components/GraphicsContext.h"
+#include "Sentinel/Renderer/Interface/RendererAPI.h"
 
-#include "Platform/OpenGL/OpenGLContext.h"
+#include "Platform/OpenGL/Renderer/Components/OpenGLContext.h"
 
 #ifdef ST_PLATFORM_WINDOWS
-#include "Platform/DirectX11/DirectX11Context.h"
+#include "Platform/DirectX11/Renderer/Components/DirectX11Context.h"
 #endif // ST_PLATFORM_WINDOWS
 
 namespace Sentinel

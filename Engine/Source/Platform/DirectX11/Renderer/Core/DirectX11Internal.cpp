@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Platform/DirectX11/DirectX11Internal.h"
+#include "Platform/DirectX11/Renderer/Core/DirectX11Internal.h"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Sentinel/Window/Window.h"
-#include "Sentinel/Renderer/Core/GraphicsContext.h"
+#include "Sentinel/Renderer/Components/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
 

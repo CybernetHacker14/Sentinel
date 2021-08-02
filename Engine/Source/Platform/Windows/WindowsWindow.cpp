@@ -5,7 +5,7 @@
 #include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Events/Categories/KeyEvent.h"
 
-#include "Sentinel/Renderer/Core/RendererAPI.h"
+#include "Sentinel/Renderer/Interface/RendererAPI.h"
 
 namespace Sentinel
 {
@@ -44,7 +44,19 @@ namespace Sentinel
 		/*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);*/
 
-		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+		if (props.FullScreen)
+		{
+			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(),
+				glfwGetPrimaryMonitor(), nullptr);
+		}
+		else
+		{
+			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+			if (props.WindowedMaximized)
+			{
+				glfwMaximizeWindow(m_Window);
+			}
+		}
 		++s_GLFWWindowCount;
 
 		m_Context = GraphicsContext::Create(m_Window);

@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Platform/OpenGL/OpenGLContext.h"
+#include "Platform/OpenGL/Renderer/Components/OpenGLContext.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

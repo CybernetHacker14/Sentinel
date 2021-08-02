@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Sentinel/Renderer/Core/RenderCommand.h"
+#include "Sentinel/Renderer/Interface/RenderCommand.h"
 
 namespace Sentinel
 {

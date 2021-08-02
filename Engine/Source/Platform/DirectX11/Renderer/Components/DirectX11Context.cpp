@@ -1,6 +1,6 @@
 #include "stpch.h"
-#include "Platform/DirectX11/DirectX11Context.h"
-#include "Platform/DirectX11/DirectX11Internal.h"
+#include "Platform/DirectX11/Renderer/Components/DirectX11Context.h"
+#include "Platform/DirectX11/Renderer/Core/DirectX11Internal.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>

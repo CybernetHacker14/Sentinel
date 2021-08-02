@@ -1,8 +1,8 @@
 #include "stpch.h"
-#include "Sentinel/Renderer/Core/RendererAPI.h"
+#include "Sentinel/Renderer/Interface/RendererAPI.h"
 
-#include "Platform/OpenGL/OpenGLRendererAPI.h"
-#include "Platform/DirectX11/DirectX11RendererAPI.h"
+#include "Platform/OpenGL/Renderer/Interface/OpenGLRendererAPI.h"
+#include "Platform/DirectX11/Renderer/Interface/DirectX11RendererAPI.h"
 
 namespace Sentinel
 {

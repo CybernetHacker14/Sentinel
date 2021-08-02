@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Renderer/Core/RendererAPI.h"
+#include "Sentinel/Renderer/Interface/RendererAPI.h"
 
 namespace Sentinel
 {

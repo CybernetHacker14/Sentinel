@@ -1,6 +1,6 @@
 #include "stpch.h"
-#include "Platform/DirectX11/DirectX11RendererAPI.h"
-#include "Platform/DirectX11/DirectX11Internal.h"
+#include "Platform/DirectX11/Renderer/Interface/DirectX11RendererAPI.h"
+#include "Platform/DirectX11/Renderer/Core/DirectX11Internal.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
