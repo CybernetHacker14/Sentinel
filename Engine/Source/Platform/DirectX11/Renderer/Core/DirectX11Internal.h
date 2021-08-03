@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 #include <d3d11.h>
+#include <d3dcompiler.h>
 #include <wrl.h>
 
 // Forward declaration
@@ -11,11 +12,18 @@ struct GLFWwindow;
 
 namespace Sentinel
 {
+	struct Vertex {
+		float x, y, z;
+	};
+
 	class DirectX11Internal {
 	public:
 		~DirectX11Internal();
 
 		void Init(GLFWwindow* windowHandle);
+
+		void Draw();
+
 		static DirectX11Internal* GetInternalHandle();
 
 		ID3D11Device* GetDirectX11Device() const { return m_Device; }
@@ -44,5 +52,10 @@ namespace Sentinel
 		IDXGIAdapter* m_Adapter = nullptr;
 
 		DXGI_ADAPTER_DESC* m_AdapterDescription = nullptr;
+
+		ID3D11VertexShader* pVS;
+		ID3D11PixelShader* pPS;
+
+		ID3D11Buffer* pVBuffer;
 	};
 }

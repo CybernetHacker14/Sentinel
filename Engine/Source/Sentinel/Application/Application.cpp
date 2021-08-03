@@ -4,6 +4,8 @@
 #include "Sentinel/Input/Input.h"
 #include "Sentinel/Renderer/Core/Renderer.h"
 
+#include "Platform/DirectX11/Renderer/Core/DirectX11Internal.h"
+
 #include <glad/glad.h>
 
 namespace Sentinel
@@ -17,6 +19,9 @@ namespace Sentinel
 		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
 		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
+		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
+
+
 
 		/*m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
@@ -34,6 +39,7 @@ namespace Sentinel
 
 		Renderer::Init();
 		RenderCommand::SetClearColor({ 0.0f, 0.2f, 0.4f, 1.0f });
+		RenderCommand::SetViewport(0, 0, 900, 900);
 
 		/*glGenVertexArrays(1, &m_VertexArray);
 		glBindVertexArray(m_VertexArray);
@@ -61,6 +67,7 @@ namespace Sentinel
 
 	Application::~Application() {
 		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
+		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
 
 		/*UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
 		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
@@ -104,6 +111,8 @@ namespace Sentinel
 
 				RenderCommand::Clear();
 
+				DirectX11Internal::GetInternalHandle()->Draw();
+
 				ProcessLayerUpdate();
 
 				m_Window->OnUpdate();
@@ -139,7 +148,7 @@ namespace Sentinel
 
 	void Application::OnWindowResize(Event& event) {
 		WindowResizeEvent e = static_cast<WindowResizeEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
+		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 		event.Handled = true;
 	}
 

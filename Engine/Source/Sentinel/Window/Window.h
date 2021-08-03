@@ -13,10 +13,10 @@ namespace Sentinel
 
 		WindowProps(
 			const STL::string& title = "Sentinel-Engine",
-			uint32_t width = 1920,
-			uint32_t height = 1080,
+			uint32_t width = 900,
+			uint32_t height = 900,
 			bool fullscreen = false,
-			bool windowedMaximized = true)
+			bool windowedMaximized = false)
 			:Title(title), Width(width), Height(height),
 			FullScreen(fullscreen), WindowedMaximized(windowedMaximized) {}
 	};
