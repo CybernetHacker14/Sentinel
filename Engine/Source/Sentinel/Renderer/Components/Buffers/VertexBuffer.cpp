@@ -1,17 +1,19 @@
 #include "stpch.h"
-#include "Sentinel/Renderer/Components/RenderPipeline.h"
-#include "Sentinel/Renderer/Interface/RendererAPI.h"
-#include "Sentinel/Window/Window.h"
 
-#include "Platform/OpenGL/Renderer/Components/OpenGLRenderPipeline.h"
+#include "Sentinel/Renderer/Interface/RendererAPI.h"
+#include "Sentinel/Renderer/Components/Buffers/VertexBuffer.h"
+
+#include "Platform/OpenGL/Renderer/Components/Buffers/OpenGLVertexBuffer.h"
 
 #ifdef ST_PLATFORM_WINDOWS
-#include "Platform/DirectX11/Renderer/Components/DirectX11RenderPipeline.h"
+#include "Platform/DirectX11/Renderer/Components/Buffers/DirectX11VertexBuffer.h"
 #endif // ST_PLATFORM_WINDOWS
+
 
 namespace Sentinel
 {
-	Ref<RenderPipeline> RenderPipeline::Create(const Scope<Window>& window) {
+	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size) {
+
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:
@@ -19,18 +21,22 @@ namespace Sentinel
 				return nullptr;
 
 			case RendererAPI::API::OpenGL:
-				return CreateRef<OpenGLRenderPipeline>(window);
+				return CreateRef<OpenGLVertexBuffer>(size);
 
 			case RendererAPI::API::DirectX11:
 			#ifdef ST_PLATFORM_WINDOWS
-				return CreateRef<DirectX11RenderPipeline>(window);
+				return CreateRef<DirectX11VertexBuffer>(size);
 			#else
 				ST_ENGINE_ASSERT(false, "Can't use RendererAPI::DirectX11 on a non-Windows platform");
 				return nullptr;
 			#endif // ST_PLATFORM_WINDOWS
 		}
+	}
 
-		ST_ENGINE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
+	Ref<VertexBuffer> VertexBuffer::Create(void* vertices, uint32_t size) {
+		switch (RendererAPI::GetAPI())
+		{
+			switch (Render)
+		}
 	}
 }

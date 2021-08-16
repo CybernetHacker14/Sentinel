@@ -24,25 +24,32 @@ namespace Sentinel
 
 		void Draw();
 
-		static DirectX11Internal* GetInternalHandle();
+		static DirectX11Internal* GetInternalHandle() { return s_Internal; }
 
-		ID3D11Device* GetDirectX11Device() const { return m_Device; }
-		IDXGISwapChain* GetDirectX11SwapChain() const { return m_Swapchain; }
-		ID3D11DeviceContext* GetDirectX11DeviceContext() const { return m_Context; }
-		ID3D11RenderTargetView* GetDirectX11RenderTargetView() const { return m_BackBuffer; }
+		void CreateDeviceAndSwapchain(GLFWwindow* windowHandle);
+		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-		IDXGIDevice* GetDirectX11DXGIDevice() const { return m_DXGIDevice; }
-		IDXGIAdapter* GetDirectX11Adapter() const { return m_Adapter; }
+		void CreateRenderTargetView();
 
-		DXGI_ADAPTER_DESC* GetDirectX11AdapterDescription() const { return m_AdapterDescription; }
+		void ClearColor(const float* color);
+
+		void ReleaseAndCleanObjects();
+	public:
+		ID3D11Device* GetDevice() const { return m_Device; }
+		IDXGISwapChain* GetSwapChain() const { return m_Swapchain; }
+		ID3D11DeviceContext* GetDeviceContext() const { return m_Context; }
+		ID3D11RenderTargetView* GetBackBuffer() const { return m_BackBuffer; }
+
+		IDXGIDevice* GetDXGIDevice() const { return m_DXGIDevice; }
+		IDXGIAdapter* GetAdapter() const { return m_Adapter; }
+
+		DXGI_ADAPTER_DESC* GetAdapterDescription() const { return m_AdapterDescription; }
 
 	private:
 		DirectX11Internal() = default;
 	private:
 		static DirectX11Internal* s_Internal;
 	private:
-		GLFWwindow* m_WindowHandle;
-
 		ID3D11Device* m_Device = nullptr;
 		IDXGISwapChain* m_Swapchain = nullptr;
 		ID3D11DeviceContext* m_Context = nullptr;

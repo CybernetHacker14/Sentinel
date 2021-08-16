@@ -12,73 +12,10 @@ namespace Sentinel
 	DirectX11Internal* DirectX11Internal::s_Internal = new DirectX11Internal();
 
 	DirectX11Internal::~DirectX11Internal() {
-		pPS->Release();
-		pVS->Release();
-		m_Swapchain->Release();
-		m_BackBuffer->Release();
-		m_Device->Release();
-		m_Context->Release();
-
-		delete pPS;
-		delete pVS;
-
-		delete m_Swapchain;
-		delete m_BackBuffer;
-		delete m_Device;
-		delete m_Context;
-
-		delete m_AdapterDescription;
-		delete s_Internal;
+		ReleaseAndCleanObjects();
 	}
 
 	void DirectX11Internal::Init(GLFWwindow* windowHandle) {
-		DXGI_SWAP_CHAIN_DESC description;
-		ZeroMemory(&description, sizeof(DXGI_SWAP_CHAIN_DESC));
-
-		description.BufferDesc.Width = 0;
-		description.BufferDesc.Height = 0;
-		description.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		description.BufferDesc.RefreshRate.Numerator = 0;
-		description.BufferDesc.RefreshRate.Denominator = 0;
-		description.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-		description.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-
-		description.SampleDesc.Count = 4;
-		description.SampleDesc.Quality = 0;
-
-		description.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-
-		description.BufferCount = 1;
-
-		description.OutputWindow = glfwGetWin32Window(windowHandle);
-
-		description.Windowed = true;
-
-		description.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-		description.Flags = 0;
-
-		// Create the device and the swapchain
-		auto result = D3D11CreateDeviceAndSwapChain(
-			nullptr,
-			D3D_DRIVER_TYPE_HARDWARE,
-			nullptr,
-			D3D11_CREATE_DEVICE_DEBUG,
-			nullptr,
-			0,
-			D3D11_SDK_VERSION,
-			&description,
-			&m_Swapchain,
-			&m_Device,
-			nullptr,
-			&m_Context
-		);
-
-		m_Device->QueryInterface(__uuidof(IDXGIDevice), (LPVOID*)&m_DXGIDevice);
-		m_DXGIDevice->GetParent(__uuidof(IDXGIAdapter), (LPVOID*)&m_Adapter);
-
-		m_AdapterDescription = new DXGI_ADAPTER_DESC();
-		m_Adapter->GetDesc(m_AdapterDescription);
-
 		ID3D11Texture2D* backBuffer = nullptr;
 
 		// Get the address of the back buffer
@@ -144,7 +81,92 @@ namespace Sentinel
 		m_Context->Draw(3, 0);
 	}
 
-	DirectX11Internal* DirectX11Internal::GetInternalHandle() {
-		return s_Internal;
+	void DirectX11Internal::CreateDeviceAndSwapchain(GLFWwindow* windowHandle) {
+		DXGI_SWAP_CHAIN_DESC swapchainDescription;
+		ZeroMemory(&swapchainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
+
+		swapchainDescription.BufferDesc.Width = 0;
+		swapchainDescription.BufferDesc.Height = 0;
+		swapchainDescription.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		swapchainDescription.BufferDesc.RefreshRate.Numerator = 0;
+		swapchainDescription.BufferDesc.RefreshRate.Denominator = 0;
+		swapchainDescription.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		swapchainDescription.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+
+		swapchainDescription.SampleDesc.Count = 4;
+		swapchainDescription.SampleDesc.Quality = 0;
+
+		swapchainDescription.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+
+		swapchainDescription.BufferCount = 1;
+
+		swapchainDescription.OutputWindow = glfwGetWin32Window(windowHandle);
+
+		swapchainDescription.Windowed = true;
+
+		swapchainDescription.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		swapchainDescription.Flags = 0;
+
+		// Create the device and the swapchain
+		D3D11CreateDeviceAndSwapChain(
+			nullptr,
+			D3D_DRIVER_TYPE_HARDWARE,
+			nullptr,
+			D3D11_CREATE_DEVICE_DEBUG,
+			nullptr,
+			0,
+			D3D11_SDK_VERSION,
+			&swapchainDescription,
+			&m_Swapchain,
+			&m_Device,
+			nullptr,
+			&m_Context
+		);
+
+		m_Device->QueryInterface(__uuidof(IDXGIDevice), (LPVOID*)&m_DXGIDevice);
+		m_DXGIDevice->GetParent(__uuidof(IDXGIAdapter), (LPVOID*)&m_Adapter);
+
+		m_AdapterDescription = new DXGI_ADAPTER_DESC();
+		m_Adapter->GetDesc(m_AdapterDescription);
+	}
+
+	void DirectX11Internal::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+		D3D11_VIEWPORT viewport;
+		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+
+		viewport.TopLeftX = x;
+		viewport.TopLeftY = y;
+		viewport.Width = width;
+		viewport.Height = height;
+		viewport.MinDepth = 0;
+		viewport.MaxDepth = 1;
+
+		m_Context->RSSetViewports(1, &viewport);
+	}
+
+	void DirectX11Internal::CreateRenderTargetView() {}
+
+	void DirectX11Internal::ClearColor(const float* color) {
+		m_Context->ClearRenderTargetView(m_BackBuffer, color);
+	}
+
+	void DirectX11Internal::ReleaseAndCleanObjects() {
+		pPS->Release();
+		pVS->Release();
+		m_Swapchain->Release();
+		m_BackBuffer->Release();
+		m_Device->Release();
+		m_Context->Release();
+
+		delete pPS;
+		delete pVS;
+
+		delete m_Swapchain;
+		delete m_BackBuffer;
+		delete m_Device;
+		delete m_Context;
+
+		delete m_AdapterDescription;
+		delete s_Internal;
 	}
 }

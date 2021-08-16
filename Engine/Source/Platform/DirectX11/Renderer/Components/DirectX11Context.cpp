@@ -14,8 +14,6 @@ namespace Sentinel
 
 	void DirectX11Context::Init() {
 		glfwMakeContextCurrent(m_WindowHandle);
-		DirectX11Internal::GetInternalHandle()->Init(m_WindowHandle);
-
 		// Getting context information for DirectX is complex and different as compared to OpenGL
 
 		char videoCardDescription[128];
@@ -24,20 +22,20 @@ namespace Sentinel
 		LARGE_INTEGER driverVersion;
 
 		wcstombs_s(NULL, videoCardDescription, 128,
-			DirectX11Internal::GetInternalHandle()->GetDirectX11AdapterDescription()->Description, 128);
+			DirectX11Internal::GetInternalHandle()->GetAdapterDescription()->Description, 128);
 
-		if (DirectX11Internal::GetInternalHandle()->GetDirectX11AdapterDescription()->VendorId == 0x10DE)
+		if (DirectX11Internal::GetInternalHandle()->GetAdapterDescription()->VendorId == 0x10DE)
 			vendor = "NVIDIA Corporation";
-		else if (DirectX11Internal::GetInternalHandle()->GetDirectX11AdapterDescription()->VendorId == 0x1002)
+		else if (DirectX11Internal::GetInternalHandle()->GetAdapterDescription()->VendorId == 0x1002)
 			vendor = "AMD";
-		else if (DirectX11Internal::GetInternalHandle()->GetDirectX11AdapterDescription()->VendorId == 0x8086)
+		else if (DirectX11Internal::GetInternalHandle()->GetAdapterDescription()->VendorId == 0x8086)
 			vendor = "Intel";
-		else if (DirectX11Internal::GetInternalHandle()->GetDirectX11AdapterDescription()->VendorId == 0x1414)
+		else if (DirectX11Internal::GetInternalHandle()->GetAdapterDescription()->VendorId == 0x1414)
 			vendor = "Microsoft";
 		else
 			vendor = "Unknown vendor!";
 
-		DirectX11Internal::GetInternalHandle()->GetDirectX11Adapter()->CheckInterfaceSupport(__uuidof(IDXGIDevice), &driverVersion);
+		DirectX11Internal::GetInternalHandle()->GetAdapter()->CheckInterfaceSupport(__uuidof(IDXGIDevice), &driverVersion);
 
 		m_ContextInfo.Vendor = (unsigned char*)vendor.c_str();
 		m_ContextInfo.Renderer = (unsigned char*)videoCardDescription;
@@ -59,6 +57,6 @@ namespace Sentinel
 	}
 
 	void DirectX11Context::SwapBuffers() {
-		DirectX11Internal::GetInternalHandle()->GetDirectX11SwapChain()->Present(0, 0);
+		DirectX11Internal::GetInternalHandle()->GetSwapChain()->Present(0, 0);
 	}
 }

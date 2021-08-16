@@ -15,33 +15,19 @@ namespace Sentinel
 	Application::Application(const STL::string& name) {
 		ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
 		s_Instance = this;
-		m_Window = Window::Create(WindowProps(name));
-		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
+		Renderer::CreateWindowAndContext(WindowProps(name));
+		Renderer::GetRendererData()->Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
 		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
 
-
-
-		/*m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
-		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
-		m_KeyPressedCallbackIndex = SubscribeToEvent(EventType::KeyPressed, ST_BIND_EVENT_FN(Application::OnKeyPressed));
-		m_KeyReleasedCallbackIndex = SubscribeToEvent(EventType::KeyReleased, ST_BIND_EVENT_FN(Application::OnKeyReleased));
-		m_KeyTypedCallbackIndex = SubscribeToEvent(EventType::KeyTyped, ST_BIND_EVENT_FN(Application::OnKeyTyped));
-		m_MouseButtonPressedCallbackIndex =
-			SubscribeToEvent(EventType::MouseButtonPressed, ST_BIND_EVENT_FN(Application::OnMouseButtonPressed));
-		m_MouseButtonReleasedCllbackIndex =
-			SubscribeToEvent(EventType::MouseButtonReleased, ST_BIND_EVENT_FN(Application::OnMouseButtonReleased));
-		m_MouseButtonScrollCallbackIndex =
-			SubscribeToEvent(EventType::MouseScrolled, ST_BIND_EVENT_FN(Application::OnMouseButtonScrolled));
-		m_MouseMovedCallbackIndex =
-			SubscribeToEvent(EventType::MouseMoved, ST_BIND_EVENT_FN(Application::OnMouseMoved));*/
-
 		Renderer::Init();
-		RenderCommand::SetClearColor({ 0.0f, 0.2f, 0.4f, 1.0f });
-		RenderCommand::SetViewport(0, 0, 900, 900);
+		Renderer::SetClearColor({ 0.1f, 0.105f, 0.11f, 1.0f });
 
-		/*glGenVertexArrays(1, &m_VertexArray);
+		Renderer::CreateRenderPipeline(Renderer::GetRendererData()->Window);
+		m_RenderPipeline = Renderer::GetRendererData()->RenderPipeline;
+
+		glGenVertexArrays(1, &m_VertexArray);
 		glBindVertexArray(m_VertexArray);
 
 		glGenBuffers(1, &m_VertexBuffer);
@@ -62,7 +48,7 @@ namespace Sentinel
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
 
 		unsigned int indices[3] = { 0, 1, 2 };
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	}
 
 	Application::~Application() {
@@ -79,6 +65,10 @@ namespace Sentinel
 		UnsubscribeFromEvent(EventType::MouseScrolled, m_MouseButtonScrollCallbackIndex);
 		UnsubscribeFromEvent(EventType::MouseMoved, m_MouseMovedCallbackIndex);*/
 		Renderer::Shutdown();
+	}
+
+	Window& Application::GetWindow() {
+		return *(Renderer::GetRendererData()->Window.get());
 	}
 
 	void Application::PushLayer(Layer* layer) {
@@ -104,18 +94,18 @@ namespace Sentinel
 		{
 			if (!m_Minimized)
 			{
-				/*glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
-				glBindVertexArray(m_VertexArray);
-				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);*/
+				/*glClearColor(0.1f, 0.1f, 0.1f, 1.0f);*/
 
 				RenderCommand::Clear();
+				glBindVertexArray(m_VertexArray);
+				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
-				DirectX11Internal::GetInternalHandle()->Draw();
+
+				//DirectX11Internal::GetInternalHandle()->Draw();
 
 				ProcessLayerUpdate();
 
-				m_Window->OnUpdate();
+				GetWindow().OnUpdate();
 			}
 
 			Input::OnUpdate();

@@ -37,13 +37,6 @@ namespace Sentinel
 			glfwSetErrorCallback(GLFWErrorCallback);
 		}
 
-	#if defined(ST_DEBUG)
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-	#endif // defined(ST_DEBUG)
-
-		/*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);*/
-
 		if (props.FullScreen)
 		{
 			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(),
@@ -58,14 +51,6 @@ namespace Sentinel
 			}
 		}
 		++s_GLFWWindowCount;
-
-		m_Context = GraphicsContext::Create(m_Window);
-		m_Context->Init();
-
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-		glfwSetWindowUserPointer(m_Window, &m_Data);
-		SetVSync(true);
 
 		// GLFWCallbacks
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
@@ -152,6 +137,12 @@ namespace Sentinel
 			Scope<Event> event(new MouseMovedEvent(xPos, yPos));
 			data.EventCallback(STL::move(event));
 			});
+
+		m_Context = GraphicsContext::Create(m_Window);
+		m_Context->Init();
+
+		glfwSetWindowUserPointer(m_Window, &m_Data);
+		SetVSync(true);
 	}
 
 	void WindowsWindow::Shutdown() {

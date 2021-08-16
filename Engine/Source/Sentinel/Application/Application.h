@@ -9,6 +9,7 @@
 #include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Layers/LayerStack.h"
 #include "Sentinel/Window/Window.h"
+#include "Sentinel/Renderer/Components/RenderPipeline.h"
 
 int main(int argc, char** argv);
 
@@ -19,7 +20,7 @@ namespace Sentinel
 		Application(const STL::string& name = "Sentinel Engine");
 		virtual ~Application();
 
-		Window& GetWindow() { return *m_Window; }
+		Window& GetWindow();
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
@@ -64,9 +65,10 @@ namespace Sentinel
 		uint32_t m_MouseButtonScrollCallbackIndex = 0;
 		uint32_t m_MouseMovedCallbackIndex = 0;
 
-		//uint32_t m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		uint32_t m_VertexArray, m_VertexBuffer, m_IndexBuffer;
 	private:
-		Scope<Window> m_Window;
+		Ref<RenderPipeline> m_RenderPipeline;
+	private:
 		LayerStack m_LayerStack;
 		EventBus m_EventBus;
 	private:

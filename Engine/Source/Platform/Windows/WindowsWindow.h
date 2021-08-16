@@ -2,6 +2,7 @@
 
 #include "Sentinel/Window/Window.h"
 #include "Sentinel/Renderer/Components/GraphicsContext.h"
+#include "Sentinel/Renderer/Interface/RenderCommand.h"
 
 #include <GLFW/glfw3.h>
 

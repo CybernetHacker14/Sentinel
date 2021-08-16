@@ -4,6 +4,9 @@
 // entered in all premake and cmake scripts for the definition to get evaluated
 #define USE_EASTL 1
 
+// Includes don't have or need alternate implementations can be put here
+#include <initializer_list>
+
 #if USE_EASTL == 1
 #include <EASTL/vector.h>
 #include <EASTL/string.h>
@@ -58,6 +61,9 @@ namespace Sentinel
 	// Namespace to switch C++ STL with other STLs
 	namespace STL
 	{
+		template<typename T>
+		using initializer_list = std::initializer_list<T>;
+
 	#if USE_EASTL == 1
 
 		template<typename T>

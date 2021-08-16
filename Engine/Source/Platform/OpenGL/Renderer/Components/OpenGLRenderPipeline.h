@@ -6,10 +6,10 @@ struct GLFWwindow;
 
 namespace Sentinel
 {
-	class DirectX11RenderPipeline : public RenderPipeline {
+	class OpenGLRenderPipeline : public RenderPipeline {
 	public:
-		DirectX11RenderPipeline(const Scope<Window>& window);
-		virtual ~DirectX11RenderPipeline();
+		OpenGLRenderPipeline(const Scope<Window>& window);
+		virtual ~OpenGLRenderPipeline();
 
 		virtual void InitPipeline() override;
 		virtual void CleanPipeline() override;
@@ -17,7 +17,7 @@ namespace Sentinel
 		virtual void Draw() override;
 	protected:
 		virtual void InitGraphics() override;
-		virtual void InitSwapChainTargetView() override;
+
 	private:
 		GLFWwindow* m_NativeWindow;
 	};
