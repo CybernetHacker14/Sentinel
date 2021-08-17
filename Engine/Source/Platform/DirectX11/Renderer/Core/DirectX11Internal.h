@@ -27,7 +27,7 @@ namespace Sentinel
 		static DirectX11Internal* GetInternalHandle() { return s_Internal; }
 
 		void CreateDeviceAndSwapchain(GLFWwindow* windowHandle);
-		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+		void SetViewport(UInt x, UInt y, UInt width, UInt height);
 
 		void CreateRenderTargetView();
 

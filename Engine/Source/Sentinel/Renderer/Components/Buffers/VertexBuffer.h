@@ -31,16 +31,16 @@ namespace Sentinel
 	struct BufferElement {
 		STL::string Name;
 		ShaderDataType Type;
-		uint32_t Size;
-		size_t Offset;
+		UInt Size;
+		ULLong Offset;
 		bool Normalized;
 
 		BufferElement() = default;
 
-		BufferElement(ShaderDataType type, const STL::string& name, bool normalized = false)
-			:Name(name), Type(type), Size(ShaderDataType(type)), Offset(0), Normalized(normalized) {}
+		BufferElement(ShaderDataType type, const STL::string& name, Bool normalized = false)
+			:Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized) {}
 
-		uint32_t GetComponentCount() const {
+		UInt GetComponentCount() const {
 			switch (Type)
 			{
 				case ShaderDataType::Float: return 1;
@@ -80,7 +80,7 @@ namespace Sentinel
 
 	private:
 		void CalculateOffsetsAndStride() {
-			size_t offset = 0;
+			ULLong offset = 0;
 			m_Stride = 0;
 			for (auto& element : m_Elements)
 			{
@@ -91,7 +91,7 @@ namespace Sentinel
 		}
 	private:
 		STL::vector<BufferElement> m_Elements;
-		uint32_t m_Stride = 0;
+		UInt m_Stride = 0;
 	};
 
 	class VertexBuffer : public IntrusiveRefObject {
@@ -101,9 +101,9 @@ namespace Sentinel
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void SetData(const void* data, uint32_t size) = 0;
+		virtual void SetData(const void* data, UInt size) = 0;
 
-		static Ref<VertexBuffer> Create(uint32_t size);
-		static Ref<VertexBuffer> Create(void* vertices, uint32_t size);
+		static Ref<VertexBuffer> Create(UInt size);
+		static Ref<VertexBuffer> Create(void* vertices, UInt size);
 	};
 }

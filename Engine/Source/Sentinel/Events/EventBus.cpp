@@ -11,14 +11,14 @@ namespace Sentinel
 		m_CallbackMap.clear();
 	}
 
-	const uint32_t EventBus::SubscribeToEvent(const EventType& eventType, const EventCallbackFn& callback) {
-		uint32_t index = m_CallbackMapInsertIndex;
+	const UInt EventBus::SubscribeToEvent(const EventType& eventType, const EventCallbackFn& callback) {
+		UInt index = m_CallbackMapInsertIndex;
 		m_CallbackMap[eventType].emplace_back(index, callback);
 		m_CallbackMapInsertIndex++;
 		return index;
 	}
 
-	void EventBus::UnsubscribeFromEvent(const EventType& eventType, const uint32_t& callbackIndex) {
+	void EventBus::UnsubscribeFromEvent(const EventType& eventType, const UInt& callbackIndex) {
 		for (auto it = m_CallbackMap[eventType].begin(); it != m_CallbackMap[eventType].end(); ++it)
 		{
 			if ((*it).first == callbackIndex)

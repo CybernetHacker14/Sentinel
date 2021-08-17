@@ -12,7 +12,7 @@
 
 namespace Sentinel
 {
-	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size) {
+	Ref<VertexBuffer> VertexBuffer::Create(UInt size) {
 
 		switch (RendererAPI::GetAPI())
 		{
@@ -31,12 +31,31 @@ namespace Sentinel
 				return nullptr;
 			#endif // ST_PLATFORM_WINDOWS
 		}
+
+		ST_ENGINE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
 	}
 
-	Ref<VertexBuffer> VertexBuffer::Create(void* vertices, uint32_t size) {
+	Ref<VertexBuffer> VertexBuffer::Create(void* vertices, UInt size) {
 		switch (RendererAPI::GetAPI())
 		{
-			switch (Render)
+			case RendererAPI::API::None:
+				ST_ENGINE_ASSERT(false, "RendererAPI::None is currently not supported!");
+				return nullptr;
+
+			case RendererAPI::API::OpenGL:
+				return CreateRef<OpenGLVertexBuffer>(vertices, size);
+
+			case RendererAPI::API::DirectX11:
+			#ifdef ST_PLATFORM_WINDOWS
+				return CreateRef < DirectX11VertexBuffer>(vertices, size);
+			#else
+				ST_ENGINE_ASSERT(false, "Can't use RendererAPI::DirectX11 on a non-Windows platform");
+				return nullptr;
+			#endif // ST_PLATFORM_WINDOWS
 		}
+
+		ST_ENGINE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
 	}
 }

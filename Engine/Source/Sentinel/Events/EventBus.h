@@ -15,8 +15,8 @@ namespace Sentinel
 	private:
 		friend class Application;
 
-		const uint32_t SubscribeToEvent(const EventType& eventType, const EventCallbackFn& callback);
-		void UnsubscribeFromEvent(const EventType& eventType, const uint32_t& callbackIndex);
+		const UInt SubscribeToEvent(const EventType& eventType, const EventCallbackFn& callback);
+		void UnsubscribeFromEvent(const EventType& eventType, const UInt& callbackIndex);
 		void NotifyAboutEvent(Scope<Event> eventData);
 
 		void ProcessEvents();
@@ -24,9 +24,9 @@ namespace Sentinel
 	private:
 		STL::vector<Scope<Event>> m_EventBus;
 
-		using CallbackMap = STL::unordered_map<EventType, STL::vector<STL::pair<uint32_t, EventCallbackFn>>>;
+		using CallbackMap = STL::unordered_map<EventType, STL::vector<STL::pair<UInt, EventCallbackFn>>>;
 
 		CallbackMap m_CallbackMap;
-		uint32_t m_CallbackMapInsertIndex = 0;
+		UInt m_CallbackMapInsertIndex = 0;
 	};
 }

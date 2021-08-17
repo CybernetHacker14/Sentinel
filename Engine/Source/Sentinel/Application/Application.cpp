@@ -81,11 +81,11 @@ namespace Sentinel
 		overlay->OnAttach();
 	}
 
-	const uint32_t Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
+	const UInt Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
 		return m_EventBus.SubscribeToEvent(eventType, STL::move(callback));
 	}
 
-	void Application::UnsubscribeFromEvent(const EventType& eventType, const uint32_t& callbackIndex) {
+	void Application::UnsubscribeFromEvent(const EventType& eventType, const UInt& callbackIndex) {
 		m_EventBus.UnsubscribeFromEvent(eventType, callbackIndex);
 	}
 

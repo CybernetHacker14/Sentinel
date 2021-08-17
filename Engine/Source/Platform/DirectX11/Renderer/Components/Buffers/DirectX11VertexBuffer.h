@@ -7,15 +7,15 @@ namespace Sentinel
 {
 	class DirectX11VertexBuffer : public VertexBuffer {
 	public:
-		DirectX11VertexBuffer(uint32_t size);
-		DirectX11VertexBuffer(void* vertices, uint32_t size);
+		DirectX11VertexBuffer(UInt size);
+		DirectX11VertexBuffer(void* vertices, UInt size);
 
 		virtual ~DirectX11VertexBuffer();
 
 		void Bind() const override;
 		void Unbind() const override;
 
-		void SetData(const void* data, uint32_t size);
+		void SetData(const void* data, UInt size);
 	private:
 		ID3D11Buffer* m_VertexBufferID;
 		BufferLayout m_Layout;

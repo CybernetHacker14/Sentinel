@@ -3,6 +3,7 @@
 #include <memory>
 #include "Sentinel/Base/PlatformDetection.h"
 #include "Sentinel/Base/STL.h"
+#include "Sentinel/Base/DataTypes.h"
 #include "Sentinel/Base/Ref.h"
 
 #ifdef ST_DEBUG

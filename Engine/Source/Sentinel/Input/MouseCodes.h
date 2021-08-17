@@ -1,8 +1,10 @@
 ﻿#pragma once
 
+#include "Sentinel/Base/Define.h"
+
 namespace Sentinel
 {
-	using MouseCode = uint16_t;
+	using MouseCode = UShort;
 
 	namespace Mouse
 	{

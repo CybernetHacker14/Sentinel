@@ -14,12 +14,12 @@ namespace Sentinel
 			m_RefCount--;
 		}
 
-		uint32_t GetRefCount() const { return m_RefCount; }
+		UInt GetRefCount() const { return m_RefCount; }
 
 		bool ShouldBeFreed() const { return m_RefCount == 0; }
 
 	private:
-		mutable uint32_t m_RefCount = 0;
+		mutable UInt m_RefCount = 0;
 	};
 
 	template<typename T>

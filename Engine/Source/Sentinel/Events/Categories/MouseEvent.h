@@ -7,11 +7,11 @@ namespace Sentinel
 {
 	class MouseMovedEvent final : public Event {
 	public:
-		MouseMovedEvent(const float_t x, const float_t y)
+		MouseMovedEvent(const Float x, const Float y)
 			: m_MouseX(x), m_MouseY(y) {}
 
-		float_t GetX() const { return m_MouseX; }
-		float_t GetY() const { return m_MouseY; }
+		Float GetX() const { return m_MouseX; }
+		Float GetY() const { return m_MouseY; }
 
 		EventType GetEventType() const final { return EventType::MouseMoved; }
 		EventCategory GetEventCategoryFlags() const final { return EventCategory::Mouse | EventCategory::Input; }
@@ -24,16 +24,16 @@ namespace Sentinel
 		}
 
 	private:
-		float_t m_MouseX, m_MouseY;
+		Float m_MouseX, m_MouseY;
 	};
 
 	class MouseScrolledEvent final : public Event {
 	public:
-		MouseScrolledEvent(const float_t xOffset, const float_t yOffset)
+		MouseScrolledEvent(const Float xOffset, const Float yOffset)
 			: m_XOffset(xOffset), m_YOffset(yOffset) {}
 
-		float_t GetXOffset() const { return m_XOffset; }
-		float_t GetYOffset() const { return m_YOffset; }
+		Float GetXOffset() const { return m_XOffset; }
+		Float GetYOffset() const { return m_YOffset; }
 
 		EventType GetEventType() const final { return EventType::MouseScrolled; }
 		EventCategory GetEventCategoryFlags() const final {
@@ -48,7 +48,7 @@ namespace Sentinel
 		}
 
 	private:
-		float_t m_XOffset, m_YOffset;
+		Float m_XOffset, m_YOffset;
 	};
 
 	class MouseButtonEvent : public Event {

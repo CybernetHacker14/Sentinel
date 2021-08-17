@@ -74,8 +74,8 @@ namespace Sentinel
 	}
 
 	void DirectX11Internal::Draw() {
-		uint32_t stride = sizeof(float) * 3;
-		uint32_t offset = 0;
+		UInt stride = sizeof(float) * 3;
+		UInt offset = 0;
 		m_Context->IASetVertexBuffers(0, 1, &pVBuffer, &stride, &offset);
 		m_Context->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_Context->Draw(3, 0);
@@ -130,7 +130,7 @@ namespace Sentinel
 		m_Adapter->GetDesc(m_AdapterDescription);
 	}
 
-	void DirectX11Internal::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+	void DirectX11Internal::SetViewport(UInt x, UInt y, UInt width, UInt height) {
 		D3D11_VIEWPORT viewport;
 		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 

@@ -10,7 +10,7 @@ namespace Sentinel
 			s_RendererAPI->Init();
 		}
 
-		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+		static void SetViewport(UInt x, UInt y, UInt width, UInt height) {
 			s_RendererAPI->SetViewport(x, y, width, height);
 		}
 

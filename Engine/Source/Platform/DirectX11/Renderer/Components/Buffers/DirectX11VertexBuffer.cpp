@@ -4,7 +4,7 @@
 
 namespace Sentinel
 {
-	DirectX11VertexBuffer::DirectX11VertexBuffer(uint32_t size) {
+	DirectX11VertexBuffer::DirectX11VertexBuffer(UInt size) {
 		D3D11_BUFFER_DESC description;
 		ZeroMemory(&description, sizeof(description));
 
@@ -19,7 +19,7 @@ namespace Sentinel
 			&description, nullptr, &m_VertexBufferID);
 	}
 
-	DirectX11VertexBuffer::DirectX11VertexBuffer(void* vertices, uint32_t size) {
+	DirectX11VertexBuffer::DirectX11VertexBuffer(void* vertices, UInt size) {
 		D3D11_BUFFER_DESC description;
 		ZeroMemory(&description, sizeof(description));
 
@@ -45,8 +45,8 @@ namespace Sentinel
 	}
 
 	void DirectX11VertexBuffer::Bind() const {
-		uint32_t stride = m_Layout.GetStride();
-		uint32_t offset = 0;
+		UInt stride = m_Layout.GetStride();
+		UInt offset = 0;
 		DirectX11Internal::GetInternalHandle()->GetDeviceContext()->IASetVertexBuffers(
 			0, 1, &m_VertexBufferID, &stride, &offset);
 	}
@@ -56,7 +56,7 @@ namespace Sentinel
 			0, 1, nullptr, nullptr, nullptr);
 	}
 
-	void DirectX11VertexBuffer::SetData(const void* data, uint32_t size) {
+	void DirectX11VertexBuffer::SetData(const void* data, UInt size) {
 		this->Bind();
 
 		auto deviceContext = DirectX11Internal::GetInternalHandle()->GetDeviceContext();

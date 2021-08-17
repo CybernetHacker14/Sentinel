@@ -25,7 +25,7 @@ namespace Sentinel
 		static void Clear();
 		static void Clear(const glm::vec4& color);
 
-		static void OnWindowResize(uint32_t width, uint32_t height);
+		static void OnWindowResize(UInt width, UInt height);
 
 		static void BeginScene();
 		static void EndScene();

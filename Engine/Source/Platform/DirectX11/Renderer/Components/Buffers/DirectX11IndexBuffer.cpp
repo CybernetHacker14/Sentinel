@@ -4,17 +4,17 @@
 
 namespace Sentinel
 {
-	DirectX11IndexBuffer::DirectX11IndexBuffer(void* indices, uint32_t count)
+	DirectX11IndexBuffer::DirectX11IndexBuffer(void* indices, UInt count)
 		: m_Count(count) {
 		D3D11_BUFFER_DESC description;
 		ZeroMemory(&description, sizeof(description));
 
 		description.Usage = D3D11_USAGE_DEFAULT;
-		description.ByteWidth = sizeof(uint32_t) * count;
+		description.ByteWidth = sizeof(UInt) * count;
 		description.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		description.CPUAccessFlags = 0;
 		description.MiscFlags = 0;
-		description.StructureByteStride = sizeof(uint32_t);
+		description.StructureByteStride = sizeof(UInt);
 
 		D3D11_SUBRESOURCE_DATA subresource;
 		ZeroMemory(&subresource, sizeof(subresource));

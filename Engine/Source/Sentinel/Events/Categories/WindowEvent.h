@@ -15,15 +15,15 @@ namespace Sentinel
 
 	class WindowResizeEvent final : public Event {
 	public:
-		WindowResizeEvent(uint32_t width, uint32_t height)
+		WindowResizeEvent(UInt width, UInt height)
 			: m_Width(width), m_Height(height) {}
 
 		EventType GetEventType() const final { return EventType::WindowResize; }
 		EventCategory GetEventCategoryFlags() const final { return EventCategory::Application; }
 		const char* GetName() const final { return "WindowResizeEvent"; }
 
-		uint32_t GetWidth() const { return m_Width; }
-		uint32_t GetHeight() const { return m_Height; }
+		UInt GetWidth() const { return m_Width; }
+		UInt GetHeight() const { return m_Height; }
 
 		STL::string ToString() const final {
 			std::stringstream stream;
@@ -32,6 +32,6 @@ namespace Sentinel
 		}
 
 	private:
-		uint32_t m_Width, m_Height;
+		UInt m_Width, m_Height;
 	};
 }

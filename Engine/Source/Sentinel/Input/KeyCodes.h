@@ -1,8 +1,10 @@
 ﻿#pragma once
 
+#include "Sentinel/Base/Define.h"
+
 namespace Sentinel
 {
-	using KeyCode = uint16_t;
+	using KeyCode = UShort;
 
 	namespace Key
 	{

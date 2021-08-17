@@ -22,10 +22,10 @@ namespace Sentinel
 
 	class KeyPressedEvent final : public KeyEvent {
 	public:
-		KeyPressedEvent(const KeyCode keycode, const uint16_t repeatCount)
+		KeyPressedEvent(const KeyCode keycode, const UShort repeatCount)
 			: KeyEvent(keycode), m_RepeatCount(repeatCount) {}
 
-		uint16_t GetRepeatCount() const { return m_RepeatCount; }
+		UShort GetRepeatCount() const { return m_RepeatCount; }
 
 		EventType GetEventType() const final { return EventType::KeyPressed; }
 		const char* GetName() const final { return "KeyPressedEvent"; }
@@ -37,7 +37,7 @@ namespace Sentinel
 		}
 
 	private:
-		uint16_t m_RepeatCount;
+		UShort m_RepeatCount;
 	};
 
 	class KeyReleasedEvent final : public KeyEvent {

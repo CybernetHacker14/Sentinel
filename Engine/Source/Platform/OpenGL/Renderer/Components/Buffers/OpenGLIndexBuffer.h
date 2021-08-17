@@ -6,16 +6,16 @@ namespace Sentinel
 {
 	class OpenGLIndexBuffer : public IndexBuffer {
 	public:
-		OpenGLIndexBuffer(void* indices, uint32_t count);
+		OpenGLIndexBuffer(void* indices, UInt count);
 		virtual ~OpenGLIndexBuffer();
 
 		void Bind() const override;
 		void Unbind() const override;
 
-		uint32_t GetCount() const override { return m_Count; }
+		UInt GetCount() const override { return m_Count; }
 
 	private:
-		uint32_t m_IndexBufferID;
-		uint32_t m_Count;
+		UInt m_IndexBufferID;
+		UInt m_Count;
 	};
 }

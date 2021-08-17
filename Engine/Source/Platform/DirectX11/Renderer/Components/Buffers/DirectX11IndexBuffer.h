@@ -7,16 +7,16 @@ namespace Sentinel
 {
 	class DirectX11IndexBuffer : public IndexBuffer {
 	public:
-		DirectX11IndexBuffer(void* indices, uint32_t count);
+		DirectX11IndexBuffer(void* indices, UInt count);
 		virtual ~DirectX11IndexBuffer();
 
 		void Bind() const override;
 		void Unbind() const override;
 
-		uint32_t GetCount() const override { return m_Count; }
+		UInt GetCount() const override { return m_Count; }
 
 	private:
 		ID3D11Buffer* m_IndexBufferID;
-		uint32_t m_Count;
+		UInt m_Count;
 	};
 }

@@ -8,7 +8,7 @@ namespace Sentinel
 {
 	void DirectX11RendererAPI::Init() {}
 
-	void DirectX11RendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+	void DirectX11RendererAPI::SetViewport(UInt x, UInt y, UInt width, UInt height) {
 		DirectX11Internal::GetInternalHandle()->SetViewport(x, y, width, height);
 	}
 

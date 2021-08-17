@@ -6,13 +6,13 @@
 
 namespace Sentinel
 {
-	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size) {
+	OpenGLVertexBuffer::OpenGLVertexBuffer(UInt size) {
 		glCreateBuffers(1, &m_VertexBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferID);
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	}
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(void* vertices, uint32_t size) {
+	OpenGLVertexBuffer::OpenGLVertexBuffer(void* vertices, UInt size) {
 		glCreateBuffers(1, &m_VertexBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferID);
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -30,7 +30,7 @@ namespace Sentinel
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	void OpenGLVertexBuffer::SetData(const void* data, uint32_t size) {
+	void OpenGLVertexBuffer::SetData(const void* data, UInt size) {
 		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferID);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}

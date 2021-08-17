@@ -6,18 +6,18 @@ namespace Sentinel
 {
 	class OpenGLVertexBuffer : public VertexBuffer {
 	public:
-		OpenGLVertexBuffer(uint32_t size);
-		OpenGLVertexBuffer(void* vertices, uint32_t size);
+		OpenGLVertexBuffer(UInt size);
+		OpenGLVertexBuffer(void* vertices, UInt size);
 
 		virtual ~OpenGLVertexBuffer();
 
 		void Bind() const override;
 		void Unbind() const override;
 
-		void SetData(const void* data, uint32_t size);
+		void SetData(const void* data, UInt size);
 
 	private:
-		uint32_t m_VertexBufferID;
+		UInt m_VertexBufferID;
 		BufferLayout m_Layout;
 	};
 }

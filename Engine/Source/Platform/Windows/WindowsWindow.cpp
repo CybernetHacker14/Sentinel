@@ -9,7 +9,7 @@
 
 namespace Sentinel
 {
-	static uint8_t s_GLFWWindowCount = 0;
+	static UChar s_GLFWWindowCount = 0;
 
 	static void GLFWErrorCallback(int error, const char* description) {
 		ST_ENGINE_ERROR("GLFW Error ({0}): {1}", error, description);
@@ -39,12 +39,12 @@ namespace Sentinel
 
 		if (props.FullScreen)
 		{
-			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(),
+			m_Window = glfwCreateWindow((Int)props.Width, (Int)props.Height, m_Data.Title.c_str(),
 				glfwGetPrimaryMonitor(), nullptr);
 		}
 		else
 		{
-			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+			m_Window = glfwCreateWindow((Int)props.Width, (Int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 			if (props.WindowedMaximized)
 			{
 				glfwMaximizeWindow(m_Window);
@@ -53,7 +53,7 @@ namespace Sentinel
 		++s_GLFWWindowCount;
 
 		// GLFWCallbacks
-		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
+		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, Int width, Int height) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			data.Width = width;
 			data.Height = height;
@@ -69,7 +69,7 @@ namespace Sentinel
 			data.EventCallback(STL::move(event));
 			});
 
-		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, Int key, Int scancode, Int action, Int mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			switch (action)
@@ -97,14 +97,14 @@ namespace Sentinel
 			}
 			});
 
-		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode) {
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, UInt keycode) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			Scope<Event> event(new KeyTypedEvent(keycode));
 			data.EventCallback(STL::move(event));
 			});
 
-		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, Int button, Int action, Int mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			switch (action)
@@ -124,14 +124,14 @@ namespace Sentinel
 			}
 			});
 
-		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, Double xOffset, Double yOffset) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			Scope<Event> event(new MouseScrolledEvent(xOffset, yOffset));
 			data.EventCallback(STL::move(event));
 			});
 
-		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos) {
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, Double xPos, Double yPos) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			Scope<Event> event(new MouseMovedEvent(xPos, yPos));
@@ -160,7 +160,7 @@ namespace Sentinel
 		m_Context->SwapBuffers();
 	}
 
-	void WindowsWindow::SetVSync(bool enabled) {
+	void WindowsWindow::SetVSync(Bool enabled) {
 		if (enabled)
 		{
 			glfwSwapInterval(1);
@@ -172,7 +172,7 @@ namespace Sentinel
 		m_Data.VSync = enabled;
 	}
 
-	bool WindowsWindow::IsVSync() const {
+	Bool WindowsWindow::IsVSync() const {
 		return m_Data.VSync;
 	}
 }
