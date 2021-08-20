@@ -14,6 +14,3 @@
 	path = Engine/Vendor/glm/module
 	url = https://github.com/g-truc/glm.git
 	branch = master
-[submodule "Engine/Vendor/SPIRV-Cross/module"]
-	path = Engine/Vendor/SPIRV-Cross/module
-	url = https://github.com/KhronosGroup/SPIRV-Cross.git
