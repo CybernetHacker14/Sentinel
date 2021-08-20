@@ -191,12 +191,12 @@ namespace Sentinel
 
 	Bool Input::GetKey(const KeyCode keycode) {
 		return glfwGetKey(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()),
-			static_cast<int32_t>(keycode)) == GLFW_PRESS;
+			static_cast<Int>(keycode)) == GLFW_PRESS;
 	}
 
 	Bool Input::GetMouseButton(const MouseCode mousecode) {
 		return glfwGetMouseButton(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()),
-			static_cast<int32_t>(mousecode)) == GLFW_PRESS;
+			static_cast<Int>(mousecode)) == GLFW_PRESS;
 	}
 
 	void Input::OnUpdate() {
