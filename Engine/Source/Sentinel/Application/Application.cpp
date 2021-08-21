@@ -2,7 +2,6 @@
 
 #include "Sentinel/Application/Application.h"
 #include "Sentinel/Input/Input.h"
-#include "Sentinel/Renderer/Core/Renderer.h"
 
 namespace Sentinel
 {
@@ -11,41 +10,21 @@ namespace Sentinel
 	Application::Application(const STL::string& name) {
 		ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
 		s_Instance = this;
+
 		m_Window = Window::Create(WindowProps(name));
 		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
 		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
-
-		/*m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
-		m_KeyPressedCallbackIndex = SubscribeToEvent(EventType::KeyPressed, ST_BIND_EVENT_FN(Application::OnKeyPressed));
-		m_KeyReleasedCallbackIndex = SubscribeToEvent(EventType::KeyReleased, ST_BIND_EVENT_FN(Application::OnKeyReleased));
-		m_KeyTypedCallbackIndex = SubscribeToEvent(EventType::KeyTyped, ST_BIND_EVENT_FN(Application::OnKeyTyped));
-		m_MouseButtonPressedCallbackIndex =
-			SubscribeToEvent(EventType::MouseButtonPressed, ST_BIND_EVENT_FN(Application::OnMouseButtonPressed));
-		m_MouseButtonReleasedCllbackIndex =
-			SubscribeToEvent(EventType::MouseButtonReleased, ST_BIND_EVENT_FN(Application::OnMouseButtonReleased));
-		m_MouseButtonScrollCallbackIndex =
-			SubscribeToEvent(EventType::MouseScrolled, ST_BIND_EVENT_FN(Application::OnMouseButtonScrolled));
-		m_MouseMovedCallbackIndex =
-			SubscribeToEvent(EventType::MouseMoved, ST_BIND_EVENT_FN(Application::OnMouseMoved));*/
-
-		Renderer::Init();
 	}
 
 	Application::~Application() {
 		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
-
-		/*UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
 		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
-		UnsubscribeFromEvent(EventType::KeyPressed, m_KeyPressedCallbackIndex);
-		UnsubscribeFromEvent(EventType::KeyReleased, m_KeyReleasedCallbackIndex);
-		UnsubscribeFromEvent(EventType::KeyTyped, m_KeyTypedCallbackIndex);
-		UnsubscribeFromEvent(EventType::MouseButtonPressed, m_MouseButtonPressedCallbackIndex);
-		UnsubscribeFromEvent(EventType::MouseButtonReleased, m_MouseButtonReleasedCllbackIndex);
-		UnsubscribeFromEvent(EventType::MouseScrolled, m_MouseButtonScrollCallbackIndex);
-		UnsubscribeFromEvent(EventType::MouseMoved, m_MouseMovedCallbackIndex);*/
-		Renderer::Shutdown();
+	}
+
+	Window& Application::GetWindow() {
+		return *m_Window;
 	}
 
 	void Application::PushLayer(Layer* layer) {
@@ -58,11 +37,11 @@ namespace Sentinel
 		overlay->OnAttach();
 	}
 
-	const uint32_t Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
+	const UInt Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
 		return m_EventBus.SubscribeToEvent(eventType, STL::move(callback));
 	}
 
-	void Application::UnsubscribeFromEvent(const EventType& eventType, const uint32_t& callbackIndex) {
+	void Application::UnsubscribeFromEvent(const EventType& eventType, const UInt& callbackIndex) {
 		m_EventBus.UnsubscribeFromEvent(eventType, callbackIndex);
 	}
 
@@ -73,7 +52,7 @@ namespace Sentinel
 			{
 				ProcessLayerUpdate();
 
-				m_Window->OnUpdate();
+				//m_Window->OnUpdate();
 			}
 
 			Input::OnUpdate();
@@ -106,7 +85,6 @@ namespace Sentinel
 
 	void Application::OnWindowResize(Event& event) {
 		WindowResizeEvent e = static_cast<WindowResizeEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
 		event.Handled = true;
 	}
 

@@ -24,7 +24,7 @@ namespace Sentinel
 		void PushOverlay(Layer* overlay);
 		void PopOverlay(Layer* overlay);
 
-		const uint32_t GetSize() const { return static_cast<uint32_t>(m_Layers.size()); }
+		const UInt GetSize() const { return static_cast<UInt>(m_Layers.size()); }
 
 		// Iterators
 
@@ -42,6 +42,6 @@ namespace Sentinel
 
 	private:
 		STL::vector<Layer*> m_Layers;
-		uint32_t m_LayerInsertIndex = 0;
+		UInt m_LayerInsertIndex = 0;
 	};
 }

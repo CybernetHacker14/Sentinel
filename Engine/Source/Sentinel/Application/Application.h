@@ -19,13 +19,13 @@ namespace Sentinel
 		Application(const STL::string& name = "Sentinel Engine");
 		virtual ~Application();
 
-		Window& GetWindow() { return *m_Window; }
+		Window& GetWindow();
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
-		const uint32_t SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
-		void UnsubscribeFromEvent(const EventType& eventType, const uint32_t& callback);
+		const UInt SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
+		void UnsubscribeFromEvent(const EventType& eventType, const UInt& callback);
 
 		// Returns the Instance of the Application, since it's a singleton
 		static Application& Get() { return *s_Instance; }
@@ -51,25 +51,20 @@ namespace Sentinel
 		void OnMouseMoved(Event& event);
 
 	private:
-		bool m_Running = true;
-		bool m_Minimized = false;
+		Bool m_Running = true;
+		Bool m_Minimized = false;
 
-		uint32_t m_WindowResizeCallbackIndex = 0;
-		uint32_t m_WindowCloseCallbackIndex = 0;
-		uint32_t m_KeyPressedCallbackIndex = 0;
-		uint32_t m_KeyReleasedCallbackIndex = 0;
-		uint32_t m_KeyTypedCallbackIndex = 0;
-		uint32_t m_MouseButtonPressedCallbackIndex = 0;
-		uint32_t m_MouseButtonReleasedCllbackIndex = 0;
-		uint32_t m_MouseButtonScrollCallbackIndex = 0;
-		uint32_t m_MouseMovedCallbackIndex = 0;
+		UInt m_WindowResizeCallbackIndex = 0;
+		UInt m_WindowCloseCallbackIndex = 0;
+
 	private:
 		Scope<Window> m_Window;
+	private:
 		LayerStack m_LayerStack;
 		EventBus m_EventBus;
 	private:
 		static Application* s_Instance;
-		friend int ::main(int argc, char** argv);
+		friend int::main(int argc, char** argv);
 	};
 
 	// TO BE Defined in Client

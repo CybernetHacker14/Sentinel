@@ -6,14 +6,19 @@ namespace Sentinel
 {
 	struct WindowProps {
 		STL::string Title;
-		uint32_t Width;
-		uint32_t Height;
+		UInt Width;
+		UInt Height;
+		Bool FullScreen;
+		Bool WindowedMaximized;
 
 		WindowProps(
 			const STL::string& title = "Sentinel-Engine",
-			uint32_t width = 1600,
-			uint32_t height = 900)
-			:Title(title), Width(width), Height(height) {}
+			UInt width = 900,
+			UInt height = 900,
+			Bool fullscreen = false,
+			Bool windowedMaximized = false)
+			:Title(title), Width(width), Height(height),
+			FullScreen(fullscreen), WindowedMaximized(windowedMaximized) {}
 	};
 
 	// Interface representing a desktop system based Window
@@ -26,12 +31,12 @@ namespace Sentinel
 
 		virtual void OnUpdate() = 0;
 
-		virtual uint32_t GetWidth() const = 0;
-		virtual uint32_t GetHeight() const = 0;
+		virtual UInt GetWidth() const = 0;
+		virtual UInt GetHeight() const = 0;
 
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
-		virtual void SetVSync(bool enabled) = 0;
-		virtual bool IsVSync() const = 0;
+		virtual void SetVSync(Bool enabled) = 0;
+		virtual Bool IsVSync() const = 0;
 
 		virtual void* GetNativeWindow() const = 0;
 

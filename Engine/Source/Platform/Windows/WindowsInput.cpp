@@ -7,8 +7,8 @@
 
 namespace Sentinel
 {
-	static STL::unordered_map<KeyCode, bool> s_KeyStateMap(0);
-	static STL::unordered_map<MouseCode, bool> s_MouseButtonStateMap(0);
+	static STL::unordered_map<KeyCode, Bool> s_KeyStateMap(0);
+	static STL::unordered_map<MouseCode, Bool> s_MouseButtonStateMap(0);
 
 	const static STL::vector<KeyCode> s_AllKeys =
 	{
@@ -146,31 +146,31 @@ namespace Sentinel
 		Mouse::Button7
 	};
 
-	bool Input::IsKeyPressed(const KeyCode keycode) {
+	Bool Input::IsKeyPressed(const KeyCode keycode) {
 		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetKey(window, static_cast<int32_t>(keycode));
+		auto state = glfwGetKey(window, static_cast<Int>(keycode));
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool Input::IsKeyDown(const KeyCode keycode) {
+	Bool Input::IsKeyDown(const KeyCode keycode) {
 		return GetKey(keycode) && !s_KeyStateMap[keycode];
 	}
 
-	bool Input::IsKeyUp(const KeyCode keycode) {
+	Bool Input::IsKeyUp(const KeyCode keycode) {
 		return !GetKey(keycode) && s_KeyStateMap[keycode];
 	}
 
-	bool Input::IsMouseButtonPressed(const MouseCode button) {
+	Bool Input::IsMouseButtonPressed(const MouseCode button) {
 		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetMouseButton(window, static_cast<int32_t>(button));
+		auto state = glfwGetMouseButton(window, static_cast<Int>(button));
 		return state == GLFW_PRESS;
 	}
 
-	bool Input::IsMouseButtonDown(const MouseCode button) {
+	Bool Input::IsMouseButtonDown(const MouseCode button) {
 		return GetMouseButton(button) && !s_MouseButtonStateMap[button];
 	}
 
-	bool Input::IsMouseButtonUp(const MouseCode button) {
+	Bool Input::IsMouseButtonUp(const MouseCode button) {
 		return !GetMouseButton(button) && s_MouseButtonStateMap[button];
 	}
 
@@ -178,25 +178,25 @@ namespace Sentinel
 		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
-		return { (float)xpos,(float)ypos };
+		return { (Float)xpos,(Float)ypos };
 	}
 
-	float Input::GetMouseX() {
+	Float Input::GetMouseX() {
 		return GetMousePosition().x;
 	}
 
-	float Input::GetMouseY() {
+	Float Input::GetMouseY() {
 		return GetMousePosition().y;
 	}
 
-	bool Input::GetKey(const KeyCode keycode) {
+	Bool Input::GetKey(const KeyCode keycode) {
 		return glfwGetKey(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()),
-			static_cast<int32_t>(keycode)) == GLFW_PRESS;
+			static_cast<Int>(keycode)) == GLFW_PRESS;
 	}
 
-	bool Input::GetMouseButton(const MouseCode mousecode) {
+	Bool Input::GetMouseButton(const MouseCode mousecode) {
 		return glfwGetMouseButton(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()),
-			static_cast<int32_t>(mousecode)) == GLFW_PRESS;
+			static_cast<Int>(mousecode)) == GLFW_PRESS;
 	}
 
 	void Input::OnUpdate() {

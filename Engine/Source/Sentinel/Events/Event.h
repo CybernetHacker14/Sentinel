@@ -46,10 +46,10 @@ namespace Sentinel
 		virtual const char* GetName() const = 0;
 		virtual STL::string ToString() const { return GetName(); }
 
-		bool IsInCategory(EventCategory category) {
-			return static_cast<bool>(GetEventCategoryFlags() & category);
+		Bool IsInCategory(EventCategory category) {
+			return static_cast<Bool>(GetEventCategoryFlags() & category);
 		}
 	public:
-		bool Handled = false;
+		Bool Handled = false;
 	};
 }
