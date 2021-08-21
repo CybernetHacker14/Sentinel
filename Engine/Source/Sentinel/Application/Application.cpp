@@ -2,11 +2,6 @@
 
 #include "Sentinel/Application/Application.h"
 #include "Sentinel/Input/Input.h"
-#include "Sentinel/Renderer/Core/Renderer.h"
-
-#include "Platform/DirectX11/Renderer/Core/DirectX11Internal.h"
-
-#include <glad/glad.h>
 
 namespace Sentinel
 {
@@ -15,60 +10,21 @@ namespace Sentinel
 	Application::Application(const STL::string& name) {
 		ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
 		s_Instance = this;
-		Renderer::CreateWindowAndContext(WindowProps(name));
-		Renderer::GetRendererData()->Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
+
+		m_Window = Window::Create(WindowProps(name));
+		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
 		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
-
-		Renderer::Init();
-		Renderer::SetClearColor({ 0.1f, 0.105f, 0.11f, 1.0f });
-
-		Renderer::CreateRenderPipeline(Renderer::GetRendererData()->Window);
-		m_RenderPipeline = Renderer::GetRendererData()->RenderPipeline;
-
-		glGenVertexArrays(1, &m_VertexArray);
-		glBindVertexArray(m_VertexArray);
-
-		glGenBuffers(1, &m_VertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
-
-		float vertices[3 * 3] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.0f, 0.0f
-		};
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-
-		glGenBuffers(1, &m_IndexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
-
-		unsigned int indices[3] = { 0, 1, 2 };
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	}
 
 	Application::~Application() {
 		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
 		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
-
-		/*UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
-		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
-		UnsubscribeFromEvent(EventType::KeyPressed, m_KeyPressedCallbackIndex);
-		UnsubscribeFromEvent(EventType::KeyReleased, m_KeyReleasedCallbackIndex);
-		UnsubscribeFromEvent(EventType::KeyTyped, m_KeyTypedCallbackIndex);
-		UnsubscribeFromEvent(EventType::MouseButtonPressed, m_MouseButtonPressedCallbackIndex);
-		UnsubscribeFromEvent(EventType::MouseButtonReleased, m_MouseButtonReleasedCllbackIndex);
-		UnsubscribeFromEvent(EventType::MouseScrolled, m_MouseButtonScrollCallbackIndex);
-		UnsubscribeFromEvent(EventType::MouseMoved, m_MouseMovedCallbackIndex);*/
-		Renderer::Shutdown();
 	}
 
 	Window& Application::GetWindow() {
-		return *(Renderer::GetRendererData()->Window.get());
+		return *m_Window;
 	}
 
 	void Application::PushLayer(Layer* layer) {
@@ -94,18 +50,9 @@ namespace Sentinel
 		{
 			if (!m_Minimized)
 			{
-				/*glClearColor(0.1f, 0.1f, 0.1f, 1.0f);*/
-
-				RenderCommand::Clear();
-				glBindVertexArray(m_VertexArray);
-				glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
-
-
-				//DirectX11Internal::GetInternalHandle()->Draw();
-
 				ProcessLayerUpdate();
 
-				GetWindow().OnUpdate();
+				//m_Window->OnUpdate();
 			}
 
 			Input::OnUpdate();
@@ -138,7 +85,6 @@ namespace Sentinel
 
 	void Application::OnWindowResize(Event& event) {
 		WindowResizeEvent e = static_cast<WindowResizeEvent&>(event);
-		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 		event.Handled = true;
 	}
 

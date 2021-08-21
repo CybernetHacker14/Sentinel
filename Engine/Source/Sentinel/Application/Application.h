@@ -9,7 +9,6 @@
 #include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Layers/LayerStack.h"
 #include "Sentinel/Window/Window.h"
-#include "Sentinel/Renderer/Components/RenderPipeline.h"
 
 int main(int argc, char** argv);
 
@@ -57,17 +56,9 @@ namespace Sentinel
 
 		UInt m_WindowResizeCallbackIndex = 0;
 		UInt m_WindowCloseCallbackIndex = 0;
-		UInt m_KeyPressedCallbackIndex = 0;
-		UInt m_KeyReleasedCallbackIndex = 0;
-		UInt m_KeyTypedCallbackIndex = 0;
-		UInt m_MouseButtonPressedCallbackIndex = 0;
-		UInt m_MouseButtonReleasedCllbackIndex = 0;
-		UInt m_MouseButtonScrollCallbackIndex = 0;
-		UInt m_MouseMovedCallbackIndex = 0;
 
-		UInt m_VertexArray, m_VertexBuffer, m_IndexBuffer;
 	private:
-		Ref<RenderPipeline> m_RenderPipeline;
+		Scope<Window> m_Window;
 	private:
 		LayerStack m_LayerStack;
 		EventBus m_EventBus;

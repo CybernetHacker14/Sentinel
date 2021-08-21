@@ -5,8 +5,6 @@
 #include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Events/Categories/KeyEvent.h"
 
-#include "Sentinel/Renderer/Interface/RendererAPI.h"
-
 namespace Sentinel
 {
 	static UChar s_GLFWWindowCount = 0;
@@ -138,9 +136,6 @@ namespace Sentinel
 			data.EventCallback(STL::move(event));
 			});
 
-		m_Context = GraphicsContext::Create(m_Window);
-		m_Context->Init();
-
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 	}
@@ -157,7 +152,6 @@ namespace Sentinel
 
 	void WindowsWindow::OnUpdate() {
 		glfwPollEvents();
-		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(Bool enabled) {
