@@ -17,7 +17,7 @@ namespace Sentinel
 		virtual void Draw() override;
 	protected:
 		virtual void InitGraphics() override;
-
+		virtual void InitSwapChainTargetView() override;
 	private:
 		GLFWwindow* m_NativeWindow;
 	};

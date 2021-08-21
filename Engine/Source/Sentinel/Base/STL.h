@@ -53,6 +53,7 @@ inline void* __cdecl operator new[](size_t size, size_t alignment, size_t alignm
 	const char* pName, int flags, unsigned int debugFlags, const char* file, int line) {
 		return new uint8_t[size];
 };
+
 #endif // !DEFINE_OVERLOADS
 #endif // USE_EASTL
 
@@ -77,10 +78,6 @@ namespace Sentinel
 		using wstring = eastl::wstring;
 
 		using string_view = eastl::string_view;
-
-		inline eastl::string to_string(int value) {
-			return eastl::to_string(value);
-		}
 
 		template<typename T>
 		using shared_ptr = eastl::shared_ptr<T>;
@@ -148,6 +145,62 @@ namespace Sentinel
 
 		template<typename T1, typename T2>
 		using pair = eastl::pair<T1, T2>;
+
+		inline string to_string(int value) {
+			return eastl::to_string(value);
+		}
+		inline string to_string(long value) {
+			return eastl::to_string(value);
+		}
+		inline string to_string(long long value) {
+			return eastl::to_string(value);
+		}
+		inline string to_string(unsigned value) {
+			return eastl::to_string(value);
+		}
+		inline string to_string(unsigned long value) {
+			return eastl::to_string(value);
+		}
+		inline string to_string(unsigned long long value) {
+			return eastl::to_string(value);
+		}
+		inline string to_string(float value) {
+			return eastl::to_string(value);
+		}
+		inline string to_string(double value) {
+			return eastl::to_string(value);
+		}
+		inline string to_string(long double value) {
+			return eastl::to_string(value);
+		}
+
+		inline wstring to_wstring(int value) {
+			return eastl::to_wstring(value);
+		}
+		inline wstring to_wstring(long value) {
+			return eastl::to_wstring(value);
+		}
+		inline wstring to_wstring(long long value) {
+			return eastl::to_wstring(value);
+		}
+		inline wstring to_wstring(unsigned value) {
+			return eastl::to_wstring(value);
+		}
+		inline wstring to_wstring(unsigned long value) {
+			return eastl::to_wstring(value);
+		}
+		inline wstring to_wstring(unsigned long long value) {
+			return eastl::to_wstring(value);
+		}
+		inline wstring to_wstring(float value) {
+			return eastl::to_wstring(value);
+		}
+		inline wstring to_wstring(double value) {
+			return eastl::to_wstring(value);
+		}
+		inline wstring to_wstring(long double value) {
+			return eastl::to_wstring(value);
+		}
 
 	#else
 
@@ -230,6 +283,62 @@ namespace Sentinel
 		template<typename T1, typename T2>
 		using pair = std::pair<T1, T2>;
 
+		inline string to_string(int value) {
+			return std::to_string(value);
+		}
+		inline string to_string(long value) {
+			return std::to_string(value);
+		}
+		inline string to_string(long long value) {
+			return std::to_string(value);
+		}
+		inline string to_string(unsigned value) {
+			return std::to_string(value);
+		}
+		inline string to_string(unsigned long value) {
+			return std::to_string(value);
+		}
+		inline string to_string(unsigned long long value) {
+			return std::to_string(value);
+		}
+		inline string to_string(float value) {
+			return std::to_string(value);
+		}
+		inline string to_string(double value) {
+			return std::to_string(value);
+		}
+		inline string to_string(long double value) {
+			return std::to_string(value);
+		}
+
+		inline wstring to_wstring(int value) {
+			return std::to_wstring(value);
+		}
+		inline wstring to_wstring(long value) {
+			return std::to_wstring(value);
+		}
+		inline wstring to_wstring(long long value) {
+			return std::to_wstring(value);
+		}
+		inline wstring to_wstring(unsigned value) {
+			return std::to_wstring(value);
+		}
+		inline wstring to_wstring(unsigned long value) {
+			return std::to_wstring(value);
+		}
+		inline wstring to_wstring(unsigned long long value) {
+			return std::to_wstring(value);
+		}
+		inline wstring to_wstring(float value) {
+			return std::to_wstring(value);
+		}
+		inline wstring to_wstring(double value) {
+			return std::to_wstring(value);
+		}
+		inline wstring to_wstring(long double value) {
+			return std::to_wstring(value);
+		}
+
 	#endif // USE_EASTL
 	}
-}
+	}

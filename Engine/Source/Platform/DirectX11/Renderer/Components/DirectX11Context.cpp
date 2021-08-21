@@ -41,10 +41,10 @@ namespace Sentinel
 		m_ContextInfo.Renderer = (unsigned char*)videoCardDescription;
 		m_ContextInfo.API = (unsigned char*)"DirectX 11";
 
-		major = std::to_string(HIWORD(driverVersion.HighPart)).c_str();
-		minor = std::to_string(LOWORD(driverVersion.HighPart)).c_str();
-		release = std::to_string(HIWORD(driverVersion.LowPart)).c_str();
-		build = std::to_string(LOWORD(driverVersion.LowPart)).c_str();
+		major = STL::to_string(HIWORD(driverVersion.HighPart));
+		minor = STL::to_string(LOWORD(driverVersion.HighPart));
+		release = STL::to_string(HIWORD(driverVersion.LowPart));
+		build = STL::to_string(LOWORD(driverVersion.LowPart));
 
 		version = major + "." + minor + "." + release + "." + build;
 

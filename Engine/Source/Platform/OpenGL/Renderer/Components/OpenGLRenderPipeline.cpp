@@ -12,4 +12,5 @@ namespace Sentinel
 	void OpenGLRenderPipeline::CleanPipeline() {}
 	void OpenGLRenderPipeline::Draw() {}
 	void OpenGLRenderPipeline::InitGraphics() {}
+	void OpenGLRenderPipeline::InitSwapChainTargetView() {}
 }
