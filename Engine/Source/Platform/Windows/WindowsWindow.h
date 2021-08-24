@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Sentinel/Window/Window.h"
+#include "Sentinel/Graphics/Components/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
 
@@ -28,6 +29,7 @@ namespace Sentinel
 
 	private:
 		GLFWwindow* m_Window;
+		Scope<GraphicsContextBase> m_Context;
 
 		struct WindowData {
 			STL::string Title;

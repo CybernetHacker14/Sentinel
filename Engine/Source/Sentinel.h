@@ -8,3 +8,6 @@
 #include "Sentinel/Input/Input.h"
 #include "Sentinel/Input/KeyCodes.h"
 #include "Sentinel/Input/MouseCodes.h"
+
+#include "Sentinel/Window/Window.h"
+#include "Sentinel/Graphics/Components/Backend.h"
