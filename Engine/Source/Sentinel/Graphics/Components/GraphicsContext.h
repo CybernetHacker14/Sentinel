@@ -7,6 +7,9 @@ struct GLFWwindow;
 
 namespace Sentinel
 {
+	template<typename T>
+	class GraphicsContext; // Forward declaration for GraphicsContextBase
+
 	struct ContextInfo {
 		STL::string Vendor;
 		STL::string Renderer;
@@ -17,11 +20,21 @@ namespace Sentinel
 	class GraphicsContextBase {
 	public:
 		template<typename T>
-		inline T* Downcast() {
-			static_assert(STL::is_base_of<GraphicsContextBase, T>::value,
-				"Trying to Downcast a non GraphicsContextBase inherited class!!!");
+		inline GraphicsContext<T>* CRTPBaseDowncast() {
+			static_assert(STL::is_base_of<GraphicsContext<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from GraphicsContext<T>.");
+			return static_cast<GraphicsContext<T>*>(this);
+		}
+
+		template<typename T>
+		inline T* CRTPDerivedDowncast() {
+			static_assert(STL::is_base_of<GraphicsContext<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from GraphicsContext<T>.");
 			return static_cast<T*>(this);
 		}
+
+	protected:
+		GraphicsContextBase() = default;
 	};
 
 	template<typename T>
@@ -30,6 +43,11 @@ namespace Sentinel
 		inline void Init() {
 			underlying().Init();
 		}
+
+		inline const ContextInfo& GetContextInfo() const { return m_ContextInfo; }
+
+	protected:
+		ContextInfo m_ContextInfo;
 
 	private:
 		friend T;

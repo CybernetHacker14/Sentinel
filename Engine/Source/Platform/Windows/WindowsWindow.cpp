@@ -139,7 +139,7 @@ namespace Sentinel
 			});
 
 		m_Context = GraphicsContextUtils::Create(m_Window);
-		m_Context->Downcast<DX11GraphicsContext>()->Init();
+		m_Context->CRTPBaseDowncast<DX11GraphicsContext>()->Init();
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);

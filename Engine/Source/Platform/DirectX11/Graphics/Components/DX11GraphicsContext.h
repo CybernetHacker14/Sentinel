@@ -14,6 +14,9 @@ namespace Sentinel
 		void Init();
 
 	private:
+		void SetContextInfo();
+
+	private:
 		GLFWwindow* m_WindowHandle;
 	};
 }

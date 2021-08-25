@@ -13,5 +13,11 @@ namespace Sentinel
 
 	void DX11GraphicsContext::Init() {
 		glfwMakeContextCurrent(m_WindowHandle);
+
+		SetContextInfo();
+	}
+
+	void DX11GraphicsContext::SetContextInfo() {
+		ST_ENGINE_INFO("Getting here");
 	}
 }
