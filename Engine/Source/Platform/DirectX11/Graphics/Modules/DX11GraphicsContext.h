@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Sentinel/Graphics/Components/GraphicsContext.h"
+#include "Sentinel/Graphics/Modules/GraphicsContext.h"
 
 // Forward declaration
 struct GLFWwindow;
 
 namespace Sentinel
 {
-	class DX11GraphicsContext : public GraphicsContext<DX11GraphicsContext> {
+	class DX11GraphicsContext final : public GraphicsContext<DX11GraphicsContext> {
 	public:
 		DX11GraphicsContext(GLFWwindow* windowHandle);
 

@@ -1,6 +1,6 @@
 #include "stpch.h"
 
-#include "Platform/DirectX11/Graphics/Components/DX11GraphicsContext.h"
+#include "Platform/DirectX11/Graphics/Modules/DX11GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
 

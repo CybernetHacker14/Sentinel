@@ -1,8 +1,8 @@
 #include "stpch.h"
 
-#include "Sentinel/Graphics/Components/GraphicsContext.h"
+#include "Sentinel/Graphics/Modules/GraphicsContext.h"
 
-#include "Platform/DirectX11/Graphics/Components/DX11GraphicsContext.h"
+#include "Platform/DirectX11/Graphics/Modules/DX11GraphicsContext.h"
 
 namespace Sentinel
 {

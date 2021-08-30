@@ -5,7 +5,7 @@
 #include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Events/Categories/KeyEvent.h"
 
-#include "Platform/DirectX11/Graphics/Components/DX11GraphicsContext.h"
+#include "Platform/DirectX11/Graphics/Modules/DX11GraphicsContext.h"
 
 namespace Sentinel
 {
@@ -137,9 +137,6 @@ namespace Sentinel
 			Scope<Event> event(new MouseMovedEvent(xPos, yPos));
 			data.EventCallback(STL::move(event));
 			});
-
-		m_Context = GraphicsContextUtils::Create(m_Window);
-		m_Context->CRTPBaseDowncast<DX11GraphicsContext>()->Init();
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);

@@ -10,4 +10,3 @@
 #include "Sentinel/Input/MouseCodes.h"
 
 #include "Sentinel/Window/Window.h"
-#include "Sentinel/Graphics/Components/Backend.h"
