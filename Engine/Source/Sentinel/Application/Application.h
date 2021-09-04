@@ -8,7 +8,10 @@
 #include "Sentinel/Events/Categories/KeyEvent.h"
 #include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Layers/LayerStack.h"
-#include "Sentinel/Window/Window.h"
+
+#include "Sentinel/Graphics/Renderers/Renderer.h"
+
+#include "Platform/DirectX11/Graphics/Components/Buffers/DX11Vertexbuffer.h"
 
 int main(int argc, char** argv);
 
@@ -56,9 +59,9 @@ namespace Sentinel
 
 		UInt m_WindowResizeCallbackIndex = 0;
 		UInt m_WindowCloseCallbackIndex = 0;
-
 	private:
-		Scope<Window> m_Window;
+		Scope<Renderer> m_Renderer;
+
 	private:
 		LayerStack m_LayerStack;
 		EventBus m_EventBus;

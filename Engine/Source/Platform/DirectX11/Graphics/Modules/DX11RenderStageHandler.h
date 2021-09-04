@@ -1,0 +1,37 @@
+#pragma once
+
+#include "Sentinel/Base/Define.h"
+#include "Sentinel/Graphics/Modules/RenderStageHandler.h"
+
+struct ID3D11RenderTargetView;
+
+namespace Sentinel
+{
+	class DX11RenderStageHandler : public RenderStageHandler<DX11RenderStageHandler> {
+	public:
+		DX11RenderStageHandler();
+		~DX11RenderStageHandler();
+
+		void ExecuteStartupStage(const WindowProps& props);
+		void ExecuteRenderPipelinePreprocessStage();
+		void ExecuteRenderPipelineDrawStage();
+		void ExecuteRenderPipelineCleanupStage();
+		void ExecuteShutdownStage();
+
+	private:
+		void InitializeRenderData();
+		void CreateWindowAndContext(const WindowProps& props);
+		void InitializeSwapchain();
+		void InitializeDevices();
+		void SetViewport(UInt x, UInt y, UInt width, UInt height);
+		void SetRenderTargets();
+		void SwapBuffers();
+		void Clear();
+		void Draw();
+
+	private:
+		// TODO: Move this to a separate Framebuffer class
+		// And make this data a part of RenderData::PipelineModules
+		ID3D11RenderTargetView* m_RenderTargetView;
+	};
+}

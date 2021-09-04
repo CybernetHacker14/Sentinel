@@ -7,7 +7,7 @@
 
 namespace Sentinel
 {
-	Ref<VertexbufferBase> VertexBufferUtils::Create(UInt size) {
+	Ref<VertexbufferBase> VertexbufferUtils::Create(UInt size) {
 		switch (Backend::GetAPI())
 		{
 			case Backend::API::None:
@@ -21,7 +21,7 @@ namespace Sentinel
 		return nullptr;
 	}
 
-	Ref<VertexbufferBase> VertexBufferUtils::Create(void* vertices, UInt size) {
+	Ref<VertexbufferBase> VertexbufferUtils::Create(void* vertices, UInt size) {
 		switch (Backend::GetAPI())
 		{
 			case Backend::API::None:

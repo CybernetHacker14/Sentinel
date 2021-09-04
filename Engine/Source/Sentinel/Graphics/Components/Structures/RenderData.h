@@ -8,21 +8,33 @@
 #include "Sentinel/Graphics/Components/Buffers/Vertexbuffer.h"
 #include "Sentinel/Graphics/Components/Buffers/Indexbuffer.h"
 
+#include <glm/glm.hpp>
+
 namespace Sentinel
 {
-	struct RenderPipelineModules {
+	struct DeviceModules : public IntrusiveRefObject {
 	public:
-		STL::vector<Ref<VertexbufferBase>> Vertexbuffers;
-		Ref<IndexbufferBase> Indexbuffer;
-	};
-
-	struct RendererModules {
-	public:
+		Scope<WindowProps> WindowProps;
 		Scope<Window> Window;
 		Scope<GraphicsContextBase> GraphicsContext;
 	};
 
-	struct RenderData {
+	struct PipelineModules : public IntrusiveRefObject {
+	public:
+		glm::vec4 ClearColor;
+		STL::vector<Ref<VertexbufferBase>> Vertexbuffers;
+		Ref<IndexbufferBase> Indexbuffer;
+	};
 
+	struct RenderData {
+	public:
+		RenderData() {
+			DeviceModules = Sentinel::CreateRef<Sentinel::DeviceModules>();
+			PipelineModules = Sentinel::CreateRef<Sentinel::PipelineModules>();
+		}
+
+	public:
+		Ref<DeviceModules> DeviceModules;
+		Ref<PipelineModules> PipelineModules;
 	};
 }

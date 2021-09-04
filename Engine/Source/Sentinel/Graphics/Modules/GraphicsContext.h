@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Sentinel/Base/Define.h"
-#include "Sentinel/Graphics/Core/Backend.h"
 
 struct GLFWwindow;
 
@@ -21,7 +20,7 @@ namespace Sentinel
 	public:
 		template<typename T>
 		inline GraphicsContext<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<GraphicsContext<T>, T>::value
+			static_assert(STL::is_base_of<GraphicsContext<T>, T>::value,
 				"Operation not allowed. 'T' should be a derived from GraphicsContext<T>.");
 			return static_cast<GraphicsContext<T>*>(this);
 		}

@@ -101,7 +101,7 @@ namespace Sentinel
 	public:
 		template<typename T>
 		inline Vertexbuffer<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<Vertexbuffer<T>, T>::value
+			static_assert(STL::is_base_of<Vertexbuffer<T>, T>::value,
 				"Operation not allowed. 'T' should be a derived from Vertexbuffer<T>.");
 			return static_cast<Vertexbuffer<T>*>(this);
 		}
@@ -151,7 +151,7 @@ namespace Sentinel
 
 	class VertexbufferUtils {
 	public:
-		Ref<VertexbufferBase> Create(UInt size);
-		Ref<VertexbufferBase> Create(void* vertices, UInt size);
+		static Ref<VertexbufferBase> Create(UInt size);
+		static Ref<VertexbufferBase> Create(void* vertices, UInt size);
 	};
 }

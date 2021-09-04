@@ -139,7 +139,6 @@ namespace Sentinel
 			});
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		SetVSync(true);
 	}
 
 	void WindowsWindow::Shutdown() {

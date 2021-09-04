@@ -2,23 +2,29 @@
 
 #include "Sentinel/Base/Define.h"
 
+#include "Platform/DirectX11/Graphics/Modules/DX11RenderStageHandler.h"
+
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <d3d11shader.h>
+#include <d3d11shadertracing.h>
 #include <wrl.h>
 
 namespace Sentinel
 {
 	class DX11Common {
 	public:
-		inline static ID3D11Device* GetDevice() { return m_Device; }
-		inline static ID3D11DeviceContext* GetContext() { return m_Context; }
+		static ID3D11Device* GetDevice();
+		static ID3D11DeviceContext* GetContext();
 
-		inline static IDXGIDevice* GetDXGIDevice() { return m_DXGIDevice; }
-		inline static IDXGIAdapter* GetAdapter() { return m_Adapter; }
+		static IDXGIDevice* GetDXGIDevice();
+		static IDXGIAdapter* GetAdapter();
 
-		inline static IDXGISwapChain* GetSwapchain() { return m_Swapchain; }
+		static IDXGISwapChain* GetSwapchain();
 
 	private:
+		friend class DX11RenderStageHandler;
+
 		static ID3D11Device* m_Device;
 		static ID3D11DeviceContext* m_Context;
 
@@ -26,7 +32,5 @@ namespace Sentinel
 		static IDXGIAdapter* m_Adapter;
 
 		static IDXGISwapChain* m_Swapchain;
-
-		static ID3D11RenderTargetView* m_BackBuffer;
 	};
 }

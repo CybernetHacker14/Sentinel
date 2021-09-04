@@ -11,8 +11,31 @@ namespace Sentinel
 		ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
 		s_Instance = this;
 
-		m_Window = Window::Create(WindowProps(name));
-		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
+		Ref<DeviceModules> deviceModules = CreateRef<DeviceModules>();
+		deviceModules->WindowProps = CreateScope<WindowProps>(name);
+
+		Ref<PipelineModules> pipelineModules = CreateRef<PipelineModules>();
+		pipelineModules->ClearColor = { 0.0f, 0.2f, 0.4f, 1.0f };
+
+		glm::vec3 vertices[3] =
+		{
+			{0.0f, 0.0f, 0.0f},
+			{0.5f, -0.5f, 0.0f},
+			{-0.5f, -0.5f, 0.0f}
+		};
+
+		Ref<VertexbufferBase> vertexBuffer = VertexbufferUtils::Create(vertices, 3 * 3 * sizeof(Float));
+
+		vertexBuffer->BaseDowncast<DX11Vertexbuffer>()->SetLayout({
+			{ShaderDataType::Float3, "position"}
+			});
+
+		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
+
+		m_Renderer = CreateScope<Renderer>(deviceModules, pipelineModules);
+		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
+		/*m_Window = Window::Create(WindowProps(name));
+		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));*/
 
 		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
@@ -24,7 +47,7 @@ namespace Sentinel
 	}
 
 	Window& Application::GetWindow() {
-		return *m_Window;
+		return m_Renderer->GetWindow();
 	}
 
 	void Application::PushLayer(Layer* layer) {

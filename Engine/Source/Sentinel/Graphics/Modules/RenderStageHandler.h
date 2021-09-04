@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Sentinel/Base/Define.h"
-
-#include "Sentinel/Window/Window.h"
-#include "Sentinel/Graphics/Modules/GraphicsContext.h"
+#include "Sentinel/Graphics/Components/Structures/RenderData.h"
 
 namespace Sentinel
 {
@@ -14,7 +12,7 @@ namespace Sentinel
 	public:
 		template<typename T>
 		inline RenderStageHandler<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<RenderStageHandler<T>, T>::value
+			static_assert(STL::is_base_of<RenderStageHandler<T>, T>::value,
 				"Operation not allowed. 'T' should be a derived from RenderStageHandler<T>.");
 			return static_cast<RenderStageHandler<T>*>(this);
 		}
@@ -30,21 +28,42 @@ namespace Sentinel
 	template<typename T>
 	class RenderStageHandler : public RenderStageHandlerBase {
 	public:
-		void ExecuteStartupStage();
-		void ExecuteRenderPipelinePreprocessStage();
-		void ExecuteRenderPipelineDrawStage();
-		void ExecuteRenderPipelineCleanupStage();
-		void ExecuteShutdownStage();
+		inline void ExecuteStartupStage(const WindowProps& props) {
+			underlying().ExecuteStartupStage(props);
+		}
+
+		inline void ExecuteRenderPipelinePreprocessStage() {
+			underlying().ExecuteRenderPipelinePreprocessStage();
+		}
+
+		inline void ExecuteRenderPipelineDrawStage() {
+			underlying().ExecuteRenderPipelineDrawStage();
+		}
+
+		inline void ExecuteRenderPipelineCleanupStage() {
+			underlying().ExecuteRenderPipelineCleanupStage();
+		}
+
+		inline void ExecuteShutdownStage() {
+			underlying().ExecuteShutdownUsage();
+		}
+
+		RenderData& GetRenderData() const { return *RenderData; }
 
 	protected:
-		void CreateWindowAndContext();
-		void InitializeDevices();
-		void SetViewport(UInt x, UInt y, UInt width, UInt height);
-		void InitializeSwapchain();
-		void InitializeRenderData();
-		void SetRenderTargets();
+		Scope<RenderData> RenderData;
 
-		void SwapBuffers();
-		void Draw();
+	private:
+		friend T;
+		RenderStageHandler() = default;
+
+		inline T& underlying() {
+			return static_cast<T&>(*this);
+		}
+	};
+
+	class RenderStageHandlerUtils {
+	public:
+		static Scope<RenderStageHandlerBase> Create();
 	};
 }
