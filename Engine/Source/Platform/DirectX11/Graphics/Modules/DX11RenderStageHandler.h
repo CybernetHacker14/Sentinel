@@ -3,7 +3,7 @@
 #include "Sentinel/Base/Define.h"
 #include "Sentinel/Graphics/Modules/RenderStageHandler.h"
 
-struct ID3D11RenderTargetView;
+#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel
 {
@@ -32,6 +32,7 @@ namespace Sentinel
 	private:
 		// TODO: Move this to a separate Framebuffer class
 		// And make this data a part of RenderData::PipelineModules
+
 		ID3D11RenderTargetView* m_RenderTargetView;
 	};
 }

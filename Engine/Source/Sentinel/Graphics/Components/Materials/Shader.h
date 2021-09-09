@@ -46,6 +46,14 @@ namespace Sentinel
 			return underlying().GetShaderSource(type);
 		}
 
+		inline const STL::string& GetName() const {
+			return underlying().GetName();
+		}
+
+		inline const STL::string& GetFilepath() const {
+			return underlying().GetFilepath();
+		}
+
 	private:
 		friend T;
 		Shader() = default;
@@ -57,6 +65,6 @@ namespace Sentinel
 
 	class ShaderUtils {
 	public:
-		static Ref<ShaderBase> Create(const STL::string& filepath);
+		static Ref<ShaderBase> Create(const STL::string& filepath, const STL::string& name = "Sentinel Shader");
 	};
 }

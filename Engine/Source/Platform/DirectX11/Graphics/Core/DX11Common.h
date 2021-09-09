@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
-
-#include "Platform/DirectX11/Graphics/Modules/DX11RenderStageHandler.h"
-
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <d3d11shader.h>
@@ -12,6 +8,8 @@
 
 namespace Sentinel
 {
+	class DX11RenderStageHandler;
+
 	class DX11Common {
 	public:
 		static ID3D11Device* GetDevice();
