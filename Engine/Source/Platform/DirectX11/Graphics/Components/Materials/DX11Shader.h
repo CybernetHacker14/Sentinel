@@ -16,13 +16,13 @@ namespace Sentinel
 		void Reload();
 		const STL::string& GetShaderSource(const ShaderType& type) const;
 
-		inline const STL::string& GetName() const { return m_ShaderName; }
-		inline const STL::string& GetGetFilepath() const { return m_FilePath; }
+		inline STL::string GetName() { return m_ShaderName; }
+		inline const STL::string& GetFilepath() const { return m_FilePath; }
 
-	private:
 		ID3DBlob* GetVertexShaderBinary() const { return m_ShaderBinaryMap.at(ShaderType::VERTEX); }
 		ID3DBlob* GetPixelShaderBinary() const { return m_ShaderBinaryMap.at(ShaderType::PIXEL); }
 		ID3DBlob* GetComputeShaderBinary() const { return m_ShaderBinaryMap.at(ShaderType::COMPUTE); }
+	private:
 
 		STL::unordered_map<ShaderType, STL::string> PreprocessSource(const STL::string& source);
 

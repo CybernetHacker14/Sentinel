@@ -14,15 +14,11 @@ namespace Sentinel
 
 		~DX11Vertexbuffer();
 
-		void Bind() const;
+		void Bind(UInt stride) const;
 		void Unbind() const;
 		void SetData(const void* vertices, UInt size);
 
-		inline const BufferLayout& GetLayout() const { return m_Layout; }
-		inline void SetLayout(const BufferLayout& layout) { m_Layout = layout; }
-
 	private:
 		ID3D11Buffer* m_VertexbufferPtr;
-		BufferLayout m_Layout;
 	};
 }

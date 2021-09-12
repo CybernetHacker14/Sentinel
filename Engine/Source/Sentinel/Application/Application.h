@@ -11,8 +11,6 @@
 
 #include "Sentinel/Graphics/Renderers/Renderer.h"
 
-#include "Platform/DirectX11/Graphics/Components/Buffers/DX11Vertexbuffer.h"
-
 int main(int argc, char** argv);
 
 namespace Sentinel

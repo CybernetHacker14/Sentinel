@@ -20,7 +20,7 @@ namespace Sentinel
 		inline Shader<T>* BaseDowncast() {
 			static_assert(STL::is_base_of<Shader<T>, T>::value,
 				"Operation not allowed. 'T' should be derived from Shader<T>.");
-			return static_cast<RenderStageHandler<T>*>(this);
+			return static_cast<Shader<T>*>(this);
 		}
 
 		template<typename T>
@@ -46,7 +46,7 @@ namespace Sentinel
 			return underlying().GetShaderSource(type);
 		}
 
-		inline const STL::string& GetName() const {
+		inline STL::string GetName() {
 			return underlying().GetName();
 		}
 

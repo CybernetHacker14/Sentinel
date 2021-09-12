@@ -4,7 +4,7 @@
 
 namespace Sentinel
 {
-	Renderer::Renderer(Ref<DeviceModules> deviceModules, Ref<PipelineModules> pipelineModules) {
+	Renderer::Renderer(Ref<DeviceModules> deviceModules) {
 		m_RenderStageHandler = RenderStageHandlerUtils::Create();
 
 		switch (Backend::GetAPI())
@@ -12,12 +12,20 @@ namespace Sentinel
 			case Backend::API::None:
 				ST_ENGINE_ASSERT(false, "API::None currently not supported");
 			case Backend::API::DirectX11:
-				Init<DX11RenderStageHandler>(deviceModules, pipelineModules);
+				InitDevices<DX11RenderStageHandler>(deviceModules);
 		}
 	}
 
-	Renderer::~Renderer() {
+	Renderer::~Renderer() {}
 
+	void Renderer::SetPipelineData(Ref<PipelineModules> pipelineModules) {
+		switch (Backend::GetAPI())
+		{
+			case Backend::API::None:
+				ST_ENGINE_ASSERT(false, "API::None currently not supported");
+			case Backend::API::DirectX11:
+				InitPipeline<DX11RenderStageHandler>(pipelineModules);
+		}
 	}
 
 	Window& Renderer::GetWindow() {
@@ -32,13 +40,22 @@ namespace Sentinel
 		ST_ENGINE_ASSERT(false, "Unknown Backend API");
 	}
 
+	void Renderer::Draw() {
+		m_RenderStageHandler->BaseDowncast<DX11RenderStageHandler>()->ExecuteRenderPipelineDrawStage();
+	}
+
 	template<typename T>
-	void Renderer::Init(Ref<DeviceModules> deviceModules, Ref<PipelineModules> pipelineModules) {
-		m_RenderStageHandler->BaseDowncast<T>()->GetRenderData().DeviceModules = deviceModules;
-		m_RenderStageHandler->BaseDowncast<T>()->GetRenderData().PipelineModules = pipelineModules;
+	void Renderer::InitDevices(Ref<DeviceModules> deviceModules) {
+		m_RenderStageHandler->BaseDowncast<T>()->RenderData->DeviceModules = deviceModules;
 		m_RenderStageHandler->BaseDowncast<T>()->ExecuteStartupStage(
 			*(m_RenderStageHandler->BaseDowncast<T>()->GetRenderData().DeviceModules->WindowProps)
 		);
+	}
+
+	template<typename T>
+	void Renderer::InitPipeline(Ref<PipelineModules> pipelineModules) {
+		m_RenderStageHandler->BaseDowncast<T>()->RenderData->PipelineModules = pipelineModules;
+		m_RenderStageHandler->BaseDowncast<T>()->ExecuteRenderPipelinePreprocessStage();
 	}
 
 	Ref<DeviceModules> Renderer::GetDeviceModulesFromRenderData() const {

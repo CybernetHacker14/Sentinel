@@ -13,9 +13,8 @@ namespace Sentinel
 	typedef long Long;
 	typedef unsigned long ULong;
 	typedef size_t ULLong;
-	typedef ssize_t LLong;
 	typedef float_t Float;
 	typedef double_t Double;
 
-	typedef bool8_t Bool;
+	typedef bool Bool;
 }

@@ -15,7 +15,7 @@ namespace Sentinel
 		void Bind() const;
 		void Unbind() const;
 
-		inline UInt GetCount() const { return m_Count; }
+		inline UInt GetCount() { return m_Count; }
 
 	private:
 		ID3D11Buffer* m_IndexbufferPtr;

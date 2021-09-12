@@ -10,14 +10,20 @@ namespace Sentinel
 {
 	class Renderer {
 	public:
-		Renderer(Ref<DeviceModules> deviceModules, Ref<PipelineModules> pipelineModules);
+		Renderer(Ref<DeviceModules> deviceModules);
 		~Renderer();
 
+		void SetPipelineData(Ref<PipelineModules> pipelineModules);
 		Window& GetWindow();
+
+		void Draw();
 
 	private:
 		template<typename T>
-		void Init(Ref<DeviceModules> deviceModules, Ref<PipelineModules> pipelineModules);
+		void InitDevices(Ref<DeviceModules> deviceModules);
+
+		template<typename T>
+		void InitPipeline(Ref<PipelineModules> pipelineModules);
 
 		Ref<DeviceModules> GetDeviceModulesFromRenderData() const;
 		Ref<PipelineModules> GetPipelineModulesFromRenderData() const;

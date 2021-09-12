@@ -7,6 +7,7 @@
 
 #include "Sentinel/Graphics/Components/Buffers/Vertexbuffer.h"
 #include "Sentinel/Graphics/Components/Buffers/Indexbuffer.h"
+#include "Sentinel/Graphics/Components/Materials/Shader.h"
 
 #include <glm/glm.hpp>
 
@@ -24,9 +25,10 @@ namespace Sentinel
 		glm::vec4 ClearColor;
 		STL::vector<Ref<VertexbufferBase>> Vertexbuffers;
 		Ref<IndexbufferBase> Indexbuffer;
+		Ref<ShaderBase> Shader;
 	};
 
-	struct RenderData {
+	struct RenderData : public IntrusiveRefObject {
 	public:
 		RenderData() {
 			DeviceModules = Sentinel::CreateRef<Sentinel::DeviceModules>();

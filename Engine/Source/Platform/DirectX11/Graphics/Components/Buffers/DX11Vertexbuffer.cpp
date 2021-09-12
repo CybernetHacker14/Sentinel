@@ -13,7 +13,7 @@ namespace Sentinel
 		description.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		description.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		description.MiscFlags = 0;
-		description.StructureByteStride = m_Layout.GetStride();
+		description.StructureByteStride = 0;
 		DX11Common::GetDevice()->CreateBuffer(&description, nullptr, &m_VertexbufferPtr);
 	}
 
@@ -26,7 +26,7 @@ namespace Sentinel
 		description.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		description.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		description.MiscFlags = 0;
-		description.StructureByteStride = m_Layout.GetStride();
+		description.StructureByteStride = 0;
 
 		D3D11_SUBRESOURCE_DATA subresource;
 		ZeroMemory(&subresource, sizeof(subresource));
@@ -41,8 +41,7 @@ namespace Sentinel
 		m_VertexbufferPtr->Release();
 	}
 
-	void DX11Vertexbuffer::Bind() const {
-		UInt stride = m_Layout.GetStride();
+	void DX11Vertexbuffer::Bind(UInt stride) const {
 		UInt offset = 0;
 		DX11Common::GetContext()->IASetVertexBuffers(0, 1, &m_VertexbufferPtr, &stride, &offset);
 	}
@@ -52,13 +51,9 @@ namespace Sentinel
 	}
 
 	void DX11Vertexbuffer::SetData(const void* vertices, UInt size) {
-		this->Bind();
-
 		D3D11_MAPPED_SUBRESOURCE subresource;
 		DX11Common::GetContext()->Map(m_VertexbufferPtr, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
 		memcpy(subresource.pData, vertices, size);
 		DX11Common::GetContext()->Unmap(m_VertexbufferPtr, 0);
-
-		this->Bind();
 	}
 }

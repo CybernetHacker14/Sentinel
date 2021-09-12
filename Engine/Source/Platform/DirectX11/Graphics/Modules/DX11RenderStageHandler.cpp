@@ -1,7 +1,11 @@
 #include "stpch.h"
 
 #include "Platform/DirectX11/Graphics/Modules/DX11GraphicsContext.h"
+#include "Platform/DirectX11/Graphics/Modules/DX11Pipeline.h"
 #include "Platform/DirectX11/Graphics/Modules/DX11RenderStageHandler.h"
+
+#include "Platform/DirectX11/Graphics/Components/Buffers/DX11Vertexbuffer.h"
+#include "Platform/DirectX11/Graphics/Components/Buffers/DX11Indexbuffer.h"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
@@ -13,7 +17,12 @@ namespace Sentinel
 		InitializeRenderData();
 	}
 
-	DX11RenderStageHandler::~DX11RenderStageHandler() {}
+	DX11RenderStageHandler::~DX11RenderStageHandler() {
+		if (m_RenderTargetView)
+		{
+			m_RenderTargetView->Release();
+		}
+	}
 
 	void DX11RenderStageHandler::ExecuteStartupStage(const WindowProps& props) {
 		CreateWindowAndContext(props);
@@ -23,10 +32,22 @@ namespace Sentinel
 	}
 
 	void DX11RenderStageHandler::ExecuteRenderPipelinePreprocessStage() {
+		RenderPipeline = PipelineUtils::Create();
+		RenderPipeline->BaseDowncast<DX11Pipeline>()->CreateInputLayout(
+			RenderData->PipelineModules->Shader
+		);
+		RenderPipeline->BaseDowncast<DX11Pipeline>()->Bind();
+
+		RenderData->PipelineModules->Indexbuffer->BaseDowncast<DX11Indexbuffer>()->Bind();
+
 		SetRenderTargets();
 	}
 
-	void DX11RenderStageHandler::ExecuteRenderPipelineDrawStage() {}
+	void DX11RenderStageHandler::ExecuteRenderPipelineDrawStage() {
+		Clear();
+		Draw();
+		SwapBuffers();
+	}
 
 	void DX11RenderStageHandler::ExecuteRenderPipelineCleanupStage() {}
 
@@ -35,7 +56,7 @@ namespace Sentinel
 	/////////////////////////////////////////////////////////////////////////////
 
 	void DX11RenderStageHandler::InitializeRenderData() {
-		RenderData = Sentinel::CreateScope<Sentinel::RenderData>();
+		RenderData = Sentinel::CreateRef<Sentinel::RenderData>();
 	}
 
 	void DX11RenderStageHandler::CreateWindowAndContext(const WindowProps& props) {
@@ -118,10 +139,16 @@ namespace Sentinel
 
 	void DX11RenderStageHandler::SetRenderTargets() {
 		ID3D11Texture2D* backBuffer = nullptr;
-		DX11Common::GetSwapchain()->GetBuffer(0, __uuidof(ID3D10Texture2D), (LPVOID*)&m_RenderTargetView);
+
+		// Get the address of the back buffer
+		DX11Common::GetSwapchain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
+
+		// use the back buffer address to create the render target
 		DX11Common::GetDevice()->CreateRenderTargetView(backBuffer, nullptr, &m_RenderTargetView);
 		backBuffer->Release();
+
 		DX11Common::GetContext()->OMSetRenderTargets(1, &m_RenderTargetView, nullptr);
+
 	}
 
 	void DX11RenderStageHandler::SwapBuffers() {
@@ -132,5 +159,12 @@ namespace Sentinel
 		DX11Common::GetContext()->ClearRenderTargetView(m_RenderTargetView, (float*)&(RenderData->PipelineModules->ClearColor));
 	}
 
-	void DX11RenderStageHandler::Draw() {}
+	void DX11RenderStageHandler::Draw() {
+		for (auto& vBuffer : RenderData->PipelineModules->Vertexbuffers)
+			vBuffer->DerivedDowncast<DX11Vertexbuffer>()->Bind(
+				RenderPipeline->BaseDowncast<DX11Pipeline>()->GetStride()
+			);
+		DX11Common::GetContext()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		DX11Common::GetContext()->Draw(3, 0);
+	}
 }

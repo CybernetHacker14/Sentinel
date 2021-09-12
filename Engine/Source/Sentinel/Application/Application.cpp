@@ -14,31 +14,36 @@ namespace Sentinel
 		Ref<DeviceModules> deviceModules = CreateRef<DeviceModules>();
 		deviceModules->WindowProps = CreateScope<WindowProps>(name);
 
+		m_Renderer = CreateScope<Renderer>(deviceModules);
+		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
+
+		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
+		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
+
 		Ref<PipelineModules> pipelineModules = CreateRef<PipelineModules>();
 		pipelineModules->ClearColor = { 0.0f, 0.2f, 0.4f, 1.0f };
 
-		glm::vec3 vertices[3] =
+		glm::vec4 vertices[3] =
 		{
-			{0.0f, 0.0f, 0.0f},
-			{0.5f, -0.5f, 0.0f},
-			{-0.5f, -0.5f, 0.0f}
+			{ 0.0f,  0.0f,  0.0f, 1.0f},
+			{ 0.5f, -0.5f,  0.0f, 1.0f},
+			{-0.5f, -0.5f,  0.0f, 1.0f}
 		};
 
 		Ref<VertexbufferBase> vertexBuffer = VertexbufferUtils::Create(vertices, 3 * 3 * sizeof(Float));
 
-		vertexBuffer->BaseDowncast<DX11Vertexbuffer>()->SetLayout({
-			{ShaderDataType::Float3, "position"}
-			});
+		UInt indices[3] =
+		{
+			0,1,2
+		};
+
+		Ref<IndexbufferBase> indexBuffer = IndexbufferUtils::Create(indices, 3);
 
 		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
+		pipelineModules->Indexbuffer = indexBuffer;
+		pipelineModules->Shader = ShaderUtils::Create("TestShader.hlsl");
+		m_Renderer->SetPipelineData(pipelineModules);
 
-		m_Renderer = CreateScope<Renderer>(deviceModules, pipelineModules);
-		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
-		/*m_Window = Window::Create(WindowProps(name));
-		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));*/
-
-		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
-		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
 	}
 
 	Application::~Application() {
@@ -75,9 +80,9 @@ namespace Sentinel
 			{
 				ProcessLayerUpdate();
 
-				//m_Window->OnUpdate();
+				m_Renderer->Draw();
 			}
-
+			m_Renderer->GetWindow().OnUpdate();
 			Input::OnUpdate();
 		}
 	}

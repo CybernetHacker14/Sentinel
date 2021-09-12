@@ -80,6 +80,9 @@ namespace Sentinel
 
 		m_ShaderBinaryMap.clear();
 		m_ShaderSourceMap.clear();
+
+		m_ShaderName.clear();
+		m_FilePath.clear();
 	}
 
 	void DX11Shader::Bind() const {
@@ -105,18 +108,18 @@ namespace Sentinel
 		STL::unordered_map<ShaderType, STL::string> shaderSources;
 
 		const char* typeToken = "#type";
-		UInt typeTokenLength = strlen(typeToken);
-		UInt pos = source.find(typeToken, 0); // Start of shader type declaration file;
+		ULLong typeTokenLength = strlen(typeToken);
+		ULLong pos = source.find(typeToken, 0); // Start of shader type declaration file;
 
 		while (pos != STL::string::npos)
 		{
-			UInt eol = source.find_first_of("\r\n", pos); // End of shader type declaration line
+			ULLong eol = source.find_first_of("\r\n", pos); // End of shader type declaration line
 			ST_ENGINE_ASSERT(eol != STL::string::npos, "Syntax error");
-			UInt begin = pos + typeTokenLength + 1; // Start of shader type name (after "#type" keyword)
+			ULLong begin = pos + typeTokenLength + 1; // Start of shader type name (after "#type" keyword)
 			STL::string type = source.substr(begin, eol - begin);
 			ST_ENGINE_ASSERT((Int)Utils::ShaderTypeFromString(type), "Invalid shader type specified");
 
-			UInt nextLinePos = source.find_first_not_of("\r\n", eol); // Start of shader code after shader type declaration line
+			ULLong nextLinePos = source.find_first_not_of("\r\n", eol); // Start of shader code after shader type declaration line
 			ST_ENGINE_ASSERT(nextLinePos != STL::string::npos, "Syntax error");
 			pos = source.find(typeToken, nextLinePos); // Start of next shader type declaration line
 
@@ -186,7 +189,7 @@ namespace Sentinel
 
 		if (m_ShaderBinaryMap[ShaderType::PIXEL])
 		{
-			DX11Common::GetDevice()->CreateVertexShader(m_ShaderBinaryMap[ShaderType::PIXEL]->GetBufferPointer(),
+			DX11Common::GetDevice()->CreatePixelShader(m_ShaderBinaryMap[ShaderType::PIXEL]->GetBufferPointer(),
 				m_ShaderBinaryMap[ShaderType::PIXEL]->GetBufferSize(), nullptr, &m_PixelShader);
 		}
 

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Sentinel/Base/Define.h"
+
 #include "Sentinel/Graphics/Components/Structures/RenderData.h"
+#include "Sentinel/Graphics/Modules/Pipeline.h"
 
 namespace Sentinel
 {
@@ -48,10 +50,13 @@ namespace Sentinel
 			underlying().ExecuteShutdownUsage();
 		}
 
-		RenderData& GetRenderData() const { return *RenderData; }
+		RenderData GetRenderData() const { return *(RenderData.get()); }
 
 	protected:
-		Scope<RenderData> RenderData;
+		Ref<RenderData> RenderData;
+		Ref<PipelineBase> RenderPipeline;
+	private:
+		friend class Renderer;
 
 	private:
 		friend T;
