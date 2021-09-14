@@ -24,7 +24,7 @@ namespace Sentinel
 		description.Usage = D3D11_USAGE_DEFAULT;
 		description.ByteWidth = size;
 		description.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		description.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		description.CPUAccessFlags = 0;
 		description.MiscFlags = 0;
 		description.StructureByteStride = 0;
 

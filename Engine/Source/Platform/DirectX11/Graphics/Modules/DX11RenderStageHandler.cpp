@@ -4,6 +4,7 @@
 #include "Platform/DirectX11/Graphics/Modules/DX11Pipeline.h"
 #include "Platform/DirectX11/Graphics/Modules/DX11RenderStageHandler.h"
 
+#include "Platform/DirectX11/Graphics/Components/Materials/DX11Shader.h"
 #include "Platform/DirectX11/Graphics/Components/Buffers/DX11Vertexbuffer.h"
 #include "Platform/DirectX11/Graphics/Components/Buffers/DX11Indexbuffer.h"
 
@@ -36,11 +37,19 @@ namespace Sentinel
 		RenderPipeline->BaseDowncast<DX11Pipeline>()->CreateInputLayout(
 			RenderData->PipelineModules->Shader
 		);
-		RenderPipeline->BaseDowncast<DX11Pipeline>()->Bind();
+
+		for (auto& vBuffer : RenderData->PipelineModules->Vertexbuffers)
+			vBuffer->DerivedDowncast<DX11Vertexbuffer>()->Bind(
+				RenderPipeline->BaseDowncast<DX11Pipeline>()->GetStride()
+			);
 
 		RenderData->PipelineModules->Indexbuffer->BaseDowncast<DX11Indexbuffer>()->Bind();
+		RenderData->PipelineModules->Shader->BaseDowncast<DX11Shader>()->Bind();
 
 		SetRenderTargets();
+
+		DX11Common::GetContext()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		RenderPipeline->BaseDowncast<DX11Pipeline>()->Bind();
 	}
 
 	void DX11RenderStageHandler::ExecuteRenderPipelineDrawStage() {
@@ -148,7 +157,6 @@ namespace Sentinel
 		backBuffer->Release();
 
 		DX11Common::GetContext()->OMSetRenderTargets(1, &m_RenderTargetView, nullptr);
-
 	}
 
 	void DX11RenderStageHandler::SwapBuffers() {
@@ -160,11 +168,7 @@ namespace Sentinel
 	}
 
 	void DX11RenderStageHandler::Draw() {
-		for (auto& vBuffer : RenderData->PipelineModules->Vertexbuffers)
-			vBuffer->DerivedDowncast<DX11Vertexbuffer>()->Bind(
-				RenderPipeline->BaseDowncast<DX11Pipeline>()->GetStride()
-			);
-		DX11Common::GetContext()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		DX11Common::GetContext()->Draw(3, 0);
+		DX11Common::GetContext()->DrawIndexed(
+			RenderData->PipelineModules->Indexbuffer->BaseDowncast<DX11Indexbuffer>()->GetCount(), 0, 0);
 	}
 }

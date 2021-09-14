@@ -44,6 +44,8 @@ namespace Sentinel
 		D3D11_SHADER_DESC shaderDescription;
 		vertexShaderReflection->GetDesc(&shaderDescription);
 
+		m_Stride = 0;
+
 		STL::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDescriptions;
 		for (UInt i = 0; i < shaderDescription.InputParameters; i++)
 		{
@@ -97,7 +99,7 @@ namespace Sentinel
 
 			inputLayoutDescriptions.emplace_back(elementDescription);
 
-			m_Stride += ShaderDataTypeSizeMap[elementDescription.Format];
+			m_Stride += ShaderDataTypeSizeMap.at(elementDescription.Format);
 		}
 
 		DX11Common::GetDevice()->CreateInputLayout(

@@ -2,19 +2,21 @@
 struct VOut
 {
     float4 position : SV_POSITION;
+    float4 color : COLOR;
 };
 
-VOut VShader(float4 position : POSITION)
+VOut VShader(float4 position : POSITION, float4 color : COLOR)
 {
     VOut output;
 
     output.position = position;
+    output.color = color;
 
     return output;
 }
 
 #type pixel
-float4 PShader(float4 position : SV_POSITION) : SV_TARGET
+float4 PShader(float4 position : SV_POSITION, float4 color : COLOR) : SV_TARGET
 {
-    return float4(1,1,1,1);
+    return color;
 }

@@ -34,7 +34,7 @@ namespace Sentinel
 	template<typename T>
 	class Shader : public ShaderBase {
 	public:
-		inline void Bind() const {
+		inline void Bind() {
 			underlying().Bind();
 		}
 

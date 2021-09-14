@@ -21,16 +21,17 @@ namespace Sentinel
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
 
 		Ref<PipelineModules> pipelineModules = CreateRef<PipelineModules>();
-		pipelineModules->ClearColor = { 0.0f, 0.2f, 0.4f, 1.0f };
+		pipelineModules->ClearColor = { 0.0f, 0.2f, 0.3f, 1.0f };
 
-		glm::vec4 vertices[3] =
+
+		STL::vector<STL::pair<glm::vec4, glm::vec4>> vertices =
 		{
-			{ 0.0f,  0.0f,  0.0f, 1.0f},
-			{ 0.5f, -0.5f,  0.0f, 1.0f},
-			{-0.5f, -0.5f,  0.0f, 1.0f}
+			{ {  0.0f,  0.45f, 0.0f, 1.0f }, {1.0f, 0.0f, 0.0f, 1.0f} },
+			{ {  0.5f, -0.5f, 0.0f, 1.0f }, {0.0f, 1.0f, 0.0f, 1.0f} },
+			{ { -0.5f, -0.5f, 0.0f, 1.0f }, {0.0f, 0.0f, 1.0f, 1.0f} }
 		};
 
-		Ref<VertexbufferBase> vertexBuffer = VertexbufferUtils::Create(vertices, 3 * 3 * sizeof(Float));
+		Ref<VertexbufferBase> vertexBuffer = VertexbufferUtils::Create(vertices.data(), 3 * sizeof(STL::pair<glm::vec4, glm::vec4>));
 
 		UInt indices[3] =
 		{
@@ -41,7 +42,7 @@ namespace Sentinel
 
 		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
 		pipelineModules->Indexbuffer = indexBuffer;
-		pipelineModules->Shader = ShaderUtils::Create("TestShader.hlsl");
+		pipelineModules->Shader = ShaderUtils::Create("TestShader.hlsl", "TestShader");
 		m_Renderer->SetPipelineData(pipelineModules);
 
 	}

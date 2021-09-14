@@ -159,6 +159,7 @@ namespace Sentinel
 				ST_ENGINE_ERROR("{0}", error);
 				errorMessages->Release();
 				ST_ENGINE_ERROR("{0}::{1} Shader Compilation error", m_ShaderName.c_str(), Utils::StringFromShaderType(type));
+				ST_ENGINE_ASSERT(false, "");
 			}
 		#endif // ST_DEBUG
 
