@@ -110,6 +110,7 @@ namespace Sentinel
 	}
 
 	void DX11Pipeline::Bind() {
+		DX11Common::GetContext()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		DX11Common::GetContext()->IASetInputLayout(m_InputLayout);
 	}
 
