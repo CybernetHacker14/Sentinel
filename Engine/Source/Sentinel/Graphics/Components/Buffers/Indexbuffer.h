@@ -5,30 +5,38 @@
 namespace Sentinel
 {
 	template<typename T>
-	class Indexbuffer;
+	class IndexbufferCRTP;
 
-	class IndexbufferBase : public IntrusiveRefObject {
+	class Indexbuffer : public IntrusiveRefObject {
 	public:
+		void Bind();
+		void Unbind();
+		UInt GetCount();
+
+	public:
+		static Ref<Indexbuffer> Create(void* indices, UInt count);
+
+	protected:
+		Indexbuffer() = default;
+
+	private:
 		template<typename T>
-		inline Indexbuffer<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<Indexbuffer<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from Indexbuffer<T>.");
-			return static_cast<Indexbuffer<T>*>(this);
+		inline IndexbufferCRTP<T>* BaseDowncast() {
+			static_assert(STL::is_base_of<IndexbufferCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be derived from IndexbufferCRTP<T>.");
+			return static_cast<IndexbufferCRTP<T>*>(this);
 		}
 
 		template<typename T>
 		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<Indexbuffer<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from Indexbuffer<T>.");
+			static_assert(STL::is_base_of<IndexbufferCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be derived from IndexbufferCRTP<T>.");
 			return static_cast<T*>(this);
 		}
-
-	protected:
-		IndexbufferBase() = default;
 	};
 
 	template<typename T>
-	class Indexbuffer : public IndexbufferBase {
+	class IndexbufferCRTP : public Indexbuffer {
 	public:
 		inline void Bind() {
 			underlying().Bind();
@@ -44,15 +52,10 @@ namespace Sentinel
 
 	private:
 		friend T;
-		Indexbuffer() = default;
+		IndexbufferCRTP() = default;
 
 		inline T& underlying() {
 			return static_cast<T&>(*this);
 		}
-	};
-
-	class IndexbufferUtils {
-	public:
-		static Ref<IndexbufferBase> Create(void* indices, UInt count);
 	};
 }

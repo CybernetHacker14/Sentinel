@@ -7,7 +7,7 @@
 
 namespace Sentinel
 {
-	class DX11Indexbuffer : public Indexbuffer<DX11Indexbuffer> {
+	class DX11Indexbuffer final : public IndexbufferCRTP<DX11Indexbuffer> {
 	public:
 		DX11Indexbuffer(void* indices, UInt count);
 		~DX11Indexbuffer();

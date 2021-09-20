@@ -2,6 +2,8 @@
 
 #include "Sentinel/Base/Define.h"
 
+#include <sstream>
+
 namespace Sentinel
 {
 	// Enum for depicting the type of event

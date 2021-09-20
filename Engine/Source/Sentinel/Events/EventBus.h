@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Sentinel/Base/Define.h"
-#include "Sentinel/Layers/Layer.h"
+#include "Sentinel/Events/Event.h"
 
 namespace Sentinel
 {

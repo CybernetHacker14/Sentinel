@@ -27,9 +27,7 @@ namespace Sentinel
 			m_InputLayout->Release();
 	}
 
-	void DX11Pipeline::CreateInputLayout(Ref<ShaderBase> shader) {
-
-		DX11Shader* dshader = shader->DerivedDowncast<DX11Shader>();
+	void DX11Pipeline::CreateInputLayout(Ref<Shader> shader) {
 		ID3DBlob* vertexShaderBinary = shader->DerivedDowncast<DX11Shader>()->GetVertexShaderBinary();
 
 		// Excerpts from https://gist.github.com/mobius/b678970c61a93c81fffef1936734909f

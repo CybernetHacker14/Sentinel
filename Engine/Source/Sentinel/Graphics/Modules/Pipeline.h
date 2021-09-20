@@ -1,34 +1,46 @@
 #pragma once
 
 #include "Sentinel/Base/Define.h"
-#include "Sentinel/Graphics/Components/Structures/RenderData.h"
+#include "Sentinel/Graphics/Components/Materials/Shader.h"
 
 namespace Sentinel
 {
 	template<typename T>
-	class Pipeline;
+	class PipelineCRTP;
 
-	class PipelineBase : public IntrusiveRefObject {
+	class Pipeline : public IntrusiveRefObject {
 	public:
+		void CreateInputLayout(Ref<Shader> shader);
+		void Bind();
+		void Unbind();
+		UInt GetStride();
+
+	public:
+		static Ref<Pipeline> Create();
+
+	protected:
+		Pipeline() = default;
+
+	private:
 		template<typename T>
-		inline Pipeline<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<Pipeline<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from Pipeline<T>.");
-			return static_cast<Pipeline<T>*>(this);
+		inline PipelineCRTP<T>* BaseDowncast() {
+			static_assert(STL::is_base_of<PipelineCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from PipelineCRTP<T>.");
+			return static_cast<PipelineCRTP<T>*>(this);
 		}
 
 		template<typename T>
 		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<Pipeline<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from Pipeline<T>.");
+			static_assert(STL::is_base_of<PipelineCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from PipelineCRTP<T>.");
 			return static_cast<T*>(this);
 		}
 	};
 
 	template<typename T>
-	class Pipeline : public PipelineBase {
+	class PipelineCRTP : public Pipeline {
 	public:
-		inline void CreateInputLayout(Ref<ShaderBase> shader) {
+		inline void CreateInputLayout(Ref<Shader> shader) {
 			underlying().CreateInputLayout(shader);
 		}
 
@@ -46,15 +58,10 @@ namespace Sentinel
 
 	private:
 		friend T;
-		Pipeline() = default;
+		PipelineCRTP() = default;
 
 		inline T& underlying() {
 			return static_cast<T&>(*this);
 		}
-	};
-
-	class PipelineUtils {
-	public:
-		static Ref<PipelineBase> Create();
 	};
 }

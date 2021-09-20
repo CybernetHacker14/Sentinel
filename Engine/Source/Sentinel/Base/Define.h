@@ -44,7 +44,6 @@ namespace Sentinel
 
 	template<typename T, typename ... Args>
 	constexpr Ref<T> CreateRef(Args&& ... args) {
-		//return STL::make_shared<T>(STL::forward<Args>(args)...);
 		return IntrusiveRefHandle<T>::CreateRefHandle(args...);
 	}
 }

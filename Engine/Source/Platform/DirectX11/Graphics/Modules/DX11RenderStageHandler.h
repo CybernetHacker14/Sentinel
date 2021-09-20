@@ -7,7 +7,7 @@
 
 namespace Sentinel
 {
-	class DX11RenderStageHandler : public RenderStageHandler<DX11RenderStageHandler> {
+	class DX11RenderStageHandler : public RenderStageHandlerCRTP<DX11RenderStageHandler> {
 	public:
 		DX11RenderStageHandler();
 		~DX11RenderStageHandler();
@@ -20,11 +20,15 @@ namespace Sentinel
 
 	private:
 		void InitializeRenderData();
+
 		void CreateWindowAndContext(const WindowProps& props);
-		void InitializeSwapchain();
-		void InitializeDevices();
+		void InitWindowAndContext();
 		void SetViewport(UInt x, UInt y, UInt width, UInt height);
+
+		void CreateAndInitRenderPipeline();
+		void BindPipelineModules();
 		void SetRenderTargets();
+
 		void SwapBuffers();
 		void Clear();
 		void Draw();

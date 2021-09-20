@@ -8,27 +8,49 @@
 namespace Sentinel
 {
 	template<typename T>
-	class RenderStageHandler;
+	class RenderStageHandlerCRTP;
 
-	class RenderStageHandlerBase {
+	class RenderStageHandler {
 	public:
+		void ExecuteStartupStage(const WindowProps& props);
+		void ExecuteRenderPipelinePreprocessStage();
+		void ExecuteRenderPipelineDrawStage();
+		void ExecuteRenderPipelineCleanupStage();
+		void ExecuteShutdownStage();
+
+		RenderData& GetRenderData() { return *(RenderData.get()); }
+
+	public:
+		static Scope<RenderStageHandler> Create();
+
+	protected:
+		RenderStageHandler() = default;
+
+	protected:
+		Ref<RenderData> RenderData;
+		Ref<Pipeline> RenderPipeline;
+
+	private:
+		friend class Renderer;
+
+	private:
 		template<typename T>
-		inline RenderStageHandler<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<RenderStageHandler<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from RenderStageHandler<T>.");
-			return static_cast<RenderStageHandler<T>*>(this);
+		inline RenderStageHandlerCRTP<T>* BaseDowncast() {
+			static_assert(STL::is_base_of<RenderStageHandlerCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from RenderStageHandlerCRTP<T>.");
+			return static_cast<RenderStageHandlerCRTP<T>*>(this);
 		}
 
 		template<typename T>
 		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<RenderStageHandler<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from RenderStageHandler<T>.");
+			static_assert(STL::is_base_of<RenderStageHandlerCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from RenderStageHandlerCRTP<T>.");
 			return static_cast<T*>(this);
 		}
 	};
 
 	template<typename T>
-	class RenderStageHandler : public RenderStageHandlerBase {
+	class RenderStageHandlerCRTP : public RenderStageHandler {
 	public:
 		inline void ExecuteStartupStage(const WindowProps& props) {
 			underlying().ExecuteStartupStage(props);
@@ -47,28 +69,15 @@ namespace Sentinel
 		}
 
 		inline void ExecuteShutdownStage() {
-			underlying().ExecuteShutdownUsage();
+			underlying().ExecuteShutdownStage();
 		}
-
-		RenderData GetRenderData() const { return *(RenderData.get()); }
-
-	protected:
-		Ref<RenderData> RenderData;
-		Ref<PipelineBase> RenderPipeline;
-	private:
-		friend class Renderer;
 
 	private:
 		friend T;
-		RenderStageHandler() = default;
+		RenderStageHandlerCRTP() = default;
 
 		inline T& underlying() {
 			return static_cast<T&>(*this);
 		}
-	};
-
-	class RenderStageHandlerUtils {
-	public:
-		static Scope<RenderStageHandlerBase> Create();
 	};
 }

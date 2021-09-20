@@ -1,12 +1,11 @@
 #pragma once
-
-#include "stpch.h"
-
 #include "Sentinel/Base/Define.h"
+
 #include "Sentinel/Events/EventBus.h"
 #include "Sentinel/Events/Categories/WindowEvent.h"
 #include "Sentinel/Events/Categories/KeyEvent.h"
 #include "Sentinel/Events/Categories/MouseEvent.h"
+
 #include "Sentinel/Layers/LayerStack.h"
 
 #include "Sentinel/Graphics/Renderers/Renderer.h"

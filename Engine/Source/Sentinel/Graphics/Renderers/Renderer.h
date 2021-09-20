@@ -29,6 +29,6 @@ namespace Sentinel
 		Ref<PipelineModules> GetPipelineModulesFromRenderData() const;
 
 	public:
-		Scope<RenderStageHandlerBase> m_RenderStageHandler;
+		Scope<RenderStageHandler> m_RenderStageHandler;
 	};
 }

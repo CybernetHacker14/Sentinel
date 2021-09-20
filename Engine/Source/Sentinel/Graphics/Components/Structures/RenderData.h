@@ -17,15 +17,15 @@ namespace Sentinel
 	public:
 		Scope<WindowProps> WindowProps;
 		Scope<Window> Window;
-		Scope<GraphicsContextBase> GraphicsContext;
+		Scope<GraphicsContext> GraphicsContext;
 	};
 
 	struct PipelineModules : public IntrusiveRefObject {
 	public:
 		glm::vec4 ClearColor;
-		STL::vector<Ref<VertexbufferBase>> Vertexbuffers;
-		Ref<IndexbufferBase> Indexbuffer;
-		Ref<ShaderBase> Shader;
+		STL::vector<Ref<Vertexbuffer>> Vertexbuffers;
+		Ref<Indexbuffer> Indexbuffer;
+		Ref<Shader> Shader;
 	};
 
 	struct RenderData : public IntrusiveRefObject {

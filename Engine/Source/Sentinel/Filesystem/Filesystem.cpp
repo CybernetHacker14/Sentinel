@@ -5,7 +5,6 @@
 namespace Sentinel
 {
 	STL::string Filesystem::ReadFile(const STL::string& filepath) {
-
 		STL::string result;
 		std::ifstream in(filepath.c_str(), std::ios::in | std::ios::binary);
 

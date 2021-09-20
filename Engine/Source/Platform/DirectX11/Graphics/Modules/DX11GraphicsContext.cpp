@@ -13,6 +13,16 @@ namespace Sentinel
 		:m_WindowHandle(windowHandle) {
 		ST_ENGINE_ASSERT(m_WindowHandle, "Window Handle is null");
 
+		InitializeDeviceAndSwapchain();
+		InitializeDirectXComponents();
+	}
+
+	void DX11GraphicsContext::Init() {
+		glfwMakeContextCurrent(m_WindowHandle);
+		SetContextInfo();
+	}
+
+	void DX11GraphicsContext::InitializeDeviceAndSwapchain() {
 		DXGI_SWAP_CHAIN_DESC swapChainDescription;
 		ZeroMemory(&swapChainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
 
@@ -52,14 +62,11 @@ namespace Sentinel
 			nullptr,
 			&(DX11Common::m_Context)
 		);
-
-		DX11Common::GetDevice()->QueryInterface(__uuidof(IDXGIDevice), (LPVOID*)&(DX11Common::m_DXGIDevice));
-		DX11Common::GetDXGIDevice()->GetParent(__uuidof(IDXGIAdapter), (LPVOID*)&(DX11Common::m_Adapter));
 	}
 
-	void DX11GraphicsContext::Init() {
-		glfwMakeContextCurrent(m_WindowHandle);
-		SetContextInfo();
+	void DX11GraphicsContext::InitializeDirectXComponents() {
+		DX11Common::GetDevice()->QueryInterface(__uuidof(IDXGIDevice), (LPVOID*)&(DX11Common::m_DXGIDevice));
+		DX11Common::GetDXGIDevice()->GetParent(__uuidof(IDXGIAdapter), (LPVOID*)&(DX11Common::m_Adapter));
 	}
 
 	void DX11GraphicsContext::SetContextInfo() {

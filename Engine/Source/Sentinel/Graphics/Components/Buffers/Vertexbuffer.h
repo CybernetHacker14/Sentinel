@@ -5,37 +5,46 @@
 namespace Sentinel
 {
 	template<typename T>
-	class Vertexbuffer;
+	class VertexbufferCRTP;
 
-	class VertexbufferBase : public IntrusiveRefObject {
+	class Vertexbuffer : public IntrusiveRefObject {
 	public:
+		void Bind(UInt stride);
+		void Unbind();
+		void SetData(const void* verticesData, UInt size);
+
+	public:
+		static Ref<Vertexbuffer> Create(UInt size);
+		static Ref<Vertexbuffer> Create(void* vertices, UInt size);
+
+	protected:
+		Vertexbuffer() = default;
+
+	private:
 		template<typename T>
-		inline Vertexbuffer<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<Vertexbuffer<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from Vertexbuffer<T>.");
-			return static_cast<Vertexbuffer<T>*>(this);
+		inline VertexbufferCRTP<T>* BaseDowncast() {
+			static_assert(STL::is_base_of<VertexbufferCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be derived from VertexbufferCRTP<T>.");
+			return static_cast<VertexbufferCRTP<T>*>(this);
 		}
 
 		template<typename T>
 		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<Vertexbuffer<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from Vertexbuffer<T>.");
+			static_assert(STL::is_base_of<VertexbufferCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be derived from VertexbufferCRTP<T>.");
 			return static_cast<T*>(this);
 		}
-
-	protected:
-		VertexbufferBase() = default;
 	};
 
 	template<typename T>
-	class Vertexbuffer : public VertexbufferBase {
+	class VertexbufferCRTP : public Vertexbuffer {
 	public:
-		inline void Bind() const {
-			underlying().Bind();
+		inline void Bind(UInt stride) {
+			underlying().Bind(stride);
 		}
 
-		inline void Unbind(UInt stride) const {
-			underlying().Unbind(stride);
+		inline void Unbind() {
+			underlying().Unbind();
 		}
 
 		inline void SetData(const void* verticesData, UInt size) {
@@ -44,16 +53,10 @@ namespace Sentinel
 
 	private:
 		friend T;
-		Vertexbuffer() = default;
+		VertexbufferCRTP() = default;
 
 		inline T& underlying() {
 			return static_cast<T&>(*this);
 		}
-	};
-
-	class VertexbufferUtils {
-	public:
-		static Ref<VertexbufferBase> Create(UInt size);
-		static Ref<VertexbufferBase> Create(void* vertices, UInt size);
 	};
 }

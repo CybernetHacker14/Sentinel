@@ -23,28 +23,14 @@ namespace Sentinel
 
 	void DX11RenderStageHandler::ExecuteStartupStage(const WindowProps& props) {
 		CreateWindowAndContext(props);
-		InitializeSwapchain();
-		InitializeDevices();
+		InitWindowAndContext();
 		SetViewport(0, 0, props.Width, props.Height);
 	}
 
 	void DX11RenderStageHandler::ExecuteRenderPipelinePreprocessStage() {
-		RenderPipeline = PipelineUtils::Create();
-		RenderPipeline->BaseDowncast<DX11Pipeline>()->CreateInputLayout(
-			RenderData->PipelineModules->Shader
-		);
-
-		for (auto& vBuffer : RenderData->PipelineModules->Vertexbuffers)
-			vBuffer->DerivedDowncast<DX11Vertexbuffer>()->Bind(
-				RenderPipeline->BaseDowncast<DX11Pipeline>()->GetStride()
-			);
-
-		RenderData->PipelineModules->Indexbuffer->BaseDowncast<DX11Indexbuffer>()->Bind();
-		RenderData->PipelineModules->Shader->BaseDowncast<DX11Shader>()->Bind();
-
+		CreateAndInitRenderPipeline();
+		BindPipelineModules();
 		SetRenderTargets();
-
-		RenderPipeline->BaseDowncast<DX11Pipeline>()->Bind();
 	}
 
 	void DX11RenderStageHandler::ExecuteRenderPipelineDrawStage() {
@@ -66,19 +52,14 @@ namespace Sentinel
 	void DX11RenderStageHandler::CreateWindowAndContext(const WindowProps& props) {
 		RenderData->DeviceModules->Window = Window::Create(props);
 		RenderData->DeviceModules->GraphicsContext =
-			GraphicsContextUtils::Create(
+			GraphicsContext::Create(
 				static_cast<GLFWwindow*>(RenderData->DeviceModules->Window->GetNativeWindow()));
 	}
 
-	void DX11RenderStageHandler::InitializeSwapchain() {
-
-	}
-
-	void DX11RenderStageHandler::InitializeDevices() {
-
-		RenderData->DeviceModules->GraphicsContext->BaseDowncast<DX11GraphicsContext>()->Init();
+	void DX11RenderStageHandler::InitWindowAndContext() {
+		RenderData->DeviceModules->GraphicsContext->Init();
 		RenderData->DeviceModules->Window->SetVSync(true);
-		ContextInfo info = RenderData->DeviceModules->GraphicsContext->BaseDowncast<DX11GraphicsContext>()->GetContextInfo();
+		ContextInfo info = RenderData->DeviceModules->GraphicsContext->GetContextInfo();
 
 		ST_ENGINE_INFO("VENDOR   : {0}", info.Vendor.c_str());
 		ST_ENGINE_INFO("RENDERER : {0}", info.Renderer.c_str());
@@ -98,6 +79,27 @@ namespace Sentinel
 		viewport.MaxDepth = 1;
 
 		DX11Common::GetContext()->RSSetViewports(1, &viewport);
+	}
+
+	void DX11RenderStageHandler::CreateAndInitRenderPipeline() {
+		RenderPipeline = Pipeline::Create();
+		RenderPipeline->CreateInputLayout(RenderData->PipelineModules->Shader);
+		RenderPipeline->Bind();
+	}
+
+	void DX11RenderStageHandler::BindPipelineModules() {
+		for (auto& vBuffer : RenderData->PipelineModules->Vertexbuffers)
+			if (vBuffer)
+			{
+				vBuffer->Bind(
+					RenderPipeline->GetStride()
+				);
+			}
+
+		if (RenderData->PipelineModules->Indexbuffer)
+			RenderData->PipelineModules->Indexbuffer->Bind();
+
+		RenderData->PipelineModules->Shader->Bind();
 	}
 
 	void DX11RenderStageHandler::SetRenderTargets() {
@@ -122,7 +124,14 @@ namespace Sentinel
 	}
 
 	void DX11RenderStageHandler::Draw() {
-		DX11Common::GetContext()->DrawIndexed(
-			RenderData->PipelineModules->Indexbuffer->BaseDowncast<DX11Indexbuffer>()->GetCount(), 0, 0);
+		if (RenderData->PipelineModules->Indexbuffer)
+		{
+			DX11Common::GetContext()->DrawIndexed(
+				RenderData->PipelineModules->Indexbuffer->GetCount(), 0, 0);
+		}
+		else
+		{
+			DX11Common::GetContext()->Draw(0, 0);
+		}
 	}
 }

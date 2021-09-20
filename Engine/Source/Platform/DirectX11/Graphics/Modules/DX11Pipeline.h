@@ -7,12 +7,12 @@
 
 namespace Sentinel
 {
-	class DX11Pipeline : public Pipeline<DX11Pipeline> {
+	class DX11Pipeline final : public PipelineCRTP<DX11Pipeline> {
 	public:
 		DX11Pipeline();
 		~DX11Pipeline();
 
-		void CreateInputLayout(Ref<ShaderBase> shader);
+		void CreateInputLayout(Ref<Shader> shader);
 		void Bind();
 		void Unbind();
 

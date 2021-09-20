@@ -1,23 +1,21 @@
-project "EASTL"
-    kind "StaticLib"
+project "EABase"
+	kind "None"
     language "C++"
-
-    targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
+	
+	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
     objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
-
-    files
+	
+	files
     {
-        "module/include/**.h",
-        "module/source/**.cpp"
+        "module/include/Common/**.h"
     }
-
-    includedirs
+	
+	includedirs
     {
-        "module/include",
-		"%{IncludeExternalDir.EABase}"
+        "module/include/Common"
     }
-
-    filter "system:windows"
+	
+	filter "system:windows"
         systemversion "latest"
         cppdialect "C++17"
         staticruntime "On"

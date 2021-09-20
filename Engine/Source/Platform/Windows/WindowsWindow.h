@@ -29,7 +29,7 @@ namespace Sentinel
 
 	private:
 		GLFWwindow* m_Window;
-		Scope<GraphicsContextBase> m_Context;
+		Scope<GraphicsContext> m_Context;
 
 		struct WindowData {
 			STL::string Title;

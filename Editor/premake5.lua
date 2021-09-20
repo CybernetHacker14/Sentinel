@@ -24,7 +24,7 @@ project "Sentinel-Editor"
         "%{IncludeInternalDir.Sentinel_Source}",
         "%{IncludeExternalDir.glm}",
         "%{IncludeExternalDir.EASTL}",
-        "%{IncludeExternalDir.EABase}",
+		"%{IncludeExternalDir.EABase}",
         "%{IncludeExternalDir.spdlog}"
     }
 

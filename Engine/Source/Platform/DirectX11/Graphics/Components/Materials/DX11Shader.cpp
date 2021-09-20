@@ -65,9 +65,7 @@ namespace Sentinel
 
 	DX11Shader::~DX11Shader() {
 		for (auto& tuple : m_ShaderBinaryMap)
-		{
 			tuple.second->Release();
-		}
 
 		if (m_VertexShader)
 			m_VertexShader->Release();
@@ -98,10 +96,6 @@ namespace Sentinel
 
 	void DX11Shader::Reload() {
 		Load();
-	}
-
-	const STL::string& DX11Shader::GetShaderSource(const ShaderType& type) const {
-		return m_ShaderSourceMap.at(type);
 	}
 
 	STL::unordered_map<ShaderType, STL::string> DX11Shader::PreprocessSource(const STL::string& source) {

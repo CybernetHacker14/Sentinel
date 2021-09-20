@@ -7,7 +7,7 @@ struct GLFWwindow;
 namespace Sentinel
 {
 	template<typename T>
-	class GraphicsContext; // Forward declaration for GraphicsContextBase
+	class GraphicsContextCRTP;
 
 	struct ContextInfo {
 		STL::string Vendor;
@@ -16,28 +16,35 @@ namespace Sentinel
 		STL::string Version;
 	};
 
-	class GraphicsContextBase {
+	class GraphicsContext {
 	public:
+		void Init();
+		const ContextInfo& GetContextInfo();
+
+	public:
+		static Scope<GraphicsContext> Create(GLFWwindow* window);
+
+	protected:
+		GraphicsContext() = default;
+
+	private:
 		template<typename T>
-		inline GraphicsContext<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<GraphicsContext<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from GraphicsContext<T>.");
-			return static_cast<GraphicsContext<T>*>(this);
+		inline GraphicsContextCRTP<T>* BaseDowncast() {
+			static_assert(STL::is_base_of<GraphicsContextCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from GraphicsContextCRTP<T>.");
+			return static_cast<GraphicsContextCRTP<T>*>(this);
 		}
 
 		template<typename T>
 		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<GraphicsContext<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from GraphicsContext<T>.");
+			static_assert(STL::is_base_of<GraphicsContextCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from GraphicsContextCRTP<T>.");
 			return static_cast<T*>(this);
 		}
-
-	protected:
-		GraphicsContextBase() = default;
 	};
 
 	template<typename T>
-	class GraphicsContext : public GraphicsContextBase {
+	class GraphicsContextCRTP : public GraphicsContext {
 	public:
 		inline void Init() {
 			underlying().Init();
@@ -50,15 +57,10 @@ namespace Sentinel
 
 	private:
 		friend T;
-		GraphicsContext() = default;
+		GraphicsContextCRTP() = default;
 
 		inline T& underlying() {
 			return static_cast<T&>(*this);
 		}
-	};
-
-	class GraphicsContextUtils {
-	public:
-		static Scope<GraphicsContextBase> Create(GLFWwindow* window);
 	};
 }

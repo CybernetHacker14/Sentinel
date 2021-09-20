@@ -26,25 +26,28 @@ namespace Sentinel
 
 		STL::vector<STL::pair<glm::vec4, glm::vec4>> vertices =
 		{
-			{ {  0.0f,  0.45f, 0.0f, 1.0f }, {1.0f, 0.0f, 0.0f, 1.0f} },
-			{ {  0.5f, -0.5f, 0.0f, 1.0f }, {0.0f, 1.0f, 0.0f, 1.0f} },
-			{ { -0.5f, -0.5f, 0.0f, 1.0f }, {0.0f, 0.0f, 1.0f, 1.0f} }
+			{ { -0.5f,   0.2f, 0.0f, 1.0f }, {1.0f, 0.0f, 0.0f, 1.0f} },
+			{ { -0.25f, -0.4f, 0.0f, 1.0f }, {0.0f, 1.0f, 0.0f, 1.0f} },
+			{ { -0.75f, -0.4f, 0.0f, 1.0f }, {0.0f, 0.0f, 1.0f, 1.0f} },
+			{ {   0.5f,  0.2f, 0.0f, 1.0f }, {0.5f, 1.0f, 0.0f, 1.0f} },
+			{ {  0.75f, -0.4f, 0.0f, 1.0f }, {1.0f, 0.0f, 0.5f, 1.0f} },
+			{ {  0.25f, -0.4f, 0.0f, 1.0f }, {0.0f, 0.5f, 1.0f, 1.0f} }
 		};
 
-		Ref<VertexbufferBase> vertexBuffer = VertexbufferUtils::Create(vertices.data(), 3 * sizeof(STL::pair<glm::vec4, glm::vec4>));
+		Ref<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
+			vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec4>));
 
-		UInt indices[3] =
+		STL::vector<UInt> indices =
 		{
-			0,1,2
+			0,1,2,3,4,5
 		};
 
-		Ref<IndexbufferBase> indexBuffer = IndexbufferUtils::Create(indices, 3);
+		Ref<Indexbuffer> indexBuffer = Indexbuffer::Create(indices.data(), indices.size());
 
 		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
 		pipelineModules->Indexbuffer = indexBuffer;
-		pipelineModules->Shader = ShaderUtils::Create("TestShader.hlsl", "TestShader");
+		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TestShader.hlsl", "TestShader");
 		m_Renderer->SetPipelineData(pipelineModules);
-
 	}
 
 	Application::~Application() {
@@ -120,6 +123,11 @@ namespace Sentinel
 	void Application::OnKeyPressed(Event& event) {
 		KeyPressedEvent e = static_cast<KeyPressedEvent&>(event);
 		ST_ENGINE_INFO("{0}", e.ToString().c_str());
+
+		if (e.GetKeyCode() == Key::K)
+		{
+		}
+
 		event.Handled = true;
 	}
 
