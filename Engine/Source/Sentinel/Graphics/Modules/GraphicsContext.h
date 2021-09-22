@@ -21,7 +21,6 @@ namespace Sentinel
 		void Init();
 		const ContextInfo& GetContextInfo();
 
-	public:
 		static Scope<GraphicsContext> Create(GLFWwindow* window);
 
 	protected:
@@ -45,22 +44,22 @@ namespace Sentinel
 
 	template<typename T>
 	class GraphicsContextCRTP : public GraphicsContext {
-	public:
+	private:
 		inline void Init() {
 			underlying().Init();
 		}
 
 		inline const ContextInfo& GetContextInfo() const { return m_ContextInfo; }
 
-	protected:
-		ContextInfo m_ContextInfo;
-
 	private:
 		friend T;
+		friend GraphicsContext;
 		GraphicsContextCRTP() = default;
 
 		inline T& underlying() {
 			return static_cast<T&>(*this);
 		}
+
+		ContextInfo m_ContextInfo;
 	};
 }

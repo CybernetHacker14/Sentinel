@@ -18,11 +18,11 @@ namespace Sentinel
 	public:
 		void Bind();
 		void Reload();
+
 		const STL::string& GetShaderSource(const ShaderType& type = ShaderType::NONE);
 		const STL::string& GetName();
 		const STL::string& GetFilepath();
 
-	public:
 		static Ref<Shader> Create(const STL::string& filepath, const STL::string& name = "Sentinel Shader");
 
 	protected:
@@ -47,7 +47,7 @@ namespace Sentinel
 
 	template<typename T>
 	class ShaderCRTP : public Shader {
-	public:
+	private:
 		inline void Bind() {
 			underlying().Bind();
 		}
@@ -70,6 +70,7 @@ namespace Sentinel
 
 	private:
 		friend T;
+		friend Shader;
 		ShaderCRTP() = default;
 
 		inline T& underlying() {

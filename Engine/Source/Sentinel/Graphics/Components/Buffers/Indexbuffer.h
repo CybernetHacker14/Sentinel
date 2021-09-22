@@ -13,7 +13,6 @@ namespace Sentinel
 		void Unbind();
 		UInt GetCount();
 
-	public:
 		static Ref<Indexbuffer> Create(void* indices, UInt count);
 
 	protected:
@@ -37,7 +36,7 @@ namespace Sentinel
 
 	template<typename T>
 	class IndexbufferCRTP : public Indexbuffer {
-	public:
+	private:
 		inline void Bind() {
 			underlying().Bind();
 		}
@@ -52,6 +51,7 @@ namespace Sentinel
 
 	private:
 		friend T;
+		friend Indexbuffer;
 		IndexbufferCRTP() = default;
 
 		inline T& underlying() {

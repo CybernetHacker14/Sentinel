@@ -15,7 +15,6 @@ namespace Sentinel
 		void Unbind();
 		UInt GetStride();
 
-	public:
 		static Ref<Pipeline> Create();
 
 	protected:
@@ -39,7 +38,7 @@ namespace Sentinel
 
 	template<typename T>
 	class PipelineCRTP : public Pipeline {
-	public:
+	private:
 		inline void CreateInputLayout(Ref<Shader> shader) {
 			underlying().CreateInputLayout(shader);
 		}
@@ -58,6 +57,7 @@ namespace Sentinel
 
 	private:
 		friend T;
+		friend Pipeline;
 		PipelineCRTP() = default;
 
 		inline T& underlying() {

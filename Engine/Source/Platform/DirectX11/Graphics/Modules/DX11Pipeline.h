@@ -12,13 +12,16 @@ namespace Sentinel
 		DX11Pipeline();
 		~DX11Pipeline();
 
+	private:
 		void CreateInputLayout(Ref<Shader> shader);
 		void Bind();
 		void Unbind();
 
-		inline UInt GetStride() { return m_Stride; }
+		inline UInt GetStride() const { return m_Stride; }
 
 	private:
+		friend class PipelineCRTP<DX11Pipeline>;
+
 		ID3D11InputLayout* m_InputLayout;
 		UInt m_Stride;
 	};

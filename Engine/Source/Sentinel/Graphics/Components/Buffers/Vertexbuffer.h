@@ -13,7 +13,6 @@ namespace Sentinel
 		void Unbind();
 		void SetData(const void* verticesData, UInt size);
 
-	public:
 		static Ref<Vertexbuffer> Create(UInt size);
 		static Ref<Vertexbuffer> Create(void* vertices, UInt size);
 
@@ -38,7 +37,7 @@ namespace Sentinel
 
 	template<typename T>
 	class VertexbufferCRTP : public Vertexbuffer {
-	public:
+	private:
 		inline void Bind(UInt stride) {
 			underlying().Bind(stride);
 		}
@@ -53,6 +52,7 @@ namespace Sentinel
 
 	private:
 		friend T;
+		friend Vertexbuffer;
 		VertexbufferCRTP() = default;
 
 		inline T& underlying() {

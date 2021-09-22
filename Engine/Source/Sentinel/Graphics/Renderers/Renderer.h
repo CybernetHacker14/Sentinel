@@ -19,12 +19,6 @@ namespace Sentinel
 		void Draw();
 
 	private:
-		template<typename T>
-		void InitDevices(Ref<DeviceModules> deviceModules);
-
-		template<typename T>
-		void InitPipeline(Ref<PipelineModules> pipelineModules);
-
 		Ref<DeviceModules> GetDeviceModulesFromRenderData() const;
 		Ref<PipelineModules> GetPipelineModulesFromRenderData() const;
 

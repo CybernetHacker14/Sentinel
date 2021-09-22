@@ -10,15 +10,17 @@ namespace Sentinel
 	public:
 		DX11GraphicsContext(GLFWwindow* windowHandle);
 
+	private:
 		void Init();
 
-	private:
 		void InitializeDeviceAndSwapchain();
 		void InitializeDirectXComponents();
 
 		void SetContextInfo();
 
 	private:
+		friend class GraphicsContextCRTP<DX11GraphicsContext>;
+
 		GLFWwindow* m_WindowHandle;
 	};
 }

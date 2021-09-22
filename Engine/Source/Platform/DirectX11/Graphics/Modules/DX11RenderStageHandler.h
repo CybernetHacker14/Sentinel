@@ -12,28 +12,26 @@ namespace Sentinel
 		DX11RenderStageHandler();
 		~DX11RenderStageHandler();
 
+	private:
 		void ExecuteStartupStage(const WindowProps& props);
 		void ExecuteRenderPipelinePreprocessStage();
 		void ExecuteRenderPipelineDrawStage();
 		void ExecuteRenderPipelineCleanupStage();
 		void ExecuteShutdownStage();
 
-	private:
 		void InitializeRenderData();
-
 		void CreateWindowAndContext(const WindowProps& props);
 		void InitWindowAndContext();
 		void SetViewport(UInt x, UInt y, UInt width, UInt height);
-
 		void CreateAndInitRenderPipeline();
 		void BindPipelineModules();
 		void SetRenderTargets();
-
 		void SwapBuffers();
 		void Clear();
 		void Draw();
 
 	private:
+		friend class RenderStageHandlerCRTP<DX11RenderStageHandler>;
 		// TODO: Move this to a separate Framebuffer class
 		// And make this data a part of RenderData::PipelineModules
 

@@ -20,7 +20,6 @@ namespace Sentinel
 
 		RenderData& GetRenderData() { return *(RenderData.get()); }
 
-	public:
 		static Scope<RenderStageHandler> Create();
 
 	protected:
@@ -51,7 +50,7 @@ namespace Sentinel
 
 	template<typename T>
 	class RenderStageHandlerCRTP : public RenderStageHandler {
-	public:
+	private:
 		inline void ExecuteStartupStage(const WindowProps& props) {
 			underlying().ExecuteStartupStage(props);
 		}
@@ -74,6 +73,7 @@ namespace Sentinel
 
 	private:
 		friend T;
+		friend RenderStageHandler;
 		RenderStageHandlerCRTP() = default;
 
 		inline T& underlying() {

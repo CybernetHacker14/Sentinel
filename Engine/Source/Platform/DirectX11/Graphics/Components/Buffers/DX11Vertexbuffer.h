@@ -11,14 +11,16 @@ namespace Sentinel
 	public:
 		DX11Vertexbuffer(UInt size);
 		DX11Vertexbuffer(void* verticesData, UInt size);
-
 		~DX11Vertexbuffer();
 
+	private:
 		void Bind(UInt stride) const;
 		void Unbind() const;
 		void SetData(const void* vertices, UInt size);
 
 	private:
+		friend class VertexbufferCRTP<DX11Vertexbuffer>;
+
 		ID3D11Buffer* m_VertexbufferPtr;
 	};
 }

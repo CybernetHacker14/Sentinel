@@ -12,12 +12,15 @@ namespace Sentinel
 		DX11Indexbuffer(void* indices, UInt count);
 		~DX11Indexbuffer();
 
+	private:
 		void Bind() const;
 		void Unbind() const;
 
 		inline UInt GetCount() { return m_Count; }
 
 	private:
+		friend class IndexbufferCRTP<DX11Indexbuffer>;
+
 		ID3D11Buffer* m_IndexbufferPtr;
 		UInt m_Count;
 	};

@@ -25,20 +25,6 @@ namespace Sentinel
 		m_RenderStageHandler->ExecuteRenderPipelineDrawStage();
 	}
 
-	template<typename T>
-	void Renderer::InitDevices(Ref<DeviceModules> deviceModules) {
-		m_RenderStageHandler->BaseDowncast<T>()->RenderData->DeviceModules = deviceModules;
-		m_RenderStageHandler->BaseDowncast<T>()->ExecuteStartupStage(
-			*(m_RenderStageHandler->BaseDowncast<T>()->GetRenderData().DeviceModules->WindowProps)
-		);
-	}
-
-	template<typename T>
-	void Renderer::InitPipeline(Ref<PipelineModules> pipelineModules) {
-		m_RenderStageHandler->BaseDowncast<T>()->RenderData->PipelineModules = pipelineModules;
-		m_RenderStageHandler->BaseDowncast<T>()->ExecuteRenderPipelinePreprocessStage();
-	}
-
 	Ref<DeviceModules> Renderer::GetDeviceModulesFromRenderData() const {
 		return m_RenderStageHandler->GetRenderData().DeviceModules;
 	}
