@@ -9,6 +9,7 @@
 namespace Sentinel
 {
 	class DX11GraphicsContext;
+	class DX11RenderStageHandler;
 
 	class DX11Common {
 	public:
@@ -22,6 +23,7 @@ namespace Sentinel
 
 	private:
 		friend class DX11GraphicsContext;
+		friend class DX11RenderStageHandler;
 
 		static ID3D11Device* m_Device;
 		static ID3D11DeviceContext* m_Context;

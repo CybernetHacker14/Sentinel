@@ -1,9 +1,13 @@
 #pragma once
 
-#include "Sentinel/Events/Categories/WindowEvent.h"
+#include "Sentinel/Base/Define.h"
+#include "Sentinel/Events/Event.h"
 
 namespace Sentinel
 {
+	template<typename T>
+	class WindowCRTP;
+
 	struct WindowProps {
 		STL::string Title;
 		UInt Width;
@@ -24,22 +28,78 @@ namespace Sentinel
 	// Interface representing a desktop system based Window
 	class Window {
 	public:
-
 		using EventCallbackFn = STL::function<void(Scope<Event>)>;
 
-		virtual ~Window() = default;
+		void OnUpdate();
 
-		virtual void OnUpdate() = 0;
+		UInt GetWidth();
+		UInt GetHeight();
 
-		virtual UInt GetWidth() const = 0;
-		virtual UInt GetHeight() const = 0;
+		void SetEventCallback(const EventCallbackFn& callback);
+		void SetVSync(Bool enabled);
+		Bool IsVSync();
 
-		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
-		virtual void SetVSync(Bool enabled) = 0;
-		virtual Bool IsVSync() const = 0;
-
-		virtual void* GetNativeWindow() const = 0;
+		void* GetNativeWindow();
 
 		static Scope<Window> Create(const WindowProps& props = WindowProps());
+
+	protected:
+		Window() = default;
+
+	private:
+		template<typename T>
+		inline WindowCRTP<T>* BaseDowncast() {
+			static_assert(STL::is_base_of<WindowCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from WindowCRTP<T>.");
+			return static_cast<WindowCRTP<T>*>(this);
+		}
+
+		template<typename T>
+		inline T* DerivedDowncast() {
+			static_assert(STL::is_base_of<WindowCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from WindowCRTP<T>.");
+			return static_cast<T*>(this);
+		}
+	};
+
+	template<typename T>
+	class WindowCRTP : public Window {
+	private:
+		inline void OnUpdate() {
+			underlying().OnUpdate();
+		}
+
+		inline UInt GetWidth() {
+			return underlying().GetWidth();
+		}
+
+		inline UInt GetHeight() {
+			return underlying().GetHeight();
+		}
+
+		inline void SetEventCallback(const EventCallbackFn& callback) {
+			underlying().SetEventCallback(callback);
+		}
+
+		inline void SetVSync(Bool enabled) {
+			underlying().SetVSync(enabled);
+		}
+
+		inline Bool IsVSync() {
+			return underlying().IsVSync();
+		}
+
+		inline void* GetNativeWindow() {
+			return underlying().GetNativeWindow();
+		}
+
+	private:
+		friend T;
+		friend Window;
+		WindowCRTP() = default;
+
+		inline T& underlying() {
+			return static_cast<T&>(*this);
+		}
 	};
 }

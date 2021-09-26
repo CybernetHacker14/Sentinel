@@ -4,30 +4,57 @@
 
 namespace Sentinel
 {
-	class AppTickEvent final : public Event {
+	class AppTickEvent final : public EventCRTP<AppTickEvent> {
 	public:
-		AppTickEvent() = default;
+		AppTickEvent() {
+			Type = EventType::AppTick;
+		};
 
-		EventType GetEventType() const final { return EventType::AppTick; }
-		EventCategory GetEventCategoryFlags() const final { return EventCategory::Application; }
-		const char* GetName() const final { return "AppTickEvent"; }
+	private:
+		EventCategory GetEventCategoryFlags() const { return EventCategory::Application; }
+		const char* GetName() const { return "AppTickEvent"; }
+
+		STL::string ToString() const {
+			return STL::string("AppTickEvent");
+		}
+
+	private:
+		friend class EventCRTP<AppTickEvent>;
 	};
 
-	class AppUpdateEvent final : public Event {
+	class AppUpdateEvent final : public EventCRTP<AppUpdateEvent> {
 	public:
-		AppUpdateEvent() = default;
+		AppUpdateEvent() {
+			Type = EventType::AppUpdate;
+		};
 
-		EventType GetEventType() const final { return EventType::AppUpdate; }
-		EventCategory GetEventCategoryFlags() const final { return EventCategory::Application; }
-		const char* GetName() const final { return "AppUpdateEvent"; }
+	private:
+		EventCategory GetEventCategoryFlags() const { return EventCategory::Application; }
+		const char* GetName() const { return "AppUpdateEvent"; }
+
+		STL::string ToString() const {
+			return STL::string("AppUpdateEvent");
+		}
+
+	private:
+		friend class EventCRTP<AppUpdateEvent>;
 	};
 
-	class AppRenderEvent final : public Event {
+	class AppRenderEvent final : public EventCRTP<AppRenderEvent> {
 	public:
-		AppRenderEvent() = default;
+		AppRenderEvent() {
+			Type = EventType::AppRender;
+		};
 
-		EventType GetEventType() const final { return EventType::AppRender; }
-		EventCategory GetEventCategoryFlags() const final { return EventCategory::Application; }
-		const char* GetName() const final { return "AppRenderEvent"; }
+	private:
+		EventCategory GetEventCategoryFlags() const { return EventCategory::Application; }
+		const char* GetName() const { return "AppRenderEvent"; }
+
+		STL::string ToString() const {
+			return STL::string("AppRenderEvent");
+		}
+
+	private:
+		friend class EventCRTP<AppRenderEvent>;
 	};
 }

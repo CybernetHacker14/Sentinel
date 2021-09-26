@@ -1,6 +1,7 @@
 #include "stpch.h"
 
 #include "Sentinel/Application/Application.h"
+#include "Sentinel/Events/Categories/WindowEvent.h"
 #include "Sentinel/Input/Input.h"
 
 namespace Sentinel
@@ -51,6 +52,7 @@ namespace Sentinel
 	}
 
 	Application::~Application() {
+		m_Renderer->Shutdown();
 		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
 		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
 	}
@@ -117,53 +119,5 @@ namespace Sentinel
 
 	void Application::OnWindowResize(Event& event) {
 		WindowResizeEvent e = static_cast<WindowResizeEvent&>(event);
-		event.Handled = true;
-	}
-
-	void Application::OnKeyPressed(Event& event) {
-		KeyPressedEvent e = static_cast<KeyPressedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-
-		if (e.GetKeyCode() == Key::K)
-		{
-		}
-
-		event.Handled = true;
-	}
-
-	void Application::OnKeyReleased(Event& event) {
-		KeyReleasedEvent e = static_cast<KeyReleasedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnKeyTyped(Event& event) {
-		KeyTypedEvent e = static_cast<KeyTypedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnMouseButtonPressed(Event& event) {
-		MouseButtonPressedEvent e = static_cast<MouseButtonPressedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnMouseButtonReleased(Event& event) {
-		MouseButtonReleasedEvent e = static_cast<MouseButtonReleasedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnMouseButtonScrolled(Event& event) {
-		MouseScrolledEvent e = static_cast<MouseScrolledEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnMouseMoved(Event& event) {
-		MouseMovedEvent e = static_cast<MouseMovedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
 	}
 }

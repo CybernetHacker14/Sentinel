@@ -5,7 +5,7 @@
 #include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Events/Categories/KeyEvent.h"
 
-#include "Platform/DirectX11/Graphics/Modules/DX11GraphicsContext.h"
+#include <GLFW/glfw3.h>
 
 namespace Sentinel
 {

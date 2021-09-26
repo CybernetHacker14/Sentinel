@@ -17,6 +17,7 @@ namespace Sentinel
 		Window& GetWindow();
 
 		void Draw();
+		void Shutdown();
 
 	private:
 		Ref<DeviceModules> GetDeviceModulesFromRenderData() const;

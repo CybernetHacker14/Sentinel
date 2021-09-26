@@ -25,6 +25,10 @@ namespace Sentinel
 		m_RenderStageHandler->ExecuteRenderPipelineDrawStage();
 	}
 
+	void Renderer::Shutdown() {
+		m_RenderStageHandler->ExecuteRenderPipelineCleanupStage();
+	}
+
 	Ref<DeviceModules> Renderer::GetDeviceModulesFromRenderData() const {
 		return m_RenderStageHandler->GetRenderData().DeviceModules;
 	}

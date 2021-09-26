@@ -1,12 +1,6 @@
 #include "stpch.h"
 
-#include "Platform/DirectX11/Graphics/Modules/DX11GraphicsContext.h"
-#include "Platform/DirectX11/Graphics/Modules/DX11Pipeline.h"
 #include "Platform/DirectX11/Graphics/Modules/DX11RenderStageHandler.h"
-
-#include "Platform/DirectX11/Graphics/Components/Materials/DX11Shader.h"
-#include "Platform/DirectX11/Graphics/Components/Buffers/DX11Vertexbuffer.h"
-#include "Platform/DirectX11/Graphics/Components/Buffers/DX11Indexbuffer.h"
 
 namespace Sentinel
 {
@@ -39,7 +33,14 @@ namespace Sentinel
 		SwapBuffers();
 	}
 
-	void DX11RenderStageHandler::ExecuteRenderPipelineCleanupStage() {}
+	void DX11RenderStageHandler::ExecuteRenderPipelineCleanupStage() {
+		m_RenderTargetView->Release();
+		DX11Common::m_Adapter->Release();
+		DX11Common::m_DXGIDevice->Release();
+		DX11Common::m_Swapchain->Release();
+		DX11Common::m_Device->Release();
+		DX11Common::m_Context->Release();
+	}
 
 	void DX11RenderStageHandler::ExecuteShutdownStage() {}
 

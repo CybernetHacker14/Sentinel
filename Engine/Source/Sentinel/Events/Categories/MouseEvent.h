@@ -5,96 +5,110 @@
 
 namespace Sentinel
 {
-	class MouseMovedEvent final : public Event {
+	class MouseMovedEvent final : public EventCRTP<MouseMovedEvent> {
 	public:
 		MouseMovedEvent(const Float x, const Float y)
-			: m_MouseX(x), m_MouseY(y) {}
+			: m_MouseX(x), m_MouseY(y) {
+			Type = EventType::MouseMoved;
+		}
 
 		Float GetX() const { return m_MouseX; }
 		Float GetY() const { return m_MouseY; }
 
-		EventType GetEventType() const final { return EventType::MouseMoved; }
-		EventCategory GetEventCategoryFlags() const final { return EventCategory::Mouse | EventCategory::Input; }
-		const char* GetName() const final { return "MouseMovedEvent"; }
+	private:
+		EventCategory GetEventCategoryFlags() const { return EventCategory::Mouse | EventCategory::Input; }
+		const char* GetName() const { return "MouseMovedEvent"; }
 
-		STL::string ToString() const final {
+		STL::string ToString() const {
 			std::stringstream stream;
 			stream << "MouseMovedEvent: " << m_MouseX << " , " << m_MouseY;
 			return STL::string(stream.str().c_str());
 		}
 
 	private:
+		friend class EventCRTP<MouseMovedEvent>;
 		Float m_MouseX, m_MouseY;
 	};
 
-	class MouseScrolledEvent final : public Event {
+	class MouseScrolledEvent final : public EventCRTP<MouseScrolledEvent> {
 	public:
 		MouseScrolledEvent(const Float xOffset, const Float yOffset)
-			: m_XOffset(xOffset), m_YOffset(yOffset) {}
+			: m_XOffset(xOffset), m_YOffset(yOffset) {
+			Type = EventType::MouseScrolled;
+		}
 
 		Float GetXOffset() const { return m_XOffset; }
 		Float GetYOffset() const { return m_YOffset; }
 
-		EventType GetEventType() const final { return EventType::MouseScrolled; }
-		EventCategory GetEventCategoryFlags() const final {
+	private:
+		EventCategory GetEventCategoryFlags() const {
 			return EventCategory::Mouse | EventCategory::Input;
 		}
-		const char* GetName() const final { return "MouseScrolledEvent"; }
 
-		STL::string ToString() const final {
+		const char* GetName() const { return "MouseScrolledEvent"; }
+
+		STL::string ToString() const {
 			std::stringstream stream;
 			stream << "MouseScrolledEvent: " << m_XOffset << " , " << m_YOffset;
 			return STL::string(stream.str().c_str());
 		}
 
 	private:
+		friend class EventCRTP<MouseScrolledEvent>;
 		Float m_XOffset, m_YOffset;
 	};
 
-	class MouseButtonEvent : public Event {
+	class MouseButtonPressedEvent final : public EventCRTP<MouseButtonPressedEvent> {
 	public:
+		MouseButtonPressedEvent(const MouseCode button)
+			: m_MouseButton(button) {
+			Type = EventType::MouseButtonPressed;
+		}
+
 		MouseCode GetMouseCode() const { return m_MouseButton; }
 
-		EventCategory GetEventCategoryFlags() const final {
+	private:
+		EventCategory GetEventCategoryFlags() const {
 			return EventCategory::Mouse | EventCategory::Input | EventCategory::MouseButton;
 		}
 
-	protected:
-		MouseButtonEvent(const MouseCode button)
-			: m_MouseButton(button) {}
+		const char* GetName() const { return "MouseButtonPressedEvent"; }
 
-		MouseCode m_MouseButton;
-	};
-
-	class MouseButtonPressedEvent final : public MouseButtonEvent {
-	public:
-		MouseButtonPressedEvent(const MouseCode button)
-			: MouseButtonEvent(button) {}
-
-		EventType GetEventType() const final { return EventType::MouseButtonPressed; }
-
-		const char* GetName() const final { return "MouseButtonPressedEvent"; }
-
-		STL::string ToString() const final {
+		STL::string ToString() const {
 			std::stringstream stream;
 			stream << "MouseButtonPressedEvent: " << m_MouseButton;
 			return STL::string(stream.str().c_str());
 		}
+
+	private:
+		friend class EventCRTP<MouseButtonPressedEvent>;
+		MouseCode m_MouseButton;
 	};
 
-	class MouseButtonReleasedEvent final : public MouseButtonEvent {
+	class MouseButtonReleasedEvent final : public EventCRTP<MouseButtonReleasedEvent> {
 	public:
 		MouseButtonReleasedEvent(const MouseCode button)
-			: MouseButtonEvent(button) {}
+			: m_MouseButton(button) {
+			Type = EventType::MouseButtonReleased;
+		}
 
-		EventType GetEventType() const final { return EventType::MouseButtonReleased; }
+		MouseCode GetMouseCode() const { return m_MouseButton; }
 
-		const char* GetName() const final { return "MouseButtonReleasedEvent"; }
+	private:
+		EventCategory GetEventCategoryFlags() const {
+			return EventCategory::Mouse | EventCategory::Input | EventCategory::MouseButton;
+		}
 
-		STL::string ToString() const final {
+		const char* GetName() const { return "MouseButtonReleasedEvent"; }
+
+		STL::string ToString() const {
 			std::stringstream stream;
 			stream << "MouseButtonReleasedEvent: " << m_MouseButton;
 			return STL::string(stream.str().c_str());
 		}
+
+	private:
+		friend class EventCRTP<MouseButtonReleasedEvent>;
+		MouseCode m_MouseButton;
 	};
 }

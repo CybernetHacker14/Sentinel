@@ -2,7 +2,7 @@
 
 // Preprocessor directive defined here, because then it needs to be
 // entered in all premake and cmake scripts for the definition to get evaluated
-#define USE_EASTL 1
+#define USE_EASTL 0
 
 // Includes don't have or need alternate implementations can be put here
 #include <initializer_list>
@@ -192,6 +192,12 @@ namespace Sentinel
 			return eastl::to_wstring(value);
 		}
 
+		template<typename T, typename U>
+		using is_same = eastl::is_same<T, U>;
+
+		template<typename T, typename U>
+		constexpr bool is_same_v = eastl::is_same_v<T, U>;
+
 	#else
 
 		template<typename T>
@@ -329,6 +335,12 @@ namespace Sentinel
 			return std::to_wstring(value);
 		}
 
+		template<typename T, typename U>
+		using is_same = std::is_same<T, U>;
+
+		template<typename T, typename U>
+		constexpr bool is_same_v = std::is_same_v<T, U>;
+
 	#endif // USE_EASTL
 	}
-	}
+}
