@@ -112,12 +112,12 @@ namespace Sentinel
 	}
 
 	void Application::OnWindowClose(Event& event) {
-		WindowCloseEvent e = static_cast<WindowCloseEvent&>(event);
+		WindowCloseEvent e = *(event.DerivedDowncast<WindowCloseEvent>());
 		m_Running = false;
 		event.Handled = true;
 	}
 
 	void Application::OnWindowResize(Event& event) {
-		WindowResizeEvent e = static_cast<WindowResizeEvent&>(event);
+		WindowResizeEvent e = *(event.DerivedDowncast<WindowResizeEvent>());
 	}
 }
