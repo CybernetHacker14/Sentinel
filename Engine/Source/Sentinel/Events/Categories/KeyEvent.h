@@ -5,68 +5,81 @@
 
 namespace Sentinel
 {
-	class KeyEvent : public Event {
-	public:
-		KeyCode GetKeyCode() const { return m_KeyCode; }
-
-		EventCategory GetEventCategoryFlags() const final {
-			return EventCategory::Keyboard | EventCategory::Input;
-		}
-
-	protected:
-		KeyEvent(const KeyCode keycode)
-			: m_KeyCode(keycode) {}
-
-		KeyCode m_KeyCode;
-	};
-
-	class KeyPressedEvent final : public KeyEvent {
+	class KeyPressedEvent final : public EventCRTP<KeyPressedEvent> {
 	public:
 		KeyPressedEvent(const KeyCode keycode, const UShort repeatCount)
-			: KeyEvent(keycode), m_RepeatCount(repeatCount) {}
+			: m_KeyCode(keycode), m_RepeatCount(repeatCount) {
+			Type = EventType::KeyPressed;
+		}
 
 		UShort GetRepeatCount() const { return m_RepeatCount; }
 
-		EventType GetEventType() const final { return EventType::KeyPressed; }
-		const char* GetName() const final { return "KeyPressedEvent"; }
+	private:
+		EventCategory GetEventCategoryFlags() const {
+			return EventCategory::Keyboard | EventCategory::Input;
+		}
 
-		STL::string ToString() const final {
+		const char* GetName() const { return "KeyPressedEvent"; }
+
+		STL::string ToString() const {
 			std::stringstream stream;
 			stream << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << " repeats)";
 			return STL::string(stream.str().c_str());
 		}
 
 	private:
+		friend class EventCRTP<KeyPressedEvent>;
+		KeyCode m_KeyCode;
 		UShort m_RepeatCount;
 	};
 
-	class KeyReleasedEvent final : public KeyEvent {
+	class KeyReleasedEvent final : public EventCRTP<KeyReleasedEvent> {
 	public:
 		KeyReleasedEvent(const KeyCode keycode)
-			: KeyEvent(keycode) {}
+			: m_KeyCode(keycode) {
+			Type = EventType::KeyReleased;
+		}
 
-		EventType GetEventType() const final { return EventType::KeyReleased; }
-		const char* GetName() const final { return "KeyReleasedEvent"; }
+	private:
+		EventCategory GetEventCategoryFlags() const {
+			return EventCategory::Keyboard | EventCategory::Input;
+		}
 
-		STL::string ToString() const final {
+		const char* GetName() const { return "KeyReleasedEvent"; }
+
+		STL::string ToString() const {
 			std::stringstream stream;
 			stream << "KeyReleasedEvent: " << m_KeyCode;
 			return STL::string(stream.str().c_str());
 		}
+
+	private:
+		friend class EventCRTP<KeyReleasedEvent>;
+		KeyCode m_KeyCode;
 	};
 
-	class KeyTypedEvent final : public KeyEvent {
+	class KeyTypedEvent final : public EventCRTP<KeyTypedEvent> {
 	public:
 		KeyTypedEvent(const KeyCode keycode)
-			: KeyEvent(keycode) {}
+			: m_KeyCode(keycode) {
+			Type = EventType::KeyTyped;
+		}
 
-		EventType GetEventType() const final { return EventType::KeyTyped; }
-		const char* GetName() const final { return "KeyTypedEvent"; }
+	private:
+		EventCategory GetEventCategoryFlags() const {
+			return EventCategory::Keyboard | EventCategory::Input;
+		}
 
-		STL::string ToString() const final {
+		const char* GetName() const { return "KeyTypedEvent"; }
+
+		STL::string ToString() const {
 			std::stringstream stream;
 			stream << "KeyTypedEvent: " << m_KeyCode;
 			return STL::string(stream.str().c_str());
 		}
+
+	private:
+		friend class EventCRTP<KeyTypedEvent>;
+		KeyCode m_KeyCode;
 	};
 }

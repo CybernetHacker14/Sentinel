@@ -8,22 +8,13 @@ project "EASTL"
     files
     {
         "module/include/**.h",
-        "module/source/**.cpp",
-        "module/test/packages/EABase/include/Common/**.h",
-        "module/test/packages/EABase/include/Common/**.cpp",
-		"module/test/packages/EAAssert/include/**.h",
-		"module/test/packages/EAAssert/source/**.cpp",
-		"module/test/packages/EAStdC/include/**.h",
-		"module/test/packages/EAStdC/source/**.cpp"
+        "module/source/**.cpp"
     }
 
     includedirs
     {
         "module/include",
-        "module/test/packages/EABase/include/Common",
-		"module/test/packages/EAStdC/include",
-		"module/test/packages/EAAssert/include",
-		"module/test/packages/EAThread/include"
+		"%{IncludeExternalDir.EABase}"
     }
 
     filter "system:windows"

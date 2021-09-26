@@ -2,8 +2,13 @@
 
 #include "Sentinel/Base/Define.h"
 
+#include <sstream>
+
 namespace Sentinel
 {
+	template<typename T>
+	class EventCRTP;
+
 	// Enum for depicting the type of event
 	enum class EventType {
 		None = 0,
@@ -33,23 +38,65 @@ namespace Sentinel
 	EventCategory& operator &=(EventCategory& lhs, EventCategory rhs);
 	EventCategory& operator ^=(EventCategory& lhs, EventCategory rhs);
 
-	//#define EVENT_STATIC_TYPE(type) static EventType GetStaticType() { return EventType::type; }
-
-	//// A pure virtual Event class.
-	//// Derived classes from Event will store event data for their respective events
 	class Event {
 	public:
-		virtual ~Event() = default;
+		EventCategory GetEventCategoryFlags();
+		const char* GetName();
+		const STL::string& ToString();
 
-		virtual EventType GetEventType() const = 0;
-		virtual EventCategory GetEventCategoryFlags() const = 0;
-		virtual const char* GetName() const = 0;
-		virtual STL::string ToString() const { return GetName(); }
+		EventType GetEventType() { return Type; }
 
 		Bool IsInCategory(EventCategory category) {
 			return static_cast<Bool>(GetEventCategoryFlags() & category);
 		}
+
 	public:
 		Bool Handled = false;
+
+	protected:
+		Event() = default;
+
+		EventType Type;
+
+	public:
+		template<typename T>
+		inline T* DerivedDowncast() {
+			static_assert(STL::is_base_of<EventCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from EventCRTP<T>.");
+			return static_cast<T*>(this);
+		}
+
+	private:
+		template<typename T>
+		inline EventCRTP<T>* BaseDowncast() {
+			static_assert(STL::is_base_of<EventCRTP<T>, T>::value,
+				"Operation not allowed. 'T' should be a derived from EventCRTP<T>.");
+			return static_cast<EventCRTP<T>*>(this);
+		}
+	};
+
+	template<typename T>
+	class EventCRTP : public Event {
+	private:
+		inline EventCategory GetEventCategoryFlags() {
+			return underlying().GetEventCategoryFlags();
+		}
+
+		inline const char* GetName() {
+			return underlying().GetName();
+		}
+
+		inline const STL::string& ToString() {
+			return underlying().ToString();
+		}
+
+	private:
+		friend T;
+		friend Event;
+		EventCRTP() = default;
+
+		inline T& underlying() {
+			return static_cast<T&>(*this);
+		}
 	};
 }

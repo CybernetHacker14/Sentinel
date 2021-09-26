@@ -4,34 +4,47 @@
 
 namespace Sentinel
 {
-	class WindowCloseEvent final : public Event {
+	class WindowCloseEvent final : public EventCRTP<WindowCloseEvent> {
 	public:
-		WindowCloseEvent() = default;
+		WindowCloseEvent() {
+			Type = EventType::WindowClose;
+		};
 
-		EventType GetEventType() const final { return EventType::WindowClose; }
-		EventCategory GetEventCategoryFlags() const final { return EventCategory::Application; }
-		const char* GetName() const final { return "WindowCloseEvent"; }
+	private:
+		EventCategory GetEventCategoryFlags() const { return EventCategory::Application; }
+		const char* GetName() const { return "WindowCloseEvent"; }
+
+		STL::string ToString() const {
+			return STL::string("WindowCloseEvent");
+		}
+
+	private:
+		friend class EventCRTP<WindowCloseEvent>;
 	};
 
-	class WindowResizeEvent final : public Event {
+	class WindowResizeEvent final : public EventCRTP<WindowResizeEvent> {
 	public:
 		WindowResizeEvent(UInt width, UInt height)
-			: m_Width(width), m_Height(height) {}
+			: m_Width(width), m_Height(height) {
+			Type = EventType::WindowResize;
+		}
 
-		EventType GetEventType() const final { return EventType::WindowResize; }
-		EventCategory GetEventCategoryFlags() const final { return EventCategory::Application; }
-		const char* GetName() const final { return "WindowResizeEvent"; }
-
+	public:
 		UInt GetWidth() const { return m_Width; }
 		UInt GetHeight() const { return m_Height; }
 
-		STL::string ToString() const final {
+	private:
+		EventCategory GetEventCategoryFlags() const { return EventCategory::Application; }
+		const char* GetName() const { return "WindowResizeEvent"; }
+
+		STL::string ToString() const {
 			std::stringstream stream;
 			stream << "WindowsResizeEvent: " << m_Width << " , " << m_Height;
 			return STL::string(stream.str().c_str());
 		}
 
 	private:
+		friend class EventCRTP<WindowResizeEvent>;
 		UInt m_Width, m_Height;
 	};
 }

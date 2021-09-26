@@ -2,31 +2,34 @@
 
 #include "Sentinel/Window/Window.h"
 
-#include <GLFW/glfw3.h>
+struct GLFWwindow;
 
 namespace Sentinel
 {
-	class WindowsWindow : public Window {
+	class WindowsWindow final : public WindowCRTP<WindowsWindow> {
 	public:
 		WindowsWindow(const WindowProps& props);
-		virtual ~WindowsWindow();
+		~WindowsWindow();
 
-		void OnUpdate() override;
+	private:
+		void OnUpdate();
 
-		UInt GetWidth() const override { return m_Data.Width; }
-		UInt GetHeight() const override { return m_Data.Height; }
+		UInt GetWidth() const { return m_Data.Width; }
+		UInt GetHeight() const { return m_Data.Height; }
 
 		// Window attributes
-		void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
-		void SetVSync(Bool enabled) override;
-		Bool IsVSync() const override;
+		void SetEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
+		void SetVSync(Bool enabled);
+		Bool IsVSync() const;
 
-		virtual void* GetNativeWindow() const { return m_Window; }
-	private:
-		virtual void Init(const WindowProps& props);
-		virtual void Shutdown();
+		void* GetNativeWindow() const { return m_Window; }
+
+		void Init(const WindowProps& props);
+		void Shutdown();
 
 	private:
+		friend class WindowCRTP<WindowsWindow>;
+
 		GLFWwindow* m_Window;
 
 		struct WindowData {

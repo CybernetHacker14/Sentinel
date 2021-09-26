@@ -12,13 +12,19 @@ project "Sandbox"
         "Source/**.h",
         "Source/**.cpp"
     }
+	
+	defines
+    {
+        "_CRT_SECURE_NO_WARNINGS",
+        "GLFW_INCLUDE_NONE"
+    }
 
     includedirs
     {
         "%{IncludeInternalDir.Sentinel_Source}",
         "%{IncludeExternalDir.glm}",
-        "%{IncludeExternalDir.EASTL}",
-        "%{IncludeExternalDir.EABase}",
+		"%{IncludeExternalDir.EASTL}",
+		"%{IncludeExternalDir.EABase}",
         "%{IncludeExternalDir.spdlog}"
     }
 

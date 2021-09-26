@@ -2,10 +2,15 @@
 
 // Preprocessor directive defined here, because then it needs to be
 // entered in all premake and cmake scripts for the definition to get evaluated
-#define USE_EASTL 1
+#define USE_EASTL 0
 
 // Includes don't have or need alternate implementations can be put here
 #include <initializer_list>
+
+#if USE_EASTL == 1
+#undef EASTL_EASTDC_VSNPRINTF
+#define EASTL_EASTDC_VSNPRINTF 0
+#endif // USE_EASTL == 1
 
 #if USE_EASTL == 1
 #include <EASTL/vector.h>
@@ -41,21 +46,6 @@
 
 // The purpose of this header file is to provide an abstraction between types like string, vector, etc.
 // so that we can replace the underlying type with std version or eastl version
-
-#if USE_EASTL == 1
-#ifndef DEFINE_OVERLOADS
-#define DEFINE_OVERLOADS
-inline void* __cdecl operator new[](size_t size, const char* name, int flags, unsigned int debugFlags, const char* file, int line) {
-	return new uint8_t[size];
-};
-
-inline void* __cdecl operator new[](size_t size, size_t alignment, size_t alignmentOffset,
-	const char* pName, int flags, unsigned int debugFlags, const char* file, int line) {
-		return new uint8_t[size];
-};
-
-#endif // !DEFINE_OVERLOADS
-#endif // USE_EASTL
 
 namespace Sentinel
 {
@@ -202,6 +192,12 @@ namespace Sentinel
 			return eastl::to_wstring(value);
 		}
 
+		template<typename T, typename U>
+		using is_same = eastl::is_same<T, U>;
+
+		template<typename T, typename U>
+		constexpr bool is_same_v = eastl::is_same_v<T, U>;
+
 	#else
 
 		template<typename T>
@@ -339,6 +335,12 @@ namespace Sentinel
 			return std::to_wstring(value);
 		}
 
+		template<typename T, typename U>
+		using is_same = std::is_same<T, U>;
+
+		template<typename T, typename U>
+		constexpr bool is_same_v = std::is_same_v<T, U>;
+
 	#endif // USE_EASTL
 	}
-	}
+}

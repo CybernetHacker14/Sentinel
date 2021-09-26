@@ -1,6 +1,7 @@
 #include "stpch.h"
 
 #include "Sentinel/Application/Application.h"
+#include "Sentinel/Events/Categories/WindowEvent.h"
 #include "Sentinel/Input/Input.h"
 
 namespace Sentinel
@@ -11,20 +12,53 @@ namespace Sentinel
 		ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
 		s_Instance = this;
 
-		m_Window = Window::Create(WindowProps(name));
-		m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
+		Ref<DeviceModules> deviceModules = CreateRef<DeviceModules>();
+		deviceModules->WindowProps = CreateScope<WindowProps>(name);
+
+		m_Renderer = CreateScope<Renderer>(deviceModules);
+		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
 		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
+
+		Ref<PipelineModules> pipelineModules = CreateRef<PipelineModules>();
+		pipelineModules->ClearColor = { 0.0f, 0.2f, 0.3f, 1.0f };
+
+
+		STL::vector<STL::pair<glm::vec4, glm::vec4>> vertices =
+		{
+			{ { -0.5f,   0.2f, 0.0f, 1.0f }, {1.0f, 0.0f, 0.0f, 1.0f} },
+			{ { -0.25f, -0.4f, 0.0f, 1.0f }, {0.0f, 1.0f, 0.0f, 1.0f} },
+			{ { -0.75f, -0.4f, 0.0f, 1.0f }, {0.0f, 0.0f, 1.0f, 1.0f} },
+			{ {   0.5f,  0.2f, 0.0f, 1.0f }, {0.5f, 1.0f, 0.0f, 1.0f} },
+			{ {  0.75f, -0.4f, 0.0f, 1.0f }, {1.0f, 0.0f, 0.5f, 1.0f} },
+			{ {  0.25f, -0.4f, 0.0f, 1.0f }, {0.0f, 0.5f, 1.0f, 1.0f} }
+		};
+
+		Ref<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
+			vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec4>));
+
+		STL::vector<UInt> indices =
+		{
+			0,1,2,3,4,5
+		};
+
+		Ref<Indexbuffer> indexBuffer = Indexbuffer::Create(indices.data(), indices.size());
+
+		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
+		pipelineModules->Indexbuffer = indexBuffer;
+		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TestShader.hlsl", "TestShader");
+		m_Renderer->SetPipelineData(pipelineModules);
 	}
 
 	Application::~Application() {
+		m_Renderer->Shutdown();
 		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
 		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
 	}
 
 	Window& Application::GetWindow() {
-		return *m_Window;
+		return m_Renderer->GetWindow();
 	}
 
 	void Application::PushLayer(Layer* layer) {
@@ -52,9 +86,9 @@ namespace Sentinel
 			{
 				ProcessLayerUpdate();
 
-				//m_Window->OnUpdate();
+				m_Renderer->Draw();
 			}
-
+			m_Renderer->GetWindow().OnUpdate();
 			Input::OnUpdate();
 		}
 	}
@@ -78,55 +112,12 @@ namespace Sentinel
 	}
 
 	void Application::OnWindowClose(Event& event) {
-		WindowCloseEvent e = static_cast<WindowCloseEvent&>(event);
+		WindowCloseEvent e = *(event.DerivedDowncast<WindowCloseEvent>());
 		m_Running = false;
 		event.Handled = true;
 	}
 
 	void Application::OnWindowResize(Event& event) {
-		WindowResizeEvent e = static_cast<WindowResizeEvent&>(event);
-		event.Handled = true;
-	}
-
-	void Application::OnKeyPressed(Event& event) {
-		KeyPressedEvent e = static_cast<KeyPressedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnKeyReleased(Event& event) {
-		KeyReleasedEvent e = static_cast<KeyReleasedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnKeyTyped(Event& event) {
-		KeyTypedEvent e = static_cast<KeyTypedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnMouseButtonPressed(Event& event) {
-		MouseButtonPressedEvent e = static_cast<MouseButtonPressedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnMouseButtonReleased(Event& event) {
-		MouseButtonReleasedEvent e = static_cast<MouseButtonReleasedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnMouseButtonScrolled(Event& event) {
-		MouseScrolledEvent e = static_cast<MouseScrolledEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
-	}
-
-	void Application::OnMouseMoved(Event& event) {
-		MouseMovedEvent e = static_cast<MouseMovedEvent&>(event);
-		ST_ENGINE_INFO("{0}", e.ToString().c_str());
-		event.Handled = true;
+		WindowResizeEvent e = *(event.DerivedDowncast<WindowResizeEvent>());
 	}
 }

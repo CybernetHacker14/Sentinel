@@ -5,6 +5,8 @@
 #include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Events/Categories/KeyEvent.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Sentinel
 {
 	static UChar s_GLFWWindowCount = 0;
@@ -137,7 +139,6 @@ namespace Sentinel
 			});
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		SetVSync(true);
 	}
 
 	void WindowsWindow::Shutdown() {

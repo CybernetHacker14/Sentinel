@@ -1,14 +1,9 @@
 #pragma once
 
-#include "stpch.h"
-
 #include "Sentinel/Base/Define.h"
 #include "Sentinel/Events/EventBus.h"
-#include "Sentinel/Events/Categories/WindowEvent.h"
-#include "Sentinel/Events/Categories/KeyEvent.h"
-#include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Layers/LayerStack.h"
-#include "Sentinel/Window/Window.h"
+#include "Sentinel/Graphics/Renderers/Renderer.h"
 
 int main(int argc, char** argv);
 
@@ -41,24 +36,15 @@ namespace Sentinel
 		void OnWindowClose(Event& event);
 		void OnWindowResize(Event& event);
 
-		void OnKeyPressed(Event& event);
-		void OnKeyReleased(Event& event);
-		void OnKeyTyped(Event& event);
-
-		void OnMouseButtonPressed(Event& event);
-		void OnMouseButtonReleased(Event& event);
-		void OnMouseButtonScrolled(Event& event);
-		void OnMouseMoved(Event& event);
-
 	private:
 		Bool m_Running = true;
 		Bool m_Minimized = false;
 
 		UInt m_WindowResizeCallbackIndex = 0;
 		UInt m_WindowCloseCallbackIndex = 0;
-
 	private:
-		Scope<Window> m_Window;
+		Scope<Renderer> m_Renderer;
+
 	private:
 		LayerStack m_LayerStack;
 		EventBus m_EventBus;

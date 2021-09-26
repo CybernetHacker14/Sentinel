@@ -4,8 +4,8 @@ project "Sentinel-Editor"
     cppdialect "C++17"
     staticruntime "on"
 
-    targetdir ("%{wks.location}/bin/" .. outputdir .. "%{prj.name}")
-    objdir ("%{wks.location}/bin-int/" .. outputdir .. "%{prj.name}")
+    targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 
     files
     {
@@ -24,7 +24,7 @@ project "Sentinel-Editor"
         "%{IncludeInternalDir.Sentinel_Source}",
         "%{IncludeExternalDir.glm}",
         "%{IncludeExternalDir.EASTL}",
-        "%{IncludeExternalDir.EABase}",
+		"%{IncludeExternalDir.EABase}",
         "%{IncludeExternalDir.spdlog}"
     }
 
