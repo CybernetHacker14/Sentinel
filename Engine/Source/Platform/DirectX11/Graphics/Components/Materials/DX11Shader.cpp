@@ -2,7 +2,6 @@
 
 #include "Sentinel/Filesystem/Filesystem.h"
 
-#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 #include "Platform/DirectX11/Graphics/Components/Materials/DX11Shader.h"
 
 namespace Sentinel
