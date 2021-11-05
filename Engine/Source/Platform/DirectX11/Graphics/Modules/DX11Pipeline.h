@@ -17,12 +17,12 @@ namespace Sentinel
 		void Bind();
 		void Unbind();
 
-		inline UInt GetStride() const { return m_Stride; }
+		inline UInt32 GetStride() const { return m_Stride; }
 
 	private:
 		friend class PipelineCRTP<DX11Pipeline>;
 
 		ID3D11InputLayout* m_InputLayout;
-		UInt m_Stride;
+		UInt32 m_Stride;
 	};
 }

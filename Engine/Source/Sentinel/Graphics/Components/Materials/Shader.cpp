@@ -71,7 +71,7 @@ namespace Sentinel
 		}
 	}
 
-	const STL::string& Shader::GetFilepath() {
+	const std::filesystem::path& Shader::GetFilepath() {
 		if (Backend::GetAPI() == Backend::API::DirectX11)
 		{
 			return BaseDowncast<DX11Shader>()->GetFilepath();
@@ -79,16 +79,16 @@ namespace Sentinel
 		else if (Backend::GetAPI() == Backend::API::None)
 		{
 			ST_ENGINE_ASSERT(false, "API::None currently not supported");
-			return STL::string();
+			return std::filesystem::path();
 		}
 		else
 		{
 			ST_ENGINE_ASSERT(false, "Unknown Backend API");
-			return STL::string();
+			return std::filesystem::path();
 		}
 	}
 
-	Ref<Shader> Shader::Create(const STL::string& filepath, const STL::string& name) {
+	Ref<Shader> Shader::Create(const std::filesystem::path& filepath, const STL::string& name) {
 		switch (Backend::GetAPI())
 		{
 			case Backend::API::None:

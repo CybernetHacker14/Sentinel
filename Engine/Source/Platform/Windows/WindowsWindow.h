@@ -14,8 +14,8 @@ namespace Sentinel
 	private:
 		void OnUpdate();
 
-		UInt GetWidth() const { return m_Data.Width; }
-		UInt GetHeight() const { return m_Data.Height; }
+		UInt32 GetWidth() const { return m_Data.Width; }
+		UInt32 GetHeight() const { return m_Data.Height; }
 
 		// Window attributes
 		void SetEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
@@ -34,7 +34,7 @@ namespace Sentinel
 
 		struct WindowData {
 			STL::string Title;
-			UInt Width, Height;
+			UInt32 Width, Height;
 			Bool VSync;
 
 			EventCallbackFn EventCallback;

@@ -24,14 +24,14 @@ namespace Sentinel
 
 	class WindowResizeEvent final : public EventCRTP<WindowResizeEvent> {
 	public:
-		WindowResizeEvent(UInt width, UInt height)
+		WindowResizeEvent(UInt32 width, UInt32 height)
 			: m_Width(width), m_Height(height) {
 			Type = EventType::WindowResize;
 		}
 
 	public:
-		UInt GetWidth() const { return m_Width; }
-		UInt GetHeight() const { return m_Height; }
+		UInt32 GetWidth() const { return m_Width; }
+		UInt32 GetHeight() const { return m_Height; }
 
 	private:
 		EventCategory GetEventCategoryFlags() const { return EventCategory::Application; }
@@ -45,6 +45,6 @@ namespace Sentinel
 
 	private:
 		friend class EventCRTP<WindowResizeEvent>;
-		UInt m_Width, m_Height;
+		UInt32 m_Width, m_Height;
 	};
 }

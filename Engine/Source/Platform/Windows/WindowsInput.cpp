@@ -148,7 +148,7 @@ namespace Sentinel
 
 	Bool Input::IsKeyPressed(const KeyCode keycode) {
 		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetKey(window, static_cast<Int>(keycode));
+		auto state = glfwGetKey(window, static_cast<Int32>(keycode));
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
@@ -162,7 +162,7 @@ namespace Sentinel
 
 	Bool Input::IsMouseButtonPressed(const MouseCode button) {
 		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetMouseButton(window, static_cast<Int>(button));
+		auto state = glfwGetMouseButton(window, static_cast<Int32>(button));
 		return state == GLFW_PRESS;
 	}
 
@@ -191,12 +191,12 @@ namespace Sentinel
 
 	Bool Input::GetKey(const KeyCode keycode) {
 		return glfwGetKey(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()),
-			static_cast<Int>(keycode)) == GLFW_PRESS;
+			static_cast<Int32>(keycode)) == GLFW_PRESS;
 	}
 
 	Bool Input::GetMouseButton(const MouseCode mousecode) {
 		return glfwGetMouseButton(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()),
-			static_cast<Int>(mousecode)) == GLFW_PRESS;
+			static_cast<Int32>(mousecode)) == GLFW_PRESS;
 	}
 
 	void Input::OnUpdate() {

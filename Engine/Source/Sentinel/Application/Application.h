@@ -4,6 +4,7 @@
 #include "Sentinel/Events/EventBus.h"
 #include "Sentinel/Layers/LayerStack.h"
 #include "Sentinel/Graphics/Renderers/Renderer.h"
+#include "Sentinel/AssetManagement/AssetManager.h"
 
 int main(int argc, char** argv);
 
@@ -19,8 +20,8 @@ namespace Sentinel
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
-		const UInt SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
-		void UnsubscribeFromEvent(const EventType& eventType, const UInt& callback);
+		const UInt32 SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
+		void UnsubscribeFromEvent(const EventType& eventType, const UInt32& callback);
 
 		// Returns the Instance of the Application, since it's a singleton
 		static Application& Get() { return *s_Instance; }
@@ -40,9 +41,10 @@ namespace Sentinel
 		Bool m_Running = true;
 		Bool m_Minimized = false;
 
-		UInt m_WindowResizeCallbackIndex = 0;
-		UInt m_WindowCloseCallbackIndex = 0;
+		UInt32 m_WindowResizeCallbackIndex = 0;
+		UInt32 m_WindowCloseCallbackIndex = 0;
 	private:
+		Scope<AssetManager> m_AssetManager;
 		Scope<Renderer> m_Renderer;
 
 	private:

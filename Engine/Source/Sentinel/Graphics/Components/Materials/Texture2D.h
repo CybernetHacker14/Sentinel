@@ -7,18 +7,24 @@ namespace Sentinel
 	template<typename T>
 	class Texture2DCRTP;
 
-	struct Texture2DImportSpecifications {
-		std::filesystem::path TexturePath;
+	enum class WrapMode {
+		REPEAT = 0,
+		CLAMP = 1
+	};
 
-		Bool ReadWriteEnabled;
-		Bool GenerateMipMaps;
-		Bool IsHDR;
-		Bool sRGB;
+	struct Texture2DImportSettings {
+		std::filesystem::path TexturePath = std::filesystem::path();
+
+		WrapMode WrapMode = WrapMode::CLAMP;
+
+		Bool ReadWriteEnabled = false;
+		Bool GenerateMipMaps = false;
+		Bool sRGB = false;
 	};
 
 	class Texture2D : public IntrusiveRefObject {
 	public:
-		static Ref<Texture2D> Create();
+		static Ref<Texture2D> Create(const Texture2DImportSettings& settings);
 
 	protected:
 		Texture2D() = default;

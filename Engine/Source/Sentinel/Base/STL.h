@@ -198,6 +198,10 @@ namespace Sentinel
 		template<typename T, typename U>
 		constexpr bool is_same_v = eastl::is_same_v<T, U>;
 
+		template <typename T, typename U>
+		inline T remove(T first, T last, const U& value) {
+			return eastl::remove(first, last, value);
+		}
 	#else
 
 		template<typename T>
@@ -340,6 +344,11 @@ namespace Sentinel
 
 		template<typename T, typename U>
 		constexpr bool is_same_v = std::is_same_v<T, U>;
+
+		template <typename T, typename U>
+		inline T remove(T first, T last, const U& value) {
+			return std::remove(first, last, value);
+		}
 
 	#endif // USE_EASTL
 	}

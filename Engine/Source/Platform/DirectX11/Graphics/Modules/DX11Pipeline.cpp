@@ -5,7 +5,7 @@
 
 namespace Sentinel
 {
-	STL::unordered_map<DXGI_FORMAT, UInt> ShaderDataTypeSizeMap = {
+	STL::unordered_map<DXGI_FORMAT, UInt32> ShaderDataTypeSizeMap = {
 		{DXGI_FORMAT_R32_FLOAT,          4},
 		{DXGI_FORMAT_R32_UINT,           4},
 		{DXGI_FORMAT_R32_SINT,           4},
@@ -45,7 +45,7 @@ namespace Sentinel
 		m_Stride = 0;
 
 		STL::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDescriptions;
-		for (UInt i = 0; i < shaderDescription.InputParameters; i++)
+		for (UInt32 i = 0; i < shaderDescription.InputParameters; i++)
 		{
 			D3D11_SIGNATURE_PARAMETER_DESC paramDescription;
 			vertexShaderReflection->GetInputParameterDesc(i, &paramDescription);
@@ -101,7 +101,7 @@ namespace Sentinel
 		}
 
 		DX11Common::GetDevice()->CreateInputLayout(
-			&inputLayoutDescriptions[0], static_cast<UInt>(inputLayoutDescriptions.size()),
+			&inputLayoutDescriptions[0], static_cast<UInt32>(inputLayoutDescriptions.size()),
 			vertexShaderBinary->GetBufferPointer(), vertexShaderBinary->GetBufferSize(), &m_InputLayout);
 
 		vertexShaderReflection->Release();

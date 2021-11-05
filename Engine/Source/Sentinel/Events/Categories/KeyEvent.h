@@ -7,12 +7,12 @@ namespace Sentinel
 {
 	class KeyPressedEvent final : public EventCRTP<KeyPressedEvent> {
 	public:
-		KeyPressedEvent(const KeyCode keycode, const UShort repeatCount)
+		KeyPressedEvent(const KeyCode keycode, const Int16 repeatCount)
 			: m_KeyCode(keycode), m_RepeatCount(repeatCount) {
 			Type = EventType::KeyPressed;
 		}
 
-		UShort GetRepeatCount() const { return m_RepeatCount; }
+		Int16 GetRepeatCount() const { return m_RepeatCount; }
 
 	private:
 		EventCategory GetEventCategoryFlags() const {
@@ -30,7 +30,7 @@ namespace Sentinel
 	private:
 		friend class EventCRTP<KeyPressedEvent>;
 		KeyCode m_KeyCode;
-		UShort m_RepeatCount;
+		Int16 m_RepeatCount;
 	};
 
 	class KeyReleasedEvent final : public EventCRTP<KeyReleasedEvent> {

@@ -15,7 +15,7 @@ namespace Sentinel
 	#endif // ST_PLATFORM_WINDOWS
 	}
 
-	UInt Window::GetWidth() {
+	UInt32 Window::GetWidth() {
 	#ifdef ST_PLATFORM_WINDOWS
 		return BaseDowncast<WindowsWindow>()->GetWidth();
 	#else
@@ -24,7 +24,7 @@ namespace Sentinel
 	#endif // ST_PLATFORM_WINDOWS
 	}
 
-	UInt Window::GetHeight() {
+	UInt32 Window::GetHeight() {
 	#ifdef ST_PLATFORM_WINDOWS
 		return BaseDowncast<WindowsWindow>()->GetHeight();
 	#else

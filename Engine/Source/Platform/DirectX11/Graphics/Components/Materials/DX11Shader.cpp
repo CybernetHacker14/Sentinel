@@ -57,7 +57,7 @@ namespace Sentinel
 		}
 	}
 
-	DX11Shader::DX11Shader(const STL::string& filepath, const STL::string& name)
+	DX11Shader::DX11Shader(const std::filesystem::path& filepath, const STL::string& name)
 		:m_FilePath(filepath), m_ShaderName(name) {
 		Load();
 	}
@@ -101,18 +101,18 @@ namespace Sentinel
 		STL::unordered_map<ShaderType, STL::string> shaderSources;
 
 		const char* typeToken = "#type";
-		ULLong typeTokenLength = strlen(typeToken);
-		ULLong pos = source.find(typeToken, 0); // Start of shader type declaration file;
+		Size_t typeTokenLength = strlen(typeToken);
+		Size_t pos = source.find(typeToken, 0); // Start of shader type declaration file;
 
 		while (pos != STL::string::npos)
 		{
-			ULLong eol = source.find_first_of("\r\n", pos); // End of shader type declaration line
+			Size_t eol = source.find_first_of("\r\n", pos); // End of shader type declaration line
 			ST_ENGINE_ASSERT(eol != STL::string::npos, "Syntax error");
-			ULLong begin = pos + typeTokenLength + 1; // Start of shader type name (after "#type" keyword)
+			Size_t begin = pos + typeTokenLength + 1; // Start of shader type name (after "#type" keyword)
 			STL::string type = source.substr(begin, eol - begin);
-			ST_ENGINE_ASSERT((Int)Utils::ShaderTypeFromString(type), "Invalid shader type specified");
+			ST_ENGINE_ASSERT((Int32)Utils::ShaderTypeFromString(type), "Invalid shader type specified");
 
-			ULLong nextLinePos = source.find_first_not_of("\r\n", eol); // Start of shader code after shader type declaration line
+			Size_t nextLinePos = source.find_first_not_of("\r\n", eol); // Start of shader code after shader type declaration line
 			ST_ENGINE_ASSERT(nextLinePos != STL::string::npos, "Syntax error");
 			pos = source.find(typeToken, nextLinePos); // Start of next shader type declaration line
 
@@ -164,11 +164,11 @@ namespace Sentinel
 	void DX11Shader::Load() {
 		Reset();
 
-		STL::string& source = Filesystem::ReadFile(m_FilePath);
+		STL::string& source = Filesystem::ReadTextFileAtPath(m_FilePath);
 
 		if (source.empty())
 		{
-			ST_ENGINE_ASSERT("Shader source at path {0} is empty", m_FilePath.c_str());
+			ST_ENGINE_ASSERT("Shader source at path {0} is empty", m_FilePath.string());
 			return;
 		}
 

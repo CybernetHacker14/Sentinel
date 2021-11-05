@@ -52,7 +52,7 @@ namespace Sentinel
 		}
 	}
 
-	UInt Pipeline::GetStride() {
+	UInt32 Pipeline::GetStride() {
 		if (Backend::GetAPI() == Backend::API::DirectX11)
 		{
 			return BaseDowncast<DX11Pipeline>()->GetStride();
@@ -60,12 +60,12 @@ namespace Sentinel
 		else if (Backend::GetAPI() == Backend::API::None)
 		{
 			ST_ENGINE_ASSERT(false, "API::None currently not supported");
-			return UInt();
+			return UInt32();
 		}
 		else
 		{
 			ST_ENGINE_ASSERT(false, "Unknown Backend API");
-			return UInt();
+			return UInt32();
 		}
 	}
 

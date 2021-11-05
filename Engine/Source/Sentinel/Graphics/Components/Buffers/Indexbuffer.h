@@ -11,9 +11,9 @@ namespace Sentinel
 	public:
 		void Bind();
 		void Unbind();
-		UInt GetCount();
+		UInt32 GetCount();
 
-		static Ref<Indexbuffer> Create(void* indices, UInt count);
+		static Ref<Indexbuffer> Create(void* indices, UInt32 count);
 
 	protected:
 		Indexbuffer() = default;
@@ -45,7 +45,7 @@ namespace Sentinel
 			underlying().Unbind();
 		}
 
-		inline UInt GetCount() {
+		inline UInt32 GetCount() {
 			return underlying().GetCount();
 		}
 

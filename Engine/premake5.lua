@@ -17,6 +17,8 @@ project "Sentinel"
 		"Resources/Shaders/**.hlsl",
         "Vendor/glm/module/glm/**.hpp",
         "Vendor/glm/module/glm/**.inl",
+		"Vendor/stb_image/**.cpp",
+		"Vendor/stb_image/**.h"
 	}
 
     defines
@@ -28,12 +30,13 @@ project "Sentinel"
     includedirs
     {
         "Source",
+		"%{IncludeExternalDir.EASTL}",
+		"%{IncludeExternalDir.EABase}",
         "%{IncludeExternalDir.GLFW}",
         "%{IncludeExternalDir.Glad}",
         "%{IncludeExternalDir.glm}",
-        "%{IncludeExternalDir.EASTL}",
-		"%{IncludeExternalDir.EABase}",
-        "%{IncludeExternalDir.spdlog}"
+        "%{IncludeExternalDir.spdlog}",
+		"%{IncludeExternalDir.stb_image}"
     }
 
     links

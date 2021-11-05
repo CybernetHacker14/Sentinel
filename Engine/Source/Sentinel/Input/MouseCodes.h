@@ -4,7 +4,7 @@
 
 namespace Sentinel
 {
-	using MouseCode = UShort;
+	using MouseCode = Int16;
 
 	namespace Mouse
 	{

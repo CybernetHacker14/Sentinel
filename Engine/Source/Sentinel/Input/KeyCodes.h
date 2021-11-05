@@ -4,7 +4,7 @@
 
 namespace Sentinel
 {
-	using KeyCode = UShort;
+	using KeyCode = Int16;
 
 	namespace Key
 	{

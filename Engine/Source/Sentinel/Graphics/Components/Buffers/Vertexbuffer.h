@@ -9,12 +9,12 @@ namespace Sentinel
 
 	class Vertexbuffer : public IntrusiveRefObject {
 	public:
-		void Bind(UInt stride);
+		void Bind(UInt32 stride);
 		void Unbind();
-		void SetData(const void* verticesData, UInt size);
+		void SetData(const void* verticesData, UInt32 size);
 
-		static Ref<Vertexbuffer> Create(UInt size);
-		static Ref<Vertexbuffer> Create(void* vertices, UInt size);
+		static Ref<Vertexbuffer> Create(UInt32 size);
+		static Ref<Vertexbuffer> Create(void* vertices, UInt32 size);
 
 	protected:
 		Vertexbuffer() = default;
@@ -38,7 +38,7 @@ namespace Sentinel
 	template<typename T>
 	class VertexbufferCRTP : public Vertexbuffer {
 	private:
-		inline void Bind(UInt stride) {
+		inline void Bind(UInt32 stride) {
 			underlying().Bind(stride);
 		}
 
@@ -46,7 +46,7 @@ namespace Sentinel
 			underlying().Unbind();
 		}
 
-		inline void SetData(const void* verticesData, UInt size) {
+		inline void SetData(const void* verticesData, UInt32 size) {
 			underlying().SetData(verticesData, size);
 		}
 
