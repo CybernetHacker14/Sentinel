@@ -7,7 +7,7 @@
 
 namespace Sentinel
 {
-	void Vertexbuffer::Bind(UInt stride) {
+	void Vertexbuffer::Bind(UInt32 stride) {
 		if (Backend::GetAPI() == Backend::API::DirectX11)
 		{
 			BaseDowncast<DX11Vertexbuffer>()->Bind(stride);
@@ -37,7 +37,7 @@ namespace Sentinel
 		}
 	}
 
-	void Vertexbuffer::SetData(const void* verticesData, UInt size) {
+	void Vertexbuffer::SetData(const void* verticesData, UInt32 size) {
 		if (Backend::GetAPI() == Backend::API::DirectX11)
 		{
 			BaseDowncast<DX11Vertexbuffer>()->SetData(verticesData, size);
@@ -52,7 +52,7 @@ namespace Sentinel
 		}
 	}
 
-	Ref<Vertexbuffer> Vertexbuffer::Create(UInt size) {
+	Ref<Vertexbuffer> Vertexbuffer::Create(UInt32 size) {
 		switch (Backend::GetAPI())
 		{
 			case Backend::API::None:
@@ -66,7 +66,7 @@ namespace Sentinel
 		return nullptr;
 	}
 
-	Ref<Vertexbuffer> Vertexbuffer::Create(void* vertices, UInt size) {
+	Ref<Vertexbuffer> Vertexbuffer::Create(void* vertices, UInt32 size) {
 		switch (Backend::GetAPI())
 		{
 			case Backend::API::None:

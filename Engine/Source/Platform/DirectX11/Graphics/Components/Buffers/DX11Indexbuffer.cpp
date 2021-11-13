@@ -4,17 +4,17 @@
 
 namespace Sentinel
 {
-	DX11Indexbuffer::DX11Indexbuffer(void* indices, UInt count)
+	DX11Indexbuffer::DX11Indexbuffer(void* indices, UInt32 count)
 		:m_Count(count) {
 		D3D11_BUFFER_DESC description;
 		ZeroMemory(&description, sizeof(description));
 
 		description.Usage = D3D11_USAGE_DEFAULT;
-		description.ByteWidth = sizeof(UInt) * count;
+		description.ByteWidth = sizeof(UInt32) * count;
 		description.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		description.CPUAccessFlags = 0;
 		description.MiscFlags = 0;
-		description.StructureByteStride = sizeof(UInt);
+		description.StructureByteStride = sizeof(UInt32);
 
 		D3D11_SUBRESOURCE_DATA subresource;
 		ZeroMemory(&subresource, sizeof(subresource));

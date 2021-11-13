@@ -22,7 +22,7 @@ namespace Sentinel
 		void InitializeRenderData();
 		void CreateWindowAndContext(const WindowProps& props);
 		void InitWindowAndContext();
-		void SetViewport(UInt x, UInt y, UInt width, UInt height);
+		void SetViewport(UInt32 x, UInt32 y, UInt32 width, UInt32 height);
 
 		void CreateAndInitRenderPipeline();
 		void BindPipelineModules();

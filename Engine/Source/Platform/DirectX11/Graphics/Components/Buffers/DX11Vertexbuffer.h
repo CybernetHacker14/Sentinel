@@ -9,14 +9,14 @@ namespace Sentinel
 {
 	class DX11Vertexbuffer final : public VertexbufferCRTP<DX11Vertexbuffer> {
 	public:
-		DX11Vertexbuffer(UInt size);
-		DX11Vertexbuffer(void* verticesData, UInt size);
+		DX11Vertexbuffer(UInt32 size);
+		DX11Vertexbuffer(void* verticesData, UInt32 size);
 		~DX11Vertexbuffer();
 
 	private:
-		void Bind(UInt stride) const;
+		void Bind(UInt32 stride) const;
 		void Unbind() const;
-		void SetData(const void* vertices, UInt size);
+		void SetData(const void* vertices, UInt32 size);
 
 	private:
 		friend class VertexbufferCRTP<DX11Vertexbuffer>;

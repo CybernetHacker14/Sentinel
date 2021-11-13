@@ -18,12 +18,12 @@ namespace Sentinel
 			m_RefCount = 0;
 		}
 
-		inline UInt GetRefCount() const { return m_RefCount; }
+		inline UInt32 GetRefCount() const { return m_RefCount; }
 
 		inline bool ShouldBeFreed() const { return m_RefCount == 0; }
 
 	private:
-		mutable UInt m_RefCount = 0;
+		mutable UInt32 m_RefCount = 0;
 	};
 
 	template<typename T>
@@ -102,7 +102,7 @@ namespace Sentinel
 		const T* operator->() const { return m_IntrusiveRefObject; }
 
 		T* get() { return m_IntrusiveRefObject; }
-		[[nodiscard]] const T* get() const { return m_IntrusiveRefObject; }
+		const T* get() const { return m_IntrusiveRefObject; }
 
 	public:
 		template<typename... Args>

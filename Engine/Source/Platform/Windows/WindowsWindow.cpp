@@ -9,7 +9,7 @@
 
 namespace Sentinel
 {
-	static UChar s_GLFWWindowCount = 0;
+	static UInt8 s_GLFWWindowCount = 0;
 
 	static void GLFWErrorCallback(int error, const char* description) {
 		ST_ENGINE_ERROR("GLFW Error ({0}): {1}", error, description);
@@ -39,12 +39,12 @@ namespace Sentinel
 
 		if (props.FullScreen)
 		{
-			m_Window = glfwCreateWindow((Int)props.Width, (Int)props.Height, m_Data.Title.c_str(),
+			m_Window = glfwCreateWindow((Int32)props.Width, (Int32)props.Height, m_Data.Title.c_str(),
 				glfwGetPrimaryMonitor(), nullptr);
 		}
 		else
 		{
-			m_Window = glfwCreateWindow((Int)props.Width, (Int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+			m_Window = glfwCreateWindow((Int32)props.Width, (Int32)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 			if (props.WindowedMaximized)
 			{
 				glfwMaximizeWindow(m_Window);
@@ -53,7 +53,7 @@ namespace Sentinel
 		++s_GLFWWindowCount;
 
 		// GLFWCallbacks
-		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, Int width, Int height) {
+		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, Int32 width, Int32 height) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			data.Width = width;
 			data.Height = height;
@@ -69,7 +69,7 @@ namespace Sentinel
 			data.EventCallback(STL::move(event));
 			});
 
-		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, Int key, Int scancode, Int action, Int mods) {
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, Int32 key, Int32 scancode, Int32 action, Int32 mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			switch (action)
@@ -97,14 +97,14 @@ namespace Sentinel
 			}
 			});
 
-		glfwSetCharCallback(m_Window, [](GLFWwindow* window, UInt keycode) {
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, UInt32 keycode) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			Scope<Event> event(new KeyTypedEvent(keycode));
 			data.EventCallback(STL::move(event));
 			});
 
-		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, Int button, Int action, Int mods) {
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, Int32 button, Int32 action, Int32 mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			switch (action)

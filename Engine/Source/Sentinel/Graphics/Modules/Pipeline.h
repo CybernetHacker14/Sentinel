@@ -13,7 +13,7 @@ namespace Sentinel
 		void CreateInputLayout(Ref<Shader> shader);
 		void Bind();
 		void Unbind();
-		UInt GetStride();
+		UInt32 GetStride();
 
 		static Ref<Pipeline> Create();
 
@@ -51,7 +51,7 @@ namespace Sentinel
 			underlying().Unbind();
 		}
 
-		inline UInt GetStride() {
+		inline UInt32 GetStride() {
 			return underlying().GetStride();
 		}
 

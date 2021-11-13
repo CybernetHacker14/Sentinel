@@ -38,7 +38,7 @@ namespace Sentinel
 		Ref<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
 			vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec4>));
 
-		STL::vector<UInt> indices =
+		STL::vector<UInt32> indices =
 		{
 			0,1,2,3,4,5
 		};
@@ -49,6 +49,8 @@ namespace Sentinel
 		pipelineModules->Indexbuffer = indexBuffer;
 		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TestShader.hlsl", "TestShader");
 		m_Renderer->SetPipelineData(pipelineModules);
+
+		m_AssetManager = CreateScope<AssetManager>();
 	}
 
 	Application::~Application() {
@@ -71,11 +73,11 @@ namespace Sentinel
 		overlay->OnAttach();
 	}
 
-	const UInt Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
+	const UInt32 Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
 		return m_EventBus.SubscribeToEvent(eventType, STL::move(callback));
 	}
 
-	void Application::UnsubscribeFromEvent(const EventType& eventType, const UInt& callbackIndex) {
+	void Application::UnsubscribeFromEvent(const EventType& eventType, const UInt32& callbackIndex) {
 		m_EventBus.UnsubscribeFromEvent(eventType, callbackIndex);
 	}
 

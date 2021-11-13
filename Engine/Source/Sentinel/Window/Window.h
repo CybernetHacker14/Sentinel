@@ -10,15 +10,15 @@ namespace Sentinel
 
 	struct WindowProps {
 		STL::string Title;
-		UInt Width;
-		UInt Height;
+		UInt32 Width;
+		UInt32 Height;
 		Bool FullScreen;
 		Bool WindowedMaximized;
 
 		WindowProps(
 			const STL::string& title = "Sentinel-Engine",
-			UInt width = 900,
-			UInt height = 900,
+			UInt32 width = 900,
+			UInt32 height = 900,
 			Bool fullscreen = false,
 			Bool windowedMaximized = false)
 			:Title(title), Width(width), Height(height),
@@ -32,8 +32,8 @@ namespace Sentinel
 
 		void OnUpdate();
 
-		UInt GetWidth();
-		UInt GetHeight();
+		UInt32 GetWidth();
+		UInt32 GetHeight();
 
 		void SetEventCallback(const EventCallbackFn& callback);
 		void SetVSync(Bool enabled);
@@ -69,11 +69,11 @@ namespace Sentinel
 			underlying().OnUpdate();
 		}
 
-		inline UInt GetWidth() {
+		inline UInt32 GetWidth() {
 			return underlying().GetWidth();
 		}
 
-		inline UInt GetHeight() {
+		inline UInt32 GetHeight() {
 			return underlying().GetHeight();
 		}
 
