@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 
 namespace Sentinel
 {
@@ -22,9 +22,9 @@ namespace Sentinel
 		Bool sRGB = false;
 	};
 
-	class Texture2D : public IntrusiveRefObject {
+	class Texture2D : public ISharedRef {
 	public:
-		static Ref<Texture2D> Create(const Texture2DImportSettings& settings);
+		static SharedRef<Texture2D> Create(const Texture2DImportSettings& settings);
 
 	protected:
 		Texture2D() = default;

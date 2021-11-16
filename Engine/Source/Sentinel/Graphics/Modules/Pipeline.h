@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 #include "Sentinel/Graphics/Components/Materials/Shader.h"
 
 namespace Sentinel
@@ -8,14 +8,14 @@ namespace Sentinel
 	template<typename T>
 	class PipelineCRTP;
 
-	class Pipeline : public IntrusiveRefObject {
+	class Pipeline : public ISharedRef {
 	public:
-		void CreateInputLayout(Ref<Shader> shader);
+		void CreateInputLayout(SharedRef<Shader> shader);
 		void Bind();
 		void Unbind();
 		UInt32 GetStride();
 
-		static Ref<Pipeline> Create();
+		static SharedRef<Pipeline> Create();
 
 	protected:
 		Pipeline() = default;
@@ -39,7 +39,7 @@ namespace Sentinel
 	template<typename T>
 	class PipelineCRTP : public Pipeline {
 	private:
-		inline void CreateInputLayout(Ref<Shader> shader) {
+		inline void CreateInputLayout(SharedRef<Shader> shader) {
 			underlying().CreateInputLayout(shader);
 		}
 

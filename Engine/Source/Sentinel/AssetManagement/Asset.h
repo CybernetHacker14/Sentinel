@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 #include "Sentinel/System/UUID.h"
 
 #include <filesystem>
 
 namespace Sentinel
 {
-	class Asset : public IntrusiveRefObject {
+	class Asset : public SharedRefObject {
 	public:
 		Asset(const std::filesystem::path& filepath);
 

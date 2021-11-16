@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 #include "Sentinel/Events/EventBus.h"
 #include "Sentinel/Layers/LayerStack.h"
 #include "Sentinel/Graphics/Renderers/Renderer.h"
@@ -29,7 +29,7 @@ namespace Sentinel
 		// The main application loop
 		void Run();
 
-		void RaiseEvent(Scope<Event> eventData);
+		void RaiseEvent(UniqueRef<Event> eventData);
 
 		void ProcessLayerUpdate();
 
@@ -44,8 +44,8 @@ namespace Sentinel
 		UInt32 m_WindowResizeCallbackIndex = 0;
 		UInt32 m_WindowCloseCallbackIndex = 0;
 	private:
-		Scope<AssetManager> m_AssetManager;
-		Scope<Renderer> m_Renderer;
+		UniqueRef<AssetManager> m_AssetManager;
+		UniqueRef<Renderer> m_Renderer;
 
 	private:
 		LayerStack m_LayerStack;

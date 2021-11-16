@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Sentinel/Graphics/Core/Backend.h"
 #include "Sentinel/Graphics/Components/Buffers/Vertexbuffer.h"
 
@@ -52,28 +51,28 @@ namespace Sentinel
 		}
 	}
 
-	Ref<Vertexbuffer> Vertexbuffer::Create(UInt32 size) {
+	SharedRef<Vertexbuffer> Vertexbuffer::Create(UInt32 size) {
 		switch (Backend::GetAPI())
 		{
 			case Backend::API::None:
 				ST_ENGINE_ASSERT(false, "API::None currently not supported");
 				return nullptr;
 			case Backend::API::DirectX11:
-				return CreateRef<DX11Vertexbuffer>(size);
+				return CreateSharedRef<DX11Vertexbuffer>(size);
 		}
 
 		ST_ENGINE_ASSERT(false, "Unknown Backend API");
 		return nullptr;
 	}
 
-	Ref<Vertexbuffer> Vertexbuffer::Create(void* vertices, UInt32 size) {
+	SharedRef<Vertexbuffer> Vertexbuffer::Create(void* vertices, UInt32 size) {
 		switch (Backend::GetAPI())
 		{
 			case Backend::API::None:
 				ST_ENGINE_ASSERT(false, "API::None currently not supported");
 				return nullptr;
 			case Backend::API::DirectX11:
-				return CreateRef<DX11Vertexbuffer>(vertices, size);
+				return CreateSharedRef<DX11Vertexbuffer>(vertices, size);
 		}
 
 		ST_ENGINE_ASSERT(false, "Unknown Backend API");

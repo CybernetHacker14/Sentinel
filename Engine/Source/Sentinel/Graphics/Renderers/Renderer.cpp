@@ -1,18 +1,17 @@
 #include "stpch.h"
-
 #include "Sentinel/Graphics/Renderers/Renderer.h"
 
 namespace Sentinel
 {
-	Renderer::Renderer(Ref<DeviceModules> deviceModules) {
-		m_RenderStageHandler = RenderStageHandler::Create();
+	Renderer::Renderer(SharedRef<DeviceModules> deviceModules) {
+		m_RenderStageHandler = STL::move(RenderStageHandler::Create());
 		m_RenderStageHandler->RenderData->DeviceModules = deviceModules;
 		m_RenderStageHandler->ExecuteStartupStage(*(m_RenderStageHandler->RenderData->DeviceModules->WindowProps));
 	}
 
 	Renderer::~Renderer() {}
 
-	void Renderer::SetPipelineData(Ref<PipelineModules> pipelineModules) {
+	void Renderer::SetPipelineData(SharedRef<PipelineModules> pipelineModules) {
 		m_RenderStageHandler->RenderData->PipelineModules = pipelineModules;
 		m_RenderStageHandler->ExecuteRenderPipelinePreprocessStage();
 	}
@@ -29,11 +28,11 @@ namespace Sentinel
 		m_RenderStageHandler->ExecuteRenderPipelineCleanupStage();
 	}
 
-	Ref<DeviceModules> Renderer::GetDeviceModulesFromRenderData() const {
+	SharedRef<DeviceModules> Renderer::GetDeviceModulesFromRenderData() {
 		return m_RenderStageHandler->GetRenderData().DeviceModules;
 	}
 
-	Ref<PipelineModules> Renderer::GetPipelineModulesFromRenderData() const {
+	SharedRef<PipelineModules> Renderer::GetPipelineModulesFromRenderData() {
 		return m_RenderStageHandler->GetRenderData().PipelineModules;
 	}
 }

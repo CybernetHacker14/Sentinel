@@ -1,19 +1,19 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 
 namespace Sentinel
 {
 	template<typename T>
 	class IndexbufferCRTP;
 
-	class Indexbuffer : public IntrusiveRefObject {
+	class Indexbuffer : public ISharedRef {
 	public:
 		void Bind();
 		void Unbind();
 		UInt32 GetCount();
 
-		static Ref<Indexbuffer> Create(void* indices, UInt32 count);
+		static SharedRef<Indexbuffer> Create(void* indices, UInt32 count);
 
 	protected:
 		Indexbuffer() = default;

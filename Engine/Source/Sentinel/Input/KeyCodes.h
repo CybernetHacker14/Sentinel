@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 
 namespace Sentinel
 {

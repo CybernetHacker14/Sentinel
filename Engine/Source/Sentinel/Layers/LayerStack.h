@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Sentinel/Common/Common.h"
 #include "Sentinel/Layers/Layer.h"
 
 namespace Sentinel

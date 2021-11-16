@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 
 struct GLFWwindow;
 
@@ -21,7 +21,7 @@ namespace Sentinel
 		void Init();
 		const ContextInfo& GetContextInfo();
 
-		static Scope<GraphicsContext> Create(GLFWwindow* window);
+		static UniqueRef<GraphicsContext> Create(GLFWwindow* window);
 
 	protected:
 		GraphicsContext() = default;

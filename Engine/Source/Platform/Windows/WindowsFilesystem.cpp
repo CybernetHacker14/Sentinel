@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Sentinel/Filesystem/Filesystem.h"
 
 #include <Windows.h>

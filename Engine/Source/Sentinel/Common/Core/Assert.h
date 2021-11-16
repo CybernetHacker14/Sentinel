@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Core/Debug.h"
+#include "Sentinel/Common/Core/Macros.h"
 #include "Sentinel/Logging/Log.h"
 
 #include <filesystem>

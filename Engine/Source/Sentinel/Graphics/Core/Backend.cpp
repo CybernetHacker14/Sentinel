@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Sentinel/Graphics/Core/Backend.h"
 
 namespace Sentinel

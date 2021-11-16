@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 
 #include "Sentinel/Window/Window.h"
 #include "Sentinel/Graphics/Modules/GraphicsContext.h"
@@ -13,30 +13,30 @@
 
 namespace Sentinel
 {
-	struct DeviceModules : public IntrusiveRefObject {
+	struct DeviceModules : public ISharedRef {
 	public:
-		Scope<WindowProps> WindowProps;
-		Scope<Window> Window;
-		Scope<GraphicsContext> GraphicsContext;
+		UniqueRef<WindowProps> WindowProps;
+		UniqueRef<Window> Window;
+		UniqueRef<GraphicsContext> GraphicsContext;
 	};
 
-	struct PipelineModules : public IntrusiveRefObject {
+	struct PipelineModules : public ISharedRef {
 	public:
 		glm::vec4 ClearColor;
-		STL::vector<Ref<Vertexbuffer>> Vertexbuffers;
-		Ref<Indexbuffer> Indexbuffer;
-		Ref<Shader> Shader;
+		STL::vector<SharedRef<Vertexbuffer>> Vertexbuffers;
+		SharedRef<Indexbuffer> Indexbuffer;
+		SharedRef<Shader> Shader;
 	};
 
-	struct RenderData : public IntrusiveRefObject {
+	struct RenderData : public ISharedRef {
 	public:
 		RenderData() {
-			DeviceModules = Sentinel::CreateRef<Sentinel::DeviceModules>();
-			PipelineModules = Sentinel::CreateRef<Sentinel::PipelineModules>();
+			DeviceModules = CreateSharedRef<Sentinel::DeviceModules>();
+			PipelineModules = CreateSharedRef<Sentinel::PipelineModules>();
 		}
 
 	public:
-		Ref<DeviceModules> DeviceModules;
-		Ref<PipelineModules> PipelineModules;
+		SharedRef<DeviceModules> DeviceModules;
+		SharedRef<PipelineModules> PipelineModules;
 	};
 }

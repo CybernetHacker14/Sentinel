@@ -29,7 +29,7 @@ namespace Sentinel
 		}
 	}
 
-	void EventBus::NotifyAboutEvent(Scope<Event> eventData) {
+	void EventBus::NotifyAboutEvent(UniqueRef<Event> eventData) {
 		m_EventBus.emplace_back(STL::move(eventData));
 	}
 

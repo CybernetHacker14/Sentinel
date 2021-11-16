@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Sentinel/Graphics/Core/Backend.h"
 #include "Sentinel/Graphics/Modules/Pipeline.h"
 
@@ -7,7 +6,7 @@
 
 namespace Sentinel
 {
-	void Pipeline::CreateInputLayout(Ref<Shader> shader) {
+	void Pipeline::CreateInputLayout(SharedRef<Shader> shader) {
 		if (Backend::GetAPI() == Backend::API::DirectX11)
 		{
 			BaseDowncast<DX11Pipeline>()->CreateInputLayout(shader);
@@ -69,7 +68,7 @@ namespace Sentinel
 		}
 	}
 
-	Ref<Pipeline> Pipeline::Create() {
+	SharedRef<Pipeline> Pipeline::Create() {
 		switch (Backend::GetAPI())
 		{
 			case Backend::API::None:
@@ -79,7 +78,7 @@ namespace Sentinel
 			}
 			case Backend::API::DirectX11:
 			{
-				return CreateRef<DX11Pipeline>();
+				return CreateSharedRef<DX11Pipeline>();
 			}
 		}
 

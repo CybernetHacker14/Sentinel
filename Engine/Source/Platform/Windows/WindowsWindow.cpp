@@ -58,14 +58,14 @@ namespace Sentinel
 			data.Width = width;
 			data.Height = height;
 
-			Scope<Event> event(new WindowResizeEvent(width, height));
+			UniqueRef<Event> event(new WindowResizeEvent(width, height));
 			data.EventCallback(STL::move(event));
 			});
 
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			Scope<Event> event(new WindowCloseEvent());
+			UniqueRef<Event> event(new WindowCloseEvent());
 			data.EventCallback(STL::move(event));
 			});
 
@@ -76,21 +76,21 @@ namespace Sentinel
 			{
 				case GLFW_PRESS:
 				{
-					Scope<Event> event(new KeyPressedEvent(key, 0));
+					UniqueRef<Event> event(new KeyPressedEvent(key, 0));
 					data.EventCallback(STL::move(event));
 					break;
 				}
 
 				case GLFW_RELEASE:
 				{
-					Scope<Event> event(new KeyReleasedEvent(key));
+					UniqueRef<Event> event(new KeyReleasedEvent(key));
 					data.EventCallback(STL::move(event));
 					break;
 				}
 
 				case GLFW_REPEAT:
 				{
-					Scope<Event> event(new KeyPressedEvent(key, 1));
+					UniqueRef<Event> event(new KeyPressedEvent(key, 1));
 					data.EventCallback(STL::move(event));
 					break;
 				}
@@ -100,7 +100,7 @@ namespace Sentinel
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, UInt32 keycode) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			Scope<Event> event(new KeyTypedEvent(keycode));
+			UniqueRef<Event> event(new KeyTypedEvent(keycode));
 			data.EventCallback(STL::move(event));
 			});
 
@@ -111,13 +111,13 @@ namespace Sentinel
 			{
 				case GLFW_PRESS:
 				{
-					Scope<Event> event(new MouseButtonPressedEvent(button));
+					UniqueRef<Event> event(new MouseButtonPressedEvent(button));
 					data.EventCallback(STL::move(event));
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					Scope<Event> event(new MouseButtonReleasedEvent(button));
+					UniqueRef<Event> event(new MouseButtonReleasedEvent(button));
 					data.EventCallback(STL::move(event));
 					break;
 				}
@@ -127,14 +127,14 @@ namespace Sentinel
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, Double xOffset, Double yOffset) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			Scope<Event> event(new MouseScrolledEvent(xOffset, yOffset));
+			UniqueRef<Event> event(new MouseScrolledEvent(xOffset, yOffset));
 			data.EventCallback(STL::move(event));
 			});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, Double xPos, Double yPos) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			Scope<Event> event(new MouseMovedEvent(xPos, yPos));
+			UniqueRef<Event> event(new MouseMovedEvent(xPos, yPos));
 			data.EventCallback(STL::move(event));
 			});
 

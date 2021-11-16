@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Platform/DirectX11/Graphics/Modules/DX11Pipeline.h"
 #include "Platform/DirectX11/Graphics/Components/Materials/DX11Shader.h"
 
@@ -27,7 +26,7 @@ namespace Sentinel
 			m_InputLayout->Release();
 	}
 
-	void DX11Pipeline::CreateInputLayout(Ref<Shader> shader) {
+	void DX11Pipeline::CreateInputLayout(SharedRef<Shader> shader) {
 		ID3DBlob* vertexShaderBinary = shader->DerivedDowncast<DX11Shader>()->GetVertexShaderBinary();
 
 		// Excerpts from https://gist.github.com/mobius/b678970c61a93c81fffef1936734909f

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/PlatformDetection.h"
+#include "Sentinel/Common/Core/PlatformDetection.h"
 
 #ifdef ST_PLATFORM_WINDOWS
 #ifndef NOMINMAX
@@ -18,7 +18,7 @@
 
 #include <filesystem>
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 
 #ifdef ST_PLATFORM_WINDOWS
 #include <Windows.h>

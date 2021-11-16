@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
 #include "Sentinel/Graphics/Components/Materials/Shader.h"
 
 #include "Platform/DirectX11/Graphics/Core/DX11Common.h"

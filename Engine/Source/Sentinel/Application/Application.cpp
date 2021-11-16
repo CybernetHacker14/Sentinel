@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Sentinel/Application/Application.h"
 #include "Sentinel/Events/Categories/WindowEvent.h"
 #include "Sentinel/Input/Input.h"
@@ -12,16 +11,16 @@ namespace Sentinel
 		ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
 		s_Instance = this;
 
-		Ref<DeviceModules> deviceModules = CreateRef<DeviceModules>();
-		deviceModules->WindowProps = CreateScope<WindowProps>(name);
+		SharedRef<DeviceModules> deviceModules = CreateSharedRef<DeviceModules>();
+		deviceModules->WindowProps = CreateUniqueRef<WindowProps>(name);
 
-		m_Renderer = CreateScope<Renderer>(deviceModules);
+		m_Renderer = UniqueRef<Renderer>(CreateUniqueRef<Renderer>(deviceModules));
 		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
 		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
 
-		Ref<PipelineModules> pipelineModules = CreateRef<PipelineModules>();
+		SharedRef<PipelineModules> pipelineModules = CreateSharedRef<PipelineModules>();
 		pipelineModules->ClearColor = { 0.0f, 0.2f, 0.3f, 1.0f };
 
 
@@ -35,7 +34,7 @@ namespace Sentinel
 			{ {  0.25f, -0.4f, 0.0f, 1.0f }, {0.0f, 0.5f, 1.0f, 1.0f} }
 		};
 
-		Ref<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
+		SharedRef<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
 			vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec4>));
 
 		STL::vector<UInt32> indices =
@@ -43,14 +42,14 @@ namespace Sentinel
 			0,1,2,3,4,5
 		};
 
-		Ref<Indexbuffer> indexBuffer = Indexbuffer::Create(indices.data(), indices.size());
+		SharedRef<Indexbuffer> indexBuffer = Indexbuffer::Create(indices.data(), indices.size());
 
 		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
 		pipelineModules->Indexbuffer = indexBuffer;
 		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TestShader.hlsl", "TestShader");
 		m_Renderer->SetPipelineData(pipelineModules);
 
-		m_AssetManager = CreateScope<AssetManager>();
+		m_AssetManager = CreateUniqueRef<AssetManager>();
 	}
 
 	Application::~Application() {
@@ -95,7 +94,7 @@ namespace Sentinel
 		}
 	}
 
-	void Application::RaiseEvent(Scope<Event> eventData) {
+	void Application::RaiseEvent(UniqueRef<Event> eventData) {
 		m_EventBus.NotifyAboutEvent(STL::move(eventData));
 		m_EventBus.ProcessEvents();
 	}

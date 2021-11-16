@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 
 namespace Sentinel
 {
@@ -14,7 +14,7 @@ namespace Sentinel
 		COMPUTE = 3
 	};
 
-	class Shader : public IntrusiveRefObject {
+	class Shader : public ISharedRef {
 	public:
 		void Bind();
 		void Reload();
@@ -24,7 +24,7 @@ namespace Sentinel
 
 		const std::filesystem::path& GetFilepath();
 
-		static Ref<Shader> Create(const std::filesystem::path& filepath, const STL::string& name = "Sentinel Shader");
+		static SharedRef<Shader> Create(const std::filesystem::path& filepath, const STL::string& name = "Sentinel Shader");
 
 	protected:
 		Shader() = default;

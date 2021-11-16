@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 
 #pragma warning(push, 0)
 #include <spdlog/spdlog.h>

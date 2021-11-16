@@ -1,5 +1,5 @@
 #include <Sentinel.h>
-#include <Sentinel/Base/EntryPoint.h>
+#include <Sentinel/Application/EntryPoint.h>
 
 #include "ExampleLayer.h"
 
