@@ -1,7 +1,7 @@
 [submodule "Engine/Vendor/GLFW/module"]
 	path = Engine/Vendor/GLFW/module
 	url = https://github.com/glfw/glfw.git
-	branch = master
+	branch = 3.3-stable
 [submodule "Engine/Vendor/spdlog/module"]
 	path = Engine/Vendor/spdlog/module
 	url = https://github.com/gabime/spdlog.git
