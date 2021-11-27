@@ -1,7 +1,7 @@
 #include "stpch.h"
 #include "Sentinel/AssetManagement/AssetManager.h"
 #include "Sentinel/Filesystem/Filesystem.h"
-#include "Sentinel/AssetManagement/AssetInfo.h"
+#include "Sentinel/AssetManagement/Asset.h"
 
 namespace Sentinel
 {

@@ -43,7 +43,6 @@ project "Sentinel"
     {
         "GLFW",
         "EASTL",
-        "Glad",
         "opengl32.lib",
         "d3d11.lib",
 		"d3dcompiler.lib",
