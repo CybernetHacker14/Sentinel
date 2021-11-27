@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Sentinel/Graphics/Core/Backend.h"
 #include "Sentinel/Graphics/Modules/GraphicsContext.h"
 
@@ -39,14 +38,14 @@ namespace Sentinel
 		}
 	}
 
-	Scope<GraphicsContext> GraphicsContext::Create(GLFWwindow* window) {
+	UniqueRef<GraphicsContext> GraphicsContext::Create(GLFWwindow* window) {
 		switch (Backend::GetAPI())
 		{
 			case Backend::API::None:
 				ST_ENGINE_ASSERT(false, "API::None currently not supported");
 				return nullptr;
 			case Backend::API::DirectX11:
-				return CreateScope<DX11GraphicsContext>(window);
+				return CreateUniqueRef<DX11GraphicsContext>(window);
 		}
 
 		ST_ENGINE_ASSERT(false, "Unknown Backend API");

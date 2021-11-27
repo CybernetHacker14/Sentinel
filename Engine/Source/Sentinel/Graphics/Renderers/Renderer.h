@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 #include "Sentinel/Graphics/Core/Backend.h"
 #include "Sentinel/Graphics/Modules/RenderStageHandler.h"
 
@@ -10,20 +10,20 @@ namespace Sentinel
 {
 	class Renderer {
 	public:
-		Renderer(Ref<DeviceModules> deviceModules);
+		Renderer(SharedRef<DeviceModules> deviceModules);
 		~Renderer();
 
-		void SetPipelineData(Ref<PipelineModules> pipelineModules);
+		void SetPipelineData(SharedRef<PipelineModules> pipelineModules);
 		Window& GetWindow();
 
 		void Draw();
 		void Shutdown();
 
 	private:
-		Ref<DeviceModules> GetDeviceModulesFromRenderData() const;
-		Ref<PipelineModules> GetPipelineModulesFromRenderData() const;
+		SharedRef<DeviceModules> GetDeviceModulesFromRenderData();
+		SharedRef<PipelineModules> GetPipelineModulesFromRenderData();
 
 	public:
-		Scope<RenderStageHandler> m_RenderStageHandler;
+		UniqueRef<RenderStageHandler> m_RenderStageHandler;
 	};
 }

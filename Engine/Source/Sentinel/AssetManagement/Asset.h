@@ -1,21 +1,23 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 #include "Sentinel/System/UUID.h"
-
-#include <filesystem>
+#include "Sentinel/AssetManagement/AssetInfo.h"
 
 namespace Sentinel
 {
-	class Asset : public IntrusiveRefObject {
+	class Asset : public ISharedRef {
 	public:
-		Asset(const std::filesystem::path& filepath);
-
-		inline const std::filesystem::path& GetAssetFilePath() const { return m_AssetFilepath; }
+		inline const STL::string& GetAssetFilePath() const { return m_AssetFilepath; }
 		inline const UUID& GetAssetUUID() const { return m_AssetUUID; }
+		inline const AssetType& GetAssetType() const { return m_AssetType; }
 
 	private:
-		std::filesystem::path m_AssetFilepath;
+		STL::string m_AssetFilename;
+		STL::string m_AssetFileExtension;
+		STL::string m_AssetVirtualFilepath;
+
 		UUID m_AssetUUID;
+		AssetType m_AssetType;
 	};
 }

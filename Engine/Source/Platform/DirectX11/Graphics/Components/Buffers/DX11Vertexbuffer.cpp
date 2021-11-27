@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Platform/DirectX11/Graphics/Components/Buffers/DX11Vertexbuffer.h"
 
 namespace Sentinel

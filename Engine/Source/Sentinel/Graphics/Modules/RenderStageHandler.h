@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 
 #include "Sentinel/Graphics/Components/Structures/RenderData.h"
 #include "Sentinel/Graphics/Modules/Pipeline.h"
@@ -20,14 +20,14 @@ namespace Sentinel
 
 		RenderData& GetRenderData() { return *(RenderData.get()); }
 
-		static Scope<RenderStageHandler> Create();
+		static UniqueRef<RenderStageHandler> Create();
 
 	protected:
 		RenderStageHandler() = default;
 
 	protected:
-		Ref<RenderData> RenderData;
-		Ref<Pipeline> RenderPipeline;
+		SharedRef<RenderData> RenderData;
+		SharedRef<Pipeline> RenderPipeline;
 
 	private:
 		friend class Renderer;

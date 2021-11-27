@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel

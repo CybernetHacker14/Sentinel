@@ -1,20 +1,20 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 
 namespace Sentinel
 {
 	template<typename T>
 	class VertexbufferCRTP;
 
-	class Vertexbuffer : public IntrusiveRefObject {
+	class Vertexbuffer : public ISharedRef {
 	public:
 		void Bind(UInt32 stride);
 		void Unbind();
 		void SetData(const void* verticesData, UInt32 size);
 
-		static Ref<Vertexbuffer> Create(UInt32 size);
-		static Ref<Vertexbuffer> Create(void* vertices, UInt32 size);
+		static SharedRef<Vertexbuffer> Create(UInt32 size);
+		static SharedRef<Vertexbuffer> Create(void* vertices, UInt32 size);
 
 	protected:
 		Vertexbuffer() = default;

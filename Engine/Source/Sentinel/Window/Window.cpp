@@ -67,9 +67,9 @@ namespace Sentinel
 	#endif // ST_PLATFORM_WINDOWS
 	}
 
-	Scope<Window> Window::Create(const WindowProps& props) {
+	UniqueRef<Window> Window::Create(const WindowProps& props) {
 	#ifdef ST_PLATFORM_WINDOWS
-		return CreateScope<WindowsWindow>(props);
+		return CreateUniqueRef<WindowsWindow>(props);
 	#else
 		ST_ASSERT(false, "Unknown platform!");
 		return nullptr;

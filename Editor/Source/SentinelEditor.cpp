@@ -1,5 +1,5 @@
 #include <Sentinel.h>
-#include <Sentinel/Base/EntryPoint.h>
+#include <Sentinel/Application/EntryPoint.h>
 
 // For launching the application with Nvidia card if available by default
 extern "C" {

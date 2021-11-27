@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Sentinel/Input/Input.h"
 #include "Sentinel/Application/Application.h"
 

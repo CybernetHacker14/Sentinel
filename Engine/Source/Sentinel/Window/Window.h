@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
+#include "Sentinel/Common/Common.h"
 #include "Sentinel/Events/Event.h"
 
 namespace Sentinel
@@ -28,7 +28,7 @@ namespace Sentinel
 	// Interface representing a desktop system based Window
 	class Window {
 	public:
-		using EventCallbackFn = STL::function<void(Scope<Event>)>;
+		using EventCallbackFn = STL::function<void(UniqueRef<Event>)>;
 
 		void OnUpdate();
 
@@ -41,7 +41,7 @@ namespace Sentinel
 
 		void* GetNativeWindow();
 
-		static Scope<Window> Create(const WindowProps& props = WindowProps());
+		static UniqueRef<Window> Create(const WindowProps& props = WindowProps());
 
 	protected:
 		Window() = default;

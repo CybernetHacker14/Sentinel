@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Sentinel/Graphics/Core/Backend.h"
 #include "Sentinel/Graphics/Components/Materials/Shader.h"
 
@@ -88,14 +87,14 @@ namespace Sentinel
 		}
 	}
 
-	Ref<Shader> Shader::Create(const std::filesystem::path& filepath, const STL::string& name) {
+	SharedRef<Shader> Shader::Create(const std::filesystem::path& filepath, const STL::string& name) {
 		switch (Backend::GetAPI())
 		{
 			case Backend::API::None:
 				ST_ENGINE_ASSERT(false, "API::None currently not supported");
 				return nullptr;
 			case Backend::API::DirectX11:
-				return CreateRef<DX11Shader>(filepath, name);
+				return CreateSharedRef<DX11Shader>(filepath, name);
 		}
 
 		ST_ENGINE_ASSERT(false, "Unknown Backend API");

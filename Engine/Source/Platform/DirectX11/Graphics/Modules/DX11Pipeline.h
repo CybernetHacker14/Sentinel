@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Sentinel/Base/Define.h"
 #include "Sentinel/Graphics/Modules/Pipeline.h"
 
 #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
@@ -13,7 +12,7 @@ namespace Sentinel
 		~DX11Pipeline();
 
 	private:
-		void CreateInputLayout(Ref<Shader> shader);
+		void CreateInputLayout(SharedRef<Shader> shader);
 		void Bind();
 		void Unbind();
 

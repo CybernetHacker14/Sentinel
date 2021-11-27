@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 #include "Platform/DirectX11/Graphics/Modules/DX11GraphicsContext.h"
 

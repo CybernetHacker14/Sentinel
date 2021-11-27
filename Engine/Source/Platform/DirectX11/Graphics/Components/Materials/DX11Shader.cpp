@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Sentinel/Filesystem/Filesystem.h"
 
 #include "Platform/DirectX11/Graphics/Components/Materials/DX11Shader.h"
@@ -64,7 +63,10 @@ namespace Sentinel
 
 	DX11Shader::~DX11Shader() {
 		for (auto& tuple : m_ShaderBinaryMap)
-			tuple.second->Release();
+		{
+			if (tuple.second)
+				tuple.second->Release();
+		}
 
 		if (m_VertexShader)
 			m_VertexShader->Release();

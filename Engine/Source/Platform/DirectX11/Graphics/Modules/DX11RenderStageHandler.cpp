@@ -1,5 +1,4 @@
 #include "stpch.h"
-
 #include "Platform/DirectX11/Graphics/Modules/DX11RenderStageHandler.h"
 
 namespace Sentinel
@@ -9,10 +8,7 @@ namespace Sentinel
 	}
 
 	DX11RenderStageHandler::~DX11RenderStageHandler() {
-		if (m_RenderTargetView)
-		{
-			m_RenderTargetView->Release();
-		}
+		ExecuteRenderPipelineCleanupStage();
 	}
 
 	void DX11RenderStageHandler::ExecuteStartupStage(const WindowProps& props) {
@@ -47,7 +43,7 @@ namespace Sentinel
 	/////////////////////////////////////////////////////////////////////////////
 
 	void DX11RenderStageHandler::InitializeRenderData() {
-		RenderData = Sentinel::CreateRef<Sentinel::RenderData>();
+		RenderData = Sentinel::CreateSharedRef<Sentinel::RenderData>();
 	}
 
 	void DX11RenderStageHandler::CreateWindowAndContext(const WindowProps& props) {
