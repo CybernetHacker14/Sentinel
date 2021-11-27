@@ -8,7 +8,16 @@ namespace Sentinel
 {
 	class Asset : public ISharedRef {
 	public:
-		inline const STL::string& GetAssetFilePath() const { return m_AssetFilepath; }
+		Asset(const STL::string& filename, const STL::string& extension, const STL::string& virtualFilepath, const AssetType& type = AssetType::NONE)
+			: m_AssetFilename(filename), m_AssetFileExtension(extension), m_AssetVirtualFilepath(virtualFilepath), m_AssetType(type) {
+
+			m_AssetUUID{};
+		}
+
+		inline const STL::string& GetFilename() const { return m_AssetFilename; }
+		inline const STL::string& GetFileExtension() const { return m_AssetFileExtension; }
+		inline const STL::string& GetVirtualFilepath() const { return m_AssetVirtualFilepath; }
+
 		inline const UUID& GetAssetUUID() const { return m_AssetUUID; }
 		inline const AssetType& GetAssetType() const { return m_AssetType; }
 
