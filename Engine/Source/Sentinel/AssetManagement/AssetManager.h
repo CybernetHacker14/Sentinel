@@ -9,8 +9,5 @@ namespace Sentinel
 	class AssetManager {
 	public:
 		AssetManager();
-
-	private:
-		const std::filesystem::path m_AssetsRootNode = "Assets";
 	};
 }
