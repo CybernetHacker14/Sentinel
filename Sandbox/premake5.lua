@@ -25,7 +25,8 @@ project "Sandbox"
         "%{IncludeExternalDir.glm}",
 		"%{IncludeExternalDir.EASTL}",
 		"%{IncludeExternalDir.EABase}",
-        "%{IncludeExternalDir.spdlog}"
+        "%{IncludeExternalDir.spdlog}",
+		"%{IncludeExternalDir.cereal}"
     }
 
     links

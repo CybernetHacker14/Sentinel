@@ -8,7 +8,7 @@ namespace Sentinel
 {
 	class DX11Shader final : public ShaderCRTP<DX11Shader> {
 	public:
-		DX11Shader(const std::filesystem::path& filepath, const STL::string& name);
+		DX11Shader(const STL::string& filepath, const STL::string& name);
 		~DX11Shader();
 
 		ID3DBlob* GetVertexShaderBinary() const { return m_ShaderBinaryMap.at(ShaderType::VERTEX); }
@@ -21,7 +21,7 @@ namespace Sentinel
 
 		inline const STL::string& GetShaderSource(const ShaderType& type) const { return m_ShaderSourceMap.at(type); }
 		inline const STL::string& GetName() const { return m_ShaderName; }
-		inline const std::filesystem::path& GetFilepath() const { return m_FilePath; }
+		inline const STL::string& GetFilepath() const { return m_FilePath; }
 
 		STL::unordered_map<ShaderType, STL::string> PreprocessSource(const STL::string& source);
 
@@ -34,8 +34,7 @@ namespace Sentinel
 		friend class ShaderCRTP;
 
 		STL::string m_ShaderName;
-
-		std::filesystem::path m_FilePath;
+		STL::string m_FilePath;
 
 		STL::unordered_map<ShaderType, STL::string> m_ShaderSourceMap;
 		STL::unordered_map<ShaderType, ID3DBlob*> m_ShaderBinaryMap;

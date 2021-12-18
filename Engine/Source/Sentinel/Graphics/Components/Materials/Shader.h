@@ -22,9 +22,9 @@ namespace Sentinel
 		const STL::string& GetShaderSource(const ShaderType& type = ShaderType::NONE);
 		const STL::string& GetName();
 
-		const std::filesystem::path& GetFilepath();
+		const STL::string& GetFilepath();
 
-		static SharedRef<Shader> Create(const std::filesystem::path& filepath, const STL::string& name = "Sentinel Shader");
+		static SharedRef<Shader> Create(const STL::string& filepath, const STL::string& name = "Sentinel Shader");
 
 	protected:
 		Shader() = default;
@@ -65,7 +65,7 @@ namespace Sentinel
 			return underlying().GetName();
 		}
 
-		inline const std::filesystem::path& GetFilepath() {
+		inline const STL::string& GetFilepath() {
 			return underlying().GetFilepath();
 		}
 

@@ -56,7 +56,7 @@ namespace Sentinel
 		}
 	}
 
-	DX11Shader::DX11Shader(const std::filesystem::path& filepath, const STL::string& name)
+	DX11Shader::DX11Shader(const STL::string& filepath, const STL::string& name)
 		:m_FilePath(filepath), m_ShaderName(name) {
 		Load();
 	}
@@ -170,7 +170,7 @@ namespace Sentinel
 
 		if (source.empty())
 		{
-			ST_ENGINE_ASSERT("Shader source at path {0} is empty", m_FilePath.string());
+			ST_ENGINE_ASSERT("Shader source at path {0} is empty", m_FilePath.c_str());
 			return;
 		}
 

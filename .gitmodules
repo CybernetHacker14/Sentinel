@@ -16,3 +16,6 @@
 [submodule "Engine/Vendor/EABase/module"]
 	path = Engine/Vendor/EABase/module
 	url = https://github.com/electronicarts/EABase
+[submodule "Engine/Vendor/cereal/module"]
+	path = Engine/Vendor/cereal/module
+	url = https://github.com/USCiLab/cereal.git

@@ -36,7 +36,8 @@ project "Sentinel"
         "%{IncludeExternalDir.Glad}",
         "%{IncludeExternalDir.glm}",
         "%{IncludeExternalDir.spdlog}",
-		"%{IncludeExternalDir.stb_image}"
+		"%{IncludeExternalDir.stb_image}",
+		"%{IncludeExternalDir.cereal}"
     }
 
     links
@@ -45,6 +46,7 @@ project "Sentinel"
         "EASTL",
         "opengl32.lib",
         "d3d11.lib",
+		"shlwapi.lib",
 		"d3dcompiler.lib",
 		"dxguid.lib"
     }

@@ -4,6 +4,10 @@
 #include "Sentinel/System/UUID.h"
 #include "Sentinel/AssetManagement/AssetInfo.h"
 
+#pragma warning(push, 0)
+#include <cereal/archives/xml.hpp>
+#pragma warning(pop)
+
 namespace Sentinel
 {
 	class Asset : public ISharedRef {
@@ -17,6 +21,16 @@ namespace Sentinel
 
 		inline const UUID& GetAssetUUID() const { return m_AssetUUID; }
 		inline const AssetType& GetAssetType() const { return m_AssetType; }
+
+		template<class Archive>
+		void save(Archive& archive) const {
+			archive(m_AssetUUID, m_AssetType, m_AssetFilename, m_AssetFileExtension, m_AssetFileExtension);
+		}
+
+		template<class Archive>
+		void load(Archive& archive) {
+			archive(m_AssetUUID, m_AssetType, m_AssetFilename, m_AssetFileExtension, m_AssetFileExtension);
+		}
 
 	private:
 		STL::string m_AssetFilename;

@@ -1,19 +1,20 @@
-project "EABase"
+project "cereal"
 	kind "None"
-    language "C++"
+	language "C++"
 	
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
     objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 	
 	files
-    {
-		"module/include/Common/**.h"
-    }
+	{
+		"module/include/cereal/**.h",
+		"module/include/cereal/**.hpp"
+	}
 	
 	includedirs
-    {
-        "module/include/Common"
-    }
+	{
+		"module/include"
+	}
 	
 	filter "system:windows"
         systemversion "latest"

@@ -33,6 +33,7 @@ group "Dependencies"
     include "Engine/Vendor/GLFW"
 	include "Engine/Vendor/EABase"
     include "Engine/Vendor/EASTL"
+	include "Engine/Vendor/cereal"
 group ""
 
 -- Include projects
