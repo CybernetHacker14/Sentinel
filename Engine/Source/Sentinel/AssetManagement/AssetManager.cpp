@@ -6,13 +6,9 @@
 namespace Sentinel
 {
 	AssetManager::AssetManager() {
-		Bool value1 = Filesystem::HasExtensionInPath("TestDirectory1/EmptyFile.txt");
-		Bool value2 = Filesystem::HasExtensionInPath("TestDirectory1");
-		Bool value3 = Filesystem::DoesFileExist("TestDirectory/EmptyFile.txt");
-		STL::string string1 = Filesystem::GetFilenameWithoutExtension("TestDirectory1/EmptyFile.txt");
-		STL::string string2 = Filesystem::GetFilenameWithExtension("TestDirectory1/EmptyFile.txt");
-		STL::string string3 = Filesystem::GetFilenameExtension("TestDirectory1/EmptyFile.txt");
-		Filesystem::DeleteAtPath("TestDirectory1 - Copy/EmptyFile.txt");
-		Filesystem::DeleteAtPath("TestDirectory1 - Copy");
+		for (auto& path : Filesystem::GetAllSubfolders("TestDirectory1"))
+		{
+			ST_ENGINE_INFO("{0}", path.c_str());
+		}
 	}
 }

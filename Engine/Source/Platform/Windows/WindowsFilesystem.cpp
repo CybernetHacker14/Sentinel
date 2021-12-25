@@ -11,11 +11,13 @@
 #include <Shlwapi.h>
 #include <PathCch.h>
 
-#include <filesystem>
-
 namespace Sentinel
 {
 	// Internal
+	static const STL::wstring s_AllFilesMask(L"\\*");
+	static const char s_SingleSlash('/');
+	static const wchar_t s_DoubleSlash(L'\\');
+
 	void CALLBACK FileIOCompletionInfo(DWORD dwErrorCode, DWORD dwNoOfBytesTransferred, LPOVERLAPPED lpOverlapped) {}
 
 	static HANDLE OpenFileForReading(const STL::string& path) {
@@ -49,6 +51,70 @@ namespace Sentinel
 		std::string message(messageBuffer, size);
 		LocalFree(messageBuffer);
 		return message;
+	}
+
+	static Bool IsDots(const STL::string& folderpath) {
+		if (((folderpath[0] == '.') && (folderpath[1] == '\0')) ||
+			((folderpath[0] == '.') && (folderpath[1] == '.') &&
+				(folderpath[2] == '\0')))
+			return true;
+
+		return false;
+	}
+
+	static Bool IsDots(const STL::wstring& folderpath) {
+		if (((folderpath[0] == '.') && (folderpath[1] == '\0')) ||
+			((folderpath[0] == '.') && (folderpath[1] == '.') &&
+				(folderpath[2] == '\0')))
+			return true;
+
+		return false;
+	}
+
+	static Bool RecursiveDeleteDirectory(const STL::wstring& path) {
+		WIN32_FIND_DATAW findData;
+
+		STL::wstring searchMask = path + s_AllFilesMask;
+		HANDLE handle = FindFirstFileExW(searchMask.c_str(),
+			FindExInfoBasic, &findData, FindExSearchNameMatch, nullptr, 0);
+
+		if (handle == INVALID_HANDLE_VALUE)
+		{
+			FindClose(handle);
+			return false;
+		}
+
+		do
+		{
+			const STL::wstring virtualName(findData.cFileName);
+
+			if (IsDots(virtualName))
+				continue;
+
+			Bool isDirectory =
+				((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) ||
+				((findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0);
+
+			STL::wstring filePath = path + L'\\' + findData.cFileName;
+			if (isDirectory)
+			{
+				RecursiveDeleteDirectory(filePath);
+			}
+			else
+			{
+				Bool result = DeleteFileW(filePath.c_str());
+			}
+
+		} while (FindNextFileW(handle, &findData) != 0);
+
+		DWORD error = GetLastError();
+		if (error != ERROR_NO_MORE_FILES)
+		{
+			ST_ENGINE_ASSERT(false, "Error enumerating folder");
+			return false;
+		}
+		FindClose(handle);
+		return RemoveDirectoryW(path.c_str());
 	}
 	// \Internal
 
@@ -85,19 +151,27 @@ namespace Sentinel
 		return DoesPathExist(folderpath) && IsFolder(folderpath);
 	}
 
+	void Filesystem::CreateFolder(const STL::string& folderpath) {
+		if (DoesFolderExist(folderpath) || HasExtensionInPath(folderpath))
+			return;
+
+		const STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(GetAbsolutePath(folderpath));
+		CreateDirectoryW(wPath.c_str(), nullptr);
+	}
+
 	Bool Filesystem::IsFolderEmpty(const STL::string& folderpath) {
 		const STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(folderpath);
 		return DoesFolderExist(folderpath) && PathIsDirectoryEmptyW(wPath.c_str());
 	}
 
 	Bool Filesystem::HasSubFolders(const STL::string& folderpath) {
-		if (!DoesPathExist(folderpath))
+		if (IsFolderEmpty(folderpath))
 			return false;
 
 		WIN32_FIND_DATAW findData;
-		STL::string& absolutePath = GetAbsolutePath(folderpath);
+		const STL::string& absolutePath = GetAbsolutePath(folderpath);
 		STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(folderpath);
-		wPath += L"\\*";
+		wPath += s_AllFilesMask;
 		HANDLE handle = FindFirstFileW(wPath.c_str(), &findData);
 
 		if (handle == INVALID_HANDLE_VALUE)
@@ -110,9 +184,7 @@ namespace Sentinel
 		{
 			const STL::wstring virtualName(findData.cFileName);
 
-			if (((virtualName[0] == '.') && (virtualName[1] == '\0')) ||
-				((virtualName[0] == '.') && (virtualName[1] == '.') &&
-					(virtualName[2] == '\0')))
+			if (IsDots(virtualName))
 				continue;
 
 			if (DoesFolderExist(absolutePath + "\\" + WindowsTextUtils::TranscodeUTF16toUTF8(virtualName)))
@@ -127,36 +199,108 @@ namespace Sentinel
 		return false;
 	}
 
+	STL::vector<STL::string> Filesystem::GetImmediateSubfolders(const STL::string& folderpath) {
+		STL::vector<STL::string> subfolders;
+
+		if (!HasSubFolders(folderpath))
+			return subfolders;
+
+		WIN32_FIND_DATAW findData;
+		const STL::string& absolutePath = GetAbsolutePath(folderpath);
+		STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(folderpath);
+		wPath += s_AllFilesMask;
+		HANDLE handle = FindFirstFileW(wPath.c_str(), &findData);
+
+		if (handle == INVALID_HANDLE_VALUE)
+		{
+			FindClose(handle);
+			return subfolders;
+		}
+
+		do
+		{
+			const STL::wstring virtualName(findData.cFileName);
+
+			if (IsDots(virtualName))
+				continue;
+
+			const STL::string subfolder(absolutePath + "\\" + WindowsTextUtils::TranscodeUTF16toUTF8(virtualName));
+
+			if (DoesFolderExist(subfolder))
+				subfolders.emplace_back(subfolder);
+
+		} while (FindNextFileW(handle, &findData) != 0);
+
+		FindClose(handle);
+
+		return subfolders;
+	}
+
+	STL::vector<STL::string> Filesystem::GetAllSubfolders(const STL::string& folderpath) {
+		STL::vector<STL::string> subfolders;
+
+		if (!HasSubFolders(folderpath))
+			return subfolders;
+
+		WIN32_FIND_DATAW findData;
+		const STL::string& absolutePath = GetAbsolutePath(folderpath);
+		STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(folderpath);
+		wPath += s_AllFilesMask;
+		HANDLE handle = FindFirstFileW(wPath.c_str(), &findData);
+
+		if (handle == INVALID_HANDLE_VALUE)
+		{
+			FindClose(handle);
+			return subfolders;
+		}
+
+		do
+		{
+			const STL::wstring virtualName(findData.cFileName);
+
+			if (IsDots(virtualName))
+				continue;
+
+			const STL::string subfolder(absolutePath + "\\" + WindowsTextUtils::TranscodeUTF16toUTF8(virtualName));
+
+			if (DoesFolderExist(subfolder))
+				subfolders.emplace_back(subfolder);
+
+			if (HasSubFolders(subfolder))
+			{
+				for (const auto& path : GetAllSubfolders(subfolder))
+					subfolders.emplace_back(path);
+			}
+
+		} while (FindNextFileW(handle, &findData) != 0);
+
+		FindClose(handle);
+
+		return subfolders;
+	}
+
 	Bool Filesystem::HasExtensionInPath(const STL::string& path) {
-		STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(path);
+		const STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(path);
 		LPCWSTR extension = PathFindExtensionW(wPath.c_str());
 		return extension && extension[0];
 	}
 
-	STL::string Filesystem::GetFilenameWithExtension(const STL::string& path) {
-		STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(path);
-		STL::wstring& filename = STL::wstring(PathFindFileNameW(wPath.c_str()));
+	STL::string Filesystem::GetFilenameWithExtension(const STL::string& filepath) {
+		const STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(filepath);
+		const STL::wstring& filename = STL::wstring(PathFindFileNameW(wPath.c_str()));
 		return WindowsTextUtils::TranscodeUTF16toUTF8(filename);
 	}
 
-	STL::string Filesystem::GetFilenameWithoutExtension(const STL::string& path) {
-		STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(path);
+	STL::string Filesystem::GetFilenameWithoutExtension(const STL::string& filepath) {
+		const STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(filepath);
 		PathRemoveExtensionW(PathFindFileNameW(wPath.c_str()));
 		return WindowsTextUtils::TranscodeUTF16toUTF8(wPath.c_str());
 	}
 
-	STL::string Filesystem::GetFilenameExtension(const STL::string& path) {
-		STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(path);
-		STL::wstring& extension = STL::wstring(PathFindExtensionW(PathFindFileNameW(wPath.c_str())));
+	STL::string Filesystem::GetFilenameExtension(const STL::string& filepath) {
+		const STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(filepath);
+		const STL::wstring& extension = STL::wstring(PathFindExtensionW(PathFindFileNameW(wPath.c_str())));
 		return WindowsTextUtils::TranscodeUTF16toUTF8(extension.c_str());
-	}
-
-	void Filesystem::CreateFolder(const STL::string& path) {
-		if (DoesFolderExist(path) || HasExtensionInPath(path))
-			return;
-
-		STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(GetAbsolutePath(path));
-		CreateDirectoryW(wPath.c_str(), nullptr);
 	}
 
 	UInt8* Filesystem::ReadFileAtPath(const STL::string& filepath) {
@@ -215,24 +359,29 @@ namespace Sentinel
 		return WriteToFileAtPath(filepath, (UInt8*)&text[0]);
 	}
 
-	Bool Filesystem::OpenAtPath(const STL::string& filepath) {
-		if (!DoesPathExist(filepath))
+	Bool Filesystem::OpenAtPath(const STL::string& path) {
+		if (!DoesPathExist(path))
 			return false;
 
-		STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(GetAbsolutePath(filepath));
+		const STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(GetAbsolutePath(path));
 		ShellExecuteW(nullptr, L"open", wPath.c_str(), nullptr, nullptr, SW_SHOW);
 		return true;
 	}
 
-	Bool Filesystem::DeleteAtPath(const STL::string& filepath) {
-		if (!DoesPathExist(filepath))
-			return false;
-
-		STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(GetAbsolutePath(filepath));
-		return DeleteFileW(wPath.c_str());
+	Bool Filesystem::DeleteAtPath(const STL::string& path) {
+		const STL::wstring& wPath = WindowsTextUtils::TranscodeUTF8toUTF16(GetAbsolutePath(path));
+		if (HasExtensionInPath(path))
+		{
+			return DoesFileExist(path) ? DeleteFileW(wPath.c_str()) : false;
+		}
+		else if (DoesFolderExist(path))
+		{
+			return IsFolderEmpty(path) ? RemoveDirectoryW(wPath.c_str()) : RecursiveDeleteDirectory(wPath);
+		}
+		return false;
 	}
 
-	Bool Filesystem::MoveToPath(const STL::string& currentFilepath, const STL::string& newFilepath) {
+	Bool Filesystem::MoveToPath(const STL::string& currentPath, const STL::string& newPath) {
 		// currentFilepath valid examples			currentFilepath invalid examples
 		// "TestDirectory1/TestDirectory2"			"TestDirectory1/TestDirectory2/" - Ending with path separator
 		// "TestDirectory1/SomeFile.txt"			"TestDirectory/SomeFile.txt/" - Ending with path separator
@@ -241,29 +390,26 @@ namespace Sentinel
 		// "TestDirectory2/TestDirectory3"			"TestDirectory/EmptyFile.txt"
 		// 
 		// Guard clauses
-		/*if (!DoesPathExist(currentFilepath) || HasExtensionInPath(newFilepath) ||
-			*(currentFilepath.rbegin()) == '/' ||
-			*(currentFilepath.rbegin()) == std::filesystem::path::preferred_separator ||
-			*(newFilepath.rbegin()) == '/' ||
-			*(newFilepath.rbegin()) == std::filesystem::path::preferred_separator)
+		auto currentPathEnding = *(currentPath.rbegin());
+		auto newPathEnding = *(newPath.rbegin());
+		if (!DoesPathExist(currentPath) || HasExtensionInPath(newPath) ||
+			currentPathEnding == s_SingleSlash || currentPathEnding == s_DoubleSlash ||
+			newPathEnding == s_SingleSlash || newPathEnding == s_DoubleSlash)
+		{
 			return false;
+		}
 
-		if (!DoesPathExist(newFilepath))
-			std::filesystem::create_directories(newFilepath.c_str());
+		if (!DoesFolderExist(newPath))
+			CreateFolder(newPath);
 
-		std::filesystem::path newPath(newFilepath.c_str());
-		newPath += "/";
-		newPath += currentFilepath.filename();
+		STL::wstring& newFileName = WindowsTextUtils::TranscodeUTF8toUTF16(GetAbsolutePath(newPath));
+		newFileName += s_DoubleSlash + WindowsTextUtils::TranscodeUTF8toUTF16(GetFilenameWithExtension(currentPath));
 
-		if (std::filesystem::exists(newPath))
-			return false;
-
-		return MoveFileA(std::filesystem::absolute(currentFilepath).string().c_str(),
-			std::filesystem::absolute(newPath).string().c_str());*/
-		return false;
+		return MoveFileW(WindowsTextUtils::TranscodeUTF8toUTF16(
+			GetAbsolutePath(currentPath)).c_str(), newFileName.c_str());
 	}
 
-	Bool Filesystem::CopyToPath(const STL::string& currentFilepath, const STL::string& newFilepath) {
+	Bool Filesystem::CopyToPath(const STL::string& currentPath, const STL::string& newPath) {
 		// currentFilepath valid examples			currentFilepath invalid examples
 		// "TestDirectory1/TestDirectory2"			"TestDirectory1/TestDirectory2/" - Ending with path separator
 		// "TestDirectory1/SomeFile.txt"			"TestDirectory/SomeFile.txt/" - Ending with path separator
@@ -272,25 +418,22 @@ namespace Sentinel
 		// "TestDirectory2/TestDirectory3"			"TestDirectory/EmptyFile.txt"
 		// 
 		// Guard clauses
-		/*if (!std::filesystem::exists(currentFilepath) || HasExtensionInPath(newFilepath) ||
-			*(currentFilepath.rbegin()) == '/' ||
-			*(currentFilepath.rbegin()) == std::filesystem::path::preferred_separator ||
-			*(newFilepath.rbegin()) == '/' ||
-			*(newFilepath.rbegin()) == std::filesystem::path::preferred_separator)
+		auto currentPathEnding = *(currentPath.rbegin());
+		auto newPathEnding = *(newPath.rbegin());
+		if (!DoesPathExist(currentPath) || HasExtensionInPath(newPath) ||
+			currentPathEnding == s_SingleSlash || currentPathEnding == s_DoubleSlash ||
+			newPathEnding == s_SingleSlash || newPathEnding == s_DoubleSlash)
+		{
 			return false;
+		}
 
-		if (!std::filesystem::exists(newFilepath))
-			std::filesystem::create_directories(newFilepath);
+		if (!DoesFolderExist(newPath))
+			CreateFolder(newPath);
 
-		std::filesystem::path newPath = newFilepath;
-		newPath += "/";
-		newPath += currentFilepath.filename();
+		STL::wstring& newFileName = WindowsTextUtils::TranscodeUTF8toUTF16(GetAbsolutePath(newPath));
+		newFileName += s_DoubleSlash + WindowsTextUtils::TranscodeUTF8toUTF16(GetFilenameWithExtension(currentPath));
 
-		if (std::filesystem::exists(newPath))
-			return false;
-
-		return CopyFileA(std::filesystem::absolute(currentFilepath).string().c_str(),
-			std::filesystem::absolute(newPath).string().c_str(), true);*/
-		return false;
+		return CopyFileW(WindowsTextUtils::TranscodeUTF8toUTF16(
+			GetAbsolutePath(currentPath)).c_str(), newFileName.c_str(), true);
 	}
 }
