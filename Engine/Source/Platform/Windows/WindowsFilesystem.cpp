@@ -17,6 +17,7 @@ namespace Sentinel
 	static const STL::wstring s_AllFilesMask(L"\\*");
 	static const char s_SingleSlash('/');
 	static const wchar_t s_DoubleSlash(L'\\');
+	static const char* s_CDoubleSlash("\\");
 
 	void CALLBACK FileIOCompletionInfo(DWORD dwErrorCode, DWORD dwNoOfBytesTransferred, LPOVERLAPPED lpOverlapped) {}
 
@@ -187,7 +188,7 @@ namespace Sentinel
 			if (IsDots(virtualName))
 				continue;
 
-			if (DoesFolderExist(absolutePath + "\\" + WindowsTextUtils::TranscodeUTF16toUTF8(virtualName)))
+			if (DoesFolderExist(absolutePath + s_CDoubleSlash + WindowsTextUtils::TranscodeUTF16toUTF8(virtualName)))
 			{
 				FindClose(handle);
 				return true;
@@ -224,7 +225,7 @@ namespace Sentinel
 			if (IsDots(virtualName))
 				continue;
 
-			const STL::string subfolder(absolutePath + "\\" + WindowsTextUtils::TranscodeUTF16toUTF8(virtualName));
+			const STL::string subfolder(absolutePath + s_CDoubleSlash + WindowsTextUtils::TranscodeUTF16toUTF8(virtualName));
 
 			if (DoesFolderExist(subfolder))
 				subfolders.emplace_back(subfolder);
@@ -261,7 +262,7 @@ namespace Sentinel
 			if (IsDots(virtualName))
 				continue;
 
-			const STL::string subfolder(absolutePath + "\\" + WindowsTextUtils::TranscodeUTF16toUTF8(virtualName));
+			const STL::string subfolder(absolutePath + s_CDoubleSlash + WindowsTextUtils::TranscodeUTF16toUTF8(virtualName));
 
 			if (DoesFolderExist(subfolder))
 				subfolders.emplace_back(subfolder);
