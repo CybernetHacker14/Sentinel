@@ -31,10 +31,10 @@ namespace Sentinel
 		}
 
 		// Find the new path from the mount points using the virtual directories
-		const STL::string& remainderString = virtualPath.substr(virtualPath.size() + 2,
-			virtualPath.size() - virtualPath.size());
+		const STL::string& remainderString = virtualPath.substr(virtualDirectory.size() + 2,
+			virtualPath.size() - virtualDirectory.size());
 
-		for (const STL::string& physicalPath : m_MountPoints[virtualPath])
+		for (const STL::string& physicalPath : m_MountPoints[virtualDirectory])
 		{
 			const STL::string newPath = physicalPath + remainderString;
 			if (std::filesystem::exists(newPath.c_str()))
@@ -75,7 +75,7 @@ namespace Sentinel
 
 	STL::string VirtualFilesystem::ReadTextFile(const STL::string& path) {
 		STL::string physicalPath;
-		return ResolvePhysicalPath(path, physicalPath) ? Filesystem::ReadTextFileAtPath(path.c_str()) : nullptr;
+		return ResolvePhysicalPath(path, physicalPath) ? Filesystem::ReadTextFileAtPath(path.c_str()) : STL::string();
 	}
 
 	Bool VirtualFilesystem::WriteToFile(const STL::string& path, UInt8* buffer) {

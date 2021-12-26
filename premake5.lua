@@ -31,9 +31,9 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 group "Dependencies"
     include "Premake"
     include "Engine/Vendor/GLFW"
-    include "Engine/Vendor/Glad"
 	include "Engine/Vendor/EABase"
     include "Engine/Vendor/EASTL"
+	include "Engine/Vendor/cereal"
 group ""
 
 -- Include projects
