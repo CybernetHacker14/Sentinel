@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
+#include "Sentinel/Graphics/Components/Materials/Shader.h"
 
 namespace Sentinel
 {
@@ -13,7 +14,7 @@ namespace Sentinel
 	};
 
 	struct Texture2DImportSettings {
-		std::filesystem::path TexturePath = std::filesystem::path();
+		STL::string texturePath;
 
 		WrapMode WrapMode = WrapMode::CLAMP;
 
@@ -24,6 +25,15 @@ namespace Sentinel
 
 	class Texture2D : public ISharedRef {
 	public:
+		void Bind(UInt32 slot, const ShaderType shaderType);
+		void Unbind(UInt32 slot, const ShaderType shaderType);
+
+		Bool IsHDR();
+		Bool IsLoaded();
+
+		UInt32 GetWidth();
+		UInt32 GetHeight();
+
 		static SharedRef<Texture2D> Create(const Texture2DImportSettings& settings);
 
 	protected:
@@ -49,7 +59,29 @@ namespace Sentinel
 	template<typename T>
 	class Texture2DCRTP : public Texture2D {
 	private:
+		inline void Bind() {
+			underlying().Bind();
+		}
 
+		inline void Unbind() {
+			underlying().Unbind();
+		}
+
+		inline Bool IsHDR() {
+			return underlying().IsHDR();
+		}
+
+		inline Bool IsLoaded() {
+			return underlying().IsLoaded();
+		}
+
+		inline UInt32 GetWidth() {
+			return underlying().GetWdith();
+		}
+
+		inline UInt32 GetHeight() {
+			return underlying().GetHeight();
+		}
 
 	private:
 		friend T;
