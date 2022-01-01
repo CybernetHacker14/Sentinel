@@ -18,6 +18,7 @@ namespace Sentinel
 	public:
 		void Bind();
 		void Reload();
+		void Clean();
 
 		const STL::string& GetShaderSource(const ShaderType& type = ShaderType::NONE);
 		const STL::string& GetName();
@@ -55,6 +56,10 @@ namespace Sentinel
 
 		inline void Reload() {
 			underlying().Reload();
+		}
+
+		inline void Clean() {
+			underlying().Clean();
 		}
 
 		inline const STL::string& GetShaderSource(const ShaderType& type) {

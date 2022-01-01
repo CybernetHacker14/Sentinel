@@ -11,6 +11,7 @@ namespace Sentinel
 	public:
 		void Bind();
 		void Unbind();
+		void Clean();
 		UInt32 GetCount();
 
 		static SharedRef<Indexbuffer> Create(void* indices, UInt32 count);
@@ -43,6 +44,10 @@ namespace Sentinel
 
 		inline void Unbind() {
 			underlying().Unbind();
+		}
+
+		inline void Clean() {
+			underlying().Clean();
 		}
 
 		inline UInt32 GetCount() {

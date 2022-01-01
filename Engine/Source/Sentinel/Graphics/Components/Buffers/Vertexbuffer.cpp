@@ -51,6 +51,21 @@ namespace Sentinel
 		}
 	}
 
+	void Vertexbuffer::Clean() {
+		if (Backend::GetAPI() == Backend::API::DirectX11)
+		{
+			BaseDowncast<DX11Vertexbuffer>()->Clean();
+		}
+		else if (Backend::GetAPI() == Backend::API::None)
+		{
+			ST_ENGINE_ASSERT(false, "API::None currently not supported");
+		}
+		else
+		{
+			ST_ENGINE_ASSERT(false, "Unknown Backend API");
+		}
+	}
+
 	SharedRef<Vertexbuffer> Vertexbuffer::Create(UInt32 size) {
 		switch (Backend::GetAPI())
 		{

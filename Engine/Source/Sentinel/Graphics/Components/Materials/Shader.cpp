@@ -36,6 +36,21 @@ namespace Sentinel
 		}
 	}
 
+	void Shader::Clean() {
+		if (Backend::GetAPI() == Backend::API::DirectX11)
+		{
+			BaseDowncast<DX11Shader>()->Clean();
+		}
+		else if (Backend::GetAPI() == Backend::API::None)
+		{
+			ST_ENGINE_ASSERT(false, "API::None currently not supported");
+		}
+		else
+		{
+			ST_ENGINE_ASSERT(false, "Unknown Backend API");
+		}
+	}
+
 	const STL::string& Shader::GetShaderSource(const ShaderType& type) {
 		if (Backend::GetAPI() == Backend::API::DirectX11)
 		{

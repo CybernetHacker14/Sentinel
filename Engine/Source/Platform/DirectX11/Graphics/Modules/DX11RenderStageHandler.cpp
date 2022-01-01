@@ -7,20 +7,14 @@ namespace Sentinel
 		InitializeRenderData();
 	}
 
-	DX11RenderStageHandler::~DX11RenderStageHandler() {
-		ExecuteRenderPipelineCleanupStage();
-	}
-
 	void DX11RenderStageHandler::ExecuteStartupStage(const WindowProps& props) {
 		CreateWindowAndContext(props);
 		InitWindowAndContext();
-		SetViewport(0, 0, props.Width, props.Height);
 	}
 
 	void DX11RenderStageHandler::ExecuteRenderPipelinePreprocessStage() {
 		CreateAndInitRenderPipeline();
 		BindPipelineModules();
-		SetRenderTargets();
 	}
 
 	void DX11RenderStageHandler::ExecuteRenderPipelineDrawStage() {
@@ -30,15 +24,25 @@ namespace Sentinel
 	}
 
 	void DX11RenderStageHandler::ExecuteRenderPipelineCleanupStage() {
-		m_RenderTargetView->Release();
+		UnbindPipelineModules();
+		RenderPipeline->Unbind();
+	}
+
+	void DX11RenderStageHandler::ExecuteShutdownStage() {
+		RenderPipeline->Clean();
+		for (auto& vBuffer : RenderData->PipelineModules->Vertexbuffers)
+		{
+			if (vBuffer)
+				vBuffer->Clean();
+		}
+		RenderData->PipelineModules->Indexbuffer->Clean();
+		RenderData->PipelineModules->Shader->Clean();
 		DX11Common::m_Adapter->Release();
 		DX11Common::m_DXGIDevice->Release();
 		DX11Common::m_Swapchain->Release();
 		DX11Common::m_Device->Release();
 		DX11Common::m_Context->Release();
 	}
-
-	void DX11RenderStageHandler::ExecuteShutdownStage() {}
 
 	/////////////////////////////////////////////////////////////////////////////
 
@@ -64,20 +68,6 @@ namespace Sentinel
 		ST_ENGINE_INFO("VERSION  : {0}", info.Version.c_str());
 	}
 
-	void DX11RenderStageHandler::SetViewport(UInt32 x, UInt32 y, UInt32 width, UInt32 height) {
-		D3D11_VIEWPORT viewport;
-		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
-
-		viewport.TopLeftX = x;
-		viewport.TopLeftY = y;
-		viewport.Width = width;
-		viewport.Height = height;
-		viewport.MinDepth = 0;
-		viewport.MaxDepth = 1;
-
-		DX11Common::GetContext()->RSSetViewports(1, &viewport);
-	}
-
 	void DX11RenderStageHandler::CreateAndInitRenderPipeline() {
 		RenderPipeline = Pipeline::Create();
 		RenderPipeline->CreateInputLayout(RenderData->PipelineModules->Shader);
@@ -86,30 +76,27 @@ namespace Sentinel
 
 	void DX11RenderStageHandler::BindPipelineModules() {
 		for (auto& vBuffer : RenderData->PipelineModules->Vertexbuffers)
+		{
 			if (vBuffer)
-			{
-				vBuffer->Bind(
-					RenderPipeline->GetStride()
-				);
-			}
+				vBuffer->Bind(RenderPipeline->GetStride());
+		}
 
 		if (RenderData->PipelineModules->Indexbuffer)
 			RenderData->PipelineModules->Indexbuffer->Bind();
 
 		RenderData->PipelineModules->Shader->Bind();
+		RenderData->PipelineModules->Framebuffer->Bind();
 	}
 
-	void DX11RenderStageHandler::SetRenderTargets() {
-		ID3D11Texture2D* backBuffer = nullptr;
-
-		// Get the address of the back buffer
-		DX11Common::GetSwapchain()->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
-
-		// use the back buffer address to create the render target
-		DX11Common::GetDevice()->CreateRenderTargetView(backBuffer, nullptr, &m_RenderTargetView);
-		backBuffer->Release();
-
-		DX11Common::GetContext()->OMSetRenderTargets(1, &m_RenderTargetView, nullptr);
+	void DX11RenderStageHandler::UnbindPipelineModules() {
+		for (auto& vBuffer : RenderData->PipelineModules->Vertexbuffers)
+		{
+			if (vBuffer)
+				vBuffer->Unbind();
+		}
+		RenderData->PipelineModules->Shader->Reset();
+		RenderData->PipelineModules->Indexbuffer->Unbind();
+		RenderData->PipelineModules->Framebuffer->Unbind();
 	}
 
 	void DX11RenderStageHandler::SwapBuffers() {
@@ -117,7 +104,7 @@ namespace Sentinel
 	}
 
 	void DX11RenderStageHandler::Clear() {
-		DX11Common::GetContext()->ClearRenderTargetView(m_RenderTargetView, (float*)&(RenderData->PipelineModules->ClearColor));
+		RenderData->PipelineModules->Framebuffer->Clear();
 	}
 
 	void DX11RenderStageHandler::Draw() {

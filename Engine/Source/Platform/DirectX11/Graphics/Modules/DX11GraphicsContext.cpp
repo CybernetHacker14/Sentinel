@@ -23,7 +23,7 @@ namespace Sentinel
 
 	void DX11GraphicsContext::InitializeDeviceAndSwapchain() {
 		DXGI_SWAP_CHAIN_DESC swapChainDescription;
-		ZeroMemory(&swapChainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
+		SecureZeroMemory(&swapChainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
 
 		swapChainDescription.BufferDesc.Width = 0;
 		swapChainDescription.BufferDesc.Height = 0;
@@ -74,7 +74,7 @@ namespace Sentinel
 		LARGE_INTEGER driverVersion;
 
 		DXGI_ADAPTER_DESC adapterDescription;
-		ZeroMemory(&adapterDescription, sizeof(DXGI_ADAPTER_DESC));
+		SecureZeroMemory(&adapterDescription, sizeof(DXGI_ADAPTER_DESC));
 
 		DX11Common::GetAdapter()->GetDesc(&adapterDescription);
 

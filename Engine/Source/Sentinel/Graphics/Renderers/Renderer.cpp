@@ -9,7 +9,9 @@ namespace Sentinel
 		m_RenderStageHandler->ExecuteStartupStage(*(m_RenderStageHandler->RenderData->DeviceModules->WindowProps));
 	}
 
-	Renderer::~Renderer() {}
+	Renderer::~Renderer() {
+		m_RenderStageHandler->ExecuteShutdownStage();
+	}
 
 	void Renderer::SetPipelineData(SharedRef<PipelineModules> pipelineModules) {
 		m_RenderStageHandler->RenderData->PipelineModules = pipelineModules;

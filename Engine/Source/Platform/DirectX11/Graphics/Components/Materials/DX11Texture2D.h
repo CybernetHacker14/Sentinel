@@ -20,8 +20,7 @@ namespace Sentinel
 		UInt32 GetWidth() const { return m_Width; }
 		UInt32 GetHeight() const { return m_Height; }
 	private:
-		Load();
-		SetFormat(D3D11_TEXTURE2D_DESC& desc);
+		void Load();
 
 	private:
 		friend class Texture2DCRTP<DX11Texture2D>;

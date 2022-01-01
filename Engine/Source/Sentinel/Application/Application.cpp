@@ -12,7 +12,7 @@ namespace Sentinel
 		s_Instance = this;
 
 		SharedRef<DeviceModules> deviceModules = CreateSharedRef<DeviceModules>();
-		deviceModules->WindowProps = CreateUniqueRef<WindowProps>(name);
+		deviceModules->WindowProps = CreateUniqueRef<WindowProps>(name, 1280, 720);
 
 		m_Renderer = UniqueRef<Renderer>(CreateUniqueRef<Renderer>(deviceModules));
 		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
@@ -21,8 +21,6 @@ namespace Sentinel
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
 
 		SharedRef<PipelineModules> pipelineModules = CreateSharedRef<PipelineModules>();
-		pipelineModules->ClearColor = { 0.0f, 0.2f, 0.3f, 1.0f };
-
 
 		STL::vector<STL::pair<glm::vec4, glm::vec4>> vertices =
 		{
@@ -42,14 +40,18 @@ namespace Sentinel
 			0,1,2,3,4,5
 		};
 
-		SharedRef<Indexbuffer> indexBuffer = Indexbuffer::Create(indices.data(), indices.size());
+		FramebufferSpecification spec;
+		spec.Attachments = { TextureFormat::RGBA32F };
+		spec.ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
+		spec.Width = 1280;
+		spec.Height = 720;
+		spec.SwapchainTarget = true;
 
+		pipelineModules->Framebuffer = Framebuffer::Create(spec);
 		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
-		pipelineModules->Indexbuffer = indexBuffer;
+		pipelineModules->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
 		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TestShader.hlsl", "TestShader");
 		m_Renderer->SetPipelineData(pipelineModules);
-
-		m_AssetManager = CreateUniqueRef<AssetManager>();
 	}
 
 	Application::~Application() {

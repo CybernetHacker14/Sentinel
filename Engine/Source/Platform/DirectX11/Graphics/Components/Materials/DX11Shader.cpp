@@ -61,29 +61,6 @@ namespace Sentinel
 		Load();
 	}
 
-	DX11Shader::~DX11Shader() {
-		for (auto& tuple : m_ShaderBinaryMap)
-		{
-			if (tuple.second)
-				tuple.second->Release();
-		}
-
-		if (m_VertexShader)
-			m_VertexShader->Release();
-
-		if (m_PixelShader)
-			m_PixelShader->Release();
-
-		if (m_ComputeShader)
-			m_ComputeShader->Release();
-
-		m_ShaderBinaryMap.clear();
-		m_ShaderSourceMap.clear();
-
-		m_ShaderName.clear();
-		m_FilePath.clear();
-	}
-
 	void DX11Shader::Bind() const {
 		if (m_VertexShader)
 			DX11Common::GetContext()->VSSetShader(m_VertexShader, nullptr, 0);
@@ -226,5 +203,28 @@ namespace Sentinel
 			m_ComputeShader->Release();
 			m_ComputeShader = nullptr;
 		}
+	}
+
+	void DX11Shader::Clean() {
+		for (auto& tuple : m_ShaderBinaryMap)
+		{
+			if (tuple.second)
+				tuple.second->Release();
+		}
+
+		if (m_VertexShader)
+			m_VertexShader->Release();
+
+		if (m_PixelShader)
+			m_PixelShader->Release();
+
+		if (m_ComputeShader)
+			m_ComputeShader->Release();
+
+		m_ShaderBinaryMap.clear();
+		m_ShaderSourceMap.clear();
+
+		m_ShaderName.clear();
+		m_FilePath.clear();
 	}
 }

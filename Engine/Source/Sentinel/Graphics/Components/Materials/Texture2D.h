@@ -59,12 +59,12 @@ namespace Sentinel
 	template<typename T>
 	class Texture2DCRTP : public Texture2D {
 	private:
-		inline void Bind() {
-			underlying().Bind();
+		inline void Bind(UInt32 slot, const ShaderType shaderType) {
+			underlying().Bind(slot, shaderType);
 		}
 
-		inline void Unbind() {
-			underlying().Unbind();
+		inline void Unbind(UInt32 slot, const ShaderType shaderType) {
+			underlying().Unbind(slot, shaderType);
 		}
 
 		inline Bool IsHDR() {
@@ -76,7 +76,7 @@ namespace Sentinel
 		}
 
 		inline UInt32 GetWidth() {
-			return underlying().GetWdith();
+			return underlying().GetWidth();
 		}
 
 		inline UInt32 GetHeight() {

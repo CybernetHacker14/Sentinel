@@ -19,13 +19,6 @@ namespace Sentinel
 		{DXGI_FORMAT_R32G32B32A32_SINT, 16}
 	};
 
-	DX11Pipeline::DX11Pipeline() {}
-
-	DX11Pipeline::~DX11Pipeline() {
-		if (m_InputLayout)
-			m_InputLayout->Release();
-	}
-
 	void DX11Pipeline::CreateInputLayout(SharedRef<Shader> shader) {
 		ID3DBlob* vertexShaderBinary = shader->DerivedDowncast<DX11Shader>()->GetVertexShaderBinary();
 
@@ -113,5 +106,9 @@ namespace Sentinel
 
 	void DX11Pipeline::Unbind() {
 		DX11Common::GetContext()->IASetInputLayout(nullptr);
+	}
+	void DX11Pipeline::Clean() {
+		if (m_InputLayout)
+			m_InputLayout->Release();
 	}
 }

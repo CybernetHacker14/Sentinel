@@ -5,7 +5,7 @@ namespace Sentinel
 {
 	DX11Vertexbuffer::DX11Vertexbuffer(UInt32 size) {
 		D3D11_BUFFER_DESC description;
-		ZeroMemory(&description, sizeof(description));
+		SecureZeroMemory(&description, sizeof(description));
 
 		description.Usage = D3D11_USAGE_DYNAMIC;
 		description.ByteWidth = size;
@@ -18,7 +18,7 @@ namespace Sentinel
 
 	DX11Vertexbuffer::DX11Vertexbuffer(void* verticesData, UInt32 size) {
 		D3D11_BUFFER_DESC description;
-		ZeroMemory(&description, sizeof(description));
+		SecureZeroMemory(&description, sizeof(description));
 
 		description.Usage = D3D11_USAGE_DEFAULT;
 		description.ByteWidth = size;
@@ -28,16 +28,12 @@ namespace Sentinel
 		description.StructureByteStride = 0;
 
 		D3D11_SUBRESOURCE_DATA subresource;
-		ZeroMemory(&subresource, sizeof(subresource));
+		SecureZeroMemory(&subresource, sizeof(subresource));
 		subresource.pSysMem = verticesData;
 		subresource.SysMemPitch = 0;
 		subresource.SysMemSlicePitch = 0;
 
 		DX11Common::GetDevice()->CreateBuffer(&description, &subresource, &m_VertexbufferPtr);
-	}
-
-	DX11Vertexbuffer::~DX11Vertexbuffer() {
-		m_VertexbufferPtr->Release();
 	}
 
 	void DX11Vertexbuffer::Bind(UInt32 stride) const {
@@ -46,7 +42,11 @@ namespace Sentinel
 	}
 
 	void DX11Vertexbuffer::Unbind() const {
-		DX11Common::GetContext()->IASetVertexBuffers(0, 1, nullptr, nullptr, nullptr);
+		// Expects an array of ID3D11Buffer*, Direct nullptr clearly isn't
+		ID3D11Buffer* nullBuffer = nullptr;
+		UInt32 nullOffset = 0;
+		UInt32 nullStride = 0;
+		DX11Common::GetContext()->IASetVertexBuffers(0, 1, &nullBuffer, &nullStride, &nullOffset);
 	}
 
 	void DX11Vertexbuffer::SetData(const void* vertices, UInt32 size) {
@@ -54,5 +54,9 @@ namespace Sentinel
 		DX11Common::GetContext()->Map(m_VertexbufferPtr, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
 		memcpy(subresource.pData, vertices, size);
 		DX11Common::GetContext()->Unmap(m_VertexbufferPtr, 0);
+	}
+
+	void DX11Vertexbuffer::Clean() {
+		m_VertexbufferPtr->Release();
 	}
 }

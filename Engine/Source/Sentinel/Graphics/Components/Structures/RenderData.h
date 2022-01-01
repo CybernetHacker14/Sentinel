@@ -7,6 +7,7 @@
 
 #include "Sentinel/Graphics/Components/Buffers/Vertexbuffer.h"
 #include "Sentinel/Graphics/Components/Buffers/Indexbuffer.h"
+#include "Sentinel/Graphics/Components/Buffers/Framebuffer.h"
 #include "Sentinel/Graphics/Components/Materials/Shader.h"
 
 #include <glm/glm.hpp>
@@ -22,7 +23,7 @@ namespace Sentinel
 
 	struct PipelineModules : public ISharedRef {
 	public:
-		glm::vec4 ClearColor;
+		SharedRef<Framebuffer> Framebuffer;
 		STL::vector<SharedRef<Vertexbuffer>> Vertexbuffers;
 		SharedRef<Indexbuffer> Indexbuffer;
 		SharedRef<Shader> Shader;
