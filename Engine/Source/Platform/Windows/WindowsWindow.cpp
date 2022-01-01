@@ -37,7 +37,8 @@ namespace Sentinel
 			glfwSetErrorCallback(GLFWErrorCallback);
 		}
 
-		if (props.FullScreen)
+		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, 1);
+		if (props.WindowMode == WindowMode::FULLSCREEN)
 		{
 			m_Window = glfwCreateWindow((Int32)props.Width, (Int32)props.Height, m_Data.Title.c_str(),
 				glfwGetPrimaryMonitor(), nullptr);
@@ -45,7 +46,7 @@ namespace Sentinel
 		else
 		{
 			m_Window = glfwCreateWindow((Int32)props.Width, (Int32)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-			if (props.WindowedMaximized)
+			if (props.WindowMode == WindowMode::WINDOWEDMAXIMIZED)
 			{
 				glfwMaximizeWindow(m_Window);
 			}

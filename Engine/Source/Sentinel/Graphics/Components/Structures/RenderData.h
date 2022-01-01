@@ -10,6 +10,8 @@
 #include "Sentinel/Graphics/Components/Buffers/Framebuffer.h"
 #include "Sentinel/Graphics/Components/Materials/Shader.h"
 
+#include "Sentinel/Graphics/Components/Materials/Texture2D.h"
+
 #include <glm/glm.hpp>
 
 namespace Sentinel

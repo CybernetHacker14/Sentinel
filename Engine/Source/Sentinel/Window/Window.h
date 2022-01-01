@@ -8,21 +8,25 @@ namespace Sentinel
 	template<typename T>
 	class WindowCRTP;
 
+	enum class WindowMode {
+		WINDOWED = 0,
+		WINDOWEDMAXIMIZED = 1,
+		FULLSCREEN = 2
+	};
+
 	struct WindowProps {
 		STL::string Title;
 		UInt32 Width;
 		UInt32 Height;
-		Bool FullScreen;
-		Bool WindowedMaximized;
+		WindowMode WindowMode;
 
 		WindowProps(
 			const STL::string& title = "Sentinel-Engine",
 			UInt32 width = 900,
 			UInt32 height = 900,
-			Bool fullscreen = false,
-			Bool windowedMaximized = false)
+			Sentinel::WindowMode mode = WindowMode::WINDOWED)
 			:Title(title), Width(width), Height(height),
-			FullScreen(fullscreen), WindowedMaximized(windowedMaximized) {}
+			WindowMode(mode) {}
 	};
 
 	// Interface representing a desktop system based Window

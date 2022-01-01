@@ -32,5 +32,7 @@ namespace Sentinel
 		static IDXGIAdapter* m_Adapter;
 
 		static IDXGISwapChain* m_Swapchain;
+
+		static ID3D11SamplerState* m_Slot0SamplerState;
 	};
 }

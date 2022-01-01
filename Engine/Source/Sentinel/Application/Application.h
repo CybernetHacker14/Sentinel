@@ -47,6 +47,8 @@ namespace Sentinel
 		UniqueRef<AssetManager> m_AssetManager;
 		UniqueRef<Renderer> m_Renderer;
 
+		SharedRef<Texture2D> m_TileTexture;
+
 	private:
 		LayerStack m_LayerStack;
 		EventBus m_EventBus;

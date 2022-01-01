@@ -12,7 +12,7 @@ namespace Sentinel
 		s_Instance = this;
 
 		SharedRef<DeviceModules> deviceModules = CreateSharedRef<DeviceModules>();
-		deviceModules->WindowProps = CreateUniqueRef<WindowProps>(name, 1280, 720);
+		deviceModules->WindowProps = CreateUniqueRef<WindowProps>(name, 900, 900, WindowMode::WINDOWED);
 
 		m_Renderer = UniqueRef<Renderer>(CreateUniqueRef<Renderer>(deviceModules));
 		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
@@ -22,14 +22,12 @@ namespace Sentinel
 
 		SharedRef<PipelineModules> pipelineModules = CreateSharedRef<PipelineModules>();
 
-		STL::vector<STL::pair<glm::vec4, glm::vec4>> vertices =
+		STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices =
 		{
-			{ { -0.5f,   0.2f, 0.0f, 1.0f }, {1.0f, 0.0f, 0.0f, 1.0f} },
-			{ { -0.25f, -0.4f, 0.0f, 1.0f }, {0.0f, 1.0f, 0.0f, 1.0f} },
-			{ { -0.75f, -0.4f, 0.0f, 1.0f }, {0.0f, 0.0f, 1.0f, 1.0f} },
-			{ {   0.5f,  0.2f, 0.0f, 1.0f }, {0.5f, 1.0f, 0.0f, 1.0f} },
-			{ {  0.75f, -0.4f, 0.0f, 1.0f }, {1.0f, 0.0f, 0.5f, 1.0f} },
-			{ {  0.25f, -0.4f, 0.0f, 1.0f }, {0.0f, 0.5f, 1.0f, 1.0f} }
+			{ { -0.25f,   0.25f, 0.0f, 1.0f }, {0.0f, 0.0f} },
+			{ {  0.25f,   0.25f, 0.0f, 1.0f }, {1.0f, 0.0f} },
+			{ {  0.25f,  -0.25f, 0.0f, 1.0f }, {1.0f, 1.0f} },
+			{ { -0.25f,  -0.25f, 0.0f, 1.0f }, {0.0f, 1.0f} }
 		};
 
 		SharedRef<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
@@ -37,21 +35,27 @@ namespace Sentinel
 
 		STL::vector<UInt32> indices =
 		{
-			0,1,2,3,4,5
+			0,1,2,0,2,3
 		};
 
 		FramebufferSpecification spec;
 		spec.Attachments = { TextureFormat::RGBA32F };
-		spec.ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
-		spec.Width = 1280;
-		spec.Height = 720;
+		spec.ClearColor = { 0.1f, 0.1f, 0.1f, 0.1f };
+		spec.Width = 900;
+		spec.Height = 900;
 		spec.SwapchainTarget = true;
+
+		Texture2DImportSettings settings;
+		settings.texturePath = "Assets/Tile1.jpg";
+		m_TileTexture = Texture2D::Create(settings);
 
 		pipelineModules->Framebuffer = Framebuffer::Create(spec);
 		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
 		pipelineModules->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
-		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TestShader.hlsl", "TestShader");
+		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
 		m_Renderer->SetPipelineData(pipelineModules);
+
+		m_TileTexture->Bind(0, ShaderType::PIXEL);
 	}
 
 	Application::~Application() {
