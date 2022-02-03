@@ -11,14 +11,14 @@ namespace Sentinel
 		DX11RenderStageHandler();
 
 	private:
-		void ExecuteStartupStage(const WindowProps& props);
+		void ExecuteStartupStage(const WindowProperties& props);
 		void ExecuteRenderPipelinePreprocessStage();
 		void ExecuteRenderPipelineDrawStage();
 		void ExecuteRenderPipelineCleanupStage();
 		void ExecuteShutdownStage();
 
 		void InitializeRenderData();
-		void CreateWindowAndContext(const WindowProps& props);
+		void CreateWindowAndContext(const WindowProperties& props);
 		void InitWindowAndContext();
 
 		void CreateAndInitRenderPipeline();

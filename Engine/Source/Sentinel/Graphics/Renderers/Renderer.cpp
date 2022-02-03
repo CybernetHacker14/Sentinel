@@ -6,7 +6,7 @@ namespace Sentinel
 	Renderer::Renderer(SharedRef<DeviceModules> deviceModules) {
 		m_RenderStageHandler = STL::move(RenderStageHandler::Create());
 		m_RenderStageHandler->RenderData->DeviceModules = deviceModules;
-		m_RenderStageHandler->ExecuteStartupStage(*(m_RenderStageHandler->RenderData->DeviceModules->WindowProps));
+		m_RenderStageHandler->ExecuteStartupStage(*(m_RenderStageHandler->RenderData->DeviceModules->WindowProperties));
 	}
 
 	Renderer::~Renderer() {

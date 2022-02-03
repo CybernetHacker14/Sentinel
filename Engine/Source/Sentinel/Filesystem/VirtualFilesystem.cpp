@@ -16,7 +16,7 @@ namespace Sentinel
 		if (!(virtualPath[0] == '/' && virtualPath[1] == '/'))
 		{
 			outPhysicalPath = virtualPath;
-			return std::filesystem::exists(virtualPath.c_str());
+			return Filesystem::DoesPathExist(virtualPath);
 		}
 
 		// Break the path by '/' and get the list of directories of the path to search
@@ -27,7 +27,7 @@ namespace Sentinel
 		if (m_MountPoints.find(virtualDirectory) == m_MountPoints.end() || m_MountPoints[virtualDirectory].empty())
 		{
 			outPhysicalPath = virtualPath;
-			return std::filesystem::exists(virtualPath.c_str());
+			return Filesystem::DoesPathExist(virtualPath);
 		}
 
 		// Find the new path from the mount points using the virtual directories
@@ -37,7 +37,7 @@ namespace Sentinel
 		for (const STL::string& physicalPath : m_MountPoints[virtualDirectory])
 		{
 			const STL::string newPath = physicalPath + remainderString;
-			if (std::filesystem::exists(newPath.c_str()))
+			if (Filesystem::DoesPathExist(virtualPath))
 			{
 				outPhysicalPath = newPath;
 				return true;

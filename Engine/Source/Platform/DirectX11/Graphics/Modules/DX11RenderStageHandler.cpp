@@ -7,7 +7,7 @@ namespace Sentinel
 		InitializeRenderData();
 	}
 
-	void DX11RenderStageHandler::ExecuteStartupStage(const WindowProps& props) {
+	void DX11RenderStageHandler::ExecuteStartupStage(const WindowProperties& props) {
 		CreateWindowAndContext(props);
 		InitWindowAndContext();
 	}
@@ -50,7 +50,7 @@ namespace Sentinel
 		RenderData = Sentinel::CreateSharedRef<Sentinel::RenderData>();
 	}
 
-	void DX11RenderStageHandler::CreateWindowAndContext(const WindowProps& props) {
+	void DX11RenderStageHandler::CreateWindowAndContext(const WindowProperties& props) {
 		RenderData->DeviceModules->Window = Window::Create(props);
 		RenderData->DeviceModules->GraphicsContext =
 			GraphicsContext::Create(

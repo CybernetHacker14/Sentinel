@@ -18,7 +18,7 @@ namespace Sentinel
 {
 	struct DeviceModules : public ISharedRef {
 	public:
-		UniqueRef<WindowProps> WindowProps;
+		UniqueRef<WindowProperties> WindowProperties;
 		UniqueRef<Window> Window;
 		UniqueRef<GraphicsContext> GraphicsContext;
 	};

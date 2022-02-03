@@ -14,19 +14,21 @@ namespace Sentinel
 		FULLSCREEN = 2
 	};
 
-	struct WindowProps {
+	struct WindowProperties {
 		STL::string Title;
 		UInt32 Width;
 		UInt32 Height;
-		WindowMode WindowMode;
+		WindowMode Mode;
+		Bool FramebufferTransparency;
 
-		WindowProps(
+		WindowProperties(
 			const STL::string& title = "Sentinel-Engine",
 			UInt32 width = 900,
 			UInt32 height = 900,
-			Sentinel::WindowMode mode = WindowMode::WINDOWED)
+			Sentinel::WindowMode mode = WindowMode::WINDOWED,
+			Bool transparency = false)
 			:Title(title), Width(width), Height(height),
-			WindowMode(mode) {}
+			Mode(mode), FramebufferTransparency(transparency) {}
 	};
 
 	// Interface representing a desktop system based Window
@@ -45,7 +47,7 @@ namespace Sentinel
 
 		void* GetNativeWindow();
 
-		static UniqueRef<Window> Create(const WindowProps& props = WindowProps());
+		static UniqueRef<Window> Create(const WindowProperties& props = WindowProperties());
 
 	protected:
 		Window() = default;

@@ -8,7 +8,7 @@ namespace Sentinel
 {
 	class WindowsWindow final : public WindowCRTP<WindowsWindow> {
 	public:
-		WindowsWindow(const WindowProps& props);
+		WindowsWindow(const WindowProperties& props);
 		~WindowsWindow();
 
 	private:
@@ -24,7 +24,7 @@ namespace Sentinel
 
 		void* GetNativeWindow() const { return m_Window; }
 
-		void Init(const WindowProps& props);
+		void Init(const WindowProperties& props);
 		void Shutdown();
 
 	private:

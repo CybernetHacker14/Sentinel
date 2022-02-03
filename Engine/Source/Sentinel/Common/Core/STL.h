@@ -39,7 +39,6 @@
 #include <deque>
 #include <algorithm>
 #include <type_traits>
-#include <utility>
 #include <functional>
 #include <utility>
 #endif // USE_EASTL

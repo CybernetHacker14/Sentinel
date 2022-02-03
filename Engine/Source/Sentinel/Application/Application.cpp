@@ -3,6 +3,8 @@
 #include "Sentinel/Events/Categories/WindowEvent.h"
 #include "Sentinel/Input/Input.h"
 
+#include "Sentinel/Math/Math.h"
+
 namespace Sentinel
 {
 	Application* Application::s_Instance = nullptr;
@@ -12,7 +14,7 @@ namespace Sentinel
 		s_Instance = this;
 
 		SharedRef<DeviceModules> deviceModules = CreateSharedRef<DeviceModules>();
-		deviceModules->WindowProps = CreateUniqueRef<WindowProps>(name, 900, 900, WindowMode::WINDOWED);
+		deviceModules->WindowProperties = CreateUniqueRef<WindowProperties>(name, 900, 900, WindowMode::WINDOWED, false);
 
 		m_Renderer = UniqueRef<Renderer>(CreateUniqueRef<Renderer>(deviceModules));
 		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
@@ -24,10 +26,10 @@ namespace Sentinel
 
 		STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices =
 		{
-			{ { -0.25f,   0.25f, 0.0f, 1.0f }, {0.0f, 0.0f} },
-			{ {  0.25f,   0.25f, 0.0f, 1.0f }, {1.0f, 0.0f} },
-			{ {  0.25f,  -0.25f, 0.0f, 1.0f }, {1.0f, 1.0f} },
-			{ { -0.25f,  -0.25f, 0.0f, 1.0f }, {0.0f, 1.0f} }
+			{ { -0.5f,   0.5f, 0.0f, 1.0f }, {0.0f, 0.0f} },
+			{ {  0.5f,   0.5f, 0.0f, 1.0f }, {1.0f, 0.0f} },
+			{ {  0.5f,  -0.5f, 0.0f, 1.0f }, {1.0f, 1.0f} },
+			{ { -0.5f,  -0.5f, 0.0f, 1.0f }, {0.0f, 1.0f} }
 		};
 
 		SharedRef<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
@@ -41,8 +43,8 @@ namespace Sentinel
 		FramebufferSpecification spec;
 		spec.Attachments = { TextureFormat::RGBA32F };
 		spec.ClearColor = { 0.1f, 0.1f, 0.1f, 0.1f };
-		spec.Width = 900;
-		spec.Height = 900;
+		spec.Width = 400;
+		spec.Height = 400;
 		spec.SwapchainTarget = true;
 
 		Texture2DImportSettings settings;
@@ -56,6 +58,13 @@ namespace Sentinel
 		m_Renderer->SetPipelineData(pipelineModules);
 
 		m_TileTexture->Bind(0, ShaderType::PIXEL);
+
+		glm::vec3 a = { 2, 1, 3 };
+		glm::vec3 b = { 4 ,5 ,6 };
+		glm::vec3 c = Math::SSECrossProduct(a, b);
+		glm::vec3 d = glm::cross(a, b);
+
+		int randomInt = 1;
 	}
 
 	Application::~Application() {
