@@ -1,41 +1,16 @@
 #include "stpch.h"
 #include "Sentinel/Math/Math.h"
 
-#define SHUFFLE_PARAM(x, y, z, w) (z<<6) | (y<<4) | (x<<2) | w
-#define _mm_madd_ps(a, b, c) _mm_add_ps(_mm_mul_ps((a), (b)), (c))
-#define _mm_shuffle(v, n) _mm_shuffle_ps((v), (v), SHUFFLE_PARAM(n,n,n,n))
-#define _mm_replicate_x_ps(v) _mm_shuffle(v, 0)
-#define _mm_replicate_y_ps(v) _mm_shuffle(v, 1)
-#define _mm_replicate_z_ps(v) _mm_shuffle(v, 2)
-#define _mm_replicate_w_ps(v) _mm_shuffle(v, 3)
-
 namespace Sentinel
 {
-	// Horizontal SSE Vector Sum
-	static Float HorizontalSumSSE3(__m128 v) {
-		__m128 shuf = _mm_movehdup_ps(v);
-		__m128 sums = _mm_add_ps(v, shuf);
-		shuf = _mm_movehl_ps(shuf, sums);
-		sums = _mm_add_ss(sums, shuf);
-		return _mm_cvtss_f32(sums);
-	}
-
-	void Math::CreateCachedSin(Float cacheSize) {
-		for (UInt32 i = 0; i < cacheSize; ++i)
-		{
-			Float cachedMul = PI * i / 1000.0f;
-			Float cachedValue = std::sin((Float)(cachedMul));
-			s_CachedSin.insert({ (Float)(cachedMul), cachedValue });
-		}
-	}
-
-	void Math::CreateCachedCos(Float cacheSize) {
-		for (UInt32 i = 0; i < cacheSize; ++i)
-		{
-			Float cachedMul = PI * i / 1000.0f;
-			Float cachedValue = std::cos((Float)(cachedMul));
-			s_CachedSin.insert({ (Float)(cachedMul), cachedValue });
-		}
+	static Float CosInternal(Float x) {
+		const float c1 = 0.9999932946f;
+		const float c2 = -0.4999124376f;
+		const float c3 = 0.0414877472f;
+		const float c4 = -0.0012712095f;
+		float x2;      // The input argument squared
+		x2 = x * x;
+		return (c1 + x2 * (c2 + x2 * (c3 + c4 * x2)));
 	}
 
 	Float Math::FastInverseSquareRoot(Float number) {
@@ -49,7 +24,7 @@ namespace Sentinel
 		x2 = number * 0.5f;
 		y = number;
 		i = *(Long*)&y;                        // evil floating point bit level hacking
-		i = 0x5f375a86 - (i >> 1);             // what the fuck? (Original constant - 0x5f3759df)
+		i = 0x5f375a86 - (i >> 1);             // what the fuck?
 		y = *(Float*)&i;
 
 		// Newton iteration
@@ -60,112 +35,21 @@ namespace Sentinel
 		return y;
 	}
 
-	Float Math::Sin(Float number) {
-		if (s_CachedSin.find(number) == s_CachedSin.end())
-		{
-			ST_ENGINE_WARN("Cache miss at sine cache - caching value {0}", number);
-			s_CachedSin.insert({ number, std::sin(number) });
-		}
+	Float Math::FastCos(Float radians) {
+		radians = radians - floorf(radians * INVTWO_PI) * TWO_PI;
+		radians = radians > 0.0f ? radians : -radians;
 
-		return s_CachedSin[number];
+		if (radians < PI_HALF) return CosInternal(radians);
+		if (radians < PI) return -CosInternal(PI - radians);
+		if (radians < PI_THREEHALF) return -CosInternal(radians - PI);
+		return CosInternal(TWO_PI - radians);
 	}
 
-
-	Float Math::Cos(Float number) {
-		if (s_CachedCos.find(number) == s_CachedCos.end())
-		{
-			ST_ENGINE_WARN("Cache miss at cosine cache - caching value {0}", number);
-			s_CachedCos.insert({ number, std::sin(number) });
-		}
-
-		return s_CachedCos[number];
+	Float Math::FastSin(Float radians) {
+		return FastCos(PI_HALF - radians);
 	}
 
-	glm::mat4 Math::SSEMatrixMultiply(const glm::mat4& a, const glm::mat4& b) {
-		__m128 m2_row_0 = _mm_setr_ps(a[0][0], a[0][1], a[0][2], a[0][3]);
-		__m128 m2_row_1 = _mm_setr_ps(a[1][0], a[1][1], a[1][2], a[1][3]);
-		__m128 m2_row_2 = _mm_setr_ps(a[2][0], a[2][1], a[2][2], a[2][3]);
-		__m128 m2_row_3 = _mm_setr_ps(a[3][0], a[3][1], a[3][2], a[3][3]);
-
-		__m128 m1_row_0 = _mm_setr_ps(b[0][0], b[0][1], b[0][2], b[0][3]);
-		__m128 m1_row_1 = _mm_setr_ps(b[1][0], b[1][1], b[1][2], b[1][3]);
-		__m128 m1_row_2 = _mm_setr_ps(b[2][0], b[2][1], b[2][2], b[2][3]);
-		__m128 m1_row_3 = _mm_setr_ps(b[3][0], b[3][1], b[3][2], b[3][3]);
-
-		__m128 out0, out1, out2, out3;
-
-		out0 = _mm_mul_ps(m2_row_0, _mm_replicate_x_ps(m1_row_0));
-		out1 = _mm_mul_ps(m2_row_0, _mm_replicate_x_ps(m1_row_1));
-		out2 = _mm_mul_ps(m2_row_0, _mm_replicate_x_ps(m1_row_2));
-		out3 = _mm_mul_ps(m2_row_0, _mm_replicate_x_ps(m1_row_3));
-
-		out0 = _mm_madd_ps(m2_row_1, _mm_replicate_y_ps(m1_row_0), out0);
-		out1 = _mm_madd_ps(m2_row_1, _mm_replicate_y_ps(m1_row_1), out1);
-		out2 = _mm_madd_ps(m2_row_1, _mm_replicate_y_ps(m1_row_2), out2);
-		out3 = _mm_madd_ps(m2_row_1, _mm_replicate_y_ps(m1_row_3), out3);
-
-		out0 = _mm_madd_ps(m2_row_2, _mm_replicate_z_ps(m1_row_0), out0);
-		out1 = _mm_madd_ps(m2_row_2, _mm_replicate_z_ps(m1_row_1), out1);
-		out2 = _mm_madd_ps(m2_row_2, _mm_replicate_z_ps(m1_row_2), out2);
-		out3 = _mm_madd_ps(m2_row_2, _mm_replicate_z_ps(m1_row_3), out3);
-
-		out0 = _mm_madd_ps(m2_row_3, _mm_replicate_w_ps(m1_row_0), out0);
-		out1 = _mm_madd_ps(m2_row_3, _mm_replicate_w_ps(m1_row_1), out1);
-		out2 = _mm_madd_ps(m2_row_3, _mm_replicate_w_ps(m1_row_2), out2);
-		out3 = _mm_madd_ps(m2_row_3, _mm_replicate_w_ps(m1_row_3), out3);
-
-		glm::mat4 dest = glm::mat4(0.0f);
-
-		_mm_store_ps(&dest[0][0], out0);
-		_mm_store_ps(&dest[1][0], out1);
-		_mm_store_ps(&dest[2][0], out2);
-		_mm_store_ps(&dest[3][0], out3);
-
-		return dest;
-	}
-
-	glm::vec3 Math::SSECrossProduct(const glm::vec3& a, const glm::vec3& b) {
-		__m128 a4, b4, result;
-
-		a4 = _mm_setr_ps(a.x, a.y, a.z, 0.0f);
-		b4 = _mm_setr_ps(b.x, b.y, b.z, 0.0f);
-
-		// http://threadlocalmutex.com/?p=8
-		__m128 a_yzx = _mm_shuffle_ps(a4, a4, _MM_SHUFFLE(3, 0, 2, 1));
-		__m128 b_yzx = _mm_shuffle_ps(b4, b4, _MM_SHUFFLE(3, 0, 2, 1));
-		__m128 c = _mm_sub_ps(_mm_mul_ps(a4, b_yzx), _mm_mul_ps(a_yzx, b4));
-		result = _mm_shuffle_ps(c, c, _MM_SHUFFLE(3, 0, 2, 1));
-
-		float resultVec4[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-		_mm_storeu_ps(resultVec4, result);
-
-		return glm::vec3(resultVec4[0], resultVec4[1], resultVec4[2]);
-	}
-
-	Float Math::SSEDotProduct(const glm::vec3& a, const glm::vec3& b) {
-		__m128 mulRes, shufReg, sumReg, a4, b4;
-
-		a4 = _mm_set_ps(a.x, a.y, a.z, 0.0f);
-		b4 = _mm_set_ps(b.x, b.y, b.z, 0.0f);
-		mulRes = _mm_mul_ps(a4, b4);
-
-		// Calculate sum of SSE Registers
-		shufReg = _mm_movehdup_ps(mulRes);        // Broadcast elements 3,1 to 2,0
-		sumReg = _mm_add_ps(mulRes, shufReg);
-		shufReg = _mm_movehl_ps(shufReg, sumReg); // High Half -> Low Half
-		sumReg = _mm_add_ss(sumReg, shufReg);
-
-		// The Result is in the lower part of the SSE Register
-		return _mm_cvtss_f32(sumReg);
-	}
-
-	Float Math::SSEDistanceSquare(const glm::vec3& a, const glm::vec3& b) {
-		__m128 a4 = _mm_set_ps(a.x, a.y, a.z, 0.0f);
-		__m128 b4 = _mm_set_ps(b.x, b.y, b.z, 0.0f);
-
-		__m128 diff = _mm_sub_ps(b4, a4);
-		__m128 sqr = _mm_mul_ps(diff, diff);
-
-		return HorizontalSumSSE3(sqr);
+	glm::vec3 Math::FastNormalize(const glm::vec3& vector) {
+		return vector * FastInverseSquareRoot(SIMDMath::SSEDotProduct(vector, vector));
 	}
 }

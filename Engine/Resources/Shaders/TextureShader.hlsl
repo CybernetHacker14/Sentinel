@@ -1,4 +1,6 @@
 #type vertex
+cbuffer Camera : register(b0) { matrix u_ViewProjection; }
+
 struct VOut {
 	float4 position : SV_POSITION;
 	float2 texCoord : TEXCOORD;
@@ -7,7 +9,7 @@ struct VOut {
 VOut VShader(float4 position : POSITION, float2 texCoord : TEXCOORD) {
 	VOut output;
 
-	output.position = position;
+	output.position = mul(position, u_ViewProjection);
 	output.texCoord = texCoord;
 
 	return output;

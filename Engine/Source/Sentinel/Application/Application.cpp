@@ -5,6 +5,9 @@
 
 #include "Sentinel/Math/Math.h"
 
+#include "Sentinel/Graphics/Components/Buffers/Constantbuffer.h"
+#include "Platform/DirectX11/Graphics/Components/Buffers/DX11Constantbuffer.h"
+
 namespace Sentinel
 {
 	Application* Application::s_Instance = nullptr;
@@ -14,7 +17,7 @@ namespace Sentinel
 		s_Instance = this;
 
 		SharedRef<DeviceModules> deviceModules = CreateSharedRef<DeviceModules>();
-		deviceModules->WindowProperties = CreateUniqueRef<WindowProperties>(name, 900, 900, WindowMode::WINDOWED, false);
+		deviceModules->WindowProperties = CreateUniqueRef<WindowProperties>(name, 1280, 720, WindowMode::WINDOWED, false);
 
 		m_Renderer = UniqueRef<Renderer>(CreateUniqueRef<Renderer>(deviceModules));
 		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
@@ -26,10 +29,10 @@ namespace Sentinel
 
 		STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices =
 		{
-			{ { -0.5f,   0.5f, 0.0f, 1.0f }, {0.0f, 0.0f} },
-			{ {  0.5f,   0.5f, 0.0f, 1.0f }, {1.0f, 0.0f} },
-			{ {  0.5f,  -0.5f, 0.0f, 1.0f }, {1.0f, 1.0f} },
-			{ { -0.5f,  -0.5f, 0.0f, 1.0f }, {0.0f, 1.0f} }
+			{ { -3.0f,   3.0f, 0.0f, 1.0f }, {0.0f, 0.0f} },
+			{ {  3.0f,   3.0f, 0.0f, 1.0f }, {1.0f, 0.0f} },
+			{ {  3.0f,  -3.0f, 0.0f, 1.0f }, {1.0f, 1.0f} },
+			{ { -3.0f,  -3.0f, 0.0f, 1.0f }, {0.0f, 1.0f} }
 		};
 
 		SharedRef<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
@@ -43,8 +46,8 @@ namespace Sentinel
 		FramebufferSpecification spec;
 		spec.Attachments = { TextureFormat::RGBA32F };
 		spec.ClearColor = { 0.1f, 0.1f, 0.1f, 0.1f };
-		spec.Width = 400;
-		spec.Height = 400;
+		spec.Width = 1280;
+		spec.Height = 720;
 		spec.SwapchainTarget = true;
 
 		Texture2DImportSettings settings;
@@ -59,12 +62,11 @@ namespace Sentinel
 
 		m_TileTexture->Bind(0, ShaderType::PIXEL);
 
-		glm::vec3 a = { 2, 1, 3 };
-		glm::vec3 b = { 4 ,5 ,6 };
-		glm::vec3 c = Math::SSECrossProduct(a, b);
-		glm::vec3 d = glm::cross(a, b);
+		m_Camera = CreateUniqueRef<Camera>();
+		m_CameraCB = Constantbuffer::Create(sizeof(glm::mat4), 0, Constantbuffer::UsageType::DYNAMIC);
+		m_CameraCB->VSBind();
 
-		int randomInt = 1;
+		m_CameraCB->SetDynamicData(&(m_Camera->GetViewProjectionMatrix()));
 	}
 
 	Application::~Application() {
@@ -101,7 +103,7 @@ namespace Sentinel
 			if (!m_Minimized)
 			{
 				ProcessLayerUpdate();
-
+				m_CameraCB->SetDynamicData(&(m_Camera->GetViewProjectionMatrix()));
 				m_Renderer->Draw();
 			}
 			m_Renderer->GetWindow().OnUpdate();
@@ -135,5 +137,6 @@ namespace Sentinel
 
 	void Application::OnWindowResize(Event& event) {
 		WindowResizeEvent e = *(event.DerivedDowncast<WindowResizeEvent>());
+		m_Camera->OnResize(e.GetWidth(), e.GetHeight());
 	}
 }

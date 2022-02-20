@@ -6,6 +6,9 @@
 #include "Sentinel/Graphics/Renderers/Renderer.h"
 #include "Sentinel/AssetManagement/AssetManager.h"
 
+#include "Sentinel/Graphics/Components/Buffers/Constantbuffer.h"
+#include "Sentinel/Graphics/Components/Cameras/Camera.h"
+
 int main(int argc, char** argv);
 
 namespace Sentinel
@@ -48,6 +51,9 @@ namespace Sentinel
 		UniqueRef<Renderer> m_Renderer;
 
 		SharedRef<Texture2D> m_TileTexture;
+
+		SharedRef<Constantbuffer> m_CameraCB;
+		UniqueRef<Camera> m_Camera;
 
 	private:
 		LayerStack m_LayerStack;

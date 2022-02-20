@@ -1,13 +1,34 @@
 #include "stpch.h"
 #include "Sentinel/Graphics/Components/Cameras/Camera.h"
 
+#include <glm/gtx/norm.hpp>
+
 namespace Sentinel
 {
-	void Camera::UpdateDirectionVectors() {
-		Float sx, sy, sz, cx, cy, cz, theta;
+	Camera::Camera() {
+		UpdateProjectionMatrix();
 	}
 
-	void Camera::CalculateProjection() {
+	void Camera::OnResize(const Float width, const Float height) {
+		m_AspectRatio = width / height;
+		UpdateProjectionMatrix();
+	}
+
+	void Camera::UpdateDirectionVectors() {
+
+		m_DirectionFront = Math::FastNormalize(
+			{
+				Math::FastCos(glm::radians(GetYaw())) * Math::FastSin(glm::radians(GetPitch())),
+				Math::FastSin(glm::radians(GetPitch())),
+				Math::FastSin(glm::radians(GetYaw())) * Math::FastCos(glm::radians(GetPitch()))
+			}
+		);
+
+		m_DirectionRight = Math::FastNormalize(SIMDMath::SSECrossProduct(m_DirectionFront, m_WorldUp));
+		m_DirectionUp = Math::FastNormalize(SIMDMath::SSECrossProduct(m_DirectionRight, m_DirectionFront));
+	}
+
+	void Camera::UpdateProjectionMatrix() {
 
 		switch (m_ProjectionMode)
 		{
@@ -26,6 +47,9 @@ namespace Sentinel
 				m_ProjectionMatrix = glm::ortho(left, right, bottom, top, m_OrthographicNear, m_OrthographicFar);
 			}
 		}
+	}
 
+	void Camera::UpdateViewMatrix() {
+		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_DirectionFront, m_DirectionUp);
 	}
 }

@@ -3,11 +3,10 @@
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Math/Math.h"
 
+#include <glm/glm.hpp>
+
 namespace Sentinel
 {
-	template<typename T>
-	class CameraCRTP;
-
 	enum class ProjectionMode {
 		PERSPECTIVE = 0,
 		ORTHOGRAPHIC = 1
@@ -15,14 +14,11 @@ namespace Sentinel
 
 	class Camera {
 	public:
-		Camera() = default;
+		Camera();
 
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
-		glm::mat4 GetViewProjectionMatrix() { return Math::SSEMatrixMultiply(m_ProjectionMatrix, m_ViewMatrix); }
-
-		const void SetProjectionMatrix(const glm::mat4& projection) { m_ProjectionMatrix = projection; }
-		const void SetViewMatrix(const glm::mat4& view) { m_ViewMatrix = view; }
+		glm::mat4& GetViewProjectionMatrix() const { return SIMDMath::SSEMatrixMultiply(m_ProjectionMatrix, m_ViewMatrix); }
 
 		const glm::vec3& GetPosition() const { return m_Position; }
 		const glm::vec3& GetOrientation() const { return m_Orientation; }
@@ -42,17 +38,24 @@ namespace Sentinel
 		const glm::vec3& GetDirectionVectorRight() const { return m_DirectionRight; }
 		const glm::vec3& GetDirectionVectorUp() const { return m_DirectionUp; }
 
-	protected:
-		void UpdateDirectionVectors();
-		void CalculateProjection();
+		void OnResize(const Float width, const Float height);
+		void OnUpdate();
 
 	protected:
-		ProjectionMode m_ProjectionMode = ProjectionMode::PERSPECTIVE;
+		void UpdateDirectionVectors();
+		void UpdateProjectionMatrix();
+		void UpdateViewMatrix();
+
+	protected:
+		inline static glm::vec3 m_WorldUp = { 0.0f, 1.0f, 0.0f };
+
+	protected:
+		ProjectionMode m_ProjectionMode = ProjectionMode::ORTHOGRAPHIC;
 
 		glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
 		glm::mat4 m_ViewMatrix = glm::mat4(1.0f);
 
-		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 m_Position = { 0.0f, 0.0f, -0.3f };
 		glm::vec3 m_Orientation = { 0.0f, 0.0f, 0.0f }; // x = Yaw, y = Pitch, z = Roll
 
 		// Direction vectors
