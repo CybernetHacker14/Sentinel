@@ -15,6 +15,7 @@ namespace Sentinel
 	class Camera {
 	public:
 		Camera();
+		Camera(const Float width, const Float height);
 
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
@@ -50,12 +51,12 @@ namespace Sentinel
 		inline static glm::vec3 m_WorldUp = { 0.0f, 1.0f, 0.0f };
 
 	protected:
-		ProjectionMode m_ProjectionMode = ProjectionMode::ORTHOGRAPHIC;
+		ProjectionMode m_ProjectionMode = ProjectionMode::PERSPECTIVE;
 
 		glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
 		glm::mat4 m_ViewMatrix = glm::mat4(1.0f);
 
-		glm::vec3 m_Position = { 0.0f, 0.0f, -0.3f };
+		glm::vec3 m_Position = { -5, 5, 5 };
 		glm::vec3 m_Orientation = { 0.0f, 0.0f, 0.0f }; // x = Yaw, y = Pitch, z = Roll
 
 		// Direction vectors
@@ -64,11 +65,11 @@ namespace Sentinel
 		glm::vec3 m_DirectionRight = { 0.0f, 0.0f, 0.0f };
 
 		// Additional attributes
-		Float m_PerspectiveFOV = glm::radians(45.0f);
+		Float m_PerspectiveFOV = 45.0f;
 		Float m_PerspectiveNear = 0.01f, m_PerspectiveFar = 1000.0f;
 
 		Float m_OrthographicSize = 10.0f;
-		Float m_OrthographicNear = -1.0f, m_OrthographicFar = 1.0f;
+		Float m_OrthographicNear = -2.0f, m_OrthographicFar = 2.0f;
 
 		Float m_AspectRatio = 1.778f;
 

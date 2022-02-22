@@ -6,11 +6,19 @@
 namespace Sentinel
 {
 	Camera::Camera() {
+		UpdateDirectionVectors();
+		UpdateViewMatrix();
 		UpdateProjectionMatrix();
+	}
+
+	Camera::Camera(const Float width, const Float height) {
+		OnResize(width, height);
 	}
 
 	void Camera::OnResize(const Float width, const Float height) {
 		m_AspectRatio = width / height;
+		UpdateDirectionVectors();
+		UpdateViewMatrix();
 		UpdateProjectionMatrix();
 	}
 
@@ -34,7 +42,7 @@ namespace Sentinel
 		{
 			case ProjectionMode::PERSPECTIVE:
 			{
-				m_ProjectionMatrix = glm::perspective(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
+				m_ProjectionMatrix = glm::perspectiveRH(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
 				break;
 			}
 			case ProjectionMode::ORTHOGRAPHIC:
@@ -50,6 +58,6 @@ namespace Sentinel
 	}
 
 	void Camera::UpdateViewMatrix() {
-		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_DirectionFront, m_DirectionUp);
+		m_ViewMatrix = glm::lookAtRH(m_Position, m_Position + m_DirectionFront, m_DirectionUp);
 	}
 }

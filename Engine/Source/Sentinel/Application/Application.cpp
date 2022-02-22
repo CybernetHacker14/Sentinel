@@ -29,10 +29,10 @@ namespace Sentinel
 
 		STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices =
 		{
-			{ { -3.0f,   3.0f, 0.0f, 1.0f }, {0.0f, 0.0f} },
-			{ {  3.0f,   3.0f, 0.0f, 1.0f }, {1.0f, 0.0f} },
-			{ {  3.0f,  -3.0f, 0.0f, 1.0f }, {1.0f, 1.0f} },
-			{ { -3.0f,  -3.0f, 0.0f, 1.0f }, {0.0f, 1.0f} }
+			{ { -1.0f,   1.0f, -0.3f, 1.0f }, {0.0f, 0.0f} },
+			{ {  1.0f,   1.0f, -0.3f, 1.0f }, {1.0f, 0.0f} },
+			{ {  1.0f,  -1.0f, -0.3f, 1.0f }, {1.0f, 1.0f} },
+			{ { -1.0f,  -1.0f, -0.3f, 1.0f }, {0.0f, 1.0f} }
 		};
 
 		SharedRef<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
@@ -46,8 +46,8 @@ namespace Sentinel
 		FramebufferSpecification spec;
 		spec.Attachments = { TextureFormat::RGBA32F };
 		spec.ClearColor = { 0.1f, 0.1f, 0.1f, 0.1f };
-		spec.Width = 1280;
-		spec.Height = 720;
+		spec.Width = deviceModules->WindowProperties->Width;
+		spec.Height = deviceModules->WindowProperties->Height;
 		spec.SwapchainTarget = true;
 
 		Texture2DImportSettings settings;
@@ -57,16 +57,16 @@ namespace Sentinel
 		pipelineModules->Framebuffer = Framebuffer::Create(spec);
 		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
 		pipelineModules->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
-		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
+		pipelineModules->Shader = Shader::Create(/*"../Engine/Resources/Shaders/*/"TextureShader.hlsl", "TextureShader");
 		m_Renderer->SetPipelineData(pipelineModules);
 
 		m_TileTexture->Bind(0, ShaderType::PIXEL);
 
-		m_Camera = CreateUniqueRef<Camera>();
+		m_Camera = CreateUniqueRef<Camera>(deviceModules->WindowProperties->Width, deviceModules->WindowProperties->Height);
 		m_CameraCB = Constantbuffer::Create(sizeof(glm::mat4), 0, Constantbuffer::UsageType::DYNAMIC);
-		m_CameraCB->VSBind();
 
-		m_CameraCB->SetDynamicData(&(m_Camera->GetViewProjectionMatrix()));
+		m_CameraCB->SetStaticData(&(m_Camera->GetViewProjectionMatrix()));
+		m_CameraCB->VSBind();
 	}
 
 	Application::~Application() {
@@ -104,6 +104,7 @@ namespace Sentinel
 			{
 				ProcessLayerUpdate();
 				m_CameraCB->SetDynamicData(&(m_Camera->GetViewProjectionMatrix()));
+				m_CameraCB->VSBind();
 				m_Renderer->Draw();
 			}
 			m_Renderer->GetWindow().OnUpdate();
