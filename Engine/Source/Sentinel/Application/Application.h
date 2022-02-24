@@ -39,6 +39,7 @@ namespace Sentinel
 	private:
 		void OnWindowClose(Event& event);
 		void OnWindowResize(Event& event);
+		void OnKeyPressed(Event& event);
 
 	private:
 		Bool m_Running = true;
@@ -46,6 +47,7 @@ namespace Sentinel
 
 		UInt32 m_WindowResizeCallbackIndex = 0;
 		UInt32 m_WindowCloseCallbackIndex = 0;
+		UInt32 m_KeyPressedCallbackIndex = 0;
 	private:
 		UniqueRef<AssetManager> m_AssetManager;
 		UniqueRef<Renderer> m_Renderer;

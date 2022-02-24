@@ -6,9 +6,7 @@
 namespace Sentinel
 {
 	Camera::Camera() {
-		UpdateDirectionVectors();
-		UpdateViewMatrix();
-		UpdateProjectionMatrix();
+		OnUpdate();
 	}
 
 	Camera::Camera(const Float width, const Float height) {
@@ -17,6 +15,9 @@ namespace Sentinel
 
 	void Camera::OnResize(const Float width, const Float height) {
 		m_AspectRatio = width / height;
+	}
+
+	void Camera::OnUpdate() {
 		UpdateDirectionVectors();
 		UpdateViewMatrix();
 		UpdateProjectionMatrix();
@@ -26,9 +27,9 @@ namespace Sentinel
 
 		m_DirectionFront = Math::FastNormalize(
 			{
-				Math::FastCos(glm::radians(GetYaw())) * Math::FastSin(glm::radians(GetPitch())),
+				Math::FastCos(glm::radians(-90 + m_Orientation.x)) * Math::FastSin(glm::radians(m_Orientation.y)),
 				Math::FastSin(glm::radians(GetPitch())),
-				Math::FastSin(glm::radians(GetYaw())) * Math::FastCos(glm::radians(GetPitch()))
+				Math::FastSin(glm::radians(-90 + m_Orientation.x)) * Math::FastCos(glm::radians(m_Orientation.y))
 			}
 		);
 
@@ -52,12 +53,29 @@ namespace Sentinel
 				Float bottom = -m_OrthographicSize * 0.5f;
 				Float top = m_OrthographicSize * 0.5f;
 
-				m_ProjectionMatrix = glm::ortho(left, right, bottom, top, m_OrthographicNear, m_OrthographicFar);
+				m_ProjectionMatrix = glm::orthoRH(left, right, bottom, top, m_OrthographicNear, m_OrthographicFar);
+				break;
 			}
 		}
 	}
 
 	void Camera::UpdateViewMatrix() {
-		m_ViewMatrix = glm::lookAtRH(m_Position, m_Position + m_DirectionFront, m_DirectionUp);
+		switch (m_ProjectionMode)
+		{
+			case ProjectionMode::PERSPECTIVE:
+			{
+				m_ViewMatrix = glm::lookAtRH(m_Position, m_Position + m_DirectionFront, m_DirectionUp);
+				break;
+			}
+			case ProjectionMode::ORTHOGRAPHIC:
+			{
+				glm::mat4 transform(1.0f);
+				transform = glm::translate(transform, m_Position);
+				transform *= glm::rotate(transform, m_OrthographicRotation, glm::vec3(0.0f, 0.0f, 1.0f));
+
+				m_ViewMatrix = glm::inverse(transform);
+				break;
+			}
+		}
 	}
 }

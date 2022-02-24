@@ -13,6 +13,7 @@ namespace Sentinel
 		}
 
 		Int16 GetRepeatCount() const { return m_RepeatCount; }
+		KeyCode GetKeycode() const { return m_KeyCode; }
 
 	private:
 		EventCategory GetEventCategoryFlags() const {

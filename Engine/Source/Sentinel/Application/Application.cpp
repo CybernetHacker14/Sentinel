@@ -1,7 +1,10 @@
 #include "stpch.h"
 #include "Sentinel/Application/Application.h"
 #include "Sentinel/Events/Categories/WindowEvent.h"
+#include "Sentinel/Events/Categories/KeyEvent.h"
 #include "Sentinel/Input/Input.h"
+
+#include "Sentinel/Input/KeyCodes.h"
 
 #include "Sentinel/Math/Math.h"
 
@@ -24,15 +27,16 @@ namespace Sentinel
 
 		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
 		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
+		m_KeyPressedCallbackIndex = SubscribeToEvent(EventType::KeyPressed, ST_BIND_EVENT_FN(Application::OnKeyPressed));
 
 		SharedRef<PipelineModules> pipelineModules = CreateSharedRef<PipelineModules>();
 
 		STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices =
 		{
-			{ { -1.0f,   1.0f, -0.3f, 1.0f }, {0.0f, 0.0f} },
-			{ {  1.0f,   1.0f, -0.3f, 1.0f }, {1.0f, 0.0f} },
-			{ {  1.0f,  -1.0f, -0.3f, 1.0f }, {1.0f, 1.0f} },
-			{ { -1.0f,  -1.0f, -0.3f, 1.0f }, {0.0f, 1.0f} }
+			{ { -1.0f,   1.0f, -5.0f, 1.0f }, {0.0f, 0.0f} },
+			{ {  1.0f,   1.0f, -5.0f, 1.0f }, {1.0f, 0.0f} },
+			{ {  1.0f,  -1.0f, -5.0f, 1.0f }, {1.0f, 1.0f} },
+			{ { -1.0f,  -1.0f, -5.0f, 1.0f }, {0.0f, 1.0f} }
 		};
 
 		SharedRef<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
@@ -57,15 +61,13 @@ namespace Sentinel
 		pipelineModules->Framebuffer = Framebuffer::Create(spec);
 		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
 		pipelineModules->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
-		pipelineModules->Shader = Shader::Create(/*"../Engine/Resources/Shaders/*/"TextureShader.hlsl", "TextureShader");
+		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
 		m_Renderer->SetPipelineData(pipelineModules);
 
 		m_TileTexture->Bind(0, ShaderType::PIXEL);
 
 		m_Camera = CreateUniqueRef<Camera>(deviceModules->WindowProperties->Width, deviceModules->WindowProperties->Height);
 		m_CameraCB = Constantbuffer::Create(sizeof(glm::mat4), 0, Constantbuffer::UsageType::DYNAMIC);
-
-		m_CameraCB->SetStaticData(&(m_Camera->GetViewProjectionMatrix()));
 		m_CameraCB->VSBind();
 	}
 
@@ -73,6 +75,7 @@ namespace Sentinel
 		m_Renderer->Shutdown();
 		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
 		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
+		UnsubscribeFromEvent(EventType::KeyPressed, m_KeyPressedCallbackIndex);
 	}
 
 	Window& Application::GetWindow() {
@@ -103,8 +106,8 @@ namespace Sentinel
 			if (!m_Minimized)
 			{
 				ProcessLayerUpdate();
+				m_Camera->OnUpdate();
 				m_CameraCB->SetDynamicData(&(m_Camera->GetViewProjectionMatrix()));
-				m_CameraCB->VSBind();
 				m_Renderer->Draw();
 			}
 			m_Renderer->GetWindow().OnUpdate();
@@ -139,5 +142,14 @@ namespace Sentinel
 	void Application::OnWindowResize(Event& event) {
 		WindowResizeEvent e = *(event.DerivedDowncast<WindowResizeEvent>());
 		m_Camera->OnResize(e.GetWidth(), e.GetHeight());
+	}
+
+	void Application::OnKeyPressed(Event& event) {
+		KeyPressedEvent e = *(event.DerivedDowncast<KeyPressedEvent>());
+		if (e.GetKeycode() == Key::P)
+		{
+			m_Camera->SetProjectionMode(m_Camera->GetProjectionMode() == ProjectionMode::PERSPECTIVE ?
+				ProjectionMode::ORTHOGRAPHIC : ProjectionMode::PERSPECTIVE);
+		}
 	}
 }
