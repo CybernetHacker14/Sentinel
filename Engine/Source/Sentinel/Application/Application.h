@@ -9,6 +9,9 @@
 #include "Sentinel/Graphics/Components/Buffers/Constantbuffer.h"
 #include "Sentinel/Graphics/Components/Cameras/Camera.h"
 
+#include "Sentinel/GUI/ImGui/ImGuiLayer.h"
+#include "Sentinel/GUI/ImGui/ImGuiDebugLayer.h"
+
 int main(int argc, char** argv);
 
 namespace Sentinel
@@ -55,11 +58,13 @@ namespace Sentinel
 		SharedRef<Texture2D> m_TileTexture;
 
 		SharedRef<Constantbuffer> m_CameraCB;
-		UniqueRef<Camera> m_Camera;
+		SharedRef<Camera> m_Camera;
 
 	private:
 		LayerStack m_LayerStack;
 		EventBus m_EventBus;
+		ImGuiLayer* m_ImGuiLayer;
+		ImGuiDebugLayer* m_ImGuiDebugLayer;
 	private:
 		static Application* s_Instance;
 		friend int::main(int argc, char** argv);

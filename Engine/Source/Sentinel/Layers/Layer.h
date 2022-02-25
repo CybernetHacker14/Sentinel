@@ -10,11 +10,11 @@ namespace Sentinel
 		Layer(const STL::string& debugName = "Layer");
 		virtual ~Layer() = default;
 
-		virtual void OnAttach() = 0;
-		virtual void OnDetach() = 0;
-		virtual void OnUpdate() = 0;
-		virtual void OnRender() = 0;
-		virtual void OnImGuiRender() = 0;
+		virtual void OnAttach() {};
+		virtual void OnDetach() {};
+		virtual void OnUpdate() {};
+		virtual void OnRender() {};
+		virtual void OnImGuiRender() {};
 
 		const STL::string& GetName() const { return m_DebugName; }
 	private:

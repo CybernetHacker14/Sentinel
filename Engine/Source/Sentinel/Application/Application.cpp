@@ -11,6 +11,8 @@
 #include "Sentinel/Graphics/Components/Buffers/Constantbuffer.h"
 #include "Platform/DirectX11/Graphics/Components/Buffers/DX11Constantbuffer.h"
 
+#include <imgui.h>
+
 namespace Sentinel
 {
 	Application* Application::s_Instance = nullptr;
@@ -20,7 +22,7 @@ namespace Sentinel
 		s_Instance = this;
 
 		SharedRef<DeviceModules> deviceModules = CreateSharedRef<DeviceModules>();
-		deviceModules->WindowProperties = CreateUniqueRef<WindowProperties>(name, 1920, 1080, WindowMode::WINDOWEDMAXIMIZED, false);
+		deviceModules->WindowProperties = CreateUniqueRef<WindowProperties>(name, 1280, 720, WindowMode::WINDOWED, false);
 
 		m_Renderer = UniqueRef<Renderer>(CreateUniqueRef<Renderer>(deviceModules));
 		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
@@ -72,9 +74,15 @@ namespace Sentinel
 
 		m_TileTexture->Bind(0, ShaderType::PIXEL);
 
-		m_Camera = CreateUniqueRef<Camera>(deviceModules->WindowProperties->Width, deviceModules->WindowProperties->Height);
+		m_Camera = CreateSharedRef<Camera>(deviceModules->WindowProperties->Width, deviceModules->WindowProperties->Height);
 		m_CameraCB = Constantbuffer::Create(sizeof(glm::mat4), 0, Constantbuffer::UsageType::DYNAMIC);
 		m_CameraCB->VSBind();
+
+		m_ImGuiLayer = new ImGuiLayer();
+		PushOverlay(m_ImGuiLayer);
+
+		m_ImGuiDebugLayer = new ImGuiDebugLayer(m_Camera);
+		PushOverlay(m_ImGuiDebugLayer);
 	}
 
 	Application::~Application() {
@@ -132,11 +140,15 @@ namespace Sentinel
 			return;
 		}
 
-		for (auto layerStackIterator = m_LayerStack.rbegin();
-			layerStackIterator != m_LayerStack.rend(); ++layerStackIterator)
-		{
-			(*layerStackIterator)->OnUpdate();
-		}
+		for (Layer* layer : m_LayerStack)
+			layer->OnUpdate();
+
+		m_ImGuiLayer->Begin();
+
+		for (Layer* layer : m_LayerStack)
+			layer->OnImGuiRender();
+
+		m_ImGuiLayer->End();
 	}
 
 	void Application::OnWindowClose(Event& event) {

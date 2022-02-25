@@ -12,7 +12,7 @@ namespace Sentinel
 		ORTHOGRAPHIC = 1
 	};
 
-	class Camera {
+	class Camera : public ISharedRef {
 	public:
 		Camera();
 		Camera(const Float width, const Float height);
