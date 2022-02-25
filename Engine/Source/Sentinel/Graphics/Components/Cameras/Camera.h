@@ -27,12 +27,24 @@ namespace Sentinel
 		const glm::vec3& GetPosition() const { return m_Position; }
 		const glm::vec3& GetOrientation() const { return m_Orientation; }
 
+		void SetPosition(const glm::vec3& position) { m_Position = position; }
+		void SetOrientation(const glm::vec3& orientation) { m_Orientation = orientation; }
+
+		const Float& GetPositionX() const { return m_Position.x; }
+		const Float& GetPositionY() const { return m_Position.y; }
+		const Float& GetPositionZ() const { return m_Position.z; }
+
+		void SetPositionX(const Float value) { m_Position.x = value; }
+		void SetPositionY(const Float value) { m_Position.y = value; }
+		void SetPositionZ(const Float value) { m_Position.z = value; }
+
 		const Float& GetOrientationX() const { return m_Orientation.x; }
 		const Float& GetOrientationY() const { return m_Orientation.y; }
 		const Float& GetOrientationZ() const { return m_Orientation.z; }
 
-		void SetPosition(const glm::vec3& position) { m_Position = position; }
-		void SetOrientation(const glm::vec3& orientation) { m_Orientation = orientation; }
+		void SetOrientationX(const Float value) { m_Orientation.x = value; }
+		void SetOrientationY(const Float value) { m_Orientation.y = value; }
+		void SetOrientationZ(const Float value) { m_Orientation.z = value; }
 
 		const glm::vec3& GetDirectionVectorFront() const { return m_DirectionFront; }
 		const glm::vec3& GetDirectionVectorRight() const { return m_DirectionRight; }
@@ -58,7 +70,7 @@ namespace Sentinel
 
 		// Transform
 		glm::vec3 m_Position = { 0, 0, 0 };
-		glm::vec3 m_Orientation = { 0.0f, 0.0f, 0.0f }; // x = Yaw, y = Pitch, z = Roll
+		glm::vec3 m_Orientation = { 0.0f, 10.0f, 0.0f }; // x = Yaw, y = Pitch, z = Roll
 
 		// Direction vectors
 		glm::vec3 m_DirectionFront = { 0.0f, 0.0f, 0.0f };
@@ -69,8 +81,8 @@ namespace Sentinel
 		Float m_PerspectiveFOV = 45.0f;
 		Float m_PerspectiveNear = 0.01f, m_PerspectiveFar = 1000.0f;
 
-		Float m_OrthographicSize = 5.0f;
-		Float m_OrthographicNear = 0.0f, m_OrthographicFar = 10.0f;
+		Float m_OrthographicSize = 10.0f;
+		Float m_OrthographicNear = -100.0f, m_OrthographicFar = 100.0f;
 		Float m_OrthographicRotation = 0.0f;
 
 		Float m_AspectRatio = 1.778f;

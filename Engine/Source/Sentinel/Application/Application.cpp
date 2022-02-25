@@ -20,7 +20,7 @@ namespace Sentinel
 		s_Instance = this;
 
 		SharedRef<DeviceModules> deviceModules = CreateSharedRef<DeviceModules>();
-		deviceModules->WindowProperties = CreateUniqueRef<WindowProperties>(name, 1280, 720, WindowMode::WINDOWED, false);
+		deviceModules->WindowProperties = CreateUniqueRef<WindowProperties>(name, 1920, 1080, WindowMode::WINDOWEDMAXIMIZED, false);
 
 		m_Renderer = UniqueRef<Renderer>(CreateUniqueRef<Renderer>(deviceModules));
 		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
@@ -33,10 +33,15 @@ namespace Sentinel
 
 		STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices =
 		{
-			{ { -1.0f,   1.0f, -5.0f, 1.0f }, {0.0f, 0.0f} },
-			{ {  1.0f,   1.0f, -5.0f, 1.0f }, {1.0f, 0.0f} },
-			{ {  1.0f,  -1.0f, -5.0f, 1.0f }, {1.0f, 1.0f} },
-			{ { -1.0f,  -1.0f, -5.0f, 1.0f }, {0.0f, 1.0f} }
+			{ { -3.0f,   3.0f, -7.0f, 1.0f }, {0.0f, 0.0f} },
+			{ { -1.0f,   3.0f, -7.0f, 1.0f }, {1.0f, 0.0f} },
+			{ { -1.0f,   1.0f, -7.0f, 1.0f }, {1.0f, 1.0f} },
+			{ { -3.0f,   1.0f, -7.0f, 1.0f }, {0.0f, 1.0f} },
+
+			{ {  1.0f,   1.0f, -5.0f, 1.0f }, {0.0f, 0.0f} },
+			{ {  3.0f,   1.0f, -5.0f, 1.0f }, {1.0f, 0.0f} },
+			{ {  3.0f,  -1.0f, -5.0f, 1.0f }, {1.0f, 1.0f} },
+			{ {  1.0f,  -1.0f, -5.0f, 1.0f }, {0.0f, 1.0f} }
 		};
 
 		SharedRef<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
@@ -44,7 +49,8 @@ namespace Sentinel
 
 		STL::vector<UInt32> indices =
 		{
-			0,1,2,0,2,3
+			0,1,2,0,2,3,
+			4,5,6,4,6,7
 		};
 
 		FramebufferSpecification spec;
