@@ -37,7 +37,8 @@ project "Sentinel"
         "%{IncludeExternalDir.glm}",
         "%{IncludeExternalDir.spdlog}",
 		"%{IncludeExternalDir.stb_image}",
-		"%{IncludeExternalDir.cereal}"
+		"%{IncludeExternalDir.cereal}",
+		"%{IncludeExternalDir.imgui}"
     }
 
     links
@@ -48,7 +49,8 @@ project "Sentinel"
         "d3d11.lib",
 		"shlwapi.lib",
 		"d3dcompiler.lib",
-		"dxguid.lib"
+		"dxguid.lib",
+		"imgui"
     }
 	
 	shadermodel("5.0")

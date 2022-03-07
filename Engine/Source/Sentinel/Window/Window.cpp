@@ -67,7 +67,7 @@ namespace Sentinel
 	#endif // ST_PLATFORM_WINDOWS
 	}
 
-	UniqueRef<Window> Window::Create(const WindowProps& props) {
+	UniqueRef<Window> Window::Create(const WindowProperties& props) {
 	#ifdef ST_PLATFORM_WINDOWS
 		return CreateUniqueRef<WindowsWindow>(props);
 	#else

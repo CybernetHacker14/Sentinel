@@ -34,6 +34,7 @@ group "Dependencies"
 	include "Engine/Vendor/EABase"
     include "Engine/Vendor/EASTL"
 	include "Engine/Vendor/cereal"
+	include "Engine/Vendor/imgui"
 group ""
 
 -- Include projects

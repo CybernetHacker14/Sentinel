@@ -23,7 +23,7 @@ namespace Sentinel
 
 	void DX11GraphicsContext::InitializeDeviceAndSwapchain() {
 		DXGI_SWAP_CHAIN_DESC swapChainDescription;
-		ZeroMemory(&swapChainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
+		SecureZeroMemory(&swapChainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
 
 		swapChainDescription.BufferDesc.Width = 0;
 		swapChainDescription.BufferDesc.Height = 0;
@@ -66,6 +66,23 @@ namespace Sentinel
 	void DX11GraphicsContext::InitializeDirectXComponents() {
 		DX11Common::GetDevice()->QueryInterface(__uuidof(IDXGIDevice), (LPVOID*)&(DX11Common::m_DXGIDevice));
 		DX11Common::GetDXGIDevice()->GetParent(__uuidof(IDXGIAdapter), (LPVOID*)&(DX11Common::m_Adapter));
+
+		// TODO : Move this in a different place
+		// Creating sampler states
+		{
+			D3D11_SAMPLER_DESC samplerDesc{};
+			SecureZeroMemory(&samplerDesc, sizeof(samplerDesc));
+			samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
+			samplerDesc.MipLODBias = 0.0f;
+			samplerDesc.MinLOD = 0.0f;
+			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			DX11Common::GetDevice()->CreateSamplerState(&samplerDesc, &(DX11Common::m_Slot0SamplerState));
+			DX11Common::GetContext()->PSSetSamplers(0, 1, &(DX11Common::m_Slot0SamplerState));
+		}
 	}
 
 	void DX11GraphicsContext::SetContextInfo() {
@@ -74,7 +91,7 @@ namespace Sentinel
 		LARGE_INTEGER driverVersion;
 
 		DXGI_ADAPTER_DESC adapterDescription;
-		ZeroMemory(&adapterDescription, sizeof(DXGI_ADAPTER_DESC));
+		SecureZeroMemory(&adapterDescription, sizeof(DXGI_ADAPTER_DESC));
 
 		DX11Common::GetAdapter()->GetDesc(&adapterDescription);
 

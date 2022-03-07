@@ -4,29 +4,31 @@
 
 namespace Sentinel
 {
-	class WindowCloseEvent final : public EventCRTP<WindowCloseEvent> {
+	class WindowCloseEvent final : public Event {
 	public:
 		WindowCloseEvent() {
 			Type = EventType::WindowClose;
+
+			m_GetEventCategoryFlagsFunction = ST_BIND_EVENT_FN(GetEventCategoryFlags);
+			m_GetNameFunction = ST_BIND_EVENT_FN(GetName);
+			m_ToStringFunction = ST_BIND_EVENT_FN(ToString);
 		};
 
 	private:
-		EventCategory GetEventCategoryFlags() const { return EventCategory::Application; }
-		const char* GetName() const { return "WindowCloseEvent"; }
-
-		STL::string ToString() const {
-			return STL::string("WindowCloseEvent");
-		}
-
-	private:
-		friend class EventCRTP<WindowCloseEvent>;
+		inline const EventCategory GetEventCategoryFlags() const { return EventCategory::Application; }
+		inline const char* GetName() const { return "WindowCloseEvent"; }
+		inline const STL::string ToString() const { return STL::string("WindowCloseEvent"); }
 	};
 
-	class WindowResizeEvent final : public EventCRTP<WindowResizeEvent> {
+	class WindowResizeEvent final : public Event {
 	public:
 		WindowResizeEvent(UInt32 width, UInt32 height)
 			: m_Width(width), m_Height(height) {
 			Type = EventType::WindowResize;
+
+			m_GetEventCategoryFlagsFunction = ST_BIND_EVENT_FN(GetEventCategoryFlags);
+			m_GetNameFunction = ST_BIND_EVENT_FN(GetName);
+			m_ToStringFunction = ST_BIND_EVENT_FN(ToString);
 		}
 
 	public:
@@ -34,17 +36,16 @@ namespace Sentinel
 		UInt32 GetHeight() const { return m_Height; }
 
 	private:
-		EventCategory GetEventCategoryFlags() const { return EventCategory::Application; }
-		const char* GetName() const { return "WindowResizeEvent"; }
+		inline const EventCategory GetEventCategoryFlags() const { return EventCategory::Application; }
+		inline const char* GetName() const { return "WindowResizeEvent"; }
 
-		STL::string ToString() const {
+		inline const STL::string ToString() const {
 			std::stringstream stream;
 			stream << "WindowsResizeEvent: " << m_Width << " , " << m_Height;
 			return STL::string(stream.str().c_str());
 		}
 
 	private:
-		friend class EventCRTP<WindowResizeEvent>;
 		UInt32 m_Width, m_Height;
 	};
 }

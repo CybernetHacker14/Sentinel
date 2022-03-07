@@ -6,7 +6,7 @@
 
 namespace Sentinel
 {
-	void RenderStageHandler::ExecuteStartupStage(const WindowProps& props) {
+	void RenderStageHandler::ExecuteStartupStage(const WindowProperties& props) {
 		if (Backend::GetAPI() == Backend::API::DirectX11)
 		{
 			BaseDowncast<DX11RenderStageHandler>()->ExecuteStartupStage(props);

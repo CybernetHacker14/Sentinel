@@ -9,7 +9,6 @@ namespace Sentinel
 	class DX11Shader final : public ShaderCRTP<DX11Shader> {
 	public:
 		DX11Shader(const STL::string& filepath, const STL::string& name);
-		~DX11Shader();
 
 		ID3DBlob* GetVertexShaderBinary() const { return m_ShaderBinaryMap.at(ShaderType::VERTEX); }
 		ID3DBlob* GetPixelShaderBinary() const { return m_ShaderBinaryMap.at(ShaderType::PIXEL); }
@@ -28,6 +27,8 @@ namespace Sentinel
 		void CompileFromSource();
 		void Load();
 		void Reset();
+
+		void Clean();
 
 	private:
 		template<typename T>

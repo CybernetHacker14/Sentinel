@@ -19,3 +19,6 @@
 [submodule "Engine/Vendor/cereal/module"]
 	path = Engine/Vendor/cereal/module
 	url = https://github.com/USCiLab/cereal.git
+[submodule "Engine/Vendor/imgui/module"]
+	path = Engine/Vendor/imgui/module
+	url = https://github.com/ocornut/imgui.git

@@ -9,6 +9,8 @@ namespace Sentinel
 	IDXGIAdapter* DX11Common::m_Adapter = nullptr;
 	IDXGISwapChain* DX11Common::m_Swapchain = nullptr;
 
+	ID3D11SamplerState* DX11Common::m_Slot0SamplerState = nullptr;
+
 	ID3D11Device* DX11Common::GetDevice() {
 		return m_Device;
 	}

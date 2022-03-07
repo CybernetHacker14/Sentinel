@@ -8,21 +8,27 @@ namespace Sentinel
 	template<typename T>
 	class WindowCRTP;
 
-	struct WindowProps {
+	enum class WindowMode {
+		WINDOWED = 0,
+		WINDOWEDMAXIMIZED = 1,
+		FULLSCREEN = 2
+	};
+
+	struct WindowProperties {
 		STL::string Title;
 		UInt32 Width;
 		UInt32 Height;
-		Bool FullScreen;
-		Bool WindowedMaximized;
+		WindowMode Mode;
+		Bool FramebufferTransparency;
 
-		WindowProps(
+		WindowProperties(
 			const STL::string& title = "Sentinel-Engine",
 			UInt32 width = 900,
 			UInt32 height = 900,
-			Bool fullscreen = false,
-			Bool windowedMaximized = false)
+			Sentinel::WindowMode mode = WindowMode::WINDOWED,
+			Bool transparency = false)
 			:Title(title), Width(width), Height(height),
-			FullScreen(fullscreen), WindowedMaximized(windowedMaximized) {}
+			Mode(mode), FramebufferTransparency(transparency) {}
 	};
 
 	// Interface representing a desktop system based Window
@@ -41,7 +47,7 @@ namespace Sentinel
 
 		void* GetNativeWindow();
 
-		static UniqueRef<Window> Create(const WindowProps& props = WindowProps());
+		static UniqueRef<Window> Create(const WindowProperties& props = WindowProperties());
 
 	protected:
 		Window() = default;

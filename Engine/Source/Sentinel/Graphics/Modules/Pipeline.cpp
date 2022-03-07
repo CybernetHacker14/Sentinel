@@ -51,6 +51,21 @@ namespace Sentinel
 		}
 	}
 
+	void Pipeline::Clean() {
+		if (Backend::GetAPI() == Backend::API::DirectX11)
+		{
+			BaseDowncast<DX11Pipeline>()->Clean();
+		}
+		else if (Backend::GetAPI() == Backend::API::None)
+		{
+			ST_ENGINE_ASSERT(false, "API::None currently not supported");
+		}
+		else
+		{
+			ST_ENGINE_ASSERT(false, "Unknown Backend API");
+		}
+	}
+
 	UInt32 Pipeline::GetStride() {
 		if (Backend::GetAPI() == Backend::API::DirectX11)
 		{

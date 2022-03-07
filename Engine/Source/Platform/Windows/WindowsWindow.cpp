@@ -15,7 +15,7 @@ namespace Sentinel
 		ST_ENGINE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	WindowsWindow::WindowsWindow(const WindowProps& props) {
+	WindowsWindow::WindowsWindow(const WindowProperties& props) {
 		Init(props);
 	}
 
@@ -23,7 +23,7 @@ namespace Sentinel
 		Shutdown();
 	}
 
-	void WindowsWindow::Init(const WindowProps& props) {
+	void WindowsWindow::Init(const WindowProperties& props) {
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
@@ -37,7 +37,9 @@ namespace Sentinel
 			glfwSetErrorCallback(GLFWErrorCallback);
 		}
 
-		if (props.FullScreen)
+		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, props.FramebufferTransparency ? 1 : 0);
+
+		if (props.Mode == WindowMode::FULLSCREEN)
 		{
 			m_Window = glfwCreateWindow((Int32)props.Width, (Int32)props.Height, m_Data.Title.c_str(),
 				glfwGetPrimaryMonitor(), nullptr);
@@ -45,7 +47,7 @@ namespace Sentinel
 		else
 		{
 			m_Window = glfwCreateWindow((Int32)props.Width, (Int32)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-			if (props.WindowedMaximized)
+			if (props.Mode == WindowMode::WINDOWEDMAXIMIZED)
 			{
 				glfwMaximizeWindow(m_Window);
 			}

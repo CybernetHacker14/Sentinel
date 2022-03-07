@@ -12,7 +12,7 @@ namespace Sentinel
 
 	class RenderStageHandler {
 	public:
-		void ExecuteStartupStage(const WindowProps& props);
+		void ExecuteStartupStage(const WindowProperties& props);
 		void ExecuteRenderPipelinePreprocessStage();
 		void ExecuteRenderPipelineDrawStage();
 		void ExecuteRenderPipelineCleanupStage();
@@ -51,7 +51,7 @@ namespace Sentinel
 	template<typename T>
 	class RenderStageHandlerCRTP : public RenderStageHandler {
 	private:
-		inline void ExecuteStartupStage(const WindowProps& props) {
+		inline void ExecuteStartupStage(const WindowProperties& props) {
 			underlying().ExecuteStartupStage(props);
 		}
 

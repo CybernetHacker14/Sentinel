@@ -16,8 +16,4 @@ void ExampleLayer::OnRender() {}
 
 void ExampleLayer::OnImGuiRender() {}
 
-void ExampleLayer::OnWindowResize(Sentinel::Event& event) {
-	Sentinel::WindowResizeEvent e = *(event.DerivedDowncast<Sentinel::WindowResizeEvent>());
-	ST_WARN("{0} {1}", e.GetWidth(), e.GetHeight());
-	event.Handled = true;
-}
+void ExampleLayer::OnWindowResize(Sentinel::Event& event) {}

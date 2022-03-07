@@ -13,6 +13,8 @@ namespace Sentinel
 		void Unbind();
 		void SetData(const void* verticesData, UInt32 size);
 
+		void Clean();
+
 		static SharedRef<Vertexbuffer> Create(UInt32 size);
 		static SharedRef<Vertexbuffer> Create(void* vertices, UInt32 size);
 
@@ -48,6 +50,10 @@ namespace Sentinel
 
 		inline void SetData(const void* verticesData, UInt32 size) {
 			underlying().SetData(verticesData, size);
+		}
+
+		inline void Clean() {
+			underlying().Clean();
 		}
 
 	private:

@@ -8,13 +8,13 @@ namespace Sentinel
 {
 	class DX11Pipeline final : public PipelineCRTP<DX11Pipeline> {
 	public:
-		DX11Pipeline();
-		~DX11Pipeline();
+		DX11Pipeline() = default;
 
 	private:
 		void CreateInputLayout(SharedRef<Shader> shader);
 		void Bind();
 		void Unbind();
+		void Clean();
 
 		inline UInt32 GetStride() const { return m_Stride; }
 
