@@ -6,9 +6,6 @@
 
 namespace Sentinel
 {
-	template<typename T>
-	class EventCRTP;
-
 	// Enum for depicting the type of event
 	enum class EventType {
 		None = 0,
@@ -40,63 +37,52 @@ namespace Sentinel
 
 	class Event {
 	public:
-		EventCategory GetEventCategoryFlags();
-		const char* GetName();
-		const STL::string& ToString();
+		Event() = default;
 
-		EventType GetEventType() { return Type; }
+		inline const EventCategory GetEventCategoryFlags() const {
+			if (!m_GetEventCategoryFlagsFunction)
+				return EventCategory();
 
-		Bool IsInCategory(EventCategory category) {
+			return m_GetEventCategoryFlagsFunction();
+		}
+
+		inline const char* GetName() const {
+			if (!m_GetNameFunction)
+				return "";
+
+			return m_GetNameFunction();
+		}
+
+		inline const STL::string& ToString() const {
+			if (!m_ToStringFunction)
+				return STL::string();
+
+			return m_ToStringFunction();
+		}
+
+		inline const EventType GetEventType() const { return Type; }
+
+		inline Bool IsInCategory(EventCategory category) const {
 			return static_cast<Bool>(GetEventCategoryFlags() & category);
+		}
+
+	public:
+		template<typename T>
+		inline T* Cast() {
+			static_assert(STL::is_base_of<Event, T>::value,
+				"'T' should be a derived from Event.");
+			return static_cast<T*>(this);
 		}
 
 	public:
 		Bool Handled = false;
 
 	protected:
-		Event() = default;
-
 		EventType Type;
 
-	public:
-		template<typename T>
-		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<EventCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from EventCRTP<T>.");
-			return static_cast<T*>(this);
-		}
-
-	private:
-		template<typename T>
-		inline EventCRTP<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<EventCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from EventCRTP<T>.");
-			return static_cast<EventCRTP<T>*>(this);
-		}
-	};
-
-	template<typename T>
-	class EventCRTP : public Event {
-	private:
-		inline EventCategory GetEventCategoryFlags() {
-			return underlying().GetEventCategoryFlags();
-		}
-
-		inline const char* GetName() {
-			return underlying().GetName();
-		}
-
-		inline const STL::string& ToString() {
-			return underlying().ToString();
-		}
-
-	private:
-		friend T;
-		friend Event;
-		EventCRTP() = default;
-
-		inline T& underlying() {
-			return static_cast<T&>(*this);
-		}
+	protected:
+		STL::function<const EventCategory()> m_GetEventCategoryFlagsFunction;
+		STL::function<const char* ()> m_GetNameFunction;
+		STL::function<const STL::string& ()> m_ToStringFunction;
 	};
 }

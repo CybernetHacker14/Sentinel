@@ -152,18 +152,18 @@ namespace Sentinel
 	}
 
 	void Application::OnWindowClose(Event& event) {
-		WindowCloseEvent e = *(event.DerivedDowncast<WindowCloseEvent>());
+		WindowCloseEvent e = *(event.Cast<WindowCloseEvent>());
 		m_Running = false;
 		event.Handled = true;
 	}
 
 	void Application::OnWindowResize(Event& event) {
-		WindowResizeEvent e = *(event.DerivedDowncast<WindowResizeEvent>());
+		WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
 		m_Camera->OnResize(e.GetWidth(), e.GetHeight());
 	}
 
 	void Application::OnKeyPressed(Event& event) {
-		KeyPressedEvent e = *(event.DerivedDowncast<KeyPressedEvent>());
+		KeyPressedEvent e = *(event.Cast<KeyPressedEvent>());
 		if (e.GetKeycode() == Key::P)
 		{
 			m_Camera->SetProjectionMode(m_Camera->GetProjectionMode() == ProjectionMode::PERSPECTIVE ?
