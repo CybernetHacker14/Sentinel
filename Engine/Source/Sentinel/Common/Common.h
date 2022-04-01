@@ -9,3 +9,5 @@
 
 #include "Sentinel/Common/SmartPointers/UniqueRef.h"
 #include "Sentinel/Common/SmartPointers/SharedRef.h"
+
+#include "Sentinel/Common/Templates/Delegate.h"

@@ -27,6 +27,7 @@
 #include <EASTL/type_traits.h>
 #include <EASTL/utility.h>
 #include <EASTL/functional.h>
+#include <EASTL/type_traits.h>
 #else
 #include <string>
 #include <vector>
@@ -41,6 +42,7 @@
 #include <type_traits>
 #include <functional>
 #include <utility>
+#include <new>
 #endif // USE_EASTL
 
 // The purpose of this header file is to provide an abstraction between types like string, vector, etc.
@@ -201,6 +203,19 @@ namespace Sentinel
 		inline T remove(T first, T last, const U& value) {
 			return eastl::remove(first, last, value);
 		}
+
+		template<typename T>
+		using is_class = eastl::is_class<T>;
+
+		template<bool B, typename T = void>
+		using enable_if = eastl::enable_if<B, T>;
+
+		template<typename T>
+		using decay = eastl::decay<T>;
+
+		using true_type = eastl::bool_constant<true>;
+		using false_type = eastl::bool_constant<false>;
+
 	#else
 
 		template<typename T>
@@ -348,6 +363,18 @@ namespace Sentinel
 		inline T remove(T first, T last, const U& value) {
 			return std::remove(first, last, value);
 		}
+
+		template<typename T>
+		using is_class = std::is_class<T>;
+
+		template<bool B, typename T = void>
+		using enable_if = std::enable_if<B, T>;
+
+		template<typename T>
+		using decay = std::decay<T>;
+
+		using true_type = std::true_type;
+		using false_type = std::false_type;
 
 	#endif // USE_EASTL
 	}

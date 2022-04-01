@@ -58,7 +58,7 @@ namespace Sentinel
 		static SharedRef<Constantbuffer> Create(UInt32 size, UInt32 bindSlot, UsageType usageType);
 
 	protected:
-		STL::function<void()> m_VSBindFunction;
+		STL::delegate<void()> m_VSBindFunction;
 		STL::function<void()> m_PSBindFunction;
 		STL::function<void()> m_CSBindFunction;
 
