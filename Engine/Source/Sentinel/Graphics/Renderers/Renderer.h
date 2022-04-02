@@ -17,6 +17,7 @@ namespace Sentinel
 		Window& GetWindow();
 
 		void Draw();
+		void Clear();
 		void Shutdown();
 
 	private:

@@ -7,23 +7,66 @@
 
 namespace Sentinel
 {
-	template<typename T>
-	class RenderStageHandlerCRTP;
-
 	class RenderStageHandler {
 	public:
-		void ExecuteStartupStage(const WindowProperties& props);
-		void ExecuteRenderPipelinePreprocessStage();
-		void ExecuteRenderPipelineDrawStage();
-		void ExecuteRenderPipelineCleanupStage();
-		void ExecuteShutdownStage();
+		RenderStageHandler() = default;
+
+		inline void ExecuteStartupStage(const WindowProperties& props) {
+			if (!m_StartupStageFunction)
+				return;
+
+			m_StartupStageFunction(props);
+		}
+
+		inline void ExecuteRenderPipelinePreprocessStage() {
+			if (!m_RenderPreprocessFunction)
+				return;
+
+			m_RenderPreprocessFunction();
+		}
+
+		inline void ExecuteRenderPipelineDrawStage() {
+			if (!m_RenderDrawFunction)
+				return;
+
+			m_RenderDrawFunction();
+		}
+
+		inline void ExecuteRenderPipelineClearStage() {
+			if (!m_RenderClearFunction)
+				return;
+
+			m_RenderClearFunction();
+		}
+
+		inline void ExecuteRenderPipelineCleanupStage() {
+			if (!m_RenderCleanupFunction)
+				return;
+
+			m_RenderCleanupFunction();
+		}
+
+		inline void ExecuteShutdownStage() {
+			if (!m_ShutdownStageFunction)
+				return;
+
+			m_ShutdownStageFunction();
+		}
 
 		RenderData& GetRenderData() { return *(RenderData.get()); }
 
+	public:
 		static UniqueRef<RenderStageHandler> Create();
 
 	protected:
-		RenderStageHandler() = default;
+		STL::delegate<void(const WindowProperties&)> m_StartupStageFunction;
+		STL::delegate<void()> m_RenderPreprocessFunction;
+		STL::delegate<void()> m_RenderDrawFunction;
+		STL::delegate<void()> m_RenderClearFunction;
+		STL::delegate<void()> m_RenderCleanupFunction;
+		STL::delegate<void()> m_ShutdownStageFunction;
+
+		STL::delegate<void()> m_DestructorFunction;
 
 	protected:
 		SharedRef<RenderData> RenderData;
@@ -31,53 +74,5 @@ namespace Sentinel
 
 	private:
 		friend class Renderer;
-
-	private:
-		template<typename T>
-		inline RenderStageHandlerCRTP<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<RenderStageHandlerCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from RenderStageHandlerCRTP<T>.");
-			return static_cast<RenderStageHandlerCRTP<T>*>(this);
-		}
-
-		template<typename T>
-		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<RenderStageHandlerCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from RenderStageHandlerCRTP<T>.");
-			return static_cast<T*>(this);
-		}
-	};
-
-	template<typename T>
-	class RenderStageHandlerCRTP : public RenderStageHandler {
-	private:
-		inline void ExecuteStartupStage(const WindowProperties& props) {
-			underlying().ExecuteStartupStage(props);
-		}
-
-		inline void ExecuteRenderPipelinePreprocessStage() {
-			underlying().ExecuteRenderPipelinePreprocessStage();
-		}
-
-		inline void ExecuteRenderPipelineDrawStage() {
-			underlying().ExecuteRenderPipelineDrawStage();
-		}
-
-		inline void ExecuteRenderPipelineCleanupStage() {
-			underlying().ExecuteRenderPipelineCleanupStage();
-		}
-
-		inline void ExecuteShutdownStage() {
-			underlying().ExecuteShutdownStage();
-		}
-
-	private:
-		friend T;
-		friend RenderStageHandler;
-		RenderStageHandlerCRTP() = default;
-
-		inline T& underlying() {
-			return static_cast<T&>(*this);
-		}
 	};
 }

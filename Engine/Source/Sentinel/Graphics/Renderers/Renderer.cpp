@@ -26,6 +26,10 @@ namespace Sentinel
 		m_RenderStageHandler->ExecuteRenderPipelineDrawStage();
 	}
 
+	void Renderer::Clear() {
+		m_RenderStageHandler->ExecuteRenderPipelineClearStage();
+	}
+
 	void Renderer::Shutdown() {
 		m_RenderStageHandler->ExecuteRenderPipelineCleanupStage();
 	}

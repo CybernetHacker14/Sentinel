@@ -11,11 +11,13 @@ namespace Sentinel
 		m_CSBindFunction = ST_BIND_EVENT_FN(CSBind);
 		m_SetStaticDataFunction = ST_BIND_EVENT_FN(SetStaticData);
 		m_SetDynamicDataFunction = ST_BIND_EVENT_FN(SetDynamicData);
+		m_DestructorFunction = ST_BIND_EVENT_FN(Destructor);
 
 		D3D11_BUFFER_DESC description;
 		SecureZeroMemory(&description, sizeof(description));
 		description.ByteWidth = m_Size;
-		description.Usage = m_UsageType == UsageType::DEFAULT ? D3D11_USAGE_DEFAULT : D3D11_USAGE_DYNAMIC;
+		description.Usage =
+			m_UsageType == UsageType::DEFAULT ? D3D11_USAGE_DEFAULT : D3D11_USAGE_DYNAMIC;
 		description.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		description.CPUAccessFlags = m_UsageType == UsageType::DYNAMIC ? D3D11_CPU_ACCESS_WRITE : 0;
 		description.MiscFlags = 0;
@@ -46,5 +48,9 @@ namespace Sentinel
 		DX11Common::GetContext()->Map(m_Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
 		memcpy(subresource.pData, data, m_Size);
 		DX11Common::GetContext()->Unmap(m_Buffer, 0);
+	}
+
+	void DX11Constantbuffer::Destructor() const {
+		m_Buffer->Release();
 	}
 }

@@ -16,6 +16,8 @@ namespace Sentinel
 		void SetStaticData(void* data) const;
 		void SetDynamicData(void* data) const;
 
+		void Destructor() const;
+
 	private:
 		ID3D11Buffer* m_Buffer;
 		UInt32 m_BindSlot;

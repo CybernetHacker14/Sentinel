@@ -69,7 +69,8 @@ namespace Sentinel
 		pipelineModules->Framebuffer = Framebuffer::Create(spec);
 		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
 		pipelineModules->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
-		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
+		//pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
+		pipelineModules->Shader = Shader::Create("TextureShader.hlsl", "TextureShader");
 		m_Renderer->SetPipelineData(pipelineModules);
 
 		m_TileTexture->Bind(0, ShaderType::PIXEL);
@@ -119,9 +120,10 @@ namespace Sentinel
 		{
 			if (!m_Minimized)
 			{
-				ProcessLayerUpdate();
+				m_Renderer->Clear();
 				m_Camera->OnUpdate();
 				m_CameraCB->SetDynamicData(&(m_Camera->GetViewProjectionMatrix()));
+				ProcessLayerUpdate();
 				m_Renderer->Draw();
 			}
 			m_Renderer->GetWindow().OnUpdate();

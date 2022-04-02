@@ -5,6 +5,15 @@ namespace Sentinel
 {
 	DX11RenderStageHandler::DX11RenderStageHandler() {
 		InitializeRenderData();
+
+		m_StartupStageFunction = ST_BIND_EVENT_FN(ExecuteStartupStage);
+		m_RenderPreprocessFunction = ST_BIND_EVENT_FN(ExecuteRenderPipelinePreprocessStage);
+		m_RenderDrawFunction = ST_BIND_EVENT_FN(ExecuteRenderPipelineDrawStage);
+		m_RenderClearFunction = ST_BIND_EVENT_FN(ExecuteRenderPipelineClearStage);
+		m_RenderCleanupFunction = ST_BIND_EVENT_FN(ExecuteRenderPipelineCleanupStage);
+		m_ShutdownStageFunction = ST_BIND_EVENT_FN(ExecuteShutdownStage);
+
+		m_DestructorFunction = ST_BIND_EVENT_FN(Destructor);
 	}
 
 	void DX11RenderStageHandler::ExecuteStartupStage(const WindowProperties& props) {
@@ -18,9 +27,12 @@ namespace Sentinel
 	}
 
 	void DX11RenderStageHandler::ExecuteRenderPipelineDrawStage() {
-		Clear();
 		Draw();
 		SwapBuffers();
+	}
+
+	void DX11RenderStageHandler::ExecuteRenderPipelineClearStage() {
+		Clear();
 	}
 
 	void DX11RenderStageHandler::ExecuteRenderPipelineCleanupStage() {
@@ -42,6 +54,10 @@ namespace Sentinel
 		DX11Common::m_Swapchain->Release();
 		DX11Common::m_Device->Release();
 		DX11Common::m_Context->Release();
+	}
+
+	void DX11RenderStageHandler::Destructor() {
+
 	}
 
 	/////////////////////////////////////////////////////////////////////////////

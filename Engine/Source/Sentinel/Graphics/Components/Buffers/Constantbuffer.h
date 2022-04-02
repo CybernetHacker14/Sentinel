@@ -15,6 +15,13 @@ namespace Sentinel
 		Constantbuffer() = default;
 		Constantbuffer(UInt32 size, UInt32 bindSlot, UsageType usageType);
 
+		inline ~Constantbuffer() {
+			if (!m_DestructorFunction)
+				return;
+
+			m_DestructorFunction();
+		}
+
 		inline void VSBind() const {
 			if (!m_VSBindFunction)
 				return;
@@ -59,11 +66,13 @@ namespace Sentinel
 
 	protected:
 		STL::delegate<void()> m_VSBindFunction;
-		STL::function<void()> m_PSBindFunction;
-		STL::function<void()> m_CSBindFunction;
+		STL::delegate<void()> m_PSBindFunction;
+		STL::delegate<void()> m_CSBindFunction;
 
-		STL::function<void(void*)> m_SetStaticDataFunction;
-		STL::function<void(void*)> m_SetDynamicDataFunction;
+		STL::delegate<void(void*)> m_SetStaticDataFunction;
+		STL::delegate<void(void*)> m_SetDynamicDataFunction;
+
+		STL::delegate<void()> m_DestructorFunction;
 
 	protected:
 		void* m_Data = nullptr;

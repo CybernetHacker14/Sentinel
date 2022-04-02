@@ -10,6 +10,10 @@ namespace Sentinel
 	}
 
 	void ImGuiDebugLayer::OnImGuiRender() {
-		ImGui::ShowDemoWindow();
+		ImGui::Begin("Test Window");
+		m_Rotation = m_Camera->GetOrientation();
+		ImGui::SliderFloat3("Test UI", &m_Rotation.x, 0.0f, 360.0f);
+		m_Camera->SetOrientation(m_Rotation);
+		ImGui::End();
 	}
 }
