@@ -66,20 +66,22 @@ namespace Sentinel
 			{
 				glm::mat4 transform(1.0f);
 				transform = glm::lookAtRH(m_Position, m_Position + m_DirectionFront, m_DirectionUp);
-				transform *= glm::rotate(transform, m_Orientation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+				transform = glm::rotate(transform, m_Orientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+				transform = glm::rotate(transform, m_Orientation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+				transform = glm::rotate(transform, m_Orientation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 
-				m_ViewMatrix = transform;
+				m_ViewMatrix = glm::inverse(transform);
 				break;
 			}
 			case ProjectionMode::ORTHOGRAPHIC:
 			{
 				glm::mat4 transform(1.0f);
 				transform = glm::translate(transform, m_Position);
-				transform *= glm::rotate(transform, m_Orientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-				transform *= glm::rotate(transform, m_Orientation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-				transform *= glm::rotate(transform, m_Orientation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+				transform = glm::rotate(transform, m_Orientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+				transform = glm::rotate(transform, m_Orientation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+				transform = glm::rotate(transform, m_Orientation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 
-				m_ViewMatrix = transform;
+				m_ViewMatrix = glm::inverse(transform);
 				break;
 			}
 		}

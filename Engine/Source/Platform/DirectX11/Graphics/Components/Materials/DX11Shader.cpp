@@ -57,7 +57,12 @@ namespace Sentinel
 	}
 
 	DX11Shader::DX11Shader(const STL::string& filepath, const STL::string& name)
-		:m_FilePath(filepath), m_ShaderName(name) {
+		: Shader(filepath, name) {
+
+		m_BindFunction = ST_BIND_EVENT_FN(Bind);
+		m_ReloadFunction = ST_BIND_EVENT_FN(Reload);
+		m_CleanFunction = ST_BIND_EVENT_FN(Clean);
+
 		Load();
 	}
 

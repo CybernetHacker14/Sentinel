@@ -4,6 +4,12 @@
 namespace Sentinel
 {
 	DX11Vertexbuffer::DX11Vertexbuffer(UInt32 size) {
+
+		m_BindFunction = ST_BIND_EVENT_FN(Bind);
+		m_UnbindFunction = ST_BIND_EVENT_FN(Unbind);
+		m_SetDataFunction = ST_BIND_EVENT_FN(SetData);
+		m_CleanFunction = ST_BIND_EVENT_FN(Clean);
+
 		D3D11_BUFFER_DESC description;
 		SecureZeroMemory(&description, sizeof(description));
 
@@ -17,6 +23,12 @@ namespace Sentinel
 	}
 
 	DX11Vertexbuffer::DX11Vertexbuffer(void* verticesData, UInt32 size) {
+
+		m_BindFunction = ST_BIND_EVENT_FN(Bind);
+		m_UnbindFunction = ST_BIND_EVENT_FN(Unbind);
+		m_SetDataFunction = ST_BIND_EVENT_FN(SetData);
+		m_CleanFunction = ST_BIND_EVENT_FN(Clean);
+
 		D3D11_BUFFER_DESC description;
 		SecureZeroMemory(&description, sizeof(description));
 

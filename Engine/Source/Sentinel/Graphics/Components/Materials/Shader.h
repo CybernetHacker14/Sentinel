@@ -4,9 +4,6 @@
 
 namespace Sentinel
 {
-	template<typename T>
-	class ShaderCRTP;
-
 	enum class ShaderType {
 		NONE = 0,
 		VERTEX = 1,
@@ -16,71 +13,65 @@ namespace Sentinel
 
 	class Shader : public ISharedRef {
 	public:
-		void Bind();
-		void Reload();
-		void Clean();
+		inline void Bind() const {
+			if (!m_BindFunction)
+				return;
 
-		const STL::string& GetShaderSource(const ShaderType& type = ShaderType::NONE);
-		const STL::string& GetName();
+			m_BindFunction();
+		}
 
-		const STL::string& GetFilepath();
+		inline void Reload() const {
+			if (!m_ReloadFunction)
+				return;
 
-		static SharedRef<Shader> Create(const STL::string& filepath, const STL::string& name = "Sentinel Shader");
+			m_ReloadFunction();
+		}
 
-	protected:
-		Shader() = default;
+		inline void Clean() const {
+			if (!m_CleanFunction)
+				return;
+
+			m_CleanFunction();
+		}
+
+		inline const STL::string& GetShaderSource(
+			const ShaderType& type = ShaderType::NONE) const {
+
+			return m_ShaderSourceMap.at(type);
+		}
+
+		inline const STL::string& GetName() const {
+			return m_ShaderName;
+		};
+
+		inline const STL::string& GetFilepath() const {
+			return m_FilePath;
+		};
 
 	public:
 		template<typename T>
-		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<ShaderCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be derived from ShaderCRTP<T>.");
+		inline T* Cast() {
+			static_assert(STL::is_base_of<Shader, T>::value,
+				"'T' should be a derived from Shader.");
 			return static_cast<T*>(this);
 		}
 
-	private:
-		template<typename T>
-		inline ShaderCRTP<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<ShaderCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be derived from ShaderCRTP<T>.");
-			return static_cast<ShaderCRTP<T>*>(this);
-		}
-	};
+	public:
+		static SharedRef<Shader> Create(const STL::string& filepath,
+			const STL::string& name = "Sentinel Shader");
 
-	template<typename T>
-	class ShaderCRTP : public Shader {
-	private:
-		inline void Bind() {
-			underlying().Bind();
-		}
+	protected:
+		Shader(const STL::string& filepath, const STL::string& name);
 
-		inline void Reload() {
-			underlying().Reload();
-		}
+	protected:
+		STL::delegate<void()> m_BindFunction;
+		STL::delegate<void()> m_ReloadFunction;
+		STL::delegate<void()> m_CleanFunction;
 
-		inline void Clean() {
-			underlying().Clean();
-		}
+	protected:
+		STL::string m_ShaderName;
+		STL::string m_FilePath;
 
-		inline const STL::string& GetShaderSource(const ShaderType& type) {
-			return underlying().GetShaderSource(type);
-		}
-
-		inline const STL::string& GetName() {
-			return underlying().GetName();
-		}
-
-		inline const STL::string& GetFilepath() {
-			return underlying().GetFilepath();
-		}
-
-	private:
-		friend T;
-		friend Shader;
-		ShaderCRTP() = default;
-
-		inline T& underlying() {
-			return static_cast<T&>(*this);
-		}
+		STL::unordered_map<ShaderType, STL::string> m_ShaderSourceMap;
 	};
 }

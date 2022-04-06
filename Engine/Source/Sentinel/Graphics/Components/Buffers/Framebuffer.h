@@ -7,9 +7,6 @@
 
 namespace Sentinel
 {
-	template<typename T>
-	class FramebufferCRTP;
-
 	enum class TextureFormat {
 		NONE = 0,
 
@@ -51,87 +48,93 @@ namespace Sentinel
 
 	class Framebuffer : public ISharedRef {
 	public:
-		void Invalidate();
-		void Bind();
-		void Unbind();
-
-		void BindColorBuffer(UInt32 index, UInt32 slot, ShaderType shaderType);
-		void BindDepthBuffer(UInt32 slot, ShaderType shaderType);
-		void UnbindBuffer(UInt32 slot, ShaderType shaderType);
-
-		void Resize(UInt32 width, UInt32 height);
-		void* GetColorAttachment(UInt32 index = 0);
-		void Clear();
-
-		const FramebufferSpecification& GetSpecification();
-
-		static SharedRef<Framebuffer> Create(const FramebufferSpecification& specification);
-	public:
-		template<typename T>
-		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<FramebufferCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be derived from FramebufferCRTP<T>.");
-			return static_cast<T*>(this);
-		}
-
-	private:
-		template<typename T>
-		inline FramebufferCRTP<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<FramebufferCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be derived from FramebufferCRTP<T>.");
-			return static_cast<FramebufferCRTP<T>*>(this);
-		}
-	};
-
-	template<typename T>
-	class FramebufferCRTP : public Framebuffer {
-	private:
 		inline void Invalidate() {
-			underlying().Invalidate();
+			if (!m_InvalidateFunction)
+				return;
+
+			m_InvalidateFunction();
 		}
 
-		inline void Bind() {
-			underlying().Bind();
+		inline void Bind() const {
+			if (!m_BindFunction)
+				return;
+
+			m_BindFunction();
 		}
 
-		inline void Unbind() {
-			underlying().Unbind();
+		inline void Unbind() const {
+			if (!m_UnbindFunction)
+				return;
+
+			m_UnbindFunction();
 		}
 
 		inline void BindColorBuffer(UInt32 index, UInt32 slot, ShaderType shaderType) {
-			underlying().BindColorBuffer(index, slot, shaderType);
+			if (!m_BindColorBufferFunction)
+				return;
+
+			m_BindColorBufferFunction(index, slot, shaderType);
 		}
 
 		inline void BindDepthBuffer(UInt32 slot, ShaderType shaderType) {
-			underlying().BindDepthBuffer(slot, shaderType);
+			if (!m_BindDepthBufferFunction)
+				return;
+
+			m_BindDepthBufferFunction(slot, shaderType);
 		}
 
 		inline void UnbindBuffer(UInt32 slot, ShaderType shaderType) {
-			underlying().UnbindBuffer(slot, shaderType);
+			if (!m_UnbindBufferFunction)
+				return;
+
+			m_UnbindBufferFunction(slot, shaderType);
 		}
 
 		inline void Resize(UInt32 width, UInt32 height) {
-			underlying().Resize(width, height);
+			if (!m_ResizeFunction)
+				return;
+
+			m_ResizeFunction(width, height);
 		}
 
 		inline void* GetColorAttachment(UInt32 index = 0) {
-			return underlying().GetColorAttachment(index);
+			if (!m_GetColorAttachmentFunction)
+				return nullptr;
+
+			return m_GetColorAttachmentFunction(index);
 		}
 
 		inline void Clear() {
-			underlying().Clear();
+			if (!m_ClearFunction)
+				return;
+
+			m_ClearFunction();
 		}
 
-		inline const FramebufferSpecification& GetSpecification() {
-			return underlying().GetSpecification();
+		inline const FramebufferSpecification& GetSpecification() const {
+			return m_Specification;
 		}
-	private:
-		friend T;
-		friend Framebuffer;
-		FramebufferCRTP() = default;
 
-		inline T& underlying() {
-			return static_cast<T&>(*this);
-		}
+	public:
+		static SharedRef<Framebuffer> Create(const FramebufferSpecification& specification);
+
+	protected:
+		Framebuffer(const FramebufferSpecification& specification);
+
+	protected:
+		STL::delegate<void()> m_InvalidateFunction;
+		STL::delegate<void()> m_BindFunction;
+		STL::delegate<void()> m_UnbindFunction;
+
+		STL::delegate<void(UInt32, UInt32, ShaderType)> m_BindColorBufferFunction;
+		STL::delegate<void(UInt32, ShaderType)> m_BindDepthBufferFunction;
+		STL::delegate<void(UInt32, ShaderType)> m_UnbindBufferFunction;
+
+		STL::delegate<void(UInt32, UInt32)> m_ResizeFunction;
+		STL::delegate<void* (UInt32)> m_GetColorAttachmentFunction;
+		STL::delegate<void()> m_ClearFunction;
+
+	protected:
+		FramebufferSpecification m_Specification;
 	};
 }

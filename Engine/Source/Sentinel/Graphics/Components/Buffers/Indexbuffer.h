@@ -4,63 +4,43 @@
 
 namespace Sentinel
 {
-	template<typename T>
-	class IndexbufferCRTP;
-
 	class Indexbuffer : public ISharedRef {
 	public:
-		void Bind();
-		void Unbind();
-		void Clean();
-		UInt32 GetCount();
+		inline void Bind() const {
+			if (!m_BindFunction)
+				return;
 
+			m_BindFunction();
+		}
+
+		inline void Unbind() const {
+			if (!m_UnbindFunction)
+				return;
+
+			m_UnbindFunction();
+		}
+
+		inline void Clean() const {
+			if (!m_CleanFunction)
+				return;
+
+			m_CleanFunction();
+		}
+
+		inline const UInt32 GetCount() const { return m_Count; }
+
+	public:
 		static SharedRef<Indexbuffer> Create(void* indices, UInt32 count);
 
 	protected:
-		Indexbuffer() = default;
+		Indexbuffer(void* indices, UInt32 count);
 
-	private:
-		template<typename T>
-		inline IndexbufferCRTP<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<IndexbufferCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be derived from IndexbufferCRTP<T>.");
-			return static_cast<IndexbufferCRTP<T>*>(this);
-		}
+	protected:
+		STL::delegate<void()> m_BindFunction;
+		STL::delegate<void()> m_UnbindFunction;
+		STL::delegate<void()> m_CleanFunction;
 
-		template<typename T>
-		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<IndexbufferCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be derived from IndexbufferCRTP<T>.");
-			return static_cast<T*>(this);
-		}
-	};
-
-	template<typename T>
-	class IndexbufferCRTP : public Indexbuffer {
-	private:
-		inline void Bind() {
-			underlying().Bind();
-		}
-
-		inline void Unbind() {
-			underlying().Unbind();
-		}
-
-		inline void Clean() {
-			underlying().Clean();
-		}
-
-		inline UInt32 GetCount() {
-			return underlying().GetCount();
-		}
-
-	private:
-		friend T;
-		friend Indexbuffer;
-		IndexbufferCRTP() = default;
-
-		inline T& underlying() {
-			return static_cast<T&>(*this);
-		}
+	protected:
+		UInt32 m_Count;
 	};
 }

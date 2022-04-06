@@ -5,9 +5,6 @@
 
 namespace Sentinel
 {
-	template<typename T>
-	class Texture2DCRTP;
-
 	enum class WrapMode {
 		REPEAT = 0,
 		CLAMP = 1
@@ -25,71 +22,56 @@ namespace Sentinel
 
 	class Texture2D : public ISharedRef {
 	public:
-		void Bind(UInt32 slot, const ShaderType shaderType);
-		void Unbind(UInt32 slot, const ShaderType shaderType);
+		inline ~Texture2D() {
+			if (!m_DestructorFunction)
+				return;
 
-		Bool IsHDR();
-		Bool IsLoaded();
+			m_DestructorFunction();
+		}
 
-		UInt32 GetWidth();
-		UInt32 GetHeight();
+		inline void Bind(UInt32 slot, const ShaderType shaderType) const {
+			if (!m_BindFunction)
+				return;
 
+			m_BindFunction(slot, shaderType);
+		}
+
+		inline void Unbind(UInt32 slot, const ShaderType shaderType) const {
+			if (!m_UnbindFunction)
+				return;
+
+			m_UnbindFunction(slot, shaderType);
+		}
+
+		inline Bool IsHDR() { return m_HDR; }
+		inline Bool IsLoaded() { return m_Loaded; }
+
+		inline UInt32 GetWidth() { return m_Width; }
+		inline UInt32 GetHeight() { return m_Height; }
+
+	public:
 		static SharedRef<Texture2D> Create(const Texture2DImportSettings& settings);
-
-	protected:
-		Texture2D() = default;
 
 	public:
 		template<typename T>
-		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<Texture2DCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be derived from Texture2DCRTP<T>.");
+		inline T* Cast() {
+			static_assert(STL::is_base_of<Texture2D, T>::value,
+				"'T' should be a derived from Texture2D.");
 			return static_cast<T*>(this);
 		}
 
-	private:
-		template<typename T>
-		inline Texture2DCRTP<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<Texture2DCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be derived from Texture2DCRTP<T>.");
-			return static_cast<Texture2DCRTP<T>*>(this);
-		}
-	};
+	protected:
+		Texture2D(const Texture2DImportSettings& settings);
 
-	template<typename T>
-	class Texture2DCRTP : public Texture2D {
-	private:
-		inline void Bind(UInt32 slot, const ShaderType shaderType) {
-			underlying().Bind(slot, shaderType);
-		}
+	protected:
+		STL::delegate<void(UInt32, const ShaderType)> m_BindFunction;
+		STL::delegate<void(UInt32, const ShaderType)> m_UnbindFunction;
+		STL::delegate<void()> m_DestructorFunction;
 
-		inline void Unbind(UInt32 slot, const ShaderType shaderType) {
-			underlying().Unbind(slot, shaderType);
-		}
-
-		inline Bool IsHDR() {
-			return underlying().IsHDR();
-		}
-
-		inline Bool IsLoaded() {
-			return underlying().IsLoaded();
-		}
-
-		inline UInt32 GetWidth() {
-			return underlying().GetWidth();
-		}
-
-		inline UInt32 GetHeight() {
-			return underlying().GetHeight();
-		}
-
-	private:
-		friend T;
-		friend Texture2D;
-		Texture2DCRTP() = default;
-
-		inline T& underlying() {
-			return static_cast<T&>(*this);
-		}
+	protected:
+		void* m_TexturePixels = nullptr;
+		Bool m_Loaded = false, m_HDR = false;
+		UInt32 m_Width = 0, m_Height = 0;
+		Texture2DImportSettings m_Settings;
 	};
 }

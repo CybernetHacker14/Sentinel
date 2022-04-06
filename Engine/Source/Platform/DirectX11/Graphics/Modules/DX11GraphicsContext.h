@@ -6,7 +6,7 @@ struct GLFWwindow;
 
 namespace Sentinel
 {
-	class DX11GraphicsContext final : public GraphicsContextCRTP<DX11GraphicsContext> {
+	class DX11GraphicsContext final : public GraphicsContext {
 	public:
 		DX11GraphicsContext(GLFWwindow* windowHandle);
 
@@ -19,8 +19,6 @@ namespace Sentinel
 		void SetContextInfo();
 
 	private:
-		friend class GraphicsContextCRTP<DX11GraphicsContext>;
-
 		GLFWwindow* m_WindowHandle;
 	};
 }

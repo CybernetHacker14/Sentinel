@@ -5,7 +5,7 @@
 
 namespace Sentinel
 {
-	class DX11Constantbuffer : public Constantbuffer {
+	class DX11Constantbuffer final : public Constantbuffer {
 	public:
 		DX11Constantbuffer(UInt32 size, UInt32 bindSlot, UsageType usageType);
 

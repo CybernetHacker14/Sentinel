@@ -116,7 +116,7 @@ namespace Sentinel
 	}
 
 	void DX11RenderStageHandler::SwapBuffers() {
-		DX11Common::GetSwapchain()->Present(0, 0);
+		DX11Common::GetSwapchain()->Present(1, 0);
 	}
 
 	void DX11RenderStageHandler::Clear() {

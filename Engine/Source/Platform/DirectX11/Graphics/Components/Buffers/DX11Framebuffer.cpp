@@ -98,7 +98,19 @@ namespace Sentinel
 	}
 
 	DX11Framebuffer::DX11Framebuffer(const FramebufferSpecification& specification)
-		: m_Specification(specification) {
+		: Framebuffer(specification) {
+
+		m_InvalidateFunction = ST_BIND_EVENT_FN(Invalidate);
+		m_BindFunction = ST_BIND_EVENT_FN(Bind);
+		m_UnbindFunction = ST_BIND_EVENT_FN(Unbind);
+
+		m_BindColorBufferFunction = ST_BIND_EVENT_FN(BindColorBuffer);
+		m_BindDepthBufferFunction = ST_BIND_EVENT_FN(BindDepthBuffer);
+		m_UnbindBufferFunction = ST_BIND_EVENT_FN(UnbindBuffer);
+
+		m_ResizeFunction = ST_BIND_EVENT_FN(Resize);
+		m_GetColorAttachmentFunction = ST_BIND_EVENT_FN(GetColorAttachment);
+		m_ClearFunction = ST_BIND_EVENT_FN(Clear);
 
 		SecureZeroMemory(&m_Viewport, sizeof(m_Viewport));
 

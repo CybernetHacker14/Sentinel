@@ -5,68 +5,48 @@
 
 namespace Sentinel
 {
-	template<typename T>
-	class PipelineCRTP;
-
 	class Pipeline : public ISharedRef {
 	public:
-		void CreateInputLayout(SharedRef<Shader> shader);
-		void Bind();
-		void Unbind();
-		void Clean();
-		UInt32 GetStride();
+		inline void CreateInputLayout(SharedRef<Shader> shader) const {
+			if (!m_CreateLayoutFunction)
+				return;
 
+			m_CreateLayoutFunction(shader);
+		}
+
+		inline void Bind() const {
+			if (!m_BindFunction)
+				return;
+
+			m_BindFunction();
+		}
+
+		inline void Unbind() const {
+			if (!m_UnbindFunction)
+				return;
+
+			m_UnbindFunction();
+		}
+
+		inline void Clean() const {
+			if (!m_CleanFunction)
+				return;
+
+			m_CleanFunction();
+		}
+
+		const UInt32 GetStride() const { return m_Stride; }
+
+	public:
 		static SharedRef<Pipeline> Create();
 
 	protected:
-		Pipeline() = default;
+		STL::delegate<void(SharedRef<Shader>)> m_CreateLayoutFunction;
+		STL::delegate<void()> m_BindFunction;
+		STL::delegate<void()> m_UnbindFunction;
+		STL::delegate<void()> m_CleanFunction;
 
-	private:
-		template<typename T>
-		inline PipelineCRTP<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<PipelineCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from PipelineCRTP<T>.");
-			return static_cast<PipelineCRTP<T>*>(this);
-		}
-
-		template<typename T>
-		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<PipelineCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from PipelineCRTP<T>.");
-			return static_cast<T*>(this);
-		}
-	};
-
-	template<typename T>
-	class PipelineCRTP : public Pipeline {
-	private:
-		inline void CreateInputLayout(SharedRef<Shader> shader) {
-			underlying().CreateInputLayout(shader);
-		}
-
-		inline void Bind() {
-			underlying().Bind();
-		}
-
-		inline void Unbind() {
-			underlying().Unbind();
-		}
-
-		inline void Clean() {
-			underlying().Clean();
-		}
-
-		inline UInt32 GetStride() {
-			return underlying().GetStride();
-		}
-
-	private:
-		friend T;
-		friend Pipeline;
-		PipelineCRTP() = default;
-
-		inline T& underlying() {
-			return static_cast<T&>(*this);
-		}
+	protected:
+		UInt32 m_Stride;
 	};
 }

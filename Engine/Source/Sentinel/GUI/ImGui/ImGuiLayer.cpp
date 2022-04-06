@@ -24,7 +24,7 @@ namespace Sentinel
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;      // Enable Keyboard Controls
 		// io.ConfigFlags != ImGuiConfigFlags_NavEnableGamepad;    // Enable Gamepad Controls
-		//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;          // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;          // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;        // Enable Multi-Viewport / Platform windows
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskbarIcons;
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
@@ -59,6 +59,10 @@ namespace Sentinel
 	}
 
 	void ImGuiLayer::Begin() {
+		ImGuiIO& io = ImGui::GetIO();
+		Application& app = Application::Get();
+		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -66,8 +70,6 @@ namespace Sentinel
 
 	void ImGuiLayer::End() {
 		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::Get();
-		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 		// Rendering
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

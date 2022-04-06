@@ -35,6 +35,12 @@ namespace Sentinel
 		return y;
 	}
 
+	Float Math::FastAbsolute(Float number) {
+		int tmp = *(int*)&number;
+		tmp &= 0x7FFFFFFF;
+		return *(Float*)&tmp;
+	}
+
 	Float Math::FastCos(Float radians) {
 		radians = radians - floorf(radians * INVTWO_PI) * TWO_PI;
 		radians = radians > 0.0f ? radians : -radians;

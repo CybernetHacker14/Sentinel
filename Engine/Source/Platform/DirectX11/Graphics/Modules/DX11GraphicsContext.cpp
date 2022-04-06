@@ -12,6 +12,8 @@ namespace Sentinel
 		:m_WindowHandle(windowHandle) {
 		ST_ENGINE_ASSERT(m_WindowHandle, "Window Handle is null");
 
+		m_InitFunction = ST_BIND_EVENT_FN(Init);
+
 		InitializeDeviceAndSwapchain();
 		InitializeDirectXComponents();
 	}

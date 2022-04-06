@@ -6,7 +6,7 @@
 
 namespace Sentinel
 {
-	class DX11Indexbuffer final : public IndexbufferCRTP<DX11Indexbuffer> {
+	class DX11Indexbuffer final : public Indexbuffer {
 	public:
 		DX11Indexbuffer(void* indices, UInt32 count);
 
@@ -18,9 +18,6 @@ namespace Sentinel
 		inline UInt32 GetCount() { return m_Count; }
 
 	private:
-		friend class IndexbufferCRTP<DX11Indexbuffer>;
-
 		ID3D11Buffer* m_IndexbufferPtr;
-		UInt32 m_Count;
 	};
 }

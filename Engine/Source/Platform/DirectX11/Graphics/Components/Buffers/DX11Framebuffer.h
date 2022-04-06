@@ -23,10 +23,9 @@ namespace Sentinel
 		};
 	}
 
-	class DX11Framebuffer : public FramebufferCRTP<DX11Framebuffer> {
+	class DX11Framebuffer final : public Framebuffer {
 	public:
 		DX11Framebuffer(const FramebufferSpecification& specification);
-		~DX11Framebuffer() = default;
 
 		void Invalidate();
 		void Bind() const;
@@ -46,8 +45,6 @@ namespace Sentinel
 		void Clean();
 
 	private:
-		FramebufferSpecification m_Specification;
-
 		STL::vector<TextureSpecification> m_ColorAttachmentSpecifications;
 		STL::vector<Attachments::ColorAttachment> m_ColorAttachments;
 

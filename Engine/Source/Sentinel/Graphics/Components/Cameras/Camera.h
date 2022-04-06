@@ -70,7 +70,7 @@ namespace Sentinel
 
 		// Transform
 		glm::vec3 m_Position = { 0, 0, 0 };
-		glm::vec3 m_Orientation = { 0.0f, 10.0f, 0.0f }; // x = Yaw, y = Pitch, z = Roll
+		glm::vec3 m_Orientation = { 0.0f, 0.0f, 0.0f }; // x = Yaw, y = Pitch, z = Roll
 
 		// Direction vectors
 		glm::vec3 m_DirectionFront = { 0.0f, 0.0f, 0.0f };

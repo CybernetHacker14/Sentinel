@@ -4,7 +4,12 @@
 namespace Sentinel
 {
 	DX11Indexbuffer::DX11Indexbuffer(void* indices, UInt32 count)
-		:m_Count(count) {
+		:Indexbuffer(indices, count) {
+
+		m_BindFunction = ST_BIND_EVENT_FN(Bind);
+		m_UnbindFunction = ST_BIND_EVENT_FN(Unbind);
+		m_CleanFunction = ST_BIND_EVENT_FN(Clean);
+
 		D3D11_BUFFER_DESC description;
 		SecureZeroMemory(&description, sizeof(description));
 

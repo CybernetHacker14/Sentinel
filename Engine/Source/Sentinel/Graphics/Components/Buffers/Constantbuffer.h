@@ -12,9 +12,6 @@ namespace Sentinel
 		};
 
 	public:
-		Constantbuffer() = default;
-		Constantbuffer(UInt32 size, UInt32 bindSlot, UsageType usageType);
-
 		inline ~Constantbuffer() {
 			if (!m_DestructorFunction)
 				return;
@@ -63,6 +60,9 @@ namespace Sentinel
 
 	public:
 		static SharedRef<Constantbuffer> Create(UInt32 size, UInt32 bindSlot, UsageType usageType);
+
+	protected:
+		Constantbuffer(UInt32 size, UInt32 bindSlot, UsageType usageType);
 
 	protected:
 		STL::delegate<void()> m_VSBindFunction;

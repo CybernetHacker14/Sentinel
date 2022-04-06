@@ -19,8 +19,15 @@ namespace Sentinel
 		{DXGI_FORMAT_R32G32B32A32_SINT, 16}
 	};
 
+	DX11Pipeline::DX11Pipeline() {
+		m_CreateLayoutFunction = ST_BIND_EVENT_FN(CreateInputLayout);
+		m_BindFunction = ST_BIND_EVENT_FN(Bind);
+		m_UnbindFunction = ST_BIND_EVENT_FN(Unbind);
+		m_CleanFunction = ST_BIND_EVENT_FN(Clean);
+	}
+
 	void DX11Pipeline::CreateInputLayout(SharedRef<Shader> shader) {
-		ID3DBlob* vertexShaderBinary = shader->DerivedDowncast<DX11Shader>()->GetVertexShaderBinary();
+		ID3DBlob* vertexShaderBinary = shader->Cast<DX11Shader>()->GetVertexShaderBinary();
 
 		// Excerpts from https://gist.github.com/mobius/b678970c61a93c81fffef1936734909f
 
@@ -99,12 +106,12 @@ namespace Sentinel
 		vertexShaderReflection->Release();
 	}
 
-	void DX11Pipeline::Bind() {
+	void DX11Pipeline::Bind() const {
 		DX11Common::GetContext()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		DX11Common::GetContext()->IASetInputLayout(m_InputLayout);
 	}
 
-	void DX11Pipeline::Unbind() {
+	void DX11Pipeline::Unbind() const {
 		DX11Common::GetContext()->IASetInputLayout(nullptr);
 	}
 	void DX11Pipeline::Clean() {

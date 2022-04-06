@@ -4,65 +4,44 @@
 
 namespace Sentinel
 {
-	template<typename T>
-	class VertexbufferCRTP;
-
 	class Vertexbuffer : public ISharedRef {
 	public:
-		void Bind(UInt32 stride);
-		void Unbind();
-		void SetData(const void* verticesData, UInt32 size);
+		inline void Bind(UInt32 stride) const {
+			if (!m_BindFunction)
+				return;
 
-		void Clean();
+			m_BindFunction(stride);
+		}
 
+		inline void Unbind() const {
+			if (!m_UnbindFunction)
+				return;
+
+			m_UnbindFunction();
+		}
+
+		inline void SetData(const void* verticesData, UInt32 size) {
+			if (!m_SetDataFunction)
+				return;
+
+			m_SetDataFunction(verticesData, size);
+		}
+
+		inline void Clean() {
+			if (!m_CleanFunction)
+				return;
+
+			m_CleanFunction();
+		}
+
+	public:
 		static SharedRef<Vertexbuffer> Create(UInt32 size);
 		static SharedRef<Vertexbuffer> Create(void* vertices, UInt32 size);
 
 	protected:
-		Vertexbuffer() = default;
-
-	private:
-		template<typename T>
-		inline VertexbufferCRTP<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<VertexbufferCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be derived from VertexbufferCRTP<T>.");
-			return static_cast<VertexbufferCRTP<T>*>(this);
-		}
-
-		template<typename T>
-		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<VertexbufferCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be derived from VertexbufferCRTP<T>.");
-			return static_cast<T*>(this);
-		}
-	};
-
-	template<typename T>
-	class VertexbufferCRTP : public Vertexbuffer {
-	private:
-		inline void Bind(UInt32 stride) {
-			underlying().Bind(stride);
-		}
-
-		inline void Unbind() {
-			underlying().Unbind();
-		}
-
-		inline void SetData(const void* verticesData, UInt32 size) {
-			underlying().SetData(verticesData, size);
-		}
-
-		inline void Clean() {
-			underlying().Clean();
-		}
-
-	private:
-		friend T;
-		friend Vertexbuffer;
-		VertexbufferCRTP() = default;
-
-		inline T& underlying() {
-			return static_cast<T&>(*this);
-		}
+		STL::delegate<void(UInt32)> m_BindFunction;
+		STL::delegate<void()> m_UnbindFunction;
+		STL::delegate<void(const void*, UInt32)> m_SetDataFunction;
+		STL::delegate<void()> m_CleanFunction;
 	};
 }

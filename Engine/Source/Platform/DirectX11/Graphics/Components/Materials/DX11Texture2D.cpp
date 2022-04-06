@@ -6,16 +6,13 @@
 namespace Sentinel
 {
 	DX11Texture2D::DX11Texture2D(const Texture2DImportSettings& settings)
-		: m_Settings(settings) {
-		Load();
-	}
+		: Texture2D(settings) {
 
-	DX11Texture2D::~DX11Texture2D() {
-		if (m_ResourceView)
-		{
-			m_ResourceView->Release();
-			m_ResourceView = nullptr;
-		}
+		m_BindFunction = ST_BIND_EVENT_FN(Bind);
+		m_UnbindFunction = ST_BIND_EVENT_FN(Unbind);
+		m_DestructorFunction = ST_BIND_EVENT_FN(Destructor);
+
+		Load();
 	}
 
 	void DX11Texture2D::Bind(UInt32 slot, const ShaderType shaderType) const {
@@ -37,6 +34,14 @@ namespace Sentinel
 			case ShaderType::PIXEL:     context->PSSetShaderResources(slot, 1, nullptr); break;
 			case ShaderType::COMPUTE:   context->CSSetShaderResources(slot, 1, nullptr); break;
 			case ShaderType::NONE:      ST_ENGINE_ASSERT(false, "Invalid shader type"); break;
+		}
+	}
+
+	void DX11Texture2D::Destructor() {
+		if (m_ResourceView)
+		{
+			m_ResourceView->Release();
+			m_ResourceView = nullptr;
 		}
 	}
 

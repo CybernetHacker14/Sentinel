@@ -81,8 +81,8 @@ namespace Sentinel
 		EventType Type;
 
 	protected:
-		STL::function<const EventCategory()> m_GetEventCategoryFlagsFunction;
-		STL::function<const char* ()> m_GetNameFunction;
-		STL::function<const STL::string& ()> m_ToStringFunction;
+		STL::delegate<const EventCategory()> m_GetEventCategoryFlagsFunction;
+		STL::delegate<const char* ()> m_GetNameFunction;
+		STL::delegate<const STL::string& ()> m_ToStringFunction;
 	};
 }

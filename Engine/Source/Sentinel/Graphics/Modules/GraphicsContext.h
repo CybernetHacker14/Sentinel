@@ -6,9 +6,6 @@ struct GLFWwindow;
 
 namespace Sentinel
 {
-	template<typename T>
-	class GraphicsContextCRTP;
-
 	struct ContextInfo {
 		STL::string Vendor;
 		STL::string Renderer;
@@ -18,48 +15,22 @@ namespace Sentinel
 
 	class GraphicsContext {
 	public:
-		void Init();
-		const ContextInfo& GetContextInfo();
+		inline void Init() const {
+			if (!m_InitFunction)
+				return;
 
-		static UniqueRef<GraphicsContext> Create(GLFWwindow* window);
-
-	protected:
-		GraphicsContext() = default;
-
-	private:
-		template<typename T>
-		inline GraphicsContextCRTP<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<GraphicsContextCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from GraphicsContextCRTP<T>.");
-			return static_cast<GraphicsContextCRTP<T>*>(this);
-		}
-
-		template<typename T>
-		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<GraphicsContextCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from GraphicsContextCRTP<T>.");
-			return static_cast<T*>(this);
-		}
-	};
-
-	template<typename T>
-	class GraphicsContextCRTP : public GraphicsContext {
-	private:
-		inline void Init() {
-			underlying().Init();
+			m_InitFunction();
 		}
 
 		inline const ContextInfo& GetContextInfo() const { return m_ContextInfo; }
 
-	private:
-		friend T;
-		friend GraphicsContext;
-		GraphicsContextCRTP() = default;
+	public:
+		static UniqueRef<GraphicsContext> Create(GLFWwindow* window);
 
-		inline T& underlying() {
-			return static_cast<T&>(*this);
-		}
+	protected:
+		STL::delegate<void()> m_InitFunction;
 
+	protected:
 		ContextInfo m_ContextInfo;
 	};
 }

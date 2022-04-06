@@ -6,7 +6,7 @@
 
 namespace Sentinel
 {
-	class DX11Vertexbuffer final : public VertexbufferCRTP<DX11Vertexbuffer> {
+	class DX11Vertexbuffer final : public Vertexbuffer {
 	public:
 		DX11Vertexbuffer(UInt32 size);
 		DX11Vertexbuffer(void* verticesData, UInt32 size);
@@ -18,8 +18,6 @@ namespace Sentinel
 
 		void Clean();
 	private:
-		friend class VertexbufferCRTP<DX11Vertexbuffer>;
-
 		ID3D11Buffer* m_VertexbufferPtr;
 	};
 }

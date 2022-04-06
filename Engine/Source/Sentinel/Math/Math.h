@@ -13,6 +13,7 @@ namespace Sentinel
 	class Math {
 	public:
 		static Float FastInverseSquareRoot(Float number);
+		static Float FastAbsolute(Float number);
 
 		static Float FastCos(Float radians);
 		static Float FastSin(Float radians);

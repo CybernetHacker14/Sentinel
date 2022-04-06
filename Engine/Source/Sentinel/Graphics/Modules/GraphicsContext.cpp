@@ -6,38 +6,6 @@
 
 namespace Sentinel
 {
-	void GraphicsContext::Init() {
-		if (Backend::GetAPI() == Backend::API::DirectX11)
-		{
-			BaseDowncast<DX11GraphicsContext>()->Init();
-		}
-		else if (Backend::GetAPI() == Backend::API::None)
-		{
-			ST_ENGINE_ASSERT(false, "API::None currently not supported");
-		}
-		else
-		{
-			ST_ENGINE_ASSERT(false, "Unknown Backend API");
-		}
-	}
-
-	const ContextInfo& GraphicsContext::GetContextInfo() {
-		if (Backend::GetAPI() == Backend::API::DirectX11)
-		{
-			return BaseDowncast<DX11GraphicsContext>()->GetContextInfo();
-		}
-		else if (Backend::GetAPI() == Backend::API::None)
-		{
-			ST_ENGINE_ASSERT(false, "API::None currently not supported");
-			return ContextInfo();
-		}
-		else
-		{
-			ST_ENGINE_ASSERT(false, "Unknown Backend API");
-			return ContextInfo();
-		}
-	}
-
 	UniqueRef<GraphicsContext> GraphicsContext::Create(GLFWwindow* window) {
 		switch (Backend::GetAPI())
 		{

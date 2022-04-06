@@ -45,7 +45,7 @@ project "Sentinel"
     {
         "GLFW",
         "EASTL",
-        "opengl32.lib",
+		"opengl32.lib",
         "d3d11.lib",
 		"shlwapi.lib",
 		"d3dcompiler.lib",

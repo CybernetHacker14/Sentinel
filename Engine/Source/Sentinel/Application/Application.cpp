@@ -57,7 +57,7 @@ namespace Sentinel
 
 		FramebufferSpecification spec;
 		spec.Attachments = { TextureFormat::RGBA32F };
-		spec.ClearColor = { 0.1f, 0.1f, 0.1f, 0.1f };
+		spec.ClearColor = { 0.1f, 0.5f, 0.1f, 0.1f };
 		spec.Width = deviceModules->WindowProperties->Width;
 		spec.Height = deviceModules->WindowProperties->Height;
 		spec.SwapchainTarget = true;
@@ -69,8 +69,8 @@ namespace Sentinel
 		pipelineModules->Framebuffer = Framebuffer::Create(spec);
 		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
 		pipelineModules->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
-		//pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
-		pipelineModules->Shader = Shader::Create("TextureShader.hlsl", "TextureShader");
+		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
+		//pipelineModules->Shader = Shader::Create("TextureShader.hlsl", "TextureShader");
 		m_Renderer->SetPipelineData(pipelineModules);
 
 		m_TileTexture->Bind(0, ShaderType::PIXEL);
@@ -120,11 +120,18 @@ namespace Sentinel
 		{
 			if (!m_Minimized)
 			{
-				m_Renderer->Clear();
 				m_Camera->OnUpdate();
 				m_CameraCB->SetDynamicData(&(m_Camera->GetViewProjectionMatrix()));
 				ProcessLayerUpdate();
+
 				m_Renderer->Draw();
+				m_Renderer->Clear();
+				m_ImGuiLayer->Begin();
+
+				for (Layer* layer : m_LayerStack)
+					layer->OnImGuiRender();
+
+				m_ImGuiLayer->End();
 			}
 			m_Renderer->GetWindow().OnUpdate();
 			Input::OnUpdate();
@@ -144,13 +151,6 @@ namespace Sentinel
 
 		for (Layer* layer : m_LayerStack)
 			layer->OnUpdate();
-
-		m_ImGuiLayer->Begin();
-
-		for (Layer* layer : m_LayerStack)
-			layer->OnImGuiRender();
-
-		m_ImGuiLayer->End();
 	}
 
 	void Application::OnWindowClose(Event& event) {
