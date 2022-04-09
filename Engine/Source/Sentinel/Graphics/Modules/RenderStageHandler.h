@@ -53,6 +53,27 @@ namespace Sentinel
 			m_ShutdownStageFunction();
 		}
 
+		inline void FramebufferBindFunction() {
+			if (!m_FramebufferBindFunction)
+				return;
+
+			m_FramebufferBindFunction();
+		}
+
+		inline void FramebufferUnbindFunction() {
+			if (!m_FramebufferUnbindFunction)
+				return;
+
+			m_FramebufferUnbindFunction();
+		}
+
+		inline void Resize(UInt32 width, UInt32 height) {
+			if (!m_ResizeFunction)
+				return;
+
+			m_ResizeFunction(width, height);
+		}
+
 		RenderData& GetRenderData() { return *(RenderData.get()); }
 
 	public:
@@ -65,6 +86,11 @@ namespace Sentinel
 		STL::delegate<void()> m_RenderClearFunction;
 		STL::delegate<void()> m_RenderCleanupFunction;
 		STL::delegate<void()> m_ShutdownStageFunction;
+
+		STL::delegate<void()> m_FramebufferBindFunction;
+		STL::delegate<void()> m_FramebufferUnbindFunction;
+
+		STL::delegate<void(UInt32, UInt32)> m_ResizeFunction;
 
 		STL::delegate<void()> m_DestructorFunction;
 

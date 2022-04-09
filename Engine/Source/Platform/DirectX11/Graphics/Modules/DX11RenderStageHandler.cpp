@@ -13,6 +13,11 @@ namespace Sentinel
 		m_RenderCleanupFunction = ST_BIND_EVENT_FN(ExecuteRenderPipelineCleanupStage);
 		m_ShutdownStageFunction = ST_BIND_EVENT_FN(ExecuteShutdownStage);
 
+		m_FramebufferBindFunction = ST_BIND_EVENT_FN(FramebufferBind);
+		m_FramebufferUnbindFunction = ST_BIND_EVENT_FN(FramebufferUnbind);
+
+		m_ResizeFunction = ST_BIND_EVENT_FN(Resize);
+
 		m_DestructorFunction = ST_BIND_EVENT_FN(Destructor);
 	}
 
@@ -54,6 +59,18 @@ namespace Sentinel
 		DX11Common::m_Swapchain->Release();
 		DX11Common::m_Device->Release();
 		DX11Common::m_Context->Release();
+	}
+
+	void DX11RenderStageHandler::FramebufferBind() {
+		RenderData->PipelineModules->Framebuffer->Bind();
+	}
+
+	void DX11RenderStageHandler::FramebufferUnbind() {
+		RenderData->PipelineModules->Framebuffer->Unbind();
+	}
+
+	void DX11RenderStageHandler::Resize(UInt32 width, UInt32 height) {
+		RenderData->PipelineModules->Framebuffer->Resize(width, height);
 	}
 
 	void DX11RenderStageHandler::Destructor() {
@@ -101,7 +118,7 @@ namespace Sentinel
 			RenderData->PipelineModules->Indexbuffer->Bind();
 
 		RenderData->PipelineModules->Shader->Bind();
-		RenderData->PipelineModules->Framebuffer->Bind();
+		FramebufferBind();
 	}
 
 	void DX11RenderStageHandler::UnbindPipelineModules() {
@@ -112,7 +129,7 @@ namespace Sentinel
 		}
 		RenderData->PipelineModules->Shader->Reset();
 		RenderData->PipelineModules->Indexbuffer->Unbind();
-		RenderData->PipelineModules->Framebuffer->Unbind();
+		FramebufferUnbind();
 	}
 
 	void DX11RenderStageHandler::SwapBuffers() {

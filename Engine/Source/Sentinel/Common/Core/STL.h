@@ -2,7 +2,7 @@
 
 // Preprocessor directive defined here, because then it needs to be
 // entered in all premake and cmake scripts for the definition to get evaluated
-#define USE_EASTL 1
+#define USE_EASTL 0
 
 // Includes don't have or need alternate implementations can be put here
 #include <initializer_list>

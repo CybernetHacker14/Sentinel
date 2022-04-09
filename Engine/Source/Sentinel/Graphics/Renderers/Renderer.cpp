@@ -34,6 +34,18 @@ namespace Sentinel
 		m_RenderStageHandler->ExecuteRenderPipelineCleanupStage();
 	}
 
+	void Renderer::Resize(UInt32 width, UInt32 height) {
+		m_RenderStageHandler->Resize(width, height);
+	}
+
+	void Renderer::FramebufferBind() {
+		m_RenderStageHandler->FramebufferBindFunction();
+	}
+
+	void Renderer::FramebufferUnbind() {
+		m_RenderStageHandler->FramebufferUnbindFunction();
+	}
+
 	SharedRef<DeviceModules> Renderer::GetDeviceModulesFromRenderData() {
 		return m_RenderStageHandler->GetRenderData().DeviceModules;
 	}

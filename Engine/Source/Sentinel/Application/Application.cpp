@@ -87,6 +87,7 @@ namespace Sentinel
 	}
 
 	Application::~Application() {
+		m_LayerStack.CleanLayerstack();
 		m_Renderer->Shutdown();
 		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
 		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
@@ -120,9 +121,12 @@ namespace Sentinel
 		{
 			if (!m_Minimized)
 			{
+
 				m_Camera->OnUpdate();
 				m_CameraCB->SetDynamicData(&(m_Camera->GetViewProjectionMatrix()));
 				ProcessLayerUpdate();
+
+				m_Renderer->FramebufferBind();
 
 				m_Renderer->Draw();
 				m_Renderer->Clear();
@@ -132,6 +136,7 @@ namespace Sentinel
 					layer->OnImGuiRender();
 
 				m_ImGuiLayer->End();
+				m_Renderer->FramebufferUnbind();
 			}
 			m_Renderer->GetWindow().OnUpdate();
 			Input::OnUpdate();
@@ -162,14 +167,10 @@ namespace Sentinel
 	void Application::OnWindowResize(Event& event) {
 		WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
 		m_Camera->OnResize(e.GetWidth(), e.GetHeight());
+		m_Renderer->Resize(e.GetWidth(), e.GetHeight());
 	}
 
 	void Application::OnKeyPressed(Event& event) {
 		KeyPressedEvent e = *(event.Cast<KeyPressedEvent>());
-		if (e.GetKeycode() == Key::P)
-		{
-			m_Camera->SetProjectionMode(m_Camera->GetProjectionMode() == ProjectionMode::PERSPECTIVE ?
-				ProjectionMode::ORTHOGRAPHIC : ProjectionMode::PERSPECTIVE);
-		}
 	}
 }

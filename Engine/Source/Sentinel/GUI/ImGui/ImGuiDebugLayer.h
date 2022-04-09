@@ -15,5 +15,6 @@ namespace Sentinel
 	private:
 		SharedRef<Camera> m_Camera;
 		glm::vec3 m_Rotation;
+		glm::vec3 m_Position;
 	};
 }

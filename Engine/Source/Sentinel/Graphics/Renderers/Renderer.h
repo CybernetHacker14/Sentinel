@@ -19,6 +19,10 @@ namespace Sentinel
 		void Draw();
 		void Clear();
 		void Shutdown();
+		void Resize(UInt32 width, UInt32 height);
+
+		void FramebufferBind();
+		void FramebufferUnbind();
 
 	private:
 		SharedRef<DeviceModules> GetDeviceModulesFromRenderData();

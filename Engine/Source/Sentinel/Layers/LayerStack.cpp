@@ -3,13 +3,7 @@
 
 namespace Sentinel
 {
-	LayerStack::~LayerStack() {
-		for (Layer* layer : m_Layers)
-		{
-			layer->OnDetach();
-			delete layer;
-		}
-	}
+	LayerStack::~LayerStack() {}
 
 	void LayerStack::PushLayer(Layer* layer) {
 		m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);
@@ -36,6 +30,14 @@ namespace Sentinel
 		{
 			overlay->OnDetach();
 			m_Layers.erase(iterator);
+		}
+	}
+
+	void LayerStack::CleanLayerstack() {
+		for (Layer* layer : m_Layers)
+		{
+			layer->OnDetach();
+			delete layer;
 		}
 	}
 }

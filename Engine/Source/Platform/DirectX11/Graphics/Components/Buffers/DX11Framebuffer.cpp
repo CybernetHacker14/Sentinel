@@ -162,7 +162,7 @@ namespace Sentinel
 		DX11Common::GetContext()->RSSetViewports(1, &m_Viewport);
 
 		// Need to understand whats happening here, maybe one RTV is for the actual rendering,
-		// theother RTV is the entity ID mask, though not sure why just 2.
+		// the other RTV is the entity ID mask, though not sure why just 2.
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderViews[2];
 		for (UInt32 i = 0; i < m_ColorAttachments.size(); i++)
 			pRenderViews[i] = m_ColorAttachments[i].RenderTargetView;
@@ -245,8 +245,11 @@ namespace Sentinel
 		if (width == 0 || height == 0 || width > s_MaxFramebufferSize || height > s_MaxFramebufferSize)
 			return;
 
+		Unbind();
+
 		m_Specification.Width = width;
 		m_Specification.Height = height;
+		DX11Common::GetSwapchain()->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 		Invalidate();
 	}
 

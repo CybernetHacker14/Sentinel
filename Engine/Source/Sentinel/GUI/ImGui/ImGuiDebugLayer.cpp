@@ -10,14 +10,22 @@ namespace Sentinel
 	}
 
 	void ImGuiDebugLayer::OnImGuiRender() {
-		ImGui::Begin("Test Window");
-		m_Rotation = m_Camera->GetOrientation();
-		ImGui::DragFloat3("Test UI", &m_Rotation.x, 0.01f, -10.0f, 10.0f);
-		m_Camera->SetOrientation(m_Rotation);
+
+		ImGui::ShowDemoWindow();
+
+		ImGuiIO& io = ImGui::GetIO();
+		ImVec2& data = ImGui::GetContentRegionAvail();
+
+		ImGui::Begin("Test UI");
+		ImGui::DragFloat3("Position", &m_Camera->GetPosition().x, 0.01f, -10.0f, 10.0f);
+		ImGui::DragFloat3("Test UI", &m_Camera->GetOrientation().x, 0.01f, -10.0f, 10.0f);
+		ImGui::Text("%f , %f", io.DisplaySize.x, io.DisplaySize.y);
+
 		if (ImGui::Button("Projection Mode"))
 		{
 			m_Camera->SetProjectionMode(
-				m_Camera->GetProjectionMode() == ProjectionMode::PERSPECTIVE ? ProjectionMode::ORTHOGRAPHIC :
+				m_Camera->GetProjectionMode() == ProjectionMode::PERSPECTIVE ?
+				ProjectionMode::ORTHOGRAPHIC :
 				ProjectionMode::PERSPECTIVE
 			);
 		}

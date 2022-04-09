@@ -17,6 +17,11 @@ namespace Sentinel
 		void ExecuteRenderPipelineCleanupStage();
 		void ExecuteShutdownStage();
 
+		void FramebufferBind();
+		void FramebufferUnbind();
+
+		void Resize(UInt32 width, UInt32 height);
+
 		void Destructor();
 
 	private:
