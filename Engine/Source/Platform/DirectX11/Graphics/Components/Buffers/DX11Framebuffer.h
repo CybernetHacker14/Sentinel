@@ -27,6 +27,7 @@ namespace Sentinel
 	public:
 		DX11Framebuffer(const FramebufferSpecification& specification);
 
+	private:
 		void Invalidate();
 		void Bind() const;
 		void Unbind() const;
@@ -36,13 +37,13 @@ namespace Sentinel
 		void UnbindBuffer(UInt32 slot, ShaderType shaderType);
 
 		void Resize(UInt32 width, UInt32 height);
-		void* GetColorAttachment(UInt32 index = 0) const { return m_ColorAttachments[index].ShaderResourceView.Get(); }
+
 		void Clear();
-
-		const FramebufferSpecification& GetSpecification() const { return m_Specification; }
-
-	private:
 		void Clean();
+
+		inline void* GetColorAttachment(UInt32 index = 0) const {
+			return m_ColorAttachments[index].ShaderResourceView.Get();
+		}
 
 	private:
 		STL::vector<TextureSpecification> m_ColorAttachmentSpecifications;

@@ -32,7 +32,8 @@ namespace Sentinel
 			rTVDescription.Format = static_cast<DXGI_FORMAT>(texSpec.TextureFormat);
 			rTVDescription.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 			rTVDescription.Texture2D.MipSlice = 0;
-			DX11Common::GetDevice()->CreateRenderTargetView(outColorAttachment->RenderTexture.Get(),
+			DX11Common::GetDevice()->CreateRenderTargetView(
+				outColorAttachment->RenderTexture.Get(),
 				&rTVDescription, &outColorAttachment->RenderTargetView);
 
 			// SRV
@@ -43,7 +44,8 @@ namespace Sentinel
 				sRVDescription.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 				sRVDescription.Texture2D.MipLevels = 1;
 				sRVDescription.Texture2D.MostDetailedMip = 0;
-				DX11Common::GetDevice()->CreateShaderResourceView(outColorAttachment->RenderTexture.Get(),
+				DX11Common::GetDevice()->CreateShaderResourceView(
+					outColorAttachment->RenderTexture.Get(),
 					&sRVDescription, &outColorAttachment->ShaderResourceView);
 			}
 		}
@@ -78,10 +80,12 @@ namespace Sentinel
 				&depthStencilDescription, &outDepthAttachment->DepthStencilView);
 		}
 
-		static void AttachToSwapchain(Attachments::ColorAttachment* outColorAttachment, FramebufferSpecification spec) {
+		static void AttachToSwapchain(Attachments::ColorAttachment* outColorAttachment,
+			FramebufferSpecification spec) {
 			ID3D11Texture2D* backbuffer = nullptr;
 			DX11Common::GetSwapchain()->GetBuffer(0, __uuidof(ID3D11Resource), (LPVOID*)&backbuffer);
-			DX11Common::GetDevice()->CreateRenderTargetView(backbuffer, nullptr, &outColorAttachment->RenderTargetView);
+			DX11Common::GetDevice()->CreateRenderTargetView(backbuffer,
+				nullptr, &outColorAttachment->RenderTargetView);
 			backbuffer->Release();
 			backbuffer = nullptr;
 		}
@@ -246,7 +250,7 @@ namespace Sentinel
 			return;
 
 		Unbind();
-
+		Clean();
 		m_Specification.Width = width;
 		m_Specification.Height = height;
 		DX11Common::GetSwapchain()->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);

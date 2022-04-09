@@ -39,6 +39,8 @@ namespace Sentinel
 
 		void ProcessLayerUpdate();
 
+		void ProcessLayerImGuiRender();
+
 	private:
 		void OnWindowClose(Event& event);
 		void OnWindowResize(Event& event);

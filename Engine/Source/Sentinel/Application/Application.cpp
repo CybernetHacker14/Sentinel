@@ -121,7 +121,6 @@ namespace Sentinel
 		{
 			if (!m_Minimized)
 			{
-
 				m_Camera->OnUpdate();
 				m_CameraCB->SetDynamicData(&(m_Camera->GetViewProjectionMatrix()));
 				ProcessLayerUpdate();
@@ -130,12 +129,9 @@ namespace Sentinel
 
 				m_Renderer->Draw();
 				m_Renderer->Clear();
-				m_ImGuiLayer->Begin();
 
-				for (Layer* layer : m_LayerStack)
-					layer->OnImGuiRender();
+				ProcessLayerImGuiRender();
 
-				m_ImGuiLayer->End();
 				m_Renderer->FramebufferUnbind();
 			}
 			m_Renderer->GetWindow().OnUpdate();
@@ -150,12 +146,22 @@ namespace Sentinel
 
 	void Application::ProcessLayerUpdate() {
 		if (m_LayerStack.GetSize() == 0)
-		{
 			return;
-		}
 
 		for (Layer* layer : m_LayerStack)
 			layer->OnUpdate();
+	}
+
+	void Application::ProcessLayerImGuiRender() {
+		if (m_LayerStack.GetSize() == 0)
+			return;
+
+		m_ImGuiLayer->Begin();
+
+		for (Layer* layer : m_LayerStack)
+			layer->OnImGuiRender();
+
+		m_ImGuiLayer->End();
 	}
 
 	void Application::OnWindowClose(Event& event) {

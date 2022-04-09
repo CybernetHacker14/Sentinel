@@ -6,6 +6,10 @@ namespace Sentinel
 {
 	class Vertexbuffer : public ISharedRef {
 	public:
+		inline ~Vertexbuffer() {
+			Clean();
+		}
+
 		inline void Bind(UInt32 stride) const {
 			if (!m_BindFunction)
 				return;

@@ -49,8 +49,8 @@ namespace Sentinel
 		RenderPipeline->Clean();
 		for (auto& vBuffer : RenderData->PipelineModules->Vertexbuffers)
 		{
-			if (vBuffer)
-				vBuffer->Clean();
+			/*if (vBuffer)
+				vBuffer->Clean();*/
 		}
 		RenderData->PipelineModules->Indexbuffer->Clean();
 		RenderData->PipelineModules->Shader->Clean();
