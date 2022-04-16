@@ -29,10 +29,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include dependencies
 group "Dependencies"
-    include "Premake"
-    include "Engine/Vendor/GLFW"
+	include "Premake"
+	include "Engine/Vendor/GLFW"
 	include "Engine/Vendor/EABase"
-    include "Engine/Vendor/EASTL"
+	include "Engine/Vendor/EASTL"
 	include "Engine/Vendor/cereal"
 	include "Engine/Vendor/imgui"
 group ""
