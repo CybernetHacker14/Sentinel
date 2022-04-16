@@ -2,6 +2,7 @@
 
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Math/Math.h"
+#include "Sentinel/Graphics/Components/RenderResources/Buffers/Constantbuffer.h"
 
 #include <glm/glm.hpp>
 
@@ -56,7 +57,14 @@ namespace Sentinel
 		void OnResize(const Float width, const Float height);
 		void OnUpdate();
 
+	public:
+		inline static SharedRef<Camera> Create(const Float width, const Float height) {
+			return CreateSharedRef<Camera>(width, height);
+		}
+
 	protected:
+		void Init();
+
 		void UpdateDirectionVectors();
 		void UpdateProjectionMatrix();
 		void UpdateViewMatrix();
@@ -65,7 +73,7 @@ namespace Sentinel
 		inline static glm::vec3 m_WorldUp = { 0.0f, 1.0f, 0.0f };
 
 	protected:
-		ProjectionMode m_ProjectionMode = ProjectionMode::ORTHOGRAPHIC;
+		ProjectionMode m_ProjectionMode = ProjectionMode::PERSPECTIVE;
 
 		// Matrices
 		glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
@@ -93,6 +101,9 @@ namespace Sentinel
 		// Experimental
 		Float m_Exposure = 0.0f;
 		glm::vec3 m_FocalPoint = { 0.0f, 0.0f, 0.0f };
+
+	protected:
+		SharedRef<Constantbuffer> m_CameraConstantbuffer;
 	};
 
 }

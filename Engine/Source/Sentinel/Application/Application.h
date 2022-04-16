@@ -6,7 +6,6 @@
 #include "Sentinel/Graphics/Renderers/Renderer.h"
 #include "Sentinel/AssetManagement/AssetManager.h"
 
-#include "Sentinel/Graphics/Components/Buffers/Constantbuffer.h"
 #include "Sentinel/Graphics/Components/Cameras/Camera.h"
 
 #include "Sentinel/GUI/ImGui/ImGuiLayer.h"
@@ -34,11 +33,8 @@ namespace Sentinel
 	private:
 		// The main application loop
 		void Run();
-
 		void RaiseEvent(UniqueRef<Event> eventData);
-
 		void ProcessLayerUpdate();
-
 		void ProcessLayerImGuiRender();
 
 	private:
@@ -53,13 +49,10 @@ namespace Sentinel
 		UInt32 m_WindowResizeCallbackIndex = 0;
 		UInt32 m_WindowCloseCallbackIndex = 0;
 		UInt32 m_KeyPressedCallbackIndex = 0;
+
 	private:
 		UniqueRef<AssetManager> m_AssetManager;
 		UniqueRef<Renderer> m_Renderer;
-
-		SharedRef<Texture2D> m_TileTexture;
-
-		SharedRef<Constantbuffer> m_CameraCB;
 		SharedRef<Camera> m_Camera;
 
 	private:
@@ -67,6 +60,7 @@ namespace Sentinel
 		EventBus m_EventBus;
 		ImGuiLayer* m_ImGuiLayer;
 		ImGuiDebugLayer* m_ImGuiDebugLayer;
+
 	private:
 		static Application* s_Instance;
 		friend int::main(int argc, char** argv);

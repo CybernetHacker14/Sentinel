@@ -1,6 +1,6 @@
 @echo off
 
-mode con: cols=160 lines=50
+mode con: cols=100 lines=30
 
 echo * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 echo *              Welcome to Sentinel Game Engine Setup                  *

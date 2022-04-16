@@ -15,20 +15,25 @@ namespace Sentinel
 		ST_ENGINE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	WindowsWindow::WindowsWindow(const WindowProperties& props) {
-		Init(props);
+	WindowsWindow::WindowsWindow(const WindowProperties& props)
+		: Window(props) {
+
+		m_InitFunction = ST_BIND_EVENT_FN(Init);
+		m_OnUpdateFunction = ST_BIND_EVENT_FN(OnUpdate);
+		m_SetVSyncFunction = ST_BIND_EVENT_FN(SetVSync);
+		m_GetNativeWindowFunction = ST_BIND_EVENT_FN(GetNativeWindow);
+		m_ShutdownFunction = ST_BIND_EVENT_FN(Shutdown);
+
+		Init();
 	}
 
-	WindowsWindow::~WindowsWindow() {
-		Shutdown();
-	}
+	void WindowsWindow::Init() {
+		m_Data.Title = m_Properties.Title;
+		m_Data.Width = m_Properties.Width;
+		m_Data.Height = m_Properties.Height;
 
-	void WindowsWindow::Init(const WindowProperties& props) {
-		m_Data.Title = props.Title;
-		m_Data.Width = props.Width;
-		m_Data.Height = props.Height;
-
-		ST_ENGINE_INFO("Creating window {0} : {1}, {2}", props.Title.c_str(), props.Width, props.Height);
+		ST_ENGINE_INFO("Creating window {0} : {1}, {2}",
+			m_Properties.Title.c_str(), m_Properties.Width, m_Properties.Height);
 
 		if (s_GLFWWindowCount == 0)
 		{
@@ -37,17 +42,19 @@ namespace Sentinel
 			glfwSetErrorCallback(GLFWErrorCallback);
 		}
 
-		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, props.FramebufferTransparency ? 1 : 0);
+		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, m_Properties.FramebufferTransparency ? 1 : 0);
 
-		if (props.Mode == WindowMode::FULLSCREEN)
+		if (m_Properties.Mode == WindowMode::FULLSCREEN)
 		{
-			m_Window = glfwCreateWindow((Int32)props.Width, (Int32)props.Height, m_Data.Title.c_str(),
+			m_Window = glfwCreateWindow((Int32)m_Properties.Width,
+				(Int32)m_Properties.Height, m_Data.Title.c_str(),
 				glfwGetPrimaryMonitor(), nullptr);
 		}
 		else
 		{
-			m_Window = glfwCreateWindow((Int32)props.Width, (Int32)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-			if (props.Mode == WindowMode::WINDOWEDMAXIMIZED)
+			m_Window = glfwCreateWindow((Int32)m_Properties.Width,
+				(Int32)m_Properties.Height, m_Data.Title.c_str(), nullptr, nullptr);
+			if (m_Properties.Mode == WindowMode::WINDOWEDMAXIMIZED)
 			{
 				glfwMaximizeWindow(m_Window);
 			}
@@ -143,6 +150,16 @@ namespace Sentinel
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 	}
 
+	void WindowsWindow::OnUpdate() {
+		glfwPollEvents();
+	}
+
+	void WindowsWindow::SetVSync(Bool enabled) {
+		glfwSwapInterval(enabled ? 1 : 0);
+		m_Data.VSync = enabled;
+	}
+
+
 	void WindowsWindow::Shutdown() {
 		glfwDestroyWindow(m_Window);
 		--s_GLFWWindowCount;
@@ -151,25 +168,5 @@ namespace Sentinel
 		{
 			glfwTerminate();
 		}
-	}
-
-	void WindowsWindow::OnUpdate() {
-		glfwPollEvents();
-	}
-
-	void WindowsWindow::SetVSync(Bool enabled) {
-		if (enabled)
-		{
-			glfwSwapInterval(1);
-		}
-		else
-		{
-			glfwSwapInterval(0);
-		}
-		m_Data.VSync = enabled;
-	}
-
-	Bool WindowsWindow::IsVSync() const {
-		return m_Data.VSync;
 	}
 }

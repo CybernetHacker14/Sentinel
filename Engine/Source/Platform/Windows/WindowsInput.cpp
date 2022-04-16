@@ -2,7 +2,7 @@
 #include "Sentinel/Input/Input.h"
 #include "Sentinel/Application/Application.h"
 
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 namespace Sentinel
 {
@@ -146,7 +146,7 @@ namespace Sentinel
 	};
 
 	Bool Input::IsKeyPressed(const KeyCode keycode) {
-		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		GLFWwindow* window = Application::Get().GetWindow().GetNativeWindow<GLFWwindow>();
 		auto state = glfwGetKey(window, static_cast<Int32>(keycode));
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
@@ -160,7 +160,7 @@ namespace Sentinel
 	}
 
 	Bool Input::IsMouseButtonPressed(const MouseCode button) {
-		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		GLFWwindow* window = Application::Get().GetWindow().GetNativeWindow<GLFWwindow>();
 		auto state = glfwGetMouseButton(window, static_cast<Int32>(button));
 		return state == GLFW_PRESS;
 	}
@@ -174,7 +174,7 @@ namespace Sentinel
 	}
 
 	glm::vec2 Input::GetMousePosition() {
-		auto* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		GLFWwindow* window = Application::Get().GetWindow().GetNativeWindow<GLFWwindow>();
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		return { (Float)xpos,(Float)ypos };
@@ -189,12 +189,12 @@ namespace Sentinel
 	}
 
 	Bool Input::GetKey(const KeyCode keycode) {
-		return glfwGetKey(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()),
+		return glfwGetKey(Application::Get().GetWindow().GetNativeWindow<GLFWwindow>(),
 			static_cast<Int32>(keycode)) == GLFW_PRESS;
 	}
 
 	Bool Input::GetMouseButton(const MouseCode mousecode) {
-		return glfwGetMouseButton(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()),
+		return glfwGetMouseButton(Application::Get().GetWindow().GetNativeWindow<GLFWwindow>(),
 			static_cast<Int32>(mousecode)) == GLFW_PRESS;
 	}
 

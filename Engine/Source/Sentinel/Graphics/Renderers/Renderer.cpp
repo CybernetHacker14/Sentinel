@@ -3,54 +3,59 @@
 
 namespace Sentinel
 {
-	Renderer::Renderer(SharedRef<DeviceModules> deviceModules) {
-		m_RenderStageHandler = STL::move(RenderStageHandler::Create());
-		m_RenderStageHandler->RenderData->DeviceModules = deviceModules;
-		m_RenderStageHandler->ExecuteStartupStage(*(m_RenderStageHandler->RenderData->DeviceModules->WindowProperties));
+	Renderer::Renderer() {
+		m_RenderPipeline = RenderPipeline::Create();
 	}
 
-	Renderer::~Renderer() {
-		m_RenderStageHandler->ExecuteShutdownStage();
+	Renderer::~Renderer() {}
+
+	void Renderer::SetRenderSpecifications(const WindowProperties& windowProps,
+		const FramebufferSpecification& framebufferSpecs) {
+		m_RenderPipeline->CreateFrameBackings(windowProps, framebufferSpecs);
+		m_RenderPipeline->CreateFrameBackingsComponents();
 	}
 
-	void Renderer::SetPipelineData(SharedRef<PipelineModules> pipelineModules) {
-		m_RenderStageHandler->RenderData->PipelineModules = pipelineModules;
-		m_RenderStageHandler->ExecuteRenderPipelinePreprocessStage();
+	void Renderer::SubmitGeometryData(SharedRef<RenderResources> renderResources) {
+		m_RenderPipeline->m_RenderResources = renderResources;
 	}
 
-	Window& Renderer::GetWindow() {
-		return *(m_RenderStageHandler->GetRenderData().DeviceModules->Window);
+	void Renderer::InitStartup() {
+		m_RenderPipeline->InitFrameBackings();
+		m_RenderPipeline->BindRenderResources();
 	}
 
-	void Renderer::Draw() {
-		m_RenderStageHandler->ExecuteRenderPipelineDrawStage();
-	}
-
-	void Renderer::Clear() {
-		m_RenderStageHandler->ExecuteRenderPipelineClearStage();
-	}
-
-	void Renderer::Shutdown() {
-		m_RenderStageHandler->ExecuteRenderPipelineCleanupStage();
-	}
-
-	void Renderer::Resize(UInt32 width, UInt32 height) {
-		m_RenderStageHandler->Resize(width, height);
-	}
+	void Renderer::PreRender() {}
 
 	void Renderer::FramebufferBind() {
-		m_RenderStageHandler->FramebufferBindFunction();
+		m_RenderPipeline->BindFramebuffer();
+	}
+
+	void Renderer::DrawCommand() {
+		m_RenderPipeline->Draw();
+		m_RenderPipeline->SwapBuffers();
+	}
+
+	void Renderer::ClearCommand() {
+		m_RenderPipeline->Clear();
 	}
 
 	void Renderer::FramebufferUnbind() {
-		m_RenderStageHandler->FramebufferUnbindFunction();
+		m_RenderPipeline->UnbindFramebuffer();
 	}
 
-	SharedRef<DeviceModules> Renderer::GetDeviceModulesFromRenderData() {
-		return m_RenderStageHandler->GetRenderData().DeviceModules;
+	void Renderer::PostRender() {}
+
+	void Renderer::InitShutdown() {
+		m_RenderPipeline->UnbindRenderResources();
+		m_RenderPipeline->CleanRenderResources();
 	}
 
-	SharedRef<PipelineModules> Renderer::GetPipelineModulesFromRenderData() {
-		return m_RenderStageHandler->GetRenderData().PipelineModules;
+	void Renderer::Shutdown() {
+		m_RenderPipeline->CleanFrameBackings();
+		m_RenderPipeline->CleanNativeResources();
+	}
+
+	void Renderer::Resize(UInt32 width, UInt32 height) {
+		m_RenderPipeline->Resize(width, height);
 	}
 }

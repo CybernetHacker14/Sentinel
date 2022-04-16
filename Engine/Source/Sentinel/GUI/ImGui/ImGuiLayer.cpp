@@ -46,7 +46,7 @@ namespace Sentinel
 		}
 
 		Application& app = Application::Get();
-		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+		GLFWwindow* window = app.GetWindow().GetNativeWindow<GLFWwindow>();
 
 		// Setup Platform/Renderer Bindings
 

@@ -6,11 +6,12 @@
 namespace Sentinel
 {
 	Camera::Camera() {
-		OnUpdate();
+		Init();
 	}
 
 	Camera::Camera(const Float width, const Float height) {
 		OnResize(width, height);
+		Init();
 	}
 
 	void Camera::OnResize(const Float width, const Float height) {
@@ -21,6 +22,14 @@ namespace Sentinel
 		UpdateDirectionVectors();
 		UpdateViewMatrix();
 		UpdateProjectionMatrix();
+		m_CameraConstantbuffer->SetDynamicData(&(GetViewProjectionMatrix()));
+	}
+
+	void Camera::Init() {
+		m_CameraConstantbuffer = Constantbuffer::Create(sizeof(glm::mat4), 0,
+			Constantbuffer::UsageType::DYNAMIC);
+		m_CameraConstantbuffer->VSBind();
+		OnUpdate();
 	}
 
 	void Camera::UpdateDirectionVectors() {
