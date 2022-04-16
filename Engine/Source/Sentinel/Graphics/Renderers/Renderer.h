@@ -1,29 +1,52 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
-#include "Sentinel/Graphics/Core/Backend.h"
-#include "Sentinel/Graphics/Modules/RenderStageHandler.h"
-
-#include "Platform/DirectX11/Graphics/Modules/DX11RenderStageHandler.h"
+#include "Sentinel/Graphics/Modules/RenderPipeline.h"
 
 namespace Sentinel
 {
 	class Renderer {
 	public:
-		Renderer(SharedRef<DeviceModules> deviceModules);
+		Renderer();
 		~Renderer();
 
-		void SetPipelineData(SharedRef<PipelineModules> pipelineModules);
-		Window& GetWindow();
+		void SetRenderSpecifications(
+			const WindowProperties& windowProps,
+			const FramebufferSpecification& framebufferSpecs);
 
-		void Draw();
+		void SubmitGeometryData(SharedRef<RenderResources> renderResources);
+
+		void InitStartup();
+		void PreRender();
+		void FramebufferBind();
+		void DrawCommand();
+		void ClearCommand();
+		void FramebufferUnbind();
+		void PostRender();
+		void InitShutdown();
 		void Shutdown();
 
-	private:
-		SharedRef<DeviceModules> GetDeviceModulesFromRenderData();
-		SharedRef<PipelineModules> GetPipelineModulesFromRenderData();
+		void Resize(UInt32 width, UInt32 height);
 
 	public:
-		UniqueRef<RenderStageHandler> m_RenderStageHandler;
+		inline static UniqueRef<Renderer> Create() {
+			return CreateUniqueRef<Renderer>();
+		}
+
+	public:
+		inline Window& GetWindow() {
+			return *(m_RenderPipeline->m_FrameBackings->Window);
+		}
+
+		inline const WindowProperties& GetWindowProperties() const {
+			return m_RenderPipeline->m_FrameBackings->WindowProperties;
+		}
+
+		inline const FramebufferSpecification& GetFramebufferSpecification() const {
+			return m_RenderPipeline->m_FrameBackings->Framebuffer->GetSpecification();
+		}
+
+	private:
+		UniqueRef<RenderPipeline> m_RenderPipeline;
 	};
 }

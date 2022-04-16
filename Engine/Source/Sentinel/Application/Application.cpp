@@ -3,13 +3,12 @@
 #include "Sentinel/Events/Categories/WindowEvent.h"
 #include "Sentinel/Events/Categories/KeyEvent.h"
 #include "Sentinel/Input/Input.h"
-
 #include "Sentinel/Input/KeyCodes.h"
 
 #include "Sentinel/Math/Math.h"
 
-#include "Sentinel/Graphics/Components/Buffers/Constantbuffer.h"
-#include "Platform/DirectX11/Graphics/Components/Buffers/DX11Constantbuffer.h"
+#include "Sentinel/Graphics/Definitions/FrameBackings.h"
+#include "Sentinel/Graphics/Definitions/RenderResources.h"
 
 #include <imgui.h>
 
@@ -21,18 +20,29 @@ namespace Sentinel
 		ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
 		s_Instance = this;
 
-		SharedRef<DeviceModules> deviceModules = CreateSharedRef<DeviceModules>();
-		deviceModules->WindowProperties = CreateUniqueRef<WindowProperties>(name, 1280, 720, WindowMode::WINDOWED, false);
+		m_Renderer = Renderer::Create();
 
-		m_Renderer = UniqueRef<Renderer>(CreateUniqueRef<Renderer>(deviceModules));
-		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
+		// Set frame backings definitions
 
-		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
-		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
-		m_KeyPressedCallbackIndex = SubscribeToEvent(EventType::KeyPressed, ST_BIND_EVENT_FN(Application::OnKeyPressed));
+		WindowProperties props;
+		props.Title = name;
+		props.Width = 1280;
+		props.Height = 720;
+		props.Mode = WindowMode::WINDOWED;
+		props.FramebufferTransparency = false;
 
-		SharedRef<PipelineModules> pipelineModules = CreateSharedRef<PipelineModules>();
+		FramebufferSpecification spec;
+		spec.Attachments = { TextureFormat::RGBA32F };
+		spec.ClearColor = { 0.1f, 0.5f, 0.1f, 0.1f };
+		spec.Width = props.Width;
+		spec.Height = props.Height;
+		spec.SwapchainTarget = true;
 
+		m_Renderer->SetRenderSpecifications(props, spec);
+
+		// Set render resource data (geometry, textures, shaders, etc.)
+
+		SharedRef<RenderResources> renderResource = RenderResources::Create();
 		STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices =
 		{
 			{ { -3.0f,   3.0f, -7.0f, 1.0f }, {0.0f, 0.0f} },
@@ -46,8 +56,10 @@ namespace Sentinel
 			{ {  1.0f,  -1.0f, -5.0f, 1.0f }, {0.0f, 1.0f} }
 		};
 
-		SharedRef<Vertexbuffer> vertexBuffer = Vertexbuffer::Create(vertices.data(),
-			vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec4>));
+		renderResource->Vertexbuffers.emplace_back(
+			Vertexbuffer::Create(vertices.data(),
+				vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec2>))
+		);
 
 		STL::vector<UInt32> indices =
 		{
@@ -55,37 +67,40 @@ namespace Sentinel
 			4,5,6,4,6,7
 		};
 
-		FramebufferSpecification spec;
-		spec.Attachments = { TextureFormat::RGBA32F };
-		spec.ClearColor = { 0.1f, 0.1f, 0.1f, 0.1f };
-		spec.Width = deviceModules->WindowProperties->Width;
-		spec.Height = deviceModules->WindowProperties->Height;
-		spec.SwapchainTarget = true;
+		renderResource->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
+		renderResource->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
+		//renderResource->Shader = Shader::Create("TextureShader.hlsl", "TextureShader");
 
 		Texture2DImportSettings settings;
 		settings.texturePath = "Assets/Tile1.jpg";
-		m_TileTexture = Texture2D::Create(settings);
+		renderResource->Textures[0] = TextureTuple::Create();
+		renderResource->Textures[0]->Texture = Texture2D::Create(settings);
+		renderResource->Textures[0]->ShaderType = ShaderType::PIXEL;
 
-		pipelineModules->Framebuffer = Framebuffer::Create(spec);
-		pipelineModules->Vertexbuffers.emplace_back(vertexBuffer);
-		pipelineModules->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
-		pipelineModules->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
-		m_Renderer->SetPipelineData(pipelineModules);
+		m_Renderer->SubmitGeometryData(renderResource);
 
-		m_TileTexture->Bind(0, ShaderType::PIXEL);
+		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
-		m_Camera = CreateSharedRef<Camera>(deviceModules->WindowProperties->Width, deviceModules->WindowProperties->Height);
-		m_CameraCB = Constantbuffer::Create(sizeof(glm::mat4), 0, Constantbuffer::UsageType::DYNAMIC);
-		m_CameraCB->VSBind();
+		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose,
+			ST_BIND_EVENT_FN(Application::OnWindowClose));
+		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize,
+			ST_BIND_EVENT_FN(Application::OnWindowResize));
+		m_KeyPressedCallbackIndex = SubscribeToEvent(EventType::KeyPressed,
+			ST_BIND_EVENT_FN(Application::OnKeyPressed));
+
+		m_Camera = Camera::Create(props.Width, props.Height);
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
 		m_ImGuiDebugLayer = new ImGuiDebugLayer(m_Camera);
 		PushOverlay(m_ImGuiDebugLayer);
+
+		m_Renderer->InitStartup();
 	}
 
 	Application::~Application() {
+		m_LayerStack.CleanLayerstack();
 		m_Renderer->Shutdown();
 		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
 		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
@@ -119,14 +134,24 @@ namespace Sentinel
 		{
 			if (!m_Minimized)
 			{
-				ProcessLayerUpdate();
+				m_Renderer->PreRender();
+
 				m_Camera->OnUpdate();
-				m_CameraCB->SetDynamicData(&(m_Camera->GetViewProjectionMatrix()));
-				m_Renderer->Draw();
+				ProcessLayerUpdate();
+
+				m_Renderer->FramebufferBind();
+				m_Renderer->DrawCommand();
+				m_Renderer->ClearCommand();
+				ProcessLayerImGuiRender();
+				m_Renderer->FramebufferUnbind();
+
+				m_Renderer->PostRender();
 			}
 			m_Renderer->GetWindow().OnUpdate();
 			Input::OnUpdate();
 		}
+
+		m_Renderer->InitShutdown();
 	}
 
 	void Application::RaiseEvent(UniqueRef<Event> eventData) {
@@ -136,12 +161,15 @@ namespace Sentinel
 
 	void Application::ProcessLayerUpdate() {
 		if (m_LayerStack.GetSize() == 0)
-		{
 			return;
-		}
 
 		for (Layer* layer : m_LayerStack)
 			layer->OnUpdate();
+	}
+
+	void Application::ProcessLayerImGuiRender() {
+		if (m_LayerStack.GetSize() == 0)
+			return;
 
 		m_ImGuiLayer->Begin();
 
@@ -160,14 +188,10 @@ namespace Sentinel
 	void Application::OnWindowResize(Event& event) {
 		WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
 		m_Camera->OnResize(e.GetWidth(), e.GetHeight());
+		m_Renderer->Resize(e.GetWidth(), e.GetHeight());
 	}
 
 	void Application::OnKeyPressed(Event& event) {
 		KeyPressedEvent e = *(event.Cast<KeyPressedEvent>());
-		if (e.GetKeycode() == Key::P)
-		{
-			m_Camera->SetProjectionMode(m_Camera->GetProjectionMode() == ProjectionMode::PERSPECTIVE ?
-				ProjectionMode::ORTHOGRAPHIC : ProjectionMode::PERSPECTIVE);
-		}
 	}
 }

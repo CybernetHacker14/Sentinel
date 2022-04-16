@@ -25,6 +25,8 @@ namespace Sentinel
 		void PushOverlay(Layer* overlay);
 		void PopOverlay(Layer* overlay);
 
+		void CleanLayerstack();
+
 		const UInt32 GetSize() const { return static_cast<UInt32>(m_Layers.size()); }
 
 		// Iterators

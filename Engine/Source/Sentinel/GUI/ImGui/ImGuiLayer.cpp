@@ -2,6 +2,8 @@
 #include "Sentinel/GUI/ImGui/ImGuiLayer.h"
 #include "Sentinel/Application/Application.h"
 
+#include "Sentinel/Events/Categories/WindowEvent.h"
+
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_win32.h>
@@ -44,21 +46,29 @@ namespace Sentinel
 		}
 
 		Application& app = Application::Get();
-		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+		GLFWwindow* window = app.GetWindow().GetNativeWindow<GLFWwindow>();
 
 		// Setup Platform/Renderer Bindings
 
 		ImGui_ImplGlfw_InitForOther(window, true);
 		ImGui_ImplDX11_Init(DX11Common::GetDevice(), DX11Common::GetContext());
+
+		m_OnResizeCallbackIndex = Application::Get().SubscribeToEvent(
+			EventType::WindowResize, ST_BIND_EVENT_FN(OnResize));
 	}
 
 	void ImGuiLayer::OnDetach() {
 		ImGui_ImplDX11_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
+		Application::Get().UnsubscribeFromEvent(EventType::WindowResize, m_OnResizeCallbackIndex);
 	}
 
 	void ImGuiLayer::Begin() {
+		ImGuiIO& io = ImGui::GetIO();
+		Application& app = Application::Get();
+		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -66,8 +76,6 @@ namespace Sentinel
 
 	void ImGuiLayer::End() {
 		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::Get();
-		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 		// Rendering
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -79,5 +87,11 @@ namespace Sentinel
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
 		}
+	}
+
+	void ImGuiLayer::OnResize(Event& event) {
+		WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.DisplaySize = ImVec2(e.GetWidth(), e.GetHeight());
 	}
 }

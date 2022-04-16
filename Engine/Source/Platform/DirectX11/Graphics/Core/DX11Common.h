@@ -8,8 +8,8 @@
 
 namespace Sentinel
 {
+	class DX11RenderPipeline;
 	class DX11GraphicsContext;
-	class DX11RenderStageHandler;
 
 	class DX11Common {
 	public:
@@ -22,8 +22,8 @@ namespace Sentinel
 		static IDXGISwapChain* GetSwapchain();
 
 	private:
+		friend class DX11RenderPipeline;
 		friend class DX11GraphicsContext;
-		friend class DX11RenderStageHandler;
 
 		static ID3D11Device* m_Device;
 		static ID3D11DeviceContext* m_Context;
@@ -32,7 +32,5 @@ namespace Sentinel
 		static IDXGIAdapter* m_Adapter;
 
 		static IDXGISwapChain* m_Swapchain;
-
-		static ID3D11SamplerState* m_Slot0SamplerState;
 	};
 }

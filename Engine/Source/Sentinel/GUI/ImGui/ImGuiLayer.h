@@ -14,5 +14,9 @@ namespace Sentinel
 
 		void Begin();
 		void End();
+		void OnResize(Event& event);
+
+	private:
+		UInt32 m_OnResizeCallbackIndex = 0;
 	};
 }

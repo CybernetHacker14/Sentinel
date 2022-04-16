@@ -5,9 +5,6 @@
 
 namespace Sentinel
 {
-	template<typename T>
-	class WindowCRTP;
-
 	enum class WindowMode {
 		WINDOWED = 0,
 		WINDOWEDMAXIMIZED = 1,
@@ -34,78 +31,81 @@ namespace Sentinel
 	// Interface representing a desktop system based Window
 	class Window {
 	public:
-		using EventCallbackFn = STL::function<void(UniqueRef<Event>)>;
+		using EventCallbackFn = STL::delegate<void(UniqueRef<Event>)>;
 
-		void OnUpdate();
+		inline void Init() const {
+			if (!m_InitFunction)
+				return;
 
-		UInt32 GetWidth();
-		UInt32 GetHeight();
+			m_InitFunction();
+		}
 
-		void SetEventCallback(const EventCallbackFn& callback);
-		void SetVSync(Bool enabled);
-		Bool IsVSync();
+		inline void OnUpdate() const {
+			if (!m_OnUpdateFunction)
+				return;
 
-		void* GetNativeWindow();
+			m_OnUpdateFunction();
+		}
 
+		inline void SetVSync(Bool enabled) const {
+			if (!m_SetVSyncFunction)
+				return;
+
+			m_SetVSyncFunction(enabled);
+		}
+
+		inline void Shutdown() const {
+			if (!m_ShutdownFunction)
+				return;
+
+			m_ShutdownFunction();
+		}
+
+		inline const UInt32 GetWidth() const { return m_Data.Width; }
+		inline const UInt32 GetHeight() const { return m_Data.Height; }
+
+		inline const Bool IsVSync() const { return m_Data.VSync; };
+
+		inline void SetEventCallback(const EventCallbackFn& callback) {
+			m_Data.EventCallback = callback;
+		}
+
+	public:
+		inline void* GetNativeWindowVPtr() const {
+			if (!m_GetNativeWindowFunction)
+				return nullptr;
+
+			m_GetNativeWindowFunction();
+		}
+
+		template<typename T>
+		inline T* GetNativeWindow() {
+			return STL::move(static_cast<T*>(GetNativeWindowVPtr()));
+		}
+
+	public:
 		static UniqueRef<Window> Create(const WindowProperties& props = WindowProperties());
 
 	protected:
-		Window() = default;
+		Window(const WindowProperties& props);
 
-	private:
-		template<typename T>
-		inline WindowCRTP<T>* BaseDowncast() {
-			static_assert(STL::is_base_of<WindowCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from WindowCRTP<T>.");
-			return static_cast<WindowCRTP<T>*>(this);
-		}
+	protected:
+		STL::delegate<void()> m_InitFunction;
+		STL::delegate<void()> m_OnUpdateFunction;
+		STL::delegate<void(Bool)> m_SetVSyncFunction;
+		STL::delegate<void* ()> m_GetNativeWindowFunction;
+		STL::delegate<void()> m_ShutdownFunction;
 
-		template<typename T>
-		inline T* DerivedDowncast() {
-			static_assert(STL::is_base_of<WindowCRTP<T>, T>::value,
-				"Operation not allowed. 'T' should be a derived from WindowCRTP<T>.");
-			return static_cast<T*>(this);
-		}
-	};
+	protected:
+		struct WindowData {
+			STL::string Title;
+			UInt32 Width, Height;
+			Bool VSync;
 
-	template<typename T>
-	class WindowCRTP : public Window {
-	private:
-		inline void OnUpdate() {
-			underlying().OnUpdate();
-		}
+			EventCallbackFn EventCallback;
+		};
 
-		inline UInt32 GetWidth() {
-			return underlying().GetWidth();
-		}
-
-		inline UInt32 GetHeight() {
-			return underlying().GetHeight();
-		}
-
-		inline void SetEventCallback(const EventCallbackFn& callback) {
-			underlying().SetEventCallback(callback);
-		}
-
-		inline void SetVSync(Bool enabled) {
-			underlying().SetVSync(enabled);
-		}
-
-		inline Bool IsVSync() {
-			return underlying().IsVSync();
-		}
-
-		inline void* GetNativeWindow() {
-			return underlying().GetNativeWindow();
-		}
-
-	private:
-		friend T;
-		friend Window;
-		WindowCRTP() = default;
-
-		inline T& underlying() {
-			return static_cast<T&>(*this);
-		}
+		WindowData m_Data;
+		WindowProperties m_Properties;
 	};
 }
