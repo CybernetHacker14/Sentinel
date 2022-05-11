@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
-#include "Sentinel/Utilities/TSingleton.h"
 #include "Sentinel/Filesystem/Filesystem.h"
 
 namespace Sentinel
 {
-	class VirtualFilesystem : public TSingleton<VirtualFilesystem> {
+	class VirtualFilesystem {
 	public:
 		void Mount(const STL::string& virtualPath, const STL::string& physicalPath);
 		void Unmount(const STL::string& path);

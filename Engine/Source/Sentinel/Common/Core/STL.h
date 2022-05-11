@@ -2,7 +2,7 @@
 
 // Preprocessor directive defined here, because then it needs to be
 // entered in all premake and cmake scripts for the definition to get evaluated
-#define USE_EASTL 0
+#define USE_EASTL 1
 
 // Includes don't have or need alternate implementations can be put here
 #include <initializer_list>
@@ -27,6 +27,7 @@
 #include <EASTL/type_traits.h>
 #include <EASTL/utility.h>
 #include <EASTL/functional.h>
+#include <EASTL/array.h>
 #else
 #include <string>
 #include <vector>
@@ -42,6 +43,7 @@
 #include <functional>
 #include <utility>
 #include <new>
+#include <array>
 #endif // USE_EASTL
 
 // The purpose of this header file is to provide an abstraction between types like string, vector, etc.
@@ -215,6 +217,9 @@ namespace Sentinel
 		using true_type = eastl::bool_constant<true>;
 		using false_type = eastl::bool_constant<false>;
 
+		template<typename T, size_t N = 1Ui64>
+		using array = eastl::array<T, N>;
+
 	#else
 
 		template<typename T>
@@ -374,6 +379,9 @@ namespace Sentinel
 
 		using true_type = std::true_type;
 		using false_type = std::false_type;
+
+		template<typename T, size_t N = 1Ui64>
+		using array = std::array<T, N>;
 
 	#endif // USE_EASTL
 	}

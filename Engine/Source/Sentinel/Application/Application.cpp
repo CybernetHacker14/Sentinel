@@ -10,7 +10,9 @@
 #include "Sentinel/Graphics/Definitions/FrameBackings.h"
 #include "Sentinel/Graphics/Definitions/RenderResources.h"
 
-#include <imgui.h>
+#include "Sentinel/Common/Allocators/TestAllocator.h"
+
+#include "Sentinel/Common/CPU/CPUInfo.h"
 
 namespace Sentinel
 {
@@ -97,6 +99,25 @@ namespace Sentinel
 		PushOverlay(m_ImGuiDebugLayer);
 
 		m_Renderer->InitStartup();
+
+		TestStruct* struct1 = new TestStruct();
+		TestStruct* struct2 = new TestStruct();
+
+		struct1->testInt = 658;
+		struct1->testFloat = 45.67f;
+		struct1->testString = "Hello";
+
+		struct2->testInt = 32556;
+		struct2->testFloat = 675.328f;
+		struct2->testString = "Hello World jakfanjkefkaleifkasuhuahfkeuakduhkauhwk kaduakhekfkahekuusajedkjakfleafkhn";
+
+		UInt32 addition = sizeof((*struct1).testInt) + sizeof((*struct1).testFloat) + sizeof((*struct1).testString);
+		ST_ENGINE_INFO(addition);
+		ST_ENGINE_INFO(sizeof((*struct1)));
+
+		ST_ENGINE_INFO(alignof(TestStruct));
+
+		ST_ENGINE_INFO("{0}", CPUInfo::GetCacheLineSize());
 	}
 
 	Application::~Application() {
