@@ -10,10 +10,11 @@
 #include "Sentinel/Graphics/Definitions/FrameBackings.h"
 #include "Sentinel/Graphics/Definitions/RenderResources.h"
 
-#include "Sentinel/Common/Allocators/PoolAllocator.h"
-#include "Sentinel/Common/Allocators/TestAllocator.h"
-
+#include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Common/CPU/CPUInfo.h"
+
+#include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DData.h"
+#include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DAPI.h"
 
 namespace Sentinel {
     Application* Application::s_Instance = nullptr;
@@ -21,6 +22,8 @@ namespace Sentinel {
     Application::Application(const STL::string& name) {
         ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
         s_Instance = this;
+
+        EngineMemoryManager = CreateSharedRef<MemoryManager>();
 
         m_Renderer = Renderer::Create();
 
@@ -65,11 +68,16 @@ namespace Sentinel {
         renderResource->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
         // renderResource->Shader = Shader::Create("TextureShader.hlsl", "TextureShader");
 
-        Texture2DImportSettings settings;
-        settings.texturePath = "Assets/Tile1.jpg";
-        renderResource->Textures[0] = TextureTuple::Create();
-        renderResource->Textures[0]->Texture = Texture2D::Create(settings);
-        renderResource->Textures[0]->ShaderType = ShaderType::PIXEL;
+        // Texture2DImportSettings settings;
+        // settings.texturePath = "Assets/Tile1.jpg";
+        // renderResource->Textures[0] = TextureTuple::Create();
+        // renderResource->Textures[0]->Texture = Texture2D::Create(settings);
+        // renderResource->Textures[0]->ShaderType = ShaderType::PIXEL;
+
+        Texture2DDataImportSettings settings;
+        settings.TextureFilepath = "Assets/Tile1.jpg";
+        Texture2DData* tex = Texture2DAPI::CreateTexture2DData(settings);
+        Texture2DAPI::Bind(tex, 0, ShaderType::PIXEL);
 
         m_Renderer->SubmitGeometryData(renderResource);
 
@@ -92,43 +100,29 @@ namespace Sentinel {
 
         m_Renderer->InitStartup();
 
-        PoolAllocator<TestStruct> allocator;
-        allocator.AllocateMemoryBlock(3);
-
-        TestStruct* testStruct1 = allocator.New();
-
-        testStruct1->testFloat = 32.45f;
-        testStruct1->testInt = 3465;
-        testStruct1->testString = "TestString 001";
-
-        TestStruct* testStruct2 = allocator.New();
-        testStruct2->testFloat = 33.64f;
-        testStruct2->testInt = 3221;
-        testStruct2->testString = "TestStruct 003";
-
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(TestStruct), alignof(TestStruct));
-        ST_ENGINE_INFO("==============");
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(char), alignof(char));
+        /*ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(char), alignof(char));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(short), alignof(short));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(unsigned short), alignof(unsigned short));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Bool), alignof(Bool));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(UInt32), alignof(UInt32));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Float), alignof(Float));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Double), alignof(Double));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(STL::string), alignof(STL::string));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(STL::string), alignof(STL::string));*/
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Texture2D), alignof(Texture2D));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(SharedRef<Texture2D>), alignof(SharedRef<Texture2D>));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Shader), alignof(Shader));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(SharedRef<Shader>), alignof(SharedRef<Shader>));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Texture2DData), alignof(Texture2DData));
         ST_ENGINE_INFO(sizeof(DWORD));
-
-        Float value1 = allocator[0]->testFloat;
-        Float value2 = allocator[1]->testFloat;
-
-        allocator.Delete(testStruct1);
-        allocator.Delete(testStruct2);
-
-        allocator.ClearMemoryBlock();
+        ST_ENGINE_INFO("{0}", CPUInfo::GetCPUType());
+        ST_ENGINE_INFO("{0}", CPUInfo::GetL1CacheLineSize());
     }
 
     Application::~Application() {
         m_LayerStack.CleanLayerstack();
         m_Renderer->Shutdown();
+        EngineMemoryManager->Texture2DAllocator.DeleteAll();
+        EngineMemoryManager->Texture2DAllocator.DeallocateMemoryBlock();
         UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
         UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
         UnsubscribeFromEvent(EventType::KeyPressed, m_KeyPressedCallbackIndex);

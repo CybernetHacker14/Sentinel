@@ -1,28 +1,25 @@
 #pragma once
 
-#include "Sentinel/Common/Core/DataTypes.h"
-#include "Sentinel/Common/Core/Assert.h"
-#include "Sentinel/Common/Core/STL.h"
+#include "Sentinel/Common/Common.h"
 
 namespace Sentinel {
     template<typename T>
     class PoolAllocator {
     public:
-        enum class AllocationState { ALLOCATED = 0, FREE = 1 };
-
-    public:
         inline void AllocateMemoryBlock(UInt32 maxCount) {
-            ClearMemoryBlock();
+            DeallocateMemoryBlock();
 
             m_BlockStartingAddress = malloc(sizeof(T) * maxCount);
             m_MaxAllowedAllocations = maxCount;
             m_CurrentAllocations = 0;
             m_FreeList.reserve(maxCount);
 
+            m_AllocatedList.reserve(maxCount);
+
             DivideBlockIntoChunks();
         }
 
-        inline void ClearMemoryBlock() {
+        inline void DeallocateMemoryBlock() {
             if (m_BlockStartingAddress != nullptr) {
                 free(m_BlockStartingAddress);
                 m_BlockStartingAddress = nullptr;
@@ -46,9 +43,11 @@ namespace Sentinel {
             }
 
             T* address = m_ChunkAddressMap[m_FreeList[0]];
+            m_AllocatedList.emplace_back(m_FreeList[0]);
             std::swap(m_FreeList[0], m_FreeList.back());
             m_FreeList.pop_back();
             std::sort(m_FreeList.begin(), m_FreeList.end());
+            std::sort(m_AllocatedList.begin(), m_AllocatedList.end());
 
             m_CurrentAllocations++;
 
@@ -64,11 +63,56 @@ namespace Sentinel {
 
             outIndex = m_FreeList[0];
             T* address = m_ChunkAddressMap[m_FreeList[0]];
+            m_AllocatedList.emplace_back(m_FreeList[0]);
             std::swap(m_FreeList[0], m_FreeList.back());
             m_FreeList.pop_back();
             std::sort(m_FreeList.begin(), m_FreeList.end());
+            std::sort(m_AllocatedList.begin(), m_AllocatedList.end());
+
             m_CurrentAllocations++;
             return static_cast<T*>(new (address) T(STL::forward<Args>(args)...));
+        }
+
+        template<typename U, typename... Args>
+        inline T* New(Args&&... args) {
+            if (m_CurrentAllocations == m_MaxAllowedAllocations) {
+                ST_ENGINE_ASSERT(false, "Max count reached");
+                return nullptr;
+            }
+
+            static_assert(STL::is_base_of<T, U>::value, "'U' should be a derived from 'T'");
+
+            T* address = m_ChunkAddressMap[m_FreeList[0]];
+            m_AllocatedList.emplace_back(m_FreeList[0]);
+            std::swap(m_FreeList[0], m_FreeList.back());
+            m_FreeList.pop_back();
+            std::sort(m_FreeList.begin(), m_FreeList.end());
+            std::sort(m_AllocatedList.begin(), m_AllocatedList.end());
+
+            m_CurrentAllocations++;
+
+            return static_cast<T*>(new (address) U(STL::forward<Args>(args)...));
+        }
+
+        template<typename U, typename... Args>
+        inline T* New(UInt32& outIndex, Args&&... args) {
+            if (m_CurrentAllocations == m_MaxAllowedAllocations) {
+                ST_ENGINE_ASSERT("Max count reached");
+                return nullptr;
+            }
+
+            static_assert(STL::is_base_of<T, U>::value, "'U' should be a derived from 'T'");
+
+            outIndex = m_FreeList[0];
+            T* address = m_ChunkAddressMap[m_FreeList[0]];
+            m_AllocatedList.emplace_back(m_FreeList[0]);
+            std::swap(m_FreeList[0], m_FreeList.back());
+            m_FreeList.pop_back();
+            std::sort(m_FreeList.begin(), m_FreeList.end());
+            std::sort(m_AllocatedList.begin(), m_AllocatedList.end());
+
+            m_CurrentAllocations++;
+            return static_cast<T*>(new (address) U(STL::forward<Args>(args)...));
         }
 
         template<typename... Args>
@@ -79,8 +123,20 @@ namespace Sentinel {
             }
 
             m_FreeList.emplace_back(m_IndexAddressMap[address]);
+            STL::remove(m_AllocatedList.begin(), m_AllocatedList.end(), m_IndexAddressMap[address]);
             std::sort(m_FreeList.begin(), m_FreeList.end());
             address->~T(STL::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        inline void DeleteAll(Args&&... args) {
+            for (UInt32 index: m_AllocatedList) {
+                m_ChunkAddressMap[index]->~T(STL::forward<Args>(args)...);
+                m_FreeList.emplace_back(index);
+            }
+            std::sort(m_FreeList.begin(), m_FreeList.end());
+            m_AllocatedList.clear();
+            m_AllocatedList.reserve(m_MaxAllowedAllocations);
         }
 
         inline T* operator[](const UInt32& index) { return m_ChunkAddressMap[index]; }
@@ -94,6 +150,7 @@ namespace Sentinel {
         STL::unordered_map<T*, UInt32> m_IndexAddressMap;
 
         STL::vector<UInt32> m_FreeList;
+        STL::vector<UInt32> m_AllocatedList;
 
         UInt32 m_CurrentAllocations = 0;
         UInt32 m_MaxAllowedAllocations;

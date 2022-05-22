@@ -6,11 +6,11 @@
 
 namespace Sentinel
 {
-	STL::unordered_map<WrapMode, D3D11_TEXTURE_ADDRESS_MODE> s_WrapModeDescTable =
+	STL::unordered_map<TextureWrapMode, D3D11_TEXTURE_ADDRESS_MODE> s_WrapModeDescTable =
 	{
-		{ WrapMode::REPEAT, D3D11_TEXTURE_ADDRESS_WRAP   },
-		{ WrapMode::CLAMP,  D3D11_TEXTURE_ADDRESS_CLAMP  },
-		{ WrapMode::MIRROR, D3D11_TEXTURE_ADDRESS_MIRROR }
+		{ TextureWrapMode::REPEAT, D3D11_TEXTURE_ADDRESS_WRAP   },
+		{ TextureWrapMode::CLAMP,  D3D11_TEXTURE_ADDRESS_CLAMP  },
+		{ TextureWrapMode::MIRROR, D3D11_TEXTURE_ADDRESS_MIRROR }
 	};
 
 	DX11Texture2D::DX11Texture2D(const Texture2DImportSettings& settings)
