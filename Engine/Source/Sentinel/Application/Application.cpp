@@ -10,188 +10,196 @@
 #include "Sentinel/Graphics/Definitions/FrameBackings.h"
 #include "Sentinel/Graphics/Definitions/RenderResources.h"
 
-#include <imgui.h>
+#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Common/CPU/CPUInfo.h"
 
-namespace Sentinel
-{
-	Application* Application::s_Instance = nullptr;
+#include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DData.h"
+#include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DAPI.h"
 
-	Application::Application(const STL::string& name) {
-		ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
-		s_Instance = this;
+namespace Sentinel {
+    Application* Application::s_Instance = nullptr;
 
-		m_Renderer = Renderer::Create();
+    Application::Application(const STL::string& name) {
+        ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
+        s_Instance = this;
 
-		// Set frame backings definitions
+        EngineMemoryManager = CreateSharedRef<MemoryManager>();
 
-		WindowProperties props;
-		props.Title = name;
-		props.Width = 1280;
-		props.Height = 720;
-		props.Mode = WindowMode::WINDOWED;
-		props.FramebufferTransparency = false;
+        m_Renderer = Renderer::Create();
 
-		FramebufferSpecification spec;
-		spec.Attachments = { TextureFormat::RGBA32F };
-		spec.ClearColor = { 0.1f, 0.5f, 0.1f, 0.1f };
-		spec.Width = props.Width;
-		spec.Height = props.Height;
-		spec.SwapchainTarget = true;
+        // Set frame backings definitions
 
-		m_Renderer->SetRenderSpecifications(props, spec);
+        WindowProperties props;
+        props.Title = name;
+        props.Width = 1280;
+        props.Height = 720;
+        props.Mode = WindowMode::WINDOWED;
+        props.FramebufferTransparency = false;
 
-		// Set render resource data (geometry, textures, shaders, etc.)
+        FramebufferSpecification spec;
+        spec.Attachments = {TextureFormat::RGBA32F};
+        spec.ClearColor = {0.1f, 0.5f, 0.1f, 0.1f};
+        spec.Width = props.Width;
+        spec.Height = props.Height;
+        spec.SwapchainTarget = true;
 
-		SharedRef<RenderResources> renderResource = RenderResources::Create();
-		STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices =
-		{
-			{ { -3.0f,   3.0f, -7.0f, 1.0f }, {0.0f, 0.0f} },
-			{ { -1.0f,   3.0f, -7.0f, 1.0f }, {1.0f, 0.0f} },
-			{ { -1.0f,   1.0f, -7.0f, 1.0f }, {1.0f, 1.0f} },
-			{ { -3.0f,   1.0f, -7.0f, 1.0f }, {0.0f, 1.0f} },
+        m_Renderer->SetRenderSpecifications(props, spec);
 
-			{ {  1.0f,   1.0f, -5.0f, 1.0f }, {0.0f, 0.0f} },
-			{ {  3.0f,   1.0f, -5.0f, 1.0f }, {1.0f, 0.0f} },
-			{ {  3.0f,  -1.0f, -5.0f, 1.0f }, {1.0f, 1.0f} },
-			{ {  1.0f,  -1.0f, -5.0f, 1.0f }, {0.0f, 1.0f} }
-		};
+        // Set render resource data (geometry, textures, shaders, etc.)
 
-		renderResource->Vertexbuffers.emplace_back(
-			Vertexbuffer::Create(vertices.data(),
-				vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec2>))
-		);
+        SharedRef<RenderResources> renderResource = RenderResources::Create();
+        STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices = {
+            {{-3.0f, 3.0f, -7.0f, 1.0f}, {0.0f, 0.0f}},
+            {{-1.0f, 3.0f, -7.0f, 1.0f}, {1.0f, 0.0f}},
+            {{-1.0f, 1.0f, -7.0f, 1.0f}, {1.0f, 1.0f}},
+            {{-3.0f, 1.0f, -7.0f, 1.0f}, {0.0f, 1.0f}},
 
-		STL::vector<UInt32> indices =
-		{
-			0,1,2,0,2,3,
-			4,5,6,4,6,7
-		};
+            {{1.0f, 1.0f, -5.0f, 1.0f}, {0.0f, 0.0f}},
+            {{3.0f, 1.0f, -5.0f, 1.0f}, {1.0f, 0.0f}},
+            {{3.0f, -1.0f, -5.0f, 1.0f}, {1.0f, 1.0f}},
+            {{1.0f, -1.0f, -5.0f, 1.0f}, {0.0f, 1.0f}}};
 
-		renderResource->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
-		renderResource->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
-		//renderResource->Shader = Shader::Create("TextureShader.hlsl", "TextureShader");
+        renderResource->Vertexbuffers.emplace_back(
+            Vertexbuffer::Create(vertices.data(), vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec2>)));
 
-		Texture2DImportSettings settings;
-		settings.texturePath = "Assets/Tile1.jpg";
-		renderResource->Textures[0] = TextureTuple::Create();
-		renderResource->Textures[0]->Texture = Texture2D::Create(settings);
-		renderResource->Textures[0]->ShaderType = ShaderType::PIXEL;
+        STL::vector<UInt32> indices = {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
 
-		m_Renderer->SubmitGeometryData(renderResource);
+        renderResource->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
+        renderResource->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
+        // renderResource->Shader = Shader::Create("TextureShader.hlsl", "TextureShader");
 
-		m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
+        // Texture2DImportSettings settings;
+        // settings.texturePath = "Assets/Tile1.jpg";
+        // renderResource->Textures[0] = TextureTuple::Create();
+        // renderResource->Textures[0]->Texture = Texture2D::Create(settings);
+        // renderResource->Textures[0]->ShaderType = ShaderType::PIXEL;
 
-		m_WindowCloseCallbackIndex = SubscribeToEvent(EventType::WindowClose,
-			ST_BIND_EVENT_FN(Application::OnWindowClose));
-		m_WindowResizeCallbackIndex = SubscribeToEvent(EventType::WindowResize,
-			ST_BIND_EVENT_FN(Application::OnWindowResize));
-		m_KeyPressedCallbackIndex = SubscribeToEvent(EventType::KeyPressed,
-			ST_BIND_EVENT_FN(Application::OnKeyPressed));
+        Texture2DDataImportSettings settings;
+        settings.TextureFilepath = "Assets/Tile1.jpg";
+        Texture2DData* tex = Texture2DAPI::CreateTexture2DData(settings);
+        Texture2DAPI::Bind(tex, 0, ShaderType::PIXEL);
 
-		m_Camera = Camera::Create(props.Width, props.Height);
+        m_Renderer->SubmitGeometryData(renderResource);
 
-		m_ImGuiLayer = new ImGuiLayer();
-		PushOverlay(m_ImGuiLayer);
+        m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
 
-		m_ImGuiDebugLayer = new ImGuiDebugLayer(m_Camera);
-		PushOverlay(m_ImGuiDebugLayer);
+        m_WindowCloseCallbackIndex =
+            SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
+        m_WindowResizeCallbackIndex =
+            SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
+        m_KeyPressedCallbackIndex =
+            SubscribeToEvent(EventType::KeyPressed, ST_BIND_EVENT_FN(Application::OnKeyPressed));
 
-		m_Renderer->InitStartup();
-	}
+        m_Camera = Camera::Create(props.Width, props.Height);
 
-	Application::~Application() {
-		m_LayerStack.CleanLayerstack();
-		m_Renderer->Shutdown();
-		UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
-		UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
-		UnsubscribeFromEvent(EventType::KeyPressed, m_KeyPressedCallbackIndex);
-	}
+        m_ImGuiLayer = new ImGuiLayer();
+        PushOverlay(m_ImGuiLayer);
 
-	Window& Application::GetWindow() {
-		return m_Renderer->GetWindow();
-	}
+        m_ImGuiDebugLayer = new ImGuiDebugLayer(m_Camera);
+        PushOverlay(m_ImGuiDebugLayer);
 
-	void Application::PushLayer(Layer* layer) {
-		m_LayerStack.PushLayer(layer);
-		layer->OnAttach();
-	}
+        m_Renderer->InitStartup();
 
-	void Application::PushOverlay(Layer* overlay) {
-		m_LayerStack.PushOverlay(overlay);
-		overlay->OnAttach();
-	}
+        /*ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(char), alignof(char));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(short), alignof(short));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(unsigned short), alignof(unsigned short));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Bool), alignof(Bool));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(UInt32), alignof(UInt32));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Float), alignof(Float));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Double), alignof(Double));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(STL::string), alignof(STL::string));*/
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Shader), alignof(Shader));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(SharedRef<Shader>), alignof(SharedRef<Shader>));
+        ST_ENGINE_INFO(sizeof(DWORD));
+        ST_ENGINE_INFO("{0}", CPUInfo::GetCPUType());
+        ST_ENGINE_INFO("{0}", CPUInfo::GetL1CacheLineSize());
+    }
 
-	const UInt32 Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
-		return m_EventBus.SubscribeToEvent(eventType, STL::move(callback));
-	}
+    Application::~Application() {
+        m_LayerStack.CleanLayerstack();
+        m_Renderer->Shutdown();
+        EngineMemoryManager->Texture2DAllocator.DeleteAll();
+        EngineMemoryManager->Texture2DAllocator.DeallocateMemoryBlock();
+        UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
+        UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
+        UnsubscribeFromEvent(EventType::KeyPressed, m_KeyPressedCallbackIndex);
+    }
 
-	void Application::UnsubscribeFromEvent(const EventType& eventType, const UInt32& callbackIndex) {
-		m_EventBus.UnsubscribeFromEvent(eventType, callbackIndex);
-	}
+    Window& Application::GetWindow() { return m_Renderer->GetWindow(); }
 
-	void Application::Run() {
-		while (m_Running)
-		{
-			if (!m_Minimized)
-			{
-				m_Renderer->PreRender();
+    void Application::PushLayer(Layer* layer) {
+        m_LayerStack.PushLayer(layer);
+        layer->OnAttach();
+    }
 
-				m_Camera->OnUpdate();
-				ProcessLayerUpdate();
+    void Application::PushOverlay(Layer* overlay) {
+        m_LayerStack.PushOverlay(overlay);
+        overlay->OnAttach();
+    }
 
-				m_Renderer->FramebufferBind();
-				m_Renderer->DrawCommand();
-				m_Renderer->ClearCommand();
-				ProcessLayerImGuiRender();
-				m_Renderer->FramebufferUnbind();
+    const UInt32 Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
+        return m_EventBus.SubscribeToEvent(eventType, STL::move(callback));
+    }
 
-				m_Renderer->PostRender();
-			}
-			m_Renderer->GetWindow().OnUpdate();
-			Input::OnUpdate();
-		}
+    void Application::UnsubscribeFromEvent(const EventType& eventType, const UInt32& callbackIndex) {
+        m_EventBus.UnsubscribeFromEvent(eventType, callbackIndex);
+    }
 
-		m_Renderer->InitShutdown();
-	}
+    void Application::Run() {
+        while (m_Running) {
+            if (!m_Minimized) {
+                m_Renderer->PreRender();
 
-	void Application::RaiseEvent(UniqueRef<Event> eventData) {
-		m_EventBus.NotifyAboutEvent(STL::move(eventData));
-		m_EventBus.ProcessEvents();
-	}
+                m_Camera->OnUpdate();
+                ProcessLayerUpdate();
 
-	void Application::ProcessLayerUpdate() {
-		if (m_LayerStack.GetSize() == 0)
-			return;
+                m_Renderer->FramebufferBind();
+                m_Renderer->DrawCommand();
+                m_Renderer->ClearCommand();
+                ProcessLayerImGuiRender();
+                m_Renderer->FramebufferUnbind();
 
-		for (Layer* layer : m_LayerStack)
-			layer->OnUpdate();
-	}
+                m_Renderer->PostRender();
+            }
+            m_Renderer->GetWindow().OnUpdate();
+            Input::OnUpdate();
+        }
 
-	void Application::ProcessLayerImGuiRender() {
-		if (m_LayerStack.GetSize() == 0)
-			return;
+        m_Renderer->InitShutdown();
+    }
 
-		m_ImGuiLayer->Begin();
+    void Application::RaiseEvent(UniqueRef<Event> eventData) {
+        m_EventBus.NotifyAboutEvent(STL::move(eventData));
+        m_EventBus.ProcessEvents();
+    }
 
-		for (Layer* layer : m_LayerStack)
-			layer->OnImGuiRender();
+    void Application::ProcessLayerUpdate() {
+        if (m_LayerStack.GetSize() == 0) return;
 
-		m_ImGuiLayer->End();
-	}
+        for (Layer* layer: m_LayerStack) layer->OnUpdate();
+    }
 
-	void Application::OnWindowClose(Event& event) {
-		WindowCloseEvent e = *(event.Cast<WindowCloseEvent>());
-		m_Running = false;
-		event.Handled = true;
-	}
+    void Application::ProcessLayerImGuiRender() {
+        if (m_LayerStack.GetSize() == 0) return;
 
-	void Application::OnWindowResize(Event& event) {
-		WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
-		m_Camera->OnResize(e.GetWidth(), e.GetHeight());
-		m_Renderer->Resize(e.GetWidth(), e.GetHeight());
-	}
+        m_ImGuiLayer->Begin();
 
-	void Application::OnKeyPressed(Event& event) {
-		KeyPressedEvent e = *(event.Cast<KeyPressedEvent>());
-	}
-}
+        for (Layer* layer: m_LayerStack) layer->OnImGuiRender();
+
+        m_ImGuiLayer->End();
+    }
+
+    void Application::OnWindowClose(Event& event) {
+        WindowCloseEvent e = *(event.Cast<WindowCloseEvent>());
+        m_Running = false;
+        event.Handled = true;
+    }
+
+    void Application::OnWindowResize(Event& event) {
+        WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
+        m_Camera->OnResize(e.GetWidth(), e.GetHeight());
+        m_Renderer->Resize(e.GetWidth(), e.GetHeight());
+    }
+
+    void Application::OnKeyPressed(Event& event) { KeyPressedEvent e = *(event.Cast<KeyPressedEvent>()); }
+}  // namespace Sentinel

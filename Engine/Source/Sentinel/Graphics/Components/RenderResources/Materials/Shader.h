@@ -4,13 +4,6 @@
 
 namespace Sentinel
 {
-	enum class ShaderType {
-		NONE = 0,
-		VERTEX = 1,
-		PIXEL = 2,
-		COMPUTE = 3
-	};
-
 	class Shader : public ISharedRef {
 	public:
 		inline void Bind() const {

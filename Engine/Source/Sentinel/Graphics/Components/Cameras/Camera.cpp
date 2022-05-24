@@ -15,7 +15,7 @@ namespace Sentinel
 	}
 
 	void Camera::OnResize(const Float width, const Float height) {
-		m_AspectRatio = width / height;
+		m_AspectRatio = (!height) ? 0 : width / height;
 	}
 
 	void Camera::OnUpdate() {
