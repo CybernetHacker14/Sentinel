@@ -1,7 +1,8 @@
 #include "stpch.h"
 #include "Sentinel/Application/Application.h"
-#include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DAPI.h"
+
 #include "Sentinel/Graphics/Definitions/Backend.h"
+#include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DAPI.h"
 
 #include "Platform/DirectX11/Graphics/Components/RenderResources/Materials/DX11Texture2DData.h"
 #include "Platform/DirectX11/Graphics/Components/RenderResources/Materials/DX11Texture2DAPI.h"

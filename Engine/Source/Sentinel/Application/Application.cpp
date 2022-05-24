@@ -108,11 +108,8 @@ namespace Sentinel {
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Float), alignof(Float));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Double), alignof(Double));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(STL::string), alignof(STL::string));*/
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Texture2D), alignof(Texture2D));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(SharedRef<Texture2D>), alignof(SharedRef<Texture2D>));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Shader), alignof(Shader));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(SharedRef<Shader>), alignof(SharedRef<Shader>));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Texture2DData), alignof(Texture2DData));
         ST_ENGINE_INFO(sizeof(DWORD));
         ST_ENGINE_INFO("{0}", CPUInfo::GetCPUType());
         ST_ENGINE_INFO("{0}", CPUInfo::GetL1CacheLineSize());

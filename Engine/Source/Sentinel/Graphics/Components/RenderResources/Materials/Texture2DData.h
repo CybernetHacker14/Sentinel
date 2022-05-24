@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
-#include "Sentinel/Graphics/Components/RenderResources/Materials/Shader.h"
+#include "Sentinel/Graphics/Components/RenderResources/Materials/ShaderData.h"
 #include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DData.h"
 
 namespace Sentinel {

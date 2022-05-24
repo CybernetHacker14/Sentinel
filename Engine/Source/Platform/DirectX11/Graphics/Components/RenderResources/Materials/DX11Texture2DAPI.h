@@ -8,10 +8,12 @@ namespace Sentinel {
     public:
         static class _init {
         public:
-            inline _init() { 
-                m_BindFunction = DX11Texture2DAPI::Bind;
-                m_UnbindFunction = DX11Texture2DAPI::Unbind;
-                m_CleanFunction = DX11Texture2DAPI::Clean;
+            inline _init() {
+                if (Backend::GetAPI() == Backend::API::DirectX11) {
+                    m_BindFunction = DX11Texture2DAPI::Bind;
+                    m_UnbindFunction = DX11Texture2DAPI::Unbind;
+                    m_CleanFunction = DX11Texture2DAPI::Clean;
+                }
             }
         } _initializer;
 
