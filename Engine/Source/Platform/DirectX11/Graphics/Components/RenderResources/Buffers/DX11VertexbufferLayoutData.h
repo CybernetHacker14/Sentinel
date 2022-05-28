@@ -1,0 +1,15 @@
+#pragma once
+
+#include "Sentinel/Graphics/Components/RenderResources/Buffers/VertexbufferLayoutData.h"
+
+struct ID3D11InputLayout;
+
+namespace Sentinel {
+    struct DX11VertexbufferLayoutData final: public VertexbufferLayoutData {
+    private:
+        ID3D11InputLayout* m_InputLayout;
+
+    private:
+        friend class DX11VertexbufferLayoutAPI;
+    };
+}  // namespace Sentinel

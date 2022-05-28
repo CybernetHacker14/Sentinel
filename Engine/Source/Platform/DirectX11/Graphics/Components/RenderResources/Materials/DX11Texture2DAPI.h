@@ -26,7 +26,6 @@ namespace Sentinel {
 
     private:
         friend class Texture2DAPI;
-        friend class _init;
     };
 
 }  // namespace Sentinel

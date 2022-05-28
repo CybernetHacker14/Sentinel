@@ -2,7 +2,6 @@
 
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Graphics/Components/RenderResources/Materials/ShaderData.h"
-#include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DData.h"
 
 namespace Sentinel {
     enum class TextureWrapMode { REPEAT = 0, CLAMP = 1, MIRROR = 2 };

@@ -6,7 +6,9 @@
 #include "Sentinel/Graphics/Definitions/RenderResources.h"
 #include "Sentinel/Graphics/Definitions/FrameBackings.h"
 
+#include "Sentinel/Graphics/Components/RenderResources/Buffers/VertexbufferLayoutData.h"
 #include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DData.h"
+#include "Sentinel/Graphics/Components/RenderResources/Materials/ShaderData.h"
 
 namespace Sentinel {
     class MemoryManager final: public ISharedRef {
@@ -16,5 +18,7 @@ namespace Sentinel {
 
     public:
         PoolAllocator<Texture2DData> Texture2DAllocator;
+        PoolAllocator<ShaderData> ShaderAllocator;
+        PoolAllocator<VertexbufferLayoutData> LayoutAllocator;
     };
 }  // namespace Sentinel

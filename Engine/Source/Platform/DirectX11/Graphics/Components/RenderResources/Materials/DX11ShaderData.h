@@ -20,5 +20,8 @@ namespace Sentinel {
         ID3D11VertexShader* m_VertexShader = nullptr;
         ID3D11PixelShader* m_PixelShader = nullptr;
         ID3D11ComputeShader* m_ComputeShader = nullptr;
+
+    private:
+        friend class DX11ShaderAPI;
     };
 }  // namespace Sentinel
