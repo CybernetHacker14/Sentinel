@@ -3,11 +3,11 @@
 #include "Sentinel/Common/Common.h"
 
 namespace Sentinel {
-    struct VertexbufferData {
+    struct IndexbufferData {
     protected:
-        void* m_Vertices;
+        UInt32 m_Count;
 
     private:
-        friend class VertexbufferAPI;
+        friend class IndexbufferAPI;
     };
 }  // namespace Sentinel

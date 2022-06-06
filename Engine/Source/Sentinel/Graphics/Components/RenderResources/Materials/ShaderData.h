@@ -3,7 +3,7 @@
 #include "Sentinel/Common/Common.h"
 
 namespace Sentinel {
-    enum class ShaderType { NONE = 0, VERTEX = 1, PIXEL = 2, COMPUTE = 3 };
+    enum class ShaderType : UInt8 { NONE = 0, VERTEX = 1, PIXEL = 2, COMPUTE = 3 };
 
     struct ShaderData {
     public:

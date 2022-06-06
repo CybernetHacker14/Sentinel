@@ -4,7 +4,7 @@
 #include "Sentinel/Graphics/Components/RenderResources/Materials/ShaderData.h"
 
 namespace Sentinel {
-    enum class TextureWrapMode { REPEAT = 0, CLAMP = 1, MIRROR = 2 };
+    enum class TextureWrapMode : UInt8 { REPEAT = 0, CLAMP = 1, MIRROR = 2 };
 
     struct Texture2DDataImportSettings {
         STL::string TextureFilepath;
@@ -18,9 +18,9 @@ namespace Sentinel {
 
     struct Texture2DData {
     protected:
-        void* m_TexturePixels = nullptr;
         Texture2DDataImportSettings m_Settings;
-        UInt32 m_Width = 0, m_Height = 0;
+        void* m_TexturePixels = nullptr;
+        UInt16 m_Width = 0, m_Height = 0;
         ShaderType m_CurrentBindType;
         Bool m_Loaded = false, m_HDR = false;
 
