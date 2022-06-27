@@ -48,16 +48,6 @@ namespace Sentinel {
     }
 
     void DX11RenderPipeline::BindRenderResources() {
-        m_RenderResources->VertexbufferLayout = VertexbufferLayout::Create();
-        m_RenderResources->VertexbufferLayout->CreateVertexLayout(m_RenderResources->Shader);
-        m_RenderResources->VertexbufferLayout->Bind();
-
-        for (auto& vBuffer: m_RenderResources->Vertexbuffers) {
-            if (vBuffer) vBuffer->Bind(m_RenderResources->VertexbufferLayout->GetStride());
-        }
-
-        m_RenderResources->Indexbuffer->Bind();
-        m_RenderResources->Shader->Bind();
     }
 
     void DX11RenderPipeline::BindFramebuffer() { m_FrameBackings->Framebuffer->Bind(); }
@@ -67,7 +57,6 @@ namespace Sentinel {
     }
 
     void DX11RenderPipeline::Draw() {
-        DX11Common::GetContext()->DrawIndexed(m_RenderResources->Indexbuffer->GetCount(), 0, 0);
     }
 
     void DX11RenderPipeline::SwapBuffers(Bool vSync) { DX11Common::GetSwapchain()->Present(vSync ? 1 : 0, 0); }
@@ -77,23 +66,9 @@ namespace Sentinel {
     void DX11RenderPipeline::UnbindFramebuffer() { m_FrameBackings->Framebuffer->Unbind(); }
 
     void DX11RenderPipeline::UnbindRenderResources() {
-        m_RenderResources->VertexbufferLayout->Unbind();
-        for (auto& vBuffer: m_RenderResources->Vertexbuffers) {
-            if (vBuffer) vBuffer->Unbind();
-        }
-
-        m_RenderResources->Indexbuffer->Unbind();
-        m_RenderResources->Shader->Reset();
     }
 
     void DX11RenderPipeline::CleanRenderResources() {
-        m_RenderResources->VertexbufferLayout->Clean();
-        for (auto& vBuffer: m_RenderResources->Vertexbuffers) {
-            if (vBuffer) vBuffer->Clean();
-        }
-
-        m_RenderResources->Indexbuffer->Clean();
-        m_RenderResources->Shader->Clean();
     }
 
     void DX11RenderPipeline::CleanFrameBackings() {

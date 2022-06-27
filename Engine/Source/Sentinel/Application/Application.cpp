@@ -13,6 +13,11 @@
 #include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Common/CPU/CPUInfo.h"
 
+#include "Sentinel/Graphics/Components/RenderResources/Buffers/ConstantbufferAPI.h"
+#include "Sentinel/Graphics/Components/RenderResources/Buffers/VertexbufferAPI.h"
+#include "Sentinel/Graphics/Components/RenderResources/Buffers/IndexbufferAPI.h"
+#include "Sentinel/Graphics/Components/RenderResources/Buffers/VertexbufferLayoutAPI.h"
+
 #include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DData.h"
 #include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DAPI.h"
 
@@ -59,14 +64,12 @@ namespace Sentinel {
             {{3.0f, -1.0f, -5.0f, 1.0f}, {1.0f, 1.0f}},
             {{1.0f, -1.0f, -5.0f, 1.0f}, {0.0f, 1.0f}}};
 
-        renderResource->Vertexbuffers.emplace_back(
-            Vertexbuffer::Create(vertices.data(), vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec2>)));
+        VertexbufferAPI::CreateVertexbufferData(
+            vertices.data(), vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec2>));
 
         STL::vector<UInt32> indices = {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
 
-        renderResource->Indexbuffer = Indexbuffer::Create(indices.data(), indices.size());
-        renderResource->Shader = Shader::Create("../Engine/Resources/Shaders/TextureShader.hlsl", "TextureShader");
-        // renderResource->Shader = Shader::Create("TextureShader.hlsl", "TextureShader");
+        IndexbufferAPI::CreateIndexbufferData(indices.data(), indices.size());
 
         // Texture2DImportSettings settings;
         // settings.texturePath = "Assets/Tile1.jpg";
@@ -108,8 +111,6 @@ namespace Sentinel {
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Float), alignof(Float));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Double), alignof(Double));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(STL::string), alignof(STL::string));*/
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Shader), alignof(Shader));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(SharedRef<Shader>), alignof(SharedRef<Shader>));
         ST_ENGINE_INFO(sizeof(DWORD));
         ST_ENGINE_INFO("{0}", CPUInfo::GetCPUType());
         ST_ENGINE_INFO("{0}", CPUInfo::GetL1CacheLineSize());

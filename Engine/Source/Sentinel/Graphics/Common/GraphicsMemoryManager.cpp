@@ -1,16 +1,18 @@
 #include "stpch.h"
-#include "Sentinel/Memory/MemoryManager.h"
+#include "Sentinel/Graphics/Common/GraphicsMemoryManager.h"
 
 namespace Sentinel {
-    MemoryManager::MemoryManager() { 
+    GraphicsMemoryManager::GraphicsMemoryManager() {
         VertexbufferAllocator.AllocateMemoryBlock(10);
         IndexbufferAllocator.AllocateMemoryBlock(10);
         LayoutAllocator.AllocateMemoryBlock(10);
         ConstantbufferAllocator.AllocateMemoryBlock(10);
-        ShaderAllocator.AllocateMemoryBlock(5);
-        Texture2DAllocator.AllocateMemoryBlock(16); }
 
-    MemoryManager::~MemoryManager() {
+        ShaderAllocator.AllocateMemoryBlock(5);
+        Texture2DAllocator.AllocateMemoryBlock(16);
+    }
+
+    GraphicsMemoryManager::~GraphicsMemoryManager() {
         VertexbufferAllocator.DeleteAll();
         VertexbufferAllocator.DeallocateMemoryBlock();
         IndexbufferAllocator.DeleteAll();
@@ -19,6 +21,7 @@ namespace Sentinel {
         LayoutAllocator.DeallocateMemoryBlock();
         ConstantbufferAllocator.DeleteAll();
         ConstantbufferAllocator.DeallocateMemoryBlock();
+
         ShaderAllocator.DeleteAll();
         ShaderAllocator.DeallocateMemoryBlock();
         Texture2DAllocator.DeleteAll();
