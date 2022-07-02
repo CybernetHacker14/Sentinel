@@ -3,17 +3,16 @@
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Memory/PoolAllocator.h"
 
-#include "Sentinel/Graphics/Buffer/VertexbufferData.h"
-#include "Sentinel/Graphics/Buffer/VertexbufferLayoutData.h"
-#include "Sentinel/Graphics/Buffer/IndexbufferData.h"
-#include "Sentinel/Graphics/Buffer/ConstantbufferData.h"
-
-#include "Sentinel/Graphics/Material/ShaderData.h"
-#include "Sentinel/Graphics/Texture/Texture2DData.h"
-
 namespace Sentinel {
-    template<typename T>
-    class PoolAllocator;
+    struct ContextData;
+    struct SwapchainData;
+    struct VertexbufferData;
+    struct VertexbufferLayoutData;
+    struct IndexbufferData;
+    struct ConstantbufferData;
+
+    struct ShaderData;
+    struct Texture2DData;
 
     class GraphicsMemoryManager final: public ISharedRef {
     public:
@@ -21,6 +20,9 @@ namespace Sentinel {
         ~GraphicsMemoryManager();
 
     private:
+        PoolAllocator<ContextData> ContextAllocator;
+        PoolAllocator<SwapchainData> SwapchainAllocator;
+
         PoolAllocator<VertexbufferData> VertexbufferAllocator;
         PoolAllocator<VertexbufferLayoutData> LayoutAllocator;
         PoolAllocator<IndexbufferData> IndexbufferAllocator;
@@ -30,6 +32,8 @@ namespace Sentinel {
         PoolAllocator<Texture2DData> Texture2DAllocator;
 
     private:
+        friend class ContextAPI;
+        friend class SwapchainAPI;
         friend class VertexbufferAPI;
         friend class VertexbufferLayoutAPI;
         friend class IndexbufferAPI;

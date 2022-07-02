@@ -9,7 +9,8 @@ namespace Sentinel {
 
     class VertexbufferLayoutAPI {
     public:
-        static VertexbufferLayoutData* CreateVertexbufferLayoutData(SharedRef<GraphicsMemoryManager> memoryHandle);
+        static VertexbufferLayoutData* CreateVertexbufferLayoutData(
+            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context);
 
         inline static void CreateLayout(VertexbufferLayoutData* dataObject, ShaderData* shader) {
             if (!m_CreateLayoutFunction) return;
@@ -38,7 +39,7 @@ namespace Sentinel {
         inline static T* Cast(VertexbufferLayoutData* dataObject) {
             static_assert(
                 STL::is_base_of<VertexbufferLayoutData, T>::value,
-                "'T' should be a derived from VertexbufferLayoutData.");
+                "'T' should be derived from VertexbufferLayoutData.");
             return static_cast<T*>(dataObject);
         }
 

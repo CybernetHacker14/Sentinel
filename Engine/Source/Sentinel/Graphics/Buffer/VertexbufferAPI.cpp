@@ -6,17 +6,20 @@
 #include "Sentinel/Graphics/Buffer/VertexbufferAPI.h"
 
 #include "Sentinel/Graphics/Buffer/VertexbufferData.h"
+#include "Sentinel/Graphics/Device/ContextData.h"
 
 #include "Platform/DirectX11/Graphics/Buffer/DX11VertexbufferData.h"
 #include "Platform/DirectX11/Graphics/Buffer/DX11VertexbufferAPI.h"
 
 namespace Sentinel {
     VertexbufferData* VertexbufferAPI::CreateVertexbufferData(
-        SharedRef<GraphicsMemoryManager> memoryHandle, UInt32 size) {
+        SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, UInt32 size) {
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
                 VertexbufferData* bufferObject = memoryHandle->VertexbufferAllocator.New<DX11VertexbufferData>();
-                DX11VertexbufferAPI::CreateNative(VertexbufferAPI::Cast<DX11VertexbufferData>(bufferObject), size);
+                bufferObject->Context = context;
+                DX11VertexbufferAPI::CreateNative(
+                    VertexbufferAPI::Cast<DX11VertexbufferData>(bufferObject), size);
                 return bufferObject;
             }
             case Backend::API::None: ST_ENGINE_ASSERT(false, "API::None currently not supported"); return nullptr;
@@ -26,11 +29,12 @@ namespace Sentinel {
     }
 
     VertexbufferData* VertexbufferAPI::CreateVertexbufferData(
-        SharedRef<GraphicsMemoryManager> memoryHandle, void* vertices, UInt32 size) {
+        SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, void* vertices, UInt32 size) {
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
                 VertexbufferData* bufferObject = memoryHandle->VertexbufferAllocator.New<DX11VertexbufferData>();
                 bufferObject->m_Vertices = vertices;
+                bufferObject->Context = context;
                 DX11VertexbufferAPI::CreateNative(
                     VertexbufferAPI::Cast<DX11VertexbufferData>(bufferObject), vertices, size);
                 return bufferObject;

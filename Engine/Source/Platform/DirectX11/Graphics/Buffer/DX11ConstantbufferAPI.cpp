@@ -3,36 +3,44 @@
 #include "Platform/DirectX11/Graphics/Buffer/DX11ConstantbufferAPI.h"
 #include "Platform/DirectX11/Graphics/Buffer/DX11ConstantbufferData.h"
 
+#include "Platform/DirectX11/Graphics/Device/DX11ContextData.h"
+#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+
 namespace Sentinel {
     DX11ConstantbufferAPI::_init DX11ConstantbufferAPI::_initializer;
 
     void DX11ConstantbufferAPI::VSBind(ConstantbufferData* dataObject) {
         DX11ConstantbufferData* buffer = ConstantbufferAPI::Cast<DX11ConstantbufferData>(dataObject);
-        DX11Common::GetContext()->VSSetConstantBuffers(buffer->m_BindSlot, 1, &(buffer->m_Buffer));
+        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+        DX11ContextAPI::GetNativeContext(dContext)->VSSetConstantBuffers(buffer->m_BindSlot, 1, &(buffer->m_Buffer));
     }
 
     void DX11ConstantbufferAPI::PSBind(ConstantbufferData* dataObject) {
         DX11ConstantbufferData* buffer = ConstantbufferAPI::Cast<DX11ConstantbufferData>(dataObject);
-        DX11Common::GetContext()->PSSetConstantBuffers(buffer->m_BindSlot, 1, &(buffer->m_Buffer));
+        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+        DX11ContextAPI::GetNativeContext(dContext)->PSSetConstantBuffers(buffer->m_BindSlot, 1, &(buffer->m_Buffer));
     }
 
     void DX11ConstantbufferAPI::CSBind(ConstantbufferData* dataObject) {
         DX11ConstantbufferData* buffer = ConstantbufferAPI::Cast<DX11ConstantbufferData>(dataObject);
-        DX11Common::GetContext()->CSSetConstantBuffers(buffer->m_BindSlot, 1, &(buffer->m_Buffer));
+        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+        DX11ContextAPI::GetNativeContext(dContext)->CSSetConstantBuffers(buffer->m_BindSlot, 1, &(buffer->m_Buffer));
     }
 
     void DX11ConstantbufferAPI::SetStaticData(ConstantbufferData* dataObject, void* data) {
         DX11ConstantbufferData* buffer = ConstantbufferAPI::Cast<DX11ConstantbufferData>(dataObject);
-        DX11Common::GetContext()->UpdateSubresource(buffer->m_Buffer, 0, 0, data, 0, 0);
+        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+        DX11ContextAPI::GetNativeContext(dContext)->UpdateSubresource(buffer->m_Buffer, 0, 0, data, 0, 0);
     }
 
     void DX11ConstantbufferAPI::SetDynamicData(ConstantbufferData* dataObject, void* data) {
         DX11ConstantbufferData* buffer = ConstantbufferAPI::Cast<DX11ConstantbufferData>(dataObject);
         D3D11_MAPPED_SUBRESOURCE subresource;
         SecureZeroMemory(&subresource, sizeof(subresource));
-        DX11Common::GetContext()->Map(buffer->m_Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
+        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+        DX11ContextAPI::GetNativeContext(dContext)->Map(buffer->m_Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
         memcpy(subresource.pData, data, buffer->m_Size);
-        DX11Common::GetContext()->Unmap(buffer->m_Buffer, 0);
+        DX11ContextAPI::GetNativeContext(dContext)->Unmap(buffer->m_Buffer, 0);
     }
 
     void DX11ConstantbufferAPI::Clean(ConstantbufferData* dataObject) {
@@ -51,6 +59,7 @@ namespace Sentinel {
         description.MiscFlags = 0;
         description.StructureByteStride = 0;
 
-        DX11Common::GetDevice()->CreateBuffer(&description, nullptr, &(dataObject->m_Buffer));
+        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+        DX11ContextAPI::GetDevice(dContext)->CreateBuffer(&description, nullptr, &(dataObject->m_Buffer));
     }
 }  // namespace Sentinel

@@ -10,6 +10,9 @@
 #include "Platform/DirectX11/Graphics/Material/DX11ShaderData.h"
 #include "Platform/DirectX11/Graphics/Material/DX11ShaderAPI.h"
 
+#include "Platform/DirectX11/Graphics/Device/DX11ContextData.h"
+#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+
 namespace Sentinel {
     static STL::unordered_map<DXGI_FORMAT, UInt32> s_ShaderDataTypeSizeMap = {
         {DXGI_FORMAT_R32_FLOAT, 4},
@@ -95,7 +98,9 @@ namespace Sentinel {
             layout->m_Stride += s_ShaderDataTypeSizeMap.at(elementDescription.Format);
         }
 
-        DX11Common::GetDevice()->CreateInputLayout(
+        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+
+        DX11ContextAPI::GetDevice(dContext)->CreateInputLayout(
             &inputLayoutDescriptions[0],
             static_cast<UInt32>(inputLayoutDescriptions.size()),
             binary->GetBufferPointer(),
@@ -107,12 +112,14 @@ namespace Sentinel {
 
     void DX11VertexbufferLayoutAPI::Bind(VertexbufferLayoutData* dataObject) {
         DX11VertexbufferLayoutData* layout = VertexbufferLayoutAPI::Cast<DX11VertexbufferLayoutData>(dataObject);
-        DX11Common::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        DX11Common::GetContext()->IASetInputLayout(layout->m_InputLayout);
+        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+        DX11ContextAPI::GetNativeContext(dContext)->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        DX11ContextAPI::GetNativeContext(dContext)->IASetInputLayout(layout->m_InputLayout);
     }
 
     void DX11VertexbufferLayoutAPI::Unbind(VertexbufferLayoutData* dataObject) {
-        DX11Common::GetContext()->IASetInputLayout(nullptr);
+        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+        DX11ContextAPI::GetNativeContext(dContext)->IASetInputLayout(nullptr);
     }
 
     void DX11VertexbufferLayoutAPI::Clean(VertexbufferLayoutData* dataObject) {

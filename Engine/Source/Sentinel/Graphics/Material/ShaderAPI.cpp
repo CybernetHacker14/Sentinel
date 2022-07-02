@@ -10,12 +10,16 @@
 
 namespace Sentinel {
     ShaderData* ShaderAPI::CreateShaderData(
-        SharedRef<GraphicsMemoryManager> memoryHandle, const STL::string& filepath, const STL::string& name) {
+        SharedRef<GraphicsMemoryManager> memoryHandle,
+        ContextData* context,
+        const STL::string& filepath,
+        const STL::string& name) {
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
                 ShaderData* shaderObject = memoryHandle->ShaderAllocator.New<DX11ShaderData>();
                 shaderObject->m_Filepath = filepath;
                 shaderObject->m_ShaderName = name;
+                shaderObject->Context = context;
                 DX11ShaderAPI::Load(ShaderAPI::Cast<DX11ShaderData>(shaderObject));
                 return shaderObject;
             }

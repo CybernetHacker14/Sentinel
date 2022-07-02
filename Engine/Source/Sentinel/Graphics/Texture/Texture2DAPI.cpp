@@ -8,12 +8,18 @@
 #include "Platform/DirectX11/Graphics/Texture/DX11Texture2DData.h"
 #include "Platform/DirectX11/Graphics/Texture/DX11Texture2DAPI.h"
 
+#include "Platform/DirectX11/Graphics/Device/DX11ContextData.h"
+#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+
 namespace Sentinel {
     Texture2DData* Texture2DAPI::CreateTexture2DData(
-        SharedRef<GraphicsMemoryManager> memoryHandle, const Texture2DDataImportSettings& settings) {
+        SharedRef<GraphicsMemoryManager> memoryHandle,
+        ContextData* context,
+        const Texture2DDataImportSettings& settings) {
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
                 Texture2DData* texObject = memoryHandle->Texture2DAllocator.New<DX11Texture2DData>();
+                texObject->Context = context;
                 texObject->m_Settings = settings;
                 DX11Texture2DAPI::Load(Texture2DAPI::Cast<DX11Texture2DData>(texObject));
                 return texObject;

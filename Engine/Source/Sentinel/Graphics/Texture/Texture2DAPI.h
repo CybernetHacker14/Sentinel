@@ -9,7 +9,9 @@ namespace Sentinel {
     class Texture2DAPI {
     public:
         static Texture2DData* CreateTexture2DData(
-            SharedRef<GraphicsMemoryManager> memoryHandle, const Texture2DDataImportSettings& settings);
+            SharedRef<GraphicsMemoryManager> memoryHandle,
+            ContextData* context,
+            const Texture2DDataImportSettings& settings);
 
         inline static void Bind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
             if (!m_BindFunction) return;
@@ -35,7 +37,7 @@ namespace Sentinel {
     public:
         template<typename T>
         inline static T* Cast(Texture2DData* dataObject) {
-            static_assert(STL::is_base_of<Texture2DData, T>::value, "'T' should be a derived from Texture2DData.");
+            static_assert(STL::is_base_of<Texture2DData, T>::value, "'T' should be derived from Texture2DData.");
             return static_cast<T*>(dataObject);
         }
 

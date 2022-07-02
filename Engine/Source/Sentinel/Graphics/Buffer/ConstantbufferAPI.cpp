@@ -10,10 +10,15 @@
 
 namespace Sentinel {
     ConstantbufferData* ConstantbufferAPI::CreateConstantbufferData(
-        SharedRef<GraphicsMemoryManager> memoryHandle, UInt32 size, UInt32 bindSlot, CBufferUsageType usageType) {
+        SharedRef<GraphicsMemoryManager> memoryHandle,
+        ContextData* context,
+        UInt32 size,
+        UInt32 bindSlot,
+        CBufferUsageType usageType) {
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
                 ConstantbufferData* bufferObject = memoryHandle->ConstantbufferAllocator.New<DX11ConstantbufferData>();
+                bufferObject->Context = context;
                 DX11ConstantbufferAPI::CreateNative(
                     ConstantbufferAPI::Cast<DX11ConstantbufferData>(bufferObject), size, bindSlot, usageType);
                 bufferObject->m_Size = size;

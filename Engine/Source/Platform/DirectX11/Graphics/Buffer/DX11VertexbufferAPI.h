@@ -4,7 +4,6 @@
 #include "Sentinel/Graphics/Buffer/VertexbufferAPI.h"
 
 namespace Sentinel {
-    struct VertexbufferData;
     struct DX11VertexbufferData;
 
     class DX11VertexbufferAPI final: public VertexbufferAPI {

@@ -2,6 +2,7 @@
 
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Graphics/Material/ShaderData.h"
+#include "Sentinel/Graphics/Device/ContextData.h"
 
 namespace Sentinel {
     enum class TextureWrapMode : UInt8 { REPEAT = 0, CLAMP = 1, MIRROR = 2 };
@@ -17,6 +18,9 @@ namespace Sentinel {
     };
 
     struct Texture2DData {
+    public:
+        ContextData* Context;
+
     protected:
         Texture2DDataImportSettings m_Settings;
         void* m_TexturePixels = nullptr;

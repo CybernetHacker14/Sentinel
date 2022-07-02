@@ -2,6 +2,9 @@
 #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 #include "Platform/DirectX11/Graphics/Material/DX11ShaderAPI.h"
 
+#include "Platform/DirectX11/Graphics/Device/DX11ContextData.h"
+#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+
 namespace Sentinel {
 
     namespace Utils {
@@ -23,7 +26,8 @@ namespace Sentinel {
     DX11ShaderAPI::_init DX11ShaderAPI::_initializer;
 
     void DX11ShaderAPI::Bind(ShaderData* dataObject) {
-        ID3D11DeviceContext* context = DX11Common::GetContext();
+        ID3D11DeviceContext* context =
+            DX11ContextAPI::GetNativeContext(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
         DX11ShaderData* shader = ShaderAPI::Cast<DX11ShaderData>(dataObject);
 
         if (shader->m_VertexShader) context->VSSetShader(shader->m_VertexShader, nullptr, 0);
@@ -32,14 +36,16 @@ namespace Sentinel {
     }
 
     void DX11ShaderAPI::Reload(ShaderData* dataObject) {
-        ID3D11DeviceContext* context = DX11Common::GetContext();
+        ID3D11DeviceContext* context =
+            DX11ContextAPI::GetNativeContext(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
         DX11ShaderData* shader = ShaderAPI::Cast<DX11ShaderData>(dataObject);
 
         DX11ShaderAPI::Load(shader);
     }
 
     void DX11ShaderAPI::Clean(ShaderData* dataObject) {
-        ID3D11DeviceContext* context = DX11Common::GetContext();
+        ID3D11DeviceContext* context =
+            DX11ContextAPI::GetNativeContext(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
         DX11ShaderData* shader = ShaderAPI::Cast<DX11ShaderData>(dataObject);
 
         for (auto& binary: shader->m_BinaryMap) {
@@ -141,8 +147,10 @@ namespace Sentinel {
         dataObject->m_ShaderSources = DX11ShaderAPI::PreprocessSource(source);
         DX11ShaderAPI::CompileFromSource(dataObject);
 
+        ID3D11Device* device = DX11ContextAPI::GetDevice(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
+
         if (dataObject->m_BinaryMap.at(ShaderType::VERTEX)) {
-            DX11Common::GetDevice()->CreateVertexShader(
+            device->CreateVertexShader(
                 dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferSize(),
                 nullptr,
@@ -150,7 +158,7 @@ namespace Sentinel {
         }
 
         if (dataObject->m_BinaryMap.at(ShaderType::PIXEL)) {
-            DX11Common::GetDevice()->CreatePixelShader(
+            device->CreatePixelShader(
                 dataObject->m_BinaryMap.at(ShaderType::PIXEL)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::PIXEL)->GetBufferSize(),
                 nullptr,
@@ -158,7 +166,7 @@ namespace Sentinel {
         }
 
         if (dataObject->m_BinaryMap.at(ShaderType::COMPUTE)) {
-            DX11Common::GetDevice()->CreateComputeShader(
+            device->CreateComputeShader(
                 dataObject->m_BinaryMap.at(ShaderType::COMPUTE)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::COMPUTE)->GetBufferSize(),
                 nullptr,

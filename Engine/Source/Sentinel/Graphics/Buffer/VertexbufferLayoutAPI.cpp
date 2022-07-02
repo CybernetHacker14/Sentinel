@@ -11,10 +11,11 @@
 
 namespace Sentinel {
     VertexbufferLayoutData* VertexbufferLayoutAPI::CreateVertexbufferLayoutData(
-        SharedRef<GraphicsMemoryManager> memoryHandle) {
+        SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context) {
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
                 VertexbufferLayoutData* layoutObject = memoryHandle->LayoutAllocator.New<DX11VertexbufferLayoutData>();
+                layoutObject->Context = context;
                 return layoutObject;
             }
             case Backend::API::None: ST_ENGINE_ASSERT(false, "API::None currently not supported"); return nullptr;

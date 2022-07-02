@@ -9,7 +9,11 @@ namespace Sentinel {
     class ConstantbufferAPI {
     public:
         static ConstantbufferData* CreateConstantbufferData(
-            SharedRef<GraphicsMemoryManager> memoryHandle, UInt32 size, UInt32 bindSlot, CBufferUsageType usageType);
+            SharedRef<GraphicsMemoryManager> memoryHandle,
+            ContextData* context,
+            UInt32 size,
+            UInt32 bindSlot,
+            CBufferUsageType usageType);
 
         inline static void VSBind(ConstantbufferData* dataObject) {
             if (!m_VSBindFunction) return;
@@ -49,7 +53,7 @@ namespace Sentinel {
         template<typename T>
         inline static T* Cast(ConstantbufferData* dataObject) {
             static_assert(
-                STL::is_base_of<ConstantbufferData, T>::value, "'T' should be a derived from ConstantbufferData.");
+                STL::is_base_of<ConstantbufferData, T>::value, "'T' should be derived from ConstantbufferData.");
             return static_cast<T*>(dataObject);
         }
 

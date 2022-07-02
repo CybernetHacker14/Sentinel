@@ -9,7 +9,7 @@ namespace Sentinel {
     class IndexbufferAPI {
     public:
         static IndexbufferData* CreateIndexbufferData(
-            SharedRef<GraphicsMemoryManager> memoryHandle, void* indices, UInt32 count);
+            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, void* indices, UInt32 count);
 
         inline static void Bind(IndexbufferData* dataObject) {
             if (!m_BindFunction) return;
@@ -31,7 +31,7 @@ namespace Sentinel {
     public:
         template<typename T>
         inline static T* Cast(IndexbufferData* dataObject) {
-            static_assert(STL::is_base_of<IndexbufferData, T>::value, "'T' should be a derived from IndexbufferData.");
+            static_assert(STL::is_base_of<IndexbufferData, T>::value, "'T' should be derived from IndexbufferData.");
             return static_cast<T*>(dataObject);
         }
 

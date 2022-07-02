@@ -5,12 +5,14 @@
 namespace Sentinel {
     class GraphicsMemoryManager;
     struct VertexbufferData;
+    struct ContextData;
 
     class VertexbufferAPI {
     public:
-        static VertexbufferData* CreateVertexbufferData(SharedRef<GraphicsMemoryManager> memoryHandle, UInt32 size);
         static VertexbufferData* CreateVertexbufferData(
-            SharedRef<GraphicsMemoryManager> memoryHandle, void* vertices, UInt32 size);
+            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, UInt32 size);
+        static VertexbufferData* CreateVertexbufferData(
+            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, void* vertices, UInt32 size);
 
         inline static void Bind(VertexbufferData* dataObject, UInt32 stride) {
             if (!m_BindFunction) return;
@@ -35,8 +37,7 @@ namespace Sentinel {
     public:
         template<typename T>
         inline static T* Cast(VertexbufferData* dataObject) {
-            static_assert(
-                STL::is_base_of<VertexbufferData, T>::value, "'T' should be a derived from VertexbufferData.");
+            static_assert(STL::is_base_of<VertexbufferData, T>::value, "'T' should be derived from VertexbufferData.");
             return static_cast<T*>(dataObject);
         }
 

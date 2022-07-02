@@ -6,12 +6,7 @@ struct GLFWwindow;
 
 namespace Sentinel
 {
-	struct ContextInfo {
-		STL::string Vendor;
-		STL::string Renderer;
-		STL::string API;
-		STL::string Version;
-	};
+	
 
 	class GraphicsContext {
 	public:

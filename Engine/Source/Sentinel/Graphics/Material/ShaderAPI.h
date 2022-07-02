@@ -5,12 +5,14 @@
 
 namespace Sentinel {
     class GraphicsMemoryManager;
-    struct ShaderData;
 
     class ShaderAPI {
     public:
         static ShaderData* CreateShaderData(
-            SharedRef<GraphicsMemoryManager> memoryHandle, const STL::string& filepath, const STL::string& name);
+            SharedRef<GraphicsMemoryManager> memoryHandle,
+            ContextData* context,
+            const STL::string& filepath,
+            const STL::string& name);
 
         inline static void Bind(ShaderData* dataObject) {
             if (!m_BindFunction) return;
@@ -38,7 +40,7 @@ namespace Sentinel {
     public:
         template<typename T>
         inline static T* Cast(ShaderData* dataObject) {
-            static_assert(STL::is_base_of<ShaderData, T>::value, "'T' should be a derived from ShaderData.");
+            static_assert(STL::is_base_of<ShaderData, T>::value, "'T' should be derived from ShaderData.");
             return static_cast<T*>(dataObject);
         }
 

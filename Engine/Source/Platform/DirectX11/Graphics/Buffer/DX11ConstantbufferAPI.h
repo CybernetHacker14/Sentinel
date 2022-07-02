@@ -35,7 +35,10 @@ namespace Sentinel {
         static void Clean(ConstantbufferData* dataObject);
 
         static void CreateNative(
-            DX11ConstantbufferData* dataObject, UInt32 size, UInt32 bindSlot, CBufferUsageType usageType);
+            DX11ConstantbufferData* dataObject,
+            UInt32 size,
+            UInt32 bindSlot,
+            CBufferUsageType usageType);
 
     private:
         friend class ConstantbufferAPI;

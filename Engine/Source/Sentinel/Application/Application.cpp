@@ -7,19 +7,10 @@
 
 #include "Sentinel/Math/Math.h"
 
-#include "Sentinel/Graphics/Definitions/FrameBackings.h"
-#include "Sentinel/Graphics/Definitions/RenderResources.h"
+#include "Sentinel/Window/Window.h"
 
 #include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Common/CPU/CPUInfo.h"
-
-#include "Sentinel/Graphics/Components/RenderResources/Buffers/ConstantbufferAPI.h"
-#include "Sentinel/Graphics/Components/RenderResources/Buffers/VertexbufferAPI.h"
-#include "Sentinel/Graphics/Components/RenderResources/Buffers/IndexbufferAPI.h"
-#include "Sentinel/Graphics/Components/RenderResources/Buffers/VertexbufferLayoutAPI.h"
-
-#include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DData.h"
-#include "Sentinel/Graphics/Components/RenderResources/Materials/Texture2DAPI.h"
 
 namespace Sentinel {
     Application* Application::s_Instance = nullptr;
@@ -27,10 +18,6 @@ namespace Sentinel {
     Application::Application(const STL::string& name) {
         ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
         s_Instance = this;
-
-        EngineMemoryManager = CreateSharedRef<MemoryManager>();
-
-        m_Renderer = Renderer::Create();
 
         // Set frame backings definitions
 
@@ -41,6 +28,7 @@ namespace Sentinel {
         props.Mode = WindowMode::WINDOWED;
         props.FramebufferTransparency = false;
 
+        /*
         FramebufferSpecification spec;
         spec.Attachments = {TextureFormat::RGBA32F};
         spec.ClearColor = {0.1f, 0.5f, 0.1f, 0.1f};
@@ -93,8 +81,6 @@ namespace Sentinel {
         m_KeyPressedCallbackIndex =
             SubscribeToEvent(EventType::KeyPressed, ST_BIND_EVENT_FN(Application::OnKeyPressed));
 
-        m_Camera = Camera::Create(props.Width, props.Height);
-
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
 
@@ -103,7 +89,7 @@ namespace Sentinel {
 
         m_Renderer->InitStartup();
 
-        /*ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(char), alignof(char));
+        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(char), alignof(char));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(short), alignof(short));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(unsigned short), alignof(unsigned short));
         ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Bool), alignof(Bool));
@@ -118,15 +104,12 @@ namespace Sentinel {
 
     Application::~Application() {
         m_LayerStack.CleanLayerstack();
-        m_Renderer->Shutdown();
-        EngineMemoryManager->Texture2DAllocator.DeleteAll();
-        EngineMemoryManager->Texture2DAllocator.DeallocateMemoryBlock();
         UnsubscribeFromEvent(EventType::WindowClose, m_WindowCloseCallbackIndex);
         UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
         UnsubscribeFromEvent(EventType::KeyPressed, m_KeyPressedCallbackIndex);
     }
 
-    Window& Application::GetWindow() { return m_Renderer->GetWindow(); }
+    Window& Application::GetWindow() { return; }
 
     void Application::PushLayer(Layer* layer) {
         m_LayerStack.PushLayer(layer);
@@ -149,7 +132,7 @@ namespace Sentinel {
     void Application::Run() {
         while (m_Running) {
             if (!m_Minimized) {
-                m_Renderer->PreRender();
+               /* m_Renderer->PreRender();
 
                 m_Camera->OnUpdate();
                 ProcessLayerUpdate();
@@ -160,13 +143,13 @@ namespace Sentinel {
                 ProcessLayerImGuiRender();
                 m_Renderer->FramebufferUnbind();
 
-                m_Renderer->PostRender();
+                m_Renderer->PostRender();*/
             }
-            m_Renderer->GetWindow().OnUpdate();
+            //m_Renderer->GetWindow().OnUpdate();
             Input::OnUpdate();
         }
 
-        m_Renderer->InitShutdown();
+        //m_Renderer->InitShutdown();
     }
 
     void Application::RaiseEvent(UniqueRef<Event> eventData) {
@@ -198,8 +181,8 @@ namespace Sentinel {
 
     void Application::OnWindowResize(Event& event) {
         WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
-        m_Camera->OnResize(e.GetWidth(), e.GetHeight());
-        m_Renderer->Resize(e.GetWidth(), e.GetHeight());
+        //m_Camera->OnResize(e.GetWidth(), e.GetHeight());
+        //m_Renderer->Resize(e.GetWidth(), e.GetHeight());
     }
 
     void Application::OnKeyPressed(Event& event) { KeyPressedEvent e = *(event.Cast<KeyPressedEvent>()); }

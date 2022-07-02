@@ -3,8 +3,8 @@
 #include "Platform/DirectX11/Graphics/Texture/DX11Texture2DAPI.h"
 #include "Platform/DirectX11/Graphics/Texture/DX11Texture2DData.h"
 
-#include "Sentinel/Graphics/Common/Backend.h"
-#include "Sentinel/Graphics/Texture/Texture2DData.h"
+#include "Platform/DirectX11/Graphics/Device/DX11ContextData.h"
+#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
 
 #include <stb_image.h>
 
@@ -17,7 +17,8 @@ namespace Sentinel {
     DX11Texture2DAPI::_init DX11Texture2DAPI::_initializer;
 
     void DX11Texture2DAPI::Bind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
-        ID3D11DeviceContext* context = DX11Common::GetContext();
+        ID3D11DeviceContext* context =
+            DX11ContextAPI::GetNativeContext(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
         DX11Texture2DData* texture = Texture2DAPI::Cast<DX11Texture2DData>(dataObject);
         switch (shaderType) {
             case ShaderType::VERTEX:
@@ -37,7 +38,8 @@ namespace Sentinel {
     }
 
     void DX11Texture2DAPI::Unbind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
-        ID3D11DeviceContext* context = DX11Common::GetContext();
+        ID3D11DeviceContext* context =
+            DX11ContextAPI::GetNativeContext(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
         ID3D11SamplerState* nullSampler = nullptr;
         ID3D11ShaderResourceView* nullSRV = nullptr;
         DX11Texture2DData* texture = Texture2DAPI::Cast<DX11Texture2DData>(dataObject);
@@ -110,10 +112,13 @@ namespace Sentinel {
 
         if (dataObject->m_Settings.GenerateMipMaps) textureDescription.BindFlags |= D3D11_BIND_RENDER_TARGET;
 
-        DX11Common::GetDevice()->CreateTexture2D(&textureDescription, nullptr, &texture2D);
+        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+
+        DX11ContextAPI::GetDevice(context)->CreateTexture2D(&textureDescription, nullptr, &texture2D);
 
         UInt32 rowPitch = dataObject->m_Width * 4 * (dataObject->m_HDR ? sizeof(float) : sizeof(unsigned char));
-        DX11Common::GetContext()->UpdateSubresource(texture2D, 0, nullptr, dataObject->m_TexturePixels, rowPitch, 0);
+        DX11ContextAPI::GetNativeContext(context)->UpdateSubresource(
+            texture2D, 0, nullptr, dataObject->m_TexturePixels, rowPitch, 0);
 
         D3D11_SHADER_RESOURCE_VIEW_DESC viewDescription;
         SecureZeroMemory(&viewDescription, sizeof(viewDescription));
@@ -122,9 +127,11 @@ namespace Sentinel {
         viewDescription.Texture2D.MostDetailedMip = 0;
         viewDescription.Texture2D.MipLevels = dataObject->m_Settings.GenerateMipMaps ? -1 : 1;
 
-        DX11Common::GetDevice()->CreateShaderResourceView(texture2D, &viewDescription, &(dataObject->m_ResourceView));
+        DX11ContextAPI::GetDevice(context)->CreateShaderResourceView(
+            texture2D, &viewDescription, &(dataObject->m_ResourceView));
 
-        if (dataObject->m_Settings.GenerateMipMaps) DX11Common::GetContext()->GenerateMips(dataObject->m_ResourceView);
+        if (dataObject->m_Settings.GenerateMipMaps)
+            DX11ContextAPI::GetNativeContext(context)->GenerateMips(dataObject->m_ResourceView);
 
         free(dataObject->m_TexturePixels);
 
@@ -140,7 +147,7 @@ namespace Sentinel {
             samplerDesc.MinLOD = 0.0f;
             samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-            DX11Common::GetDevice()->CreateSamplerState(&samplerDesc, &(dataObject->m_SamplerState));
+            DX11ContextAPI::GetDevice(context)->CreateSamplerState(&samplerDesc, &(dataObject->m_SamplerState));
         }
     }
 }  // namespace Sentinel

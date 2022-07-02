@@ -1,17 +1,19 @@
 #include "stpch.h"
-#include "Sentinel/Graphics/Components/Cameras/Camera.h"
+#include "Sentinel/Graphics/Camera/Camera.h"
 
-#include "Sentinel/Graphics/Components/RenderResources/Buffers/ConstantbufferData.h"
-#include "Sentinel/Graphics/Components/RenderResources/Buffers/ConstantbufferAPI.h"
+#include "Sentinel/Graphics/Buffer/ConstantbufferData.h"
+#include "Sentinel/Graphics/Buffer/ConstantbufferAPI.h"
+
+#include "Sentinel/Graphics/Common/GraphicsMemoryManager.h"
 
 #include <glm/gtx/norm.hpp>
 
 namespace Sentinel {
-    Camera::Camera() { Init(); }
+    Camera::Camera(SharedRef<GraphicsMemoryManager> memoryHandle) { Init(memoryHandle); }
 
-    Camera::Camera(const Float width, const Float height) {
+    Camera::Camera(SharedRef<GraphicsMemoryManager> memoryHandle, const Float width, const Float height) {
         OnResize(width, height);
-        Init();
+        Init(memoryHandle);
     }
 
     void Camera::OnResize(const Float width, const Float height) { m_AspectRatio = (!height) ? 0 : width / height; }
@@ -23,9 +25,9 @@ namespace Sentinel {
         ConstantbufferAPI::SetDynamicData(m_CameraConstantbuffer, &(GetViewProjectionMatrix()));
     }
 
-    void Camera::Init() {
+    void Camera::Init(SharedRef<GraphicsMemoryManager> memoryHandle) {
         m_CameraConstantbuffer =
-            ConstantbufferAPI::CreateConstantbufferData(sizeof(glm::mat4), 0, CBufferUsageType::DYNAMIC);
+            ConstantbufferAPI::CreateConstantbufferData(memoryHandle, sizeof(glm::mat4), 0, CBufferUsageType::DYNAMIC);
         ConstantbufferAPI::VSBind(m_CameraConstantbuffer);
         OnUpdate();
     }
