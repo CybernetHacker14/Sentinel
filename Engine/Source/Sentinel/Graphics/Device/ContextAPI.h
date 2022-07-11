@@ -3,13 +3,17 @@
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Graphics/Device/ContextData.h"
 
+struct GLFWwindow;
+
 namespace Sentinel {
     class GraphicsMemoryManager;
 
     class ContextAPI {
     public:
-        static ContextData* CreateImmediateContext(SharedRef<GraphicsMemoryManager> memoryHandle);
-        static ContextData* CreateDeferredContext(SharedRef<GraphicsMemoryManager> memoryHandle);
+        static ContextData* CreateImmediateContext(
+            SharedRef<GraphicsMemoryManager> memoryHandle, GLFWwindow* windowHandle);
+        static ContextData* CreateDeferredContext(
+            SharedRef<GraphicsMemoryManager> memoryHandle, GLFWwindow* windowHandle);
 
         inline static const ContextInfo& GetContextInfo(ContextData* dataObject) { return dataObject->m_ContextInfo; }
         inline static ContextType GetContextType(ContextData* dataObject) { return dataObject->m_ContextType; }

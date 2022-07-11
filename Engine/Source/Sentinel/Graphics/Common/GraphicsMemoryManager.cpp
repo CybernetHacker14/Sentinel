@@ -12,6 +12,8 @@
 #include "Sentinel/Graphics/Material/ShaderData.h"
 #include "Sentinel/Graphics/Texture/Texture2DData.h"
 
+#include "Sentinel/Graphics/Texture/RenderTexture2DData.h"
+
 namespace Sentinel {
     GraphicsMemoryManager::GraphicsMemoryManager() {
         ContextAllocator.AllocateMemoryBlock(10);
@@ -24,6 +26,8 @@ namespace Sentinel {
 
         ShaderAllocator.AllocateMemoryBlock(5);
         Texture2DAllocator.AllocateMemoryBlock(16);
+
+        RenderTexture2DAllocator.AllocateMemoryBlock(10);
     }
 
     GraphicsMemoryManager::~GraphicsMemoryManager() {
@@ -40,6 +44,9 @@ namespace Sentinel {
         ShaderAllocator.DeallocateMemoryBlock();
         Texture2DAllocator.DeleteAll();
         Texture2DAllocator.DeallocateMemoryBlock();
+
+        RenderTexture2DAllocator.DeleteAll();
+        RenderTexture2DAllocator.DeallocateMemoryBlock();
 
         SwapchainAllocator.DeleteAll();
         SwapchainAllocator.DeallocateMemoryBlock();

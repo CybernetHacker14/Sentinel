@@ -4,4 +4,5 @@
 #include <d3dcompiler.h>
 #include <d3d11shader.h>
 #include <d3d11shadertracing.h>
+#include <dxgi.h>
 #include <wrl.h>

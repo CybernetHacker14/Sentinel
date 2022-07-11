@@ -10,10 +10,11 @@
 
 namespace Sentinel {
     SwapchainData* SwapchainAPI::CreateSwapchain(
-        SharedRef<GraphicsMemoryManager> memoryHandle, GLFWwindow* windowHandle) {
+        SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, GLFWwindow* windowHandle) {
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
                 SwapchainData* swapchain = memoryHandle->SwapchainAllocator.New<DX11SwapchainData>();
+                swapchain->Context = context;
                 DX11SwapchainAPI::Init(SwapchainAPI::Cast<DX11SwapchainData>(swapchain), windowHandle);
                 return swapchain;
             }

@@ -14,9 +14,10 @@ namespace Sentinel {
         }
         inline static IDXGIDevice* GetDXGIDevice(DX11ContextData* dataObject) { return dataObject->m_DXGIDevice; }
         inline static IDXGIAdapter* GetAdapter(DX11ContextData* dataObject) { return dataObject->m_Adapter; }
+        inline static IDXGIFactory* GetFactory(DX11ContextData* dataObject) { return dataObject->m_Factory; }
 
     private:
-        static void Create(DX11ContextData* dataObject);
+        static void Create(DX11ContextData* dataObject, GLFWwindow* windowHandle);
 
     private:
         friend class ContextAPI;

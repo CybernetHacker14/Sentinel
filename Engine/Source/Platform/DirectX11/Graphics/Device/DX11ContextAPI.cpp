@@ -2,8 +2,10 @@
 #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 #include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Sentinel {
-    void DX11ContextAPI::Create(DX11ContextData* dataObject) {
+    void DX11ContextAPI::Create(DX11ContextData* dataObject, GLFWwindow* windowHandle) {
         if (dataObject->m_ContextType == ContextType::IMMEDIATE) {
             D3D11CreateDevice(
                 nullptr,
@@ -18,7 +20,8 @@ namespace Sentinel {
                 &(dataObject->m_Context));
 
             dataObject->m_Device->QueryInterface(__uuidof(IDXGIDevice), (LPVOID*)&(dataObject->m_DXGIDevice));
-            dataObject->m_DXGIDevice->QueryInterface(__uuidof(IDXGIAdapter), (LPVOID*)&(dataObject->m_Adapter));
+            dataObject->m_DXGIDevice->GetParent(__uuidof(IDXGIAdapter), (LPVOID*)&(dataObject->m_Adapter));
+            dataObject->m_Adapter->GetParent(__uuidof(IDXGIFactory), (LPVOID*)&(dataObject->m_Factory));
 
             char videoCardDescription[128];
             STL::string vendor, major, minor, release, build, version;
@@ -52,6 +55,8 @@ namespace Sentinel {
             version = major + "." + minor + "." + release + "." + build;
 
             dataObject->m_ContextInfo.Version = version;
+
+            glfwMakeContextCurrent(windowHandle);
 
         } else if (dataObject->m_ContextType == ContextType::DEFFERED) {
             // TODO : R&D and implement this

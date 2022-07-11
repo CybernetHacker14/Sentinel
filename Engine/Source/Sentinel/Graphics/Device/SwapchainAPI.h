@@ -3,17 +3,24 @@
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Graphics/Device/SwapchainData.h"
 
+struct GLFWwindow;
+
 namespace Sentinel {
-    struct GLFWwindow;
     class GraphicsMemoryManager;
 
     class SwapchainAPI {
     public:
-        static SwapchainData* CreateSwapchain(SharedRef<GraphicsMemoryManager> memoryHandle, GLFWwindow* windowHandle);
+        static SwapchainData* CreateSwapchain(
+            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, GLFWwindow* windowHandle);
 
         inline static void SwapBuffers(SwapchainData* dataObject) {
             if (!m_SwapFunction) return;
             m_SwapFunction(dataObject);
+        }
+
+        inline static void Resize(SwapchainData* dataObject, UInt32 width, UInt32 height) {
+            if (!m_ResizeFunction) return;
+            m_ResizeFunction(dataObject, width, height);
         }
 
         inline static void SetVSync(SwapchainData* dataObject, Bool value) { dataObject->vSync = value; }
@@ -28,5 +35,6 @@ namespace Sentinel {
 
     protected:
         inline static STL::delegate<void(SwapchainData*)> m_SwapFunction;
+        inline static STL::delegate<void(SwapchainData*, UInt32, UInt32)> m_ResizeFunction;
     };
 }  // namespace Sentinel

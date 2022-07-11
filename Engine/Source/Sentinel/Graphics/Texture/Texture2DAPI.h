@@ -15,12 +15,15 @@ namespace Sentinel {
 
         inline static void Bind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
             if (!m_BindFunction) return;
+            dataObject->m_BindSlot = slot;
+            dataObject->m_BindType = shaderType;
             m_BindFunction(dataObject, slot, shaderType);
         }
 
-        inline static void Unbind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
+        inline static void Unbind(Texture2DData* dataObject) {
             if (!m_UnbindFunction) return;
-            m_UnbindFunction(dataObject, slot, shaderType);
+            m_UnbindFunction(dataObject);
+            dataObject->m_BindType = ShaderType::NONE;
         }
 
         inline static void Clean(Texture2DData* dataObject) {
@@ -34,6 +37,9 @@ namespace Sentinel {
         inline static UInt32 GetWidth(Texture2DData* dataObject) { return dataObject->m_Width; }
         inline static UInt32 GetHeight(Texture2DData* dataObject) { return dataObject->m_Height; }
 
+        inline static UInt32 GetBindSlot(Texture2DData* dataObject) { return dataObject->m_BindSlot; }
+        inline static const ShaderType GetBindType(Texture2DData* dataObject) { return dataObject->m_BindType; }
+
     public:
         template<typename T>
         inline static T* Cast(Texture2DData* dataObject) {
@@ -43,7 +49,7 @@ namespace Sentinel {
 
     protected:
         inline static STL::delegate<void(Texture2DData*, UInt32, const ShaderType)> m_BindFunction;
-        inline static STL::delegate<void(Texture2DData*, UInt32, const ShaderType)> m_UnbindFunction;
+        inline static STL::delegate<void(Texture2DData*)> m_UnbindFunction;
         inline static STL::delegate<void(Texture2DData*)> m_CleanFunction;
     };
 }  // namespace Sentinel

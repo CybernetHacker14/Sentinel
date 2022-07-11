@@ -21,7 +21,7 @@ namespace Sentinel {
 
     private:
         static void Bind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType);
-        static void Unbind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType);
+        static void Unbind(Texture2DData* dataObject);
         static void Clean(Texture2DData* dataObject);
 
         static void Load(DX11Texture2DData* dataObject);

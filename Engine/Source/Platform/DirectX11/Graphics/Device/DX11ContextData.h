@@ -6,6 +6,7 @@ struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGIDevice;
 struct IDXGIAdapter;
+struct IDXGIFactory;
 
 namespace Sentinel {
     class DX11ContextData final: public ContextData {
@@ -14,6 +15,7 @@ namespace Sentinel {
         ID3D11DeviceContext* m_Context;
         IDXGIDevice* m_DXGIDevice;
         IDXGIAdapter* m_Adapter;
+        IDXGIFactory* m_Factory;
 
     private:
         friend class DX11ContextAPI;

@@ -9,6 +9,8 @@ namespace Sentinel {
     private:
         IDXGISwapChain* m_Swapchain;
 
+        UInt32 m_BufferCount;
+
     private:
         friend class DX11SwapchainAPI;
     };

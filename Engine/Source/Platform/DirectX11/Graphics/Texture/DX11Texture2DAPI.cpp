@@ -37,13 +37,14 @@ namespace Sentinel {
         }
     }
 
-    void DX11Texture2DAPI::Unbind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
+    void DX11Texture2DAPI::Unbind(Texture2DData* dataObject) {
         ID3D11DeviceContext* context =
             DX11ContextAPI::GetNativeContext(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
         ID3D11SamplerState* nullSampler = nullptr;
         ID3D11ShaderResourceView* nullSRV = nullptr;
         DX11Texture2DData* texture = Texture2DAPI::Cast<DX11Texture2DData>(dataObject);
-        switch (shaderType) {
+        UInt32 slot = Texture2DAPI::GetBindSlot(dataObject);
+        switch (Texture2DAPI::GetBindType(dataObject)) {
             case ShaderType::VERTEX:
                 context->VSSetShaderResources(slot, 1, &(texture->m_ResourceView));
                 context->VSSetSamplers(slot, 1, &(texture->m_SamplerState));

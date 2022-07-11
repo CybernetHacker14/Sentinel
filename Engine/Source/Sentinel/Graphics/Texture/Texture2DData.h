@@ -24,8 +24,9 @@ namespace Sentinel {
     protected:
         Texture2DDataImportSettings m_Settings;
         void* m_TexturePixels = nullptr;
-        UInt16 m_Width = 0, m_Height = 0;
-        ShaderType m_CurrentBindType;
+        UInt32 m_Width = 0, m_Height = 0;
+        UInt32 m_BindSlot;
+        ShaderType m_BindType = ShaderType::NONE;
         Bool m_Loaded = false, m_HDR = false;
 
     private:

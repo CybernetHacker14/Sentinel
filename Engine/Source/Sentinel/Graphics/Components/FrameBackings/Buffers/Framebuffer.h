@@ -7,21 +7,6 @@
 
 namespace Sentinel
 {
-	enum class TextureFormat {
-		NONE = 0,
-
-		// Color
-		RGBA32F = 2,
-		RGBA8UNORM = 28,
-		R32SINT = 43, // For detecting objects via click (RED_INTEGER)
-
-		// Depth/Stencil
-		D24S8UINT = 45,
-
-		// Defaults
-		Depth = D24S8UINT
-	};
-
 	struct TextureSpecification {
 		TextureSpecification() = default;
 		TextureSpecification(TextureFormat format)
@@ -41,7 +26,6 @@ namespace Sentinel
 	struct FramebufferSpecification {
 		UInt32 Width = 0, Height = 0;
 		AttachmentSpecification Attachments;
-		UInt32 Samples = 1;
 		Bool SwapchainTarget = false;
 		glm::vec4 ClearColor = { 0.0f, 0.0f, 0.0f, 0.0f };
 	};
