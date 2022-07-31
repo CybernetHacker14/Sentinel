@@ -6,9 +6,9 @@
 #include "Sentinel/Graphics/Material/ShaderData.h"
 
 namespace Sentinel {
-    enum class ColorFormat : UInt8 { NONE = 0, RGBA32F = 2, RGBA8UNORM = 28, R32SINT = 43 };
+    enum class DepthFormat : UInt8 { NONE = 0, D24S8UINT = 45 };
 
-    struct RenderTexture2DData {
+    struct DepthTexture2DData {
     public:
         ContextData* Context;
         SharedRef<GraphicsMemoryManager> MemoryHandle;
@@ -17,11 +17,11 @@ namespace Sentinel {
         void* m_PixelData;
         UInt32 m_Width, m_Height;
         UInt32 m_BindSlot;
-        ColorFormat m_Format = ColorFormat::NONE;
+        DepthFormat m_Format = DepthFormat::NONE;
         ShaderType m_BindType = ShaderType::NONE;
         Bool m_SwapchainTarget = false;
 
     private:
-        friend class RenderTexture2DAPI;
+        friend class DepthTexture2DAPI;
     };
 }  // namespace Sentinel

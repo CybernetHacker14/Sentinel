@@ -1,19 +1,19 @@
 #include "stpch.h"
 #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
-#include "Platform/DirectX11/Graphics/Texture/DX11RenderTexture2DAPI.h"
+#include "Platform/DirectX11/Graphics/Texture/DX11DepthTexture2DAPI.h"
 
 #include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
 
 namespace Sentinel {
     static const UInt32 s_MaxSize = 8192;  // 8K
 
-    DX11RenderTexture2DAPI::_init DX11RenderTexture2DAPI::_initializer;
+    DX11DepthTexture2DAPI::_init DX11DepthTexture2DAPI::_initializer;
 
-    void DX11RenderTexture2DAPI::Create(DX11RenderTexture2DData* dataObject) {
+    void DX11DepthTexture2DAPI::Create(DX11DepthTexture2DData* dataObject) {
         DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
         ID3D11Device* dxDevice = DX11ContextAPI::GetDevice(context);
 
-        if (dataObject->m_Format != ColorFormat::NONE) {
+        if (dataObject->m_Format != DepthFormat::NONE) {
             D3D11_TEXTURE2D_DESC texDescription;
             SecureZeroMemory(&texDescription, sizeof(texDescription));
             texDescription.Width = dataObject->m_Width;
@@ -24,20 +24,19 @@ namespace Sentinel {
             texDescription.SampleDesc.Count = 1;
             texDescription.SampleDesc.Quality = 0;
             texDescription.Usage = D3D11_USAGE_DEFAULT;
-            texDescription.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
             texDescription.CPUAccessFlags = 0;
             texDescription.MiscFlags = 0;
+            texDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 
-            dxDevice->CreateTexture2D(&texDescription, nullptr, &(dataObject->m_NativeTexture));
+            // DSV
+            D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilDescription;
+            SecureZeroMemory(&depthStencilDescription, sizeof(depthStencilDescription));
+            depthStencilDescription.Format = static_cast<DXGI_FORMAT>(dataObject->m_Format);
+            depthStencilDescription.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+            depthStencilDescription.Texture2D.MipSlice = 0;
 
-            // RTV
-            D3D11_RENDER_TARGET_VIEW_DESC rTVDescription;
-            SecureZeroMemory(&rTVDescription, sizeof(rTVDescription));
-            rTVDescription.Format = static_cast<DXGI_FORMAT>(dataObject->m_Format);
-            rTVDescription.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-            rTVDescription.Texture2D.MipSlice = 0;
-
-            dxDevice->CreateRenderTargetView(dataObject->m_NativeTexture, &rTVDescription, &(dataObject->m_NativeRTV));
+            dxDevice->CreateDepthStencilView(
+                dataObject->m_NativeTexture, &depthStencilDescription, &(dataObject->m_NativeDSV));
 
             // SRV
             if (!dataObject->m_SwapchainTarget) {
@@ -53,32 +52,32 @@ namespace Sentinel {
         }
     }
 
-    void DX11RenderTexture2DAPI::Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor) {
+    void DX11DepthTexture2DAPI::Clear(DepthTexture2DData* dataObject) {
+        DX11DepthTexture2DData* depthTexture = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
+
         DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
         ID3D11DeviceContext* dxContext = DX11ContextAPI::GetNativeContext(context);
 
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
-
-        if (dxDataObject->m_BindType != ShaderType::NONE) {
-            dxContext->ClearRenderTargetView(dxDataObject->m_NativeRTV, (Float*)&clearColor);
+        if (depthTexture->m_BindType != ShaderType::NONE) {
+            dxContext->ClearDepthStencilView(
+                depthTexture->m_NativeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
         }
     }
 
-    void DX11RenderTexture2DAPI::Clean(RenderTexture2DData* dataObject) {
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
+    void DX11DepthTexture2DAPI::Clean(DepthTexture2DData* dataObject) {
+        DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
 
         if (dxDataObject->m_BindType != ShaderType::NONE) {
             dxDataObject->m_NativeTexture->Release();
-            dxDataObject->m_NativeRTV->Release();
+            dxDataObject->m_NativeDSV->Release();
             dxDataObject->m_NativeSRV->Release();
-            dxDataObject->m_NativeUAV->Release();
         }
     }
 
-    void DX11RenderTexture2DAPI::Resize(RenderTexture2DData* dataObject, UInt32 width, UInt32 height) {
+    void DX11DepthTexture2DAPI::Resize(DepthTexture2DData* dataObject, UInt32 width, UInt32 height) {
         if (width == 0 || height == 0 || width > s_MaxSize || height > s_MaxSize) return;
 
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
+        DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
 
         Unbind(dataObject);
         Clean(dataObject);
@@ -87,11 +86,11 @@ namespace Sentinel {
         Create(dxDataObject);
     }
 
-    void DX11RenderTexture2DAPI::Bind(RenderTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
+    void DX11DepthTexture2DAPI::Bind(DepthTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
         DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
         ID3D11DeviceContext* dxContext = DX11ContextAPI::GetNativeContext(context);
 
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
+        DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
         ID3D11ShaderResourceView* srv = dxDataObject->m_NativeSRV;
 
         switch (shaderType) {
@@ -114,11 +113,11 @@ namespace Sentinel {
         }
     }
 
-    void DX11RenderTexture2DAPI::Unbind(RenderTexture2DData* dataObject) {
+    void DX11DepthTexture2DAPI::Unbind(DepthTexture2DData* dataObject) {
         DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
         ID3D11DeviceContext* dxContext = DX11ContextAPI::GetNativeContext(context);
 
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
+        DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
 
         if (dxDataObject->m_BindType != ShaderType::NONE) {
             switch (dxDataObject->m_BindType) {

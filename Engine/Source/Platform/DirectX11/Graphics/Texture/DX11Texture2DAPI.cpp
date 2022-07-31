@@ -1,9 +1,7 @@
 #include "stpch.h"
 #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 #include "Platform/DirectX11/Graphics/Texture/DX11Texture2DAPI.h"
-#include "Platform/DirectX11/Graphics/Texture/DX11Texture2DData.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextData.h"
 #include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
 
 #include <stb_image.h>

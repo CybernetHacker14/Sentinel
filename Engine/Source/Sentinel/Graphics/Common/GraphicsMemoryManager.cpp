@@ -13,6 +13,8 @@
 #include "Sentinel/Graphics/Texture/Texture2DData.h"
 
 #include "Sentinel/Graphics/Texture/RenderTexture2DData.h"
+#include "Sentinel/Graphics/Texture/DepthTexture2DData.h"
+#include "Sentinel/Graphics/Output/FramebufferData.h"
 
 namespace Sentinel {
     GraphicsMemoryManager::GraphicsMemoryManager() {
@@ -27,7 +29,8 @@ namespace Sentinel {
         ShaderAllocator.AllocateMemoryBlock(5);
         Texture2DAllocator.AllocateMemoryBlock(16);
 
-        RenderTexture2DAllocator.AllocateMemoryBlock(10);
+        RenderTexture2DAllocator.AllocateMemoryBlock(6);
+        DepthTexture2DAllocator.AllocateMemoryBlock(2);
     }
 
     GraphicsMemoryManager::~GraphicsMemoryManager() {
@@ -47,6 +50,9 @@ namespace Sentinel {
 
         RenderTexture2DAllocator.DeleteAll();
         RenderTexture2DAllocator.DeallocateMemoryBlock();
+
+        DepthTexture2DAllocator.DeleteAll();
+        DepthTexture2DAllocator.DeallocateMemoryBlock();
 
         SwapchainAllocator.DeleteAll();
         SwapchainAllocator.DeallocateMemoryBlock();

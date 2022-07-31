@@ -5,8 +5,10 @@
 
 #include "Sentinel/Graphics/Common/GraphicsMemoryManager.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11SwapchainData.h"
 #include "Platform/DirectX11/Graphics/Device/DX11SwapchainAPI.h"
+
+#include "Platform/DirectX11/Graphics/Texture/DX11RenderTexture2DAPI.h"
+#include "Platform/DirectX11/Graphics/Texture/DX11DepthTexture2DAPI.h"
 
 namespace Sentinel {
     SwapchainData* SwapchainAPI::CreateSwapchain(

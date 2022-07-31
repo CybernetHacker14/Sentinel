@@ -3,9 +3,6 @@
 #include "Platform/DirectX11/Graphics/Buffer/DX11VertexbufferAPI.h"
 #include "Platform/DirectX11/Graphics/Buffer/DX11VertexbufferData.h"
 
-#include "Sentinel/Graphics/Buffer/VertexbufferData.h"
-
-#include "Platform/DirectX11/Graphics/Device/DX11ContextData.h"
 #include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
 
 namespace Sentinel {

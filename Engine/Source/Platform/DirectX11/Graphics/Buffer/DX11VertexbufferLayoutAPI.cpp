@@ -3,14 +3,8 @@
 #include "Platform/DirectX11/Graphics/Buffer/DX11VertexbufferLayoutAPI.h"
 #include "Platform/DirectX11/Graphics/Buffer/DX11VertexbufferLayoutData.h"
 
-#include "Sentinel/Graphics/Material/ShaderData.h"
-
-#include "Sentinel/Graphics/Material/ShaderAPI.h"
-
-#include "Platform/DirectX11/Graphics/Material/DX11ShaderData.h"
 #include "Platform/DirectX11/Graphics/Material/DX11ShaderAPI.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextData.h"
 #include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
 
 namespace Sentinel {

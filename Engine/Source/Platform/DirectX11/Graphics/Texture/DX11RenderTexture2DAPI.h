@@ -15,40 +15,27 @@ namespace Sentinel {
                     m_ClearFunction = DX11RenderTexture2DAPI::Clear;
                     m_CleanFunction = DX11RenderTexture2DAPI::Clean;
                     m_ResizeFunction = DX11RenderTexture2DAPI::Resize;
-                    m_BindColorFunction = DX11RenderTexture2DAPI::BindColor;
-                    m_BindDepthFunction = DX11RenderTexture2DAPI::BindDepth;
+                    m_BindFunction = DX11RenderTexture2DAPI::Bind;
                     m_UnbindFunction = DX11RenderTexture2DAPI::Unbind;
                 }
             }
         } _initializer;
 
     public:
-        inline static ID3D11Texture2D* GetNativeColorTexture(DX11RenderTexture2DData* dataObject) {
-            return dataObject->m_NativeColorTexture;
+        inline static ID3D11Texture2D* GetNativeTexture(DX11RenderTexture2DData* dataObject) {
+            return dataObject->m_NativeTexture;
         }
 
-        inline static ID3D11RenderTargetView* GetNativeColorRTV(DX11RenderTexture2DData* dataObject) {
-            return dataObject->m_NativeColorRTV;
+        inline static ID3D11RenderTargetView* GetNativeRTV(DX11RenderTexture2DData* dataObject) {
+            return dataObject->m_NativeRTV;
         }
 
-        inline static ID3D11ShaderResourceView* GetNativeColorSRV(DX11RenderTexture2DData* dataObject) {
-            return dataObject->m_NativeColorSRV;
+        inline static ID3D11ShaderResourceView* GetNativeSRV(DX11RenderTexture2DData* dataObject) {
+            return dataObject->m_NativeSRV;
         }
 
-        inline static ID3D11UnorderedAccessView* GetNativeColorUAV(DX11RenderTexture2DData* dataObject) {
-            return dataObject->m_NativeColorUAV;
-        }
-
-        inline static ID3D11Texture2D* GetNativeDepthTexture(DX11RenderTexture2DData* dataObject) {
-            return dataObject->m_NativeDepthTexture;
-        }
-
-        inline static ID3D11DepthStencilView* GetNativeDepthDSV(DX11RenderTexture2DData* dataObject) {
-            return dataObject->m_NativeDepthDSV;
-        }
-
-        inline static ID3D11ShaderResourceView* GetNativeDepthSRV(DX11RenderTexture2DData* dataObject) {
-            return dataObject->m_NativeDepthSRV;
+        inline static ID3D11UnorderedAccessView* GetNativeUAV(DX11RenderTexture2DData* dataObject) {
+            return dataObject->m_NativeUAV;
         }
 
     private:
@@ -59,8 +46,7 @@ namespace Sentinel {
         static void Clean(RenderTexture2DData* dataObject);
         static void Resize(RenderTexture2DData* dataObject, UInt32 width, UInt32 height);
 
-        static void BindColor(RenderTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType);
-        static void BindDepth(RenderTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType);
+        static void Bind(RenderTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType);
         static void Unbind(RenderTexture2DData* dataObject);
 
     private:
