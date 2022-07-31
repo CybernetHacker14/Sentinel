@@ -3,12 +3,6 @@
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Events/EventBus.h"
 #include "Sentinel/Layers/LayerStack.h"
-#include "Sentinel/Graphics/Renderers/Renderer.h"
-#include "Sentinel/AssetManagement/AssetManager.h"
-
-#include "Sentinel/Memory/MemoryManager.h"
-
-#include "Sentinel/Graphics/Components/Cameras/Camera.h"
 
 #include "Sentinel/GUI/ImGui/ImGuiLayer.h"
 #include "Sentinel/GUI/ImGui/ImGuiDebugLayer.h"
@@ -16,6 +10,8 @@
 int main(int argc, char** argv);
 
 namespace Sentinel {
+    class Window;
+
     class Application {
     public:
         Application(const STL::string& name = "Sentinel Engine");
@@ -44,10 +40,6 @@ namespace Sentinel {
         void OnWindowResize(Event& event);
         void OnKeyPressed(Event& event);
 
-    public:
-        // Keeping Memory Manager public now. Kind of exposing memory management to the engine
-        SharedRef<MemoryManager> EngineMemoryManager;
-
     private:
         Bool m_Running = true;
         Bool m_Minimized = false;
@@ -55,11 +47,6 @@ namespace Sentinel {
         UInt32 m_WindowResizeCallbackIndex = 0;
         UInt32 m_WindowCloseCallbackIndex = 0;
         UInt32 m_KeyPressedCallbackIndex = 0;
-
-    private:
-        UniqueRef<AssetManager> m_AssetManager;
-        UniqueRef<Renderer> m_Renderer;
-        SharedRef<Camera> m_Camera;
 
     private:
         LayerStack m_LayerStack;
