@@ -2,20 +2,21 @@
 
 #include <Sentinel.h>
 
-class ExampleLayer final : public Sentinel::Layer {
+class ExampleLayer final: public Sentinel::Layer {
 public:
-	ExampleLayer();
+    ExampleLayer();
+    ~ExampleLayer() = default;
 
-	virtual ~ExampleLayer() = default;
+protected:
+    void OnAttach();
+    void OnDetach();
 
-	virtual void OnAttach() final;
-	virtual void OnDetach() final;
+    void OnUpdate();
+    void OnRender();
+    void OnImGuiRender();
 
-	void OnUpdate() final;
-	void OnRender() final;
-	void OnImGuiRender() final;
 private:
-	void OnWindowResize(Sentinel::Event& event);
+    void OnWindowResize(Sentinel::Event& event);
 
-	uint32_t value = 0;
+    uint32_t value = 0;
 };

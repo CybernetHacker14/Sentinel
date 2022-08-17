@@ -7,8 +7,6 @@
 
 #include "Sentinel/Math/Math.h"
 
-#include "Sentinel/Window/Window.h"
-
 #include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Common/CPU/CPUInfo.h"
 
@@ -108,8 +106,6 @@ namespace Sentinel {
         UnsubscribeFromEvent(EventType::WindowResize, m_WindowResizeCallbackIndex);
         UnsubscribeFromEvent(EventType::KeyPressed, m_KeyPressedCallbackIndex);
     }
-
-    Window& Application::GetWindow() { return; }
 
     void Application::PushLayer(Layer* layer) {
         m_LayerStack.PushLayer(layer);
