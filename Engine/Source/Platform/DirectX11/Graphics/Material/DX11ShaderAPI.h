@@ -15,6 +15,7 @@ namespace Sentinel {
                     m_BindFunction = DX11ShaderAPI::Bind;
                     m_ReloadFunction = DX11ShaderAPI::Reload;
                     m_CleanFunction = DX11ShaderAPI::Clean;
+                    m_UnbindFunction = DX11ShaderAPI::Unbind;
                 }
             }
         } _initializer;
@@ -36,6 +37,7 @@ namespace Sentinel {
         static void Bind(ShaderData* dataObject);
         static void Reload(ShaderData* dataObject);
         static void Clean(ShaderData* dataObject);
+        static void Unbind(ShaderData* dataObject);
 
         static STL::unordered_map<ShaderType, STL::string> PreprocessSource(const STL::string& source);
 

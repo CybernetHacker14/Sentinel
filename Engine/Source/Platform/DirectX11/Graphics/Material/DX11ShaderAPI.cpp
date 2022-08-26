@@ -63,6 +63,11 @@ namespace Sentinel {
         shader->m_Filepath.clear();
     }
 
+    void DX11ShaderAPI::Unbind(ShaderData* dataObject) {
+        DX11ShaderData* shader = ShaderAPI::Cast<DX11ShaderData>(dataObject);
+        DX11ShaderAPI::Reset(shader);
+    }
+
     STL::unordered_map<ShaderType, STL::string> DX11ShaderAPI::PreprocessSource(const STL::string& source) {
         STL::unordered_map<ShaderType, STL::string> shaderSources;
 

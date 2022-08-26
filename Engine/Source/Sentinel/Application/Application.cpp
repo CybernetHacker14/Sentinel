@@ -57,11 +57,11 @@ namespace Sentinel {
 
         IndexbufferAPI::CreateIndexbufferData(indices.data(), indices.size());
 
-        // Texture2DImportSettings settings;
-        // settings.texturePath = "Assets/Tile1.jpg";
-        // renderResource->Textures[0] = TextureTuple::Create();
-        // renderResource->Textures[0]->Texture = Texture2D::Create(settings);
-        // renderResource->Textures[0]->ShaderType = ShaderType::PIXEL;
+         Texture2DImportSettings settings;
+         settings.texturePath = "Assets/Tile1.jpg";
+         renderResource->Textures[0] = TextureTuple::Create();
+         renderResource->Textures[0]->Texture = Texture2D::Create(settings);
+         renderResource->Textures[0]->ShaderType = ShaderType::PIXEL;
 
         Texture2DDataImportSettings settings;
         settings.TextureFilepath = "Assets/Tile1.jpg";

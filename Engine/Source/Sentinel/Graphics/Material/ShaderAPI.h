@@ -29,6 +29,11 @@ namespace Sentinel {
             m_CleanFunction(dataObject);
         }
 
+        inline static void Unbind(ShaderData* dataObject) {
+            if (!m_UnbindFunction) return;
+            m_UnbindFunction(dataObject);
+        }
+
         inline static const STL::string& GetShaderSource(
             ShaderData* dataObject, const ShaderType& type = ShaderType::NONE) {
             return dataObject->m_ShaderSources.at(type);
@@ -48,5 +53,6 @@ namespace Sentinel {
         inline static STL::delegate<void(ShaderData*)> m_BindFunction;
         inline static STL::delegate<void(ShaderData*)> m_ReloadFunction;
         inline static STL::delegate<void(ShaderData*)> m_CleanFunction;
+        inline static STL::delegate<void(ShaderData*)> m_UnbindFunction;
     };
 }  // namespace Sentinel
