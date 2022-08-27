@@ -24,24 +24,16 @@ namespace Sentinel {
     class ResourceCreateOp final: public IPipelineOperation {
     public:
         ResourceCreateOp(
-            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData*& context, SwapchainData*& swapchain);
-
-        inline void SetGFXComponentPointers(
-            VertexbufferData** vBuffer,
-            IndexbufferData** iBuffer,
-            VertexbufferLayoutData** vLayout,
-            ShaderData** shader,
-            Texture2DData** texture,
-            RenderTexture2DData** renderTex,
-            DepthTexture2DData** depthTex) {
-            m_VBuffer = vBuffer;
-            m_IBuffer = iBuffer;
-            m_VLayout = vLayout;
-            m_Shader = shader;
-            m_Texture = texture;
-            m_RenderTexture = renderTex;
-            m_DepthTexture = depthTex;
-        }
+            SharedRef<GraphicsMemoryManager> memoryHandle,
+            ContextData*& context,
+            SwapchainData*& swapchain,
+            VertexbufferData*& vBuffer,
+            IndexbufferData*& iBuffer,
+            VertexbufferLayoutData*& vLayout,
+            ShaderData*& shader,
+            Texture2DData*& texture,
+            RenderTexture2DData*& renderTex,
+            DepthTexture2DData*& depthTex);
 
     private:
         void Setup();
@@ -52,12 +44,12 @@ namespace Sentinel {
         SharedRef<GraphicsMemoryManager> m_MemoryHandle;
         ContextData*& m_Context;
         SwapchainData*& m_Swapchain;
-        VertexbufferData** m_VBuffer;
-        IndexbufferData** m_IBuffer;
-        VertexbufferLayoutData** m_VLayout;
-        ShaderData** m_Shader;
-        Texture2DData** m_Texture;
-        RenderTexture2DData** m_RenderTexture;
-        DepthTexture2DData** m_DepthTexture;
+        VertexbufferData*& m_VBuffer;
+        IndexbufferData*& m_IBuffer;
+        VertexbufferLayoutData*& m_VLayout;
+        ShaderData*& m_Shader;
+        Texture2DData*& m_Texture;
+        RenderTexture2DData*& m_RenderTexture;
+        DepthTexture2DData*& m_DepthTexture;
     };
 }  // namespace Sentinel

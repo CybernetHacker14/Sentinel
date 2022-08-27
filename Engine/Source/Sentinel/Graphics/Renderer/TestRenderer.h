@@ -22,6 +22,8 @@ namespace Sentinel {
     struct RenderTexture2DData;
     struct DepthTexture2DData;
 
+    class ImGuiLayer;
+    class ImGuiDebugLayer;
 
     class TestRenderer {
     public:
@@ -33,6 +35,8 @@ namespace Sentinel {
         void Setup();
         void Draw();
         void Unbind();
+
+        SharedRef<Camera> GetCamera() { return m_Camera; }
 
     private:
         RenderPipeline m_RenderPipeline;
@@ -54,5 +58,9 @@ namespace Sentinel {
 
         RenderTexture2DData* m_RenderTexture;
         DepthTexture2DData* m_DepthTexture;
+
+        // Add ImGuiLayer and ImGuiDebugLayer here
+        ImGuiLayer* m_ImGuiLayer;
+        ImGuiDebugLayer* m_ImGuiDebugLayer;
     };
 }  // namespace Sentinel

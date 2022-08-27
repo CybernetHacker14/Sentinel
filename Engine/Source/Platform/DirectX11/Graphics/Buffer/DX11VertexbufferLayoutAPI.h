@@ -4,8 +4,6 @@
 #include "Sentinel/Graphics/Buffer/VertexbufferLayoutAPI.h"
 
 namespace Sentinel {
-    struct ShaderData;
-
     class DX11VertexbufferLayoutAPI final: public VertexbufferLayoutAPI {
     public:
         static class _init {

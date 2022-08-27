@@ -20,8 +20,26 @@
 
 namespace Sentinel {
     ResourceCreateOp::ResourceCreateOp(
-        SharedRef<GraphicsMemoryManager> memoryHandle, ContextData*& context, SwapchainData*& swapchain)
-        : m_MemoryHandle(memoryHandle), m_Context(context), m_Swapchain(swapchain) {
+        SharedRef<GraphicsMemoryManager> memoryHandle,
+        ContextData*& context,
+        SwapchainData*& swapchain,
+        VertexbufferData*& vBuffer,
+        IndexbufferData*& iBuffer,
+        VertexbufferLayoutData*& vLayout,
+        ShaderData*& shader,
+        Texture2DData*& texture,
+        RenderTexture2DData*& renderTex,
+        DepthTexture2DData*& depthTex)
+        : m_MemoryHandle(memoryHandle),
+          m_Context(context),
+          m_Swapchain(swapchain),
+          m_VBuffer(vBuffer),
+          m_IBuffer(iBuffer),
+          m_VLayout(vLayout),
+          m_Shader(shader),
+          m_Texture(texture),
+          m_RenderTexture(renderTex),
+          m_DepthTexture(depthTex) {
         m_SetupFn = ST_BIND_EVENT_FN(ResourceCreateOp::Setup);
         m_ExecuteFn = ST_BIND_EVENT_FN(ResourceCreateOp::Execute);
         m_ResetFn = ST_BIND_EVENT_FN(ResourceCreateOp::Reset);
@@ -44,29 +62,31 @@ namespace Sentinel {
 
         STL::vector<UInt32> indices = {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
 
-        (*m_VBuffer) = VertexbufferAPI::CreateVertexbufferData(
+        m_VBuffer = VertexbufferAPI::CreateVertexbufferData(
             m_MemoryHandle, m_Context, vertices.data(), vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec2>));
 
-        (*m_IBuffer) = IndexbufferAPI::CreateIndexbufferData(m_MemoryHandle, m_Context, indices.data(), indices.size());
+        m_IBuffer = IndexbufferAPI::CreateIndexbufferData(m_MemoryHandle, m_Context, indices.data(), indices.size());
 
-        (*m_VLayout) = VertexbufferLayoutAPI::CreateVertexbufferLayoutData(m_MemoryHandle, m_Context);
+        m_VLayout = VertexbufferLayoutAPI::CreateVertexbufferLayoutData(m_MemoryHandle, m_Context);
 
-        (*m_Shader) = ShaderAPI::CreateShaderData(
+        m_Shader = ShaderAPI::CreateShaderData(
             m_MemoryHandle, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");
+
+        VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
 
         Texture2DDataImportSettings settings;
         settings.TextureFilepath = "Assets/Tile1.jpg";
 
-        (*m_Texture) = Texture2DAPI::CreateTexture2DData(m_MemoryHandle, m_Context, settings);
+        m_Texture = Texture2DAPI::CreateTexture2DData(m_MemoryHandle, m_Context, settings);
 
         // TODO: Possible refactor
         Window& window = Application::Get().GetWindow();
         // \TODO
 
-        (*m_RenderTexture) = RenderTexture2DAPI::CreateRenderTexture2DData(
+        m_RenderTexture = RenderTexture2DAPI::CreateRenderTexture2DData(
             m_MemoryHandle, m_Context, window.GetWidth(), window.GetHeight(), ColorFormat::RGBA32F, true);
 
-        (*m_DepthTexture) = DepthTexture2DAPI::CreateDepthTexture2DData(
+        m_DepthTexture = DepthTexture2DAPI::CreateDepthTexture2DData(
             m_MemoryHandle, m_Context, window.GetWidth(), window.GetHeight(), DepthFormat::D24S8UINT, true);
     }
 

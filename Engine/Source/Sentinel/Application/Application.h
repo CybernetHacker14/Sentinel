@@ -5,6 +5,8 @@
 #include "Sentinel/Layers/LayerStack.h"
 #include "Sentinel/Window/Window.h"
 
+#include "Sentinel/Graphics/Renderer/TestRenderer.h"
+
 #include "Sentinel/GUI/ImGui/ImGuiLayer.h"
 #include "Sentinel/GUI/ImGui/ImGuiDebugLayer.h"
 
@@ -53,6 +55,8 @@ namespace Sentinel {
         EventBus m_EventBus;
         ImGuiLayer* m_ImGuiLayer;
         ImGuiDebugLayer* m_ImGuiDebugLayer;
+
+        TestRenderer* m_Renderer;
 
     private:
         static Application* s_Instance;

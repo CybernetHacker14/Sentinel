@@ -18,24 +18,15 @@ namespace Sentinel {
 
     class ResourceBindOp final: public IPipelineOperation {
     public:
-        ResourceBindOp(SwapchainData*& swapchain);
-
-        inline void SetGFXComponentPointers(
-            VertexbufferData** vBuffer,
-            IndexbufferData** iBuffer,
-            VertexbufferLayoutData** vLayout,
-            ShaderData** shader,
-            Texture2DData** texture,
-            RenderTexture2DData** renderTex,
-            DepthTexture2DData** depthTex) {
-            m_VBuffer = vBuffer;
-            m_IBuffer = iBuffer;
-            m_VLayout = vLayout;
-            m_Shader = shader;
-            m_Texture = texture;
-            m_RenderTexture = renderTex;
-            m_DepthTexture = depthTex;
-        }
+        ResourceBindOp(
+            SwapchainData*& swapchain,
+            VertexbufferData*& vBuffer,
+            IndexbufferData*& iBuffer,
+            VertexbufferLayoutData*& vLayout,
+            ShaderData*& shader,
+            Texture2DData*& texture,
+            RenderTexture2DData*& renderTex,
+            DepthTexture2DData*& depthTex);
 
     private:
         void Setup();
@@ -44,12 +35,12 @@ namespace Sentinel {
 
     private:
         SwapchainData*& m_Swapchain;
-        VertexbufferData** m_VBuffer;
-        IndexbufferData** m_IBuffer;
-        VertexbufferLayoutData** m_VLayout;
-        ShaderData** m_Shader;
-        Texture2DData** m_Texture;
-        RenderTexture2DData** m_RenderTexture;
-        DepthTexture2DData** m_DepthTexture;
+        VertexbufferData*& m_VBuffer;
+        IndexbufferData*& m_IBuffer;
+        VertexbufferLayoutData*& m_VLayout;
+        ShaderData*& m_Shader;
+        Texture2DData*& m_Texture;
+        RenderTexture2DData*& m_RenderTexture;
+        DepthTexture2DData*& m_DepthTexture;
     };
 }  // namespace Sentinel

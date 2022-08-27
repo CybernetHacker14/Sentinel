@@ -18,18 +18,18 @@
 
 namespace Sentinel {
     GraphicsMemoryManager::GraphicsMemoryManager() {
-        ContextAllocator.AllocateMemoryBlock(10);
-        SwapchainAllocator.AllocateMemoryBlock(10);
+        ContextAllocator.AllocateMemoryBlock(1);
+        SwapchainAllocator.AllocateMemoryBlock(1);
 
-        VertexbufferAllocator.AllocateMemoryBlock(10);
-        IndexbufferAllocator.AllocateMemoryBlock(10);
-        LayoutAllocator.AllocateMemoryBlock(10);
-        ConstantbufferAllocator.AllocateMemoryBlock(10);
+        VertexbufferAllocator.AllocateMemoryBlock(3);
+        IndexbufferAllocator.AllocateMemoryBlock(2);
+        LayoutAllocator.AllocateMemoryBlock(1);
+        ConstantbufferAllocator.AllocateMemoryBlock(1);
 
-        ShaderAllocator.AllocateMemoryBlock(5);
-        Texture2DAllocator.AllocateMemoryBlock(16);
+        ShaderAllocator.AllocateMemoryBlock(2);
+        Texture2DAllocator.AllocateMemoryBlock(3);
 
-        RenderTexture2DAllocator.AllocateMemoryBlock(6);
+        RenderTexture2DAllocator.AllocateMemoryBlock(2);
         DepthTexture2DAllocator.AllocateMemoryBlock(2);
     }
 

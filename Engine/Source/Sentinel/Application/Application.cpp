@@ -26,78 +26,14 @@ namespace Sentinel {
         props.Mode = WindowMode::WINDOWED;
         props.FramebufferTransparency = false;
 
-        /*
-        FramebufferSpecification spec;
-        spec.Attachments = {TextureFormat::RGBA32F};
-        spec.ClearColor = {0.1f, 0.5f, 0.1f, 0.1f};
-        spec.Width = props.Width;
-        spec.Height = props.Height;
-        spec.SwapchainTarget = true;
-
-        m_Renderer->SetRenderSpecifications(props, spec);
-
-        // Set render resource data (geometry, textures, shaders, etc.)
-
-        SharedRef<RenderResources> renderResource = RenderResources::Create();
-        STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices = {
-            {{-3.0f, 3.0f, -7.0f, 1.0f}, {0.0f, 0.0f}},
-            {{-1.0f, 3.0f, -7.0f, 1.0f}, {1.0f, 0.0f}},
-            {{-1.0f, 1.0f, -7.0f, 1.0f}, {1.0f, 1.0f}},
-            {{-3.0f, 1.0f, -7.0f, 1.0f}, {0.0f, 1.0f}},
-
-            {{1.0f, 1.0f, -5.0f, 1.0f}, {0.0f, 0.0f}},
-            {{3.0f, 1.0f, -5.0f, 1.0f}, {1.0f, 0.0f}},
-            {{3.0f, -1.0f, -5.0f, 1.0f}, {1.0f, 1.0f}},
-            {{1.0f, -1.0f, -5.0f, 1.0f}, {0.0f, 1.0f}}};
-
-        VertexbufferAPI::CreateVertexbufferData(
-            vertices.data(), vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec2>));
-
-        STL::vector<UInt32> indices = {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
-
-        IndexbufferAPI::CreateIndexbufferData(indices.data(), indices.size());
-
-         Texture2DImportSettings settings;
-         settings.texturePath = "Assets/Tile1.jpg";
-         renderResource->Textures[0] = TextureTuple::Create();
-         renderResource->Textures[0]->Texture = Texture2D::Create(settings);
-         renderResource->Textures[0]->ShaderType = ShaderType::PIXEL;
-
-        Texture2DDataImportSettings settings;
-        settings.TextureFilepath = "Assets/Tile1.jpg";
-        Texture2DData* tex = Texture2DAPI::CreateTexture2DData(settings);
-        Texture2DAPI::Bind(tex, 0, ShaderType::PIXEL);
-
-        m_Renderer->SubmitGeometryData(renderResource);
-
-        m_Renderer->GetWindow().SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
-
-        m_WindowCloseCallbackIndex =
-            SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
-        m_WindowResizeCallbackIndex =
-            SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
-        m_KeyPressedCallbackIndex =
-            SubscribeToEvent(EventType::KeyPressed, ST_BIND_EVENT_FN(Application::OnKeyPressed));
-
-        m_ImGuiLayer = new ImGuiLayer();
-        PushOverlay(m_ImGuiLayer);
-
-        m_ImGuiDebugLayer = new ImGuiDebugLayer(m_Camera);
-        PushOverlay(m_ImGuiDebugLayer);
-
-        m_Renderer->InitStartup();
-
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(char), alignof(char));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(short), alignof(short));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(unsigned short), alignof(unsigned short));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Bool), alignof(Bool));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(UInt32), alignof(UInt32));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Float), alignof(Float));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(Double), alignof(Double));
-        ST_ENGINE_INFO("Size : {0}, Alignment : {1}", sizeof(STL::string), alignof(STL::string));*/
         ST_ENGINE_INFO(sizeof(DWORD));
         ST_ENGINE_INFO("{0}", CPUInfo::GetCPUType());
         ST_ENGINE_INFO("{0}", CPUInfo::GetL1CacheLineSize());
+
+        m_Window = Window::Create(props);
+
+        m_Renderer = new TestRenderer();
+        m_Renderer->Setup();
     }
 
     Application::~Application() {
@@ -128,24 +64,29 @@ namespace Sentinel {
     void Application::Run() {
         while (m_Running) {
             if (!m_Minimized) {
-               /* m_Renderer->PreRender();
+                /* m_Renderer->PreRender();
 
-                m_Camera->OnUpdate();
+                 m_Camera->OnUpdate();
+                 ProcessLayerUpdate();
+
+                 m_Renderer->FramebufferBind();
+                 m_Renderer->DrawCommand();
+                 m_Renderer->ClearCommand();
+                 ProcessLayerImGuiRender();
+                 m_Renderer->FramebufferUnbind();
+
+                 m_Renderer->PostRender();*/
+                m_Renderer->GetCamera()->OnUpdate();
                 ProcessLayerUpdate();
 
-                m_Renderer->FramebufferBind();
-                m_Renderer->DrawCommand();
-                m_Renderer->ClearCommand();
+                m_Renderer->Draw();
                 ProcessLayerImGuiRender();
-                m_Renderer->FramebufferUnbind();
-
-                m_Renderer->PostRender();*/
             }
-            //m_Renderer->GetWindow().OnUpdate();
+            m_Window->OnUpdate();
             Input::OnUpdate();
         }
 
-        //m_Renderer->InitShutdown();
+        // m_Renderer->InitShutdown();
     }
 
     void Application::RaiseEvent(UniqueRef<Event> eventData) {
@@ -177,9 +118,11 @@ namespace Sentinel {
 
     void Application::OnWindowResize(Event& event) {
         WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
-        //m_Camera->OnResize(e.GetWidth(), e.GetHeight());
-        //m_Renderer->Resize(e.GetWidth(), e.GetHeight());
+        // m_Camera->OnResize(e.GetWidth(), e.GetHeight());
+        // m_Renderer->Resize(e.GetWidth(), e.GetHeight());
     }
 
-    void Application::OnKeyPressed(Event& event) { KeyPressedEvent e = *(event.Cast<KeyPressedEvent>()); }
+    void Application::OnKeyPressed(Event& event) {
+        KeyPressedEvent e = *(event.Cast<KeyPressedEvent>());
+    }
 }  // namespace Sentinel

@@ -5,8 +5,6 @@
 #include "Sentinel/Graphics/Common/GraphicsMemoryManager.h"
 #include "Sentinel/Graphics/Buffer/VertexbufferLayoutAPI.h"
 
-#include "Sentinel/Graphics/Material/ShaderData.h"
-
 #include "Platform/DirectX11/Graphics/Buffer/DX11VertexbufferLayoutData.h"
 
 namespace Sentinel {

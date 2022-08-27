@@ -29,6 +29,9 @@
 #include "Sentinel/Graphics/Pipeline/ResourceRenderOp.h"
 #include "Sentinel/Graphics/Pipeline/ResourceUnbindOp.h"
 
+#include "Sentinel/GUI/ImGui/ImGuiLayer.h"
+#include "Sentinel/GUI/ImGui/ImGuiDebugLayer.h"
+
 namespace Sentinel {
     TestRenderer::TestRenderer() {
         Window& window = Application::Get().GetWindow();
@@ -36,35 +39,58 @@ namespace Sentinel {
         m_GFXMemory = CreateSharedRef<GraphicsMemoryManager>();
         m_Context = ContextAPI::CreateImmediateContext(m_GFXMemory, glfwWindow);
         m_Swapchain = SwapchainAPI::CreateSwapchain(m_GFXMemory, m_Context, glfwWindow);
-        m_Framebuffer =
-            FramebufferAPI::CreateFramebufferData(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
+        // m_Framebuffer =
+        // FramebufferAPI::CreateFramebufferData(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
         m_Camera = CreateSharedRef<Camera>(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
+
+        ConstructOperationQueue();
     }
 
     TestRenderer::~TestRenderer() {
     }
 
     void TestRenderer::ConstructOperationQueue() {
-        ResourceCreateOp createOp(m_GFXMemory, m_Context, m_Swapchain);
-        createOp.SetGFXComponentPointers(
-            &m_VBuffer, &m_IBuffer, &m_VLayout, &m_Shader, &m_Texture, &m_RenderTexture, &m_DepthTexture);
-        ResourceBindOp bindOp(m_Swapchain);
-        bindOp.SetGFXComponentPointers(
-            &m_VBuffer, &m_IBuffer, &m_VLayout, &m_Shader, &m_Texture, &m_RenderTexture, &m_DepthTexture);
+        ResourceCreateOp createOp(
+            m_GFXMemory,
+            m_Context,
+            m_Swapchain,
+            m_VBuffer,
+            m_IBuffer,
+            m_VLayout,
+            m_Shader,
+            m_Texture,
+            m_RenderTexture,
+            m_DepthTexture);
+
+        ResourceBindOp bindOp(
+            m_Swapchain, m_VBuffer, m_IBuffer, m_VLayout, m_Shader, m_Texture, m_RenderTexture, m_DepthTexture);
 
         ResourceRenderOp renderOp(m_Context, m_Swapchain);
         renderOp.SetGFXComponentPointers(&m_IBuffer, &m_RenderTexture, &m_DepthTexture);
 
         ResourceUnbindOp unbindOP(m_Swapchain);
 
-        m_RenderPipeline.m_CreateOpQueue.emplace_back(STL::move(createOp));
-        m_RenderPipeline.m_CreateOpQueue.emplace_back(STL::move(bindOp));
+        m_RenderPipeline.m_CreateOpQueue.emplace_back(createOp);
+        m_RenderPipeline.m_CreateOpQueue.emplace_back(bindOp);
         m_RenderPipeline.m_RenderOpQueue.emplace_back(STL::move(renderOp));
         m_RenderPipeline.m_UnbindOpQueue.emplace_back(STL::move(unbindOP));
+
+        /*m_RenderPipeline.m_CreateOpQueue[0].Setup();
+        m_RenderPipeline.m_CreateOpQueue[0].Execute();
+        m_RenderPipeline.m_CreateOpQueue[0].Reset();
+
+        m_RenderPipeline.m_CreateOpQueue[1].Setup();
+        m_RenderPipeline.m_CreateOpQueue[1].Execute();
+        m_RenderPipeline.m_CreateOpQueue[1].Reset();*/
+
+        m_ImGuiLayer = new ImGuiLayer(m_Context);
+        Application::Get().PushOverlay(m_ImGuiLayer);
+        m_ImGuiDebugLayer = new ImGuiDebugLayer(m_Camera);
+        Application::Get().PushOverlay(m_ImGuiDebugLayer);
     }
 
     void TestRenderer::Setup() {
-        for (auto& operation: m_RenderPipeline.m_CreateOpQueue) {
+        for (auto operation: m_RenderPipeline.m_CreateOpQueue) {
             operation.Setup();
             operation.Execute();
             operation.Reset();
@@ -72,7 +98,7 @@ namespace Sentinel {
     }
 
     void TestRenderer::Draw() {
-        for (auto& operation: m_RenderPipeline.m_RenderOpQueue) {
+        for (auto operation: m_RenderPipeline.m_RenderOpQueue) {
             operation.Setup();
             operation.Execute();
             operation.Reset();
@@ -80,7 +106,7 @@ namespace Sentinel {
     }
 
     void TestRenderer::Unbind() {
-        for (auto& operation: m_RenderPipeline.m_UnbindOpQueue) {
+        for (auto operation: m_RenderPipeline.m_UnbindOpQueue) {
             operation.Setup();
             operation.Execute();
             operation.Reset();
