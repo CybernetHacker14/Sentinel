@@ -90,7 +90,7 @@ namespace Sentinel {
                 ProcessLayerUpdate();
 
                 m_Renderer->Draw();
-                ProcessLayerImGuiRender();
+                //ProcessLayerImGuiRender();
             }
             m_Window->OnUpdate();
             Input::OnUpdate();
@@ -98,7 +98,7 @@ namespace Sentinel {
 
         // m_Renderer->InitShutdown();
         m_Renderer->Unbind();
-        delete (m_Renderer);
+        delete m_Renderer;
     }
 
     void Application::RaiseEvent(UniqueRef<Event> eventData) {

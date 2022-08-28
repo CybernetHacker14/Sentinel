@@ -15,6 +15,15 @@ namespace Sentinel {
         DX11ContextAPI::GetNativeContext(context)->DrawIndexed(count, 0, 0);
     }
 
+    void DX11ContextAPI::Clean(ContextData* dataObject) {
+        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject);
+        context->m_Context->Release();
+        context->m_Device->Release();
+        context->m_DXGIDevice->Release();
+        context->m_Factory->Release();
+        context->m_Adapter->Release();
+    }
+
     void DX11ContextAPI::Create(DX11ContextData* dataObject, GLFWwindow* windowHandle) {
         if (dataObject->m_ContextType == ContextType::IMMEDIATE) {
             D3D11CreateDevice(

@@ -14,6 +14,7 @@ namespace Sentinel {
                 if (Backend::GetAPI() == Backend::API::DirectX11) {
                     m_DrawFunction = DX11ContextAPI::Draw;
                     m_DrawIndexedFunction = DX11ContextAPI::DrawIndexed;
+                    m_CleanFunction = DX11ContextAPI::Clean;
                 }
             }
         } _initializer;
@@ -30,6 +31,8 @@ namespace Sentinel {
     private:
         static void Draw(ContextData* dataObject);
         static void DrawIndexed(ContextData* dataObject, const UInt32 count);
+
+        static void Clean(ContextData* dataObject);
 
     private:
         static void Create(DX11ContextData* dataObject, GLFWwindow* windowHandle);

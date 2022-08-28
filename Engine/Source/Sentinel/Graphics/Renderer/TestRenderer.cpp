@@ -36,13 +36,15 @@ namespace Sentinel {
         // FramebufferAPI::CreateFramebufferData(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
         m_Camera = CreateSharedRef<Camera>(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
 
-        m_ImGuiLayer = new ImGuiLayer(m_Context);
+        /*m_ImGuiLayer = new ImGuiLayer(m_Context);
         Application::Get().PushOverlay(m_ImGuiLayer);
         m_ImGuiDebugLayer = new ImGuiDebugLayer(m_Camera);
-        Application::Get().PushOverlay(m_ImGuiDebugLayer);
+        Application::Get().PushOverlay(m_ImGuiDebugLayer);*/
     }
 
     TestRenderer::~TestRenderer() {
+        //m_GFXMemory->ReleaseRef();
+        ContextAPI::Clean(m_Context);
     }
 
     void TestRenderer::Construct() {
@@ -68,6 +70,9 @@ namespace Sentinel {
 
         m_Shader = ShaderAPI::CreateShaderData(
             m_GFXMemory, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");
+
+        /*m_Shader = ShaderAPI::CreateShaderData(
+            m_GFXMemory, m_Context, "TextureShader.hlsl", "TexShader");*/
 
         VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
 

@@ -25,6 +25,11 @@ namespace Sentinel {
             m_DrawIndexedFunction(dataObject, count);
         }
 
+        inline static void Clean(ContextData* dataObject) {
+            if (!m_CleanFunction) return;
+            m_CleanFunction(dataObject);
+        }
+
         inline static const ContextInfo& GetContextInfo(ContextData* dataObject) { return dataObject->m_ContextInfo; }
         inline static ContextType GetContextType(ContextData* dataObject) { return dataObject->m_ContextType; }
 
@@ -38,5 +43,6 @@ namespace Sentinel {
     protected:
         inline static STL::delegate<void(ContextData*)> m_DrawFunction;
         inline static STL::delegate<void(ContextData*, const UInt32)> m_DrawIndexedFunction;
+        inline static STL::delegate<void(ContextData*)> m_CleanFunction;
     };
 }  // namespace Sentinel
