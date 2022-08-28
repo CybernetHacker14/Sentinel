@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
-#include "Sentinel/Graphics/Pipeline/RenderPipeline.h"
 
 namespace Sentinel {
     class Backend;
@@ -30,7 +29,7 @@ namespace Sentinel {
         TestRenderer();
         ~TestRenderer();
 
-        void ConstructOperationQueue();
+        void Construct();
 
         void Setup();
         void Draw();
@@ -39,8 +38,6 @@ namespace Sentinel {
         SharedRef<Camera> GetCamera() { return m_Camera; }
 
     private:
-        RenderPipeline m_RenderPipeline;
-
         SharedRef<GraphicsMemoryManager> m_GFXMemory;
         SharedRef<Camera> m_Camera;
         // The objects to which these pointers are pointing to will be residing in GraphicsMemoryManager class, but it's

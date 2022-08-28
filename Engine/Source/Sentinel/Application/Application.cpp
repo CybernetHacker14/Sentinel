@@ -17,8 +17,7 @@ namespace Sentinel {
         ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
         s_Instance = this;
 
-        // Set frame backings definitions
-
+        //====================================WINDOW CREATION=======================================//
         WindowProperties props;
         props.Title = name;
         props.Width = 1280;
@@ -26,13 +25,24 @@ namespace Sentinel {
         props.Mode = WindowMode::WINDOWED;
         props.FramebufferTransparency = false;
 
+        m_Window = Window::Create(props);
+        m_Window->SetEventCallback(ST_BIND_EVENT_FN(Application::RaiseEvent));
+
+        m_WindowCloseCallbackIndex =
+            SubscribeToEvent(EventType::WindowClose, ST_BIND_EVENT_FN(Application::OnWindowClose));
+        m_WindowResizeCallbackIndex =
+            SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(Application::OnWindowResize));
+        m_KeyPressedCallbackIndex =
+            SubscribeToEvent(EventType::KeyPressed, ST_BIND_EVENT_FN(Application::OnKeyPressed));
+
+        //====================================DO NOT DELETE========================================//
+
         ST_ENGINE_INFO(sizeof(DWORD));
         ST_ENGINE_INFO("{0}", CPUInfo::GetCPUType());
         ST_ENGINE_INFO("{0}", CPUInfo::GetL1CacheLineSize());
 
-        m_Window = Window::Create(props);
-
         m_Renderer = new TestRenderer();
+        m_Renderer->Construct();
         m_Renderer->Setup();
     }
 
@@ -87,6 +97,8 @@ namespace Sentinel {
         }
 
         // m_Renderer->InitShutdown();
+        m_Renderer->Unbind();
+        delete (m_Renderer);
     }
 
     void Application::RaiseEvent(UniqueRef<Event> eventData) {

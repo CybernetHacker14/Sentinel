@@ -10,7 +10,7 @@ namespace Sentinel {
     struct DX11DepthTexture2DData final: public DepthTexture2DData {
     private:
         ID3D11Texture2D* m_NativeTexture;
-        ID3D11DepthStencilView* m_NativeDSV;
+        ID3D11DepthStencilView* m_NativeDSV = nullptr;
         ID3D11ShaderResourceView* m_NativeSRV;
 
     private:

@@ -158,8 +158,6 @@ namespace Sentinel {
         ID3D11Device* device = DX11ContextAPI::GetDevice(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
 
         if (dataObject->m_BinaryMap.at(ShaderType::VERTEX)) {
-            LPVOID value1 = dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferPointer();
-            SIZE_T value2 = dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferSize();
             device->CreateVertexShader(
                 dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferSize(),
@@ -167,12 +165,12 @@ namespace Sentinel {
                 &(dataObject->m_VertexShader));
         }
 
-        if (dataObject->m_BinaryMap.find(ShaderType::PIXEL) != dataObject->m_BinaryMap.end()) {
+        if (dataObject->m_BinaryMap.at(ShaderType::PIXEL)) {
             device->CreatePixelShader(
                 dataObject->m_BinaryMap.at(ShaderType::PIXEL)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::PIXEL)->GetBufferSize(),
                 nullptr,
-                &dataObject->m_PixelShader);
+                &(dataObject->m_PixelShader));
         }
 
         if (dataObject->m_BinaryMap.find(ShaderType::COMPUTE) != dataObject->m_BinaryMap.end()) {

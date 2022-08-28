@@ -22,13 +22,6 @@
 #include "Sentinel/Graphics/Texture/RenderTexture2DAPI.h"
 #include "Sentinel/Graphics/Texture/DepthTexture2DAPI.h"
 
-#include "Sentinel/Graphics/Pipeline/RenderPipeline.h"
-
-#include "Sentinel/Graphics/Pipeline/ResourceCreateOp.h"
-#include "Sentinel/Graphics/Pipeline/ResourceBindOp.h"
-#include "Sentinel/Graphics/Pipeline/ResourceRenderOp.h"
-#include "Sentinel/Graphics/Pipeline/ResourceUnbindOp.h"
-
 #include "Sentinel/GUI/ImGui/ImGuiLayer.h"
 #include "Sentinel/GUI/ImGui/ImGuiDebugLayer.h"
 
@@ -43,73 +36,86 @@ namespace Sentinel {
         // FramebufferAPI::CreateFramebufferData(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
         m_Camera = CreateSharedRef<Camera>(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
 
-        ConstructOperationQueue();
-    }
-
-    TestRenderer::~TestRenderer() {
-    }
-
-    void TestRenderer::ConstructOperationQueue() {
-        ResourceCreateOp createOp(
-            m_GFXMemory,
-            m_Context,
-            m_Swapchain,
-            m_VBuffer,
-            m_IBuffer,
-            m_VLayout,
-            m_Shader,
-            m_Texture,
-            m_RenderTexture,
-            m_DepthTexture);
-
-        ResourceBindOp bindOp(
-            m_Swapchain, m_VBuffer, m_IBuffer, m_VLayout, m_Shader, m_Texture, m_RenderTexture, m_DepthTexture);
-
-        ResourceRenderOp renderOp(m_Context, m_Swapchain);
-        renderOp.SetGFXComponentPointers(&m_IBuffer, &m_RenderTexture, &m_DepthTexture);
-
-        ResourceUnbindOp unbindOP(m_Swapchain);
-
-        m_RenderPipeline.m_CreateOpQueue.emplace_back(createOp);
-        m_RenderPipeline.m_CreateOpQueue.emplace_back(bindOp);
-        m_RenderPipeline.m_RenderOpQueue.emplace_back(STL::move(renderOp));
-        m_RenderPipeline.m_UnbindOpQueue.emplace_back(STL::move(unbindOP));
-
-        /*m_RenderPipeline.m_CreateOpQueue[0].Setup();
-        m_RenderPipeline.m_CreateOpQueue[0].Execute();
-        m_RenderPipeline.m_CreateOpQueue[0].Reset();
-
-        m_RenderPipeline.m_CreateOpQueue[1].Setup();
-        m_RenderPipeline.m_CreateOpQueue[1].Execute();
-        m_RenderPipeline.m_CreateOpQueue[1].Reset();*/
-
         m_ImGuiLayer = new ImGuiLayer(m_Context);
         Application::Get().PushOverlay(m_ImGuiLayer);
         m_ImGuiDebugLayer = new ImGuiDebugLayer(m_Camera);
         Application::Get().PushOverlay(m_ImGuiDebugLayer);
     }
 
+    TestRenderer::~TestRenderer() {
+    }
+
+    void TestRenderer::Construct() {
+        STL::vector<STL::pair<glm::vec4, glm::vec2>> vertices = {
+            {{-3.0f, 3.0f, -7.0f, 1.0f}, {0.0f, 0.0f}},
+            {{-1.0f, 3.0f, -7.0f, 1.0f}, {1.0f, 0.0f}},
+            {{-1.0f, 1.0f, -7.0f, 1.0f}, {1.0f, 1.0f}},
+            {{-3.0f, 1.0f, -7.0f, 1.0f}, {0.0f, 1.0f}},
+
+            {{1.0f, 1.0f, -5.0f, 1.0f}, {0.0f, 0.0f}},
+            {{3.0f, 1.0f, -5.0f, 1.0f}, {1.0f, 0.0f}},
+            {{3.0f, -1.0f, -5.0f, 1.0f}, {1.0f, 1.0f}},
+            {{1.0f, -1.0f, -5.0f, 1.0f}, {0.0f, 1.0f}}};
+
+        STL::vector<UInt32> indices = {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
+
+        m_VBuffer = VertexbufferAPI::CreateVertexbufferData(
+            m_GFXMemory, m_Context, vertices.data(), vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec2>));
+
+        m_IBuffer = IndexbufferAPI::CreateIndexbufferData(m_GFXMemory, m_Context, indices.data(), indices.size());
+
+        m_VLayout = VertexbufferLayoutAPI::CreateVertexbufferLayoutData(m_GFXMemory, m_Context);
+
+        m_Shader = ShaderAPI::CreateShaderData(
+            m_GFXMemory, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");
+
+        VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
+
+        Texture2DDataImportSettings settings;
+        settings.TextureFilepath = "Assets/Tile1.jpg";
+
+        m_Texture = Texture2DAPI::CreateTexture2DData(m_GFXMemory, m_Context, settings);
+
+        // TODO: Possible refactor
+        Window& window = Application::Get().GetWindow();
+        // \TODO
+
+        m_RenderTexture = RenderTexture2DAPI::CreateRenderTexture2DData(
+            m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight(), ColorFormat::RGBA32F, true);
+
+        m_DepthTexture = DepthTexture2DAPI::CreateDepthTexture2DData(
+            m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight(), DepthFormat::D24S8UINT, true);
+
+        SwapchainAPI::SetBuffers(m_Swapchain, m_RenderTexture, m_DepthTexture);
+    }
+
     void TestRenderer::Setup() {
-        for (auto operation: m_RenderPipeline.m_CreateOpQueue) {
-            operation.Setup();
-            operation.Execute();
-            operation.Reset();
-        }
+        VertexbufferLayoutAPI::Bind(m_VLayout);
+        VertexbufferAPI::Bind(m_VBuffer, VertexbufferLayoutAPI::GetStride(m_VLayout));
+        IndexbufferAPI::Bind(m_IBuffer);
+        ShaderAPI::Bind(m_Shader);
+        Texture2DAPI::Bind(m_Texture, 0, ShaderType::PIXEL);
+        RenderTexture2DAPI::Bind(m_RenderTexture, 1, ShaderType::PIXEL);
+        DepthTexture2DAPI::Bind(m_DepthTexture, 2, ShaderType::PIXEL);
+        SwapchainAPI::Bind(m_Swapchain);
     }
 
     void TestRenderer::Draw() {
-        for (auto operation: m_RenderPipeline.m_RenderOpQueue) {
-            operation.Setup();
-            operation.Execute();
-            operation.Reset();
-        }
+        RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.1f, 0.1f, 1.0f});
+        DepthTexture2DAPI::Clear(m_DepthTexture);
+        ContextAPI::DrawIndexed(m_Context, IndexbufferAPI::GetCount(m_IBuffer));
+        SwapchainAPI::SwapBuffers(m_Swapchain);
     }
 
     void TestRenderer::Unbind() {
-        for (auto operation: m_RenderPipeline.m_UnbindOpQueue) {
-            operation.Setup();
-            operation.Execute();
-            operation.Reset();
-        }
+        VertexbufferAPI::Unbind(m_VBuffer);
+        IndexbufferAPI::Unbind(m_IBuffer);
+        VertexbufferLayoutAPI::Unbind(m_VLayout);
+        ShaderAPI::Unbind(m_Shader);
+        Texture2DAPI::Unbind(m_Texture);
+        SwapchainAPI::UnsetBuffers(m_Swapchain);
+        RenderTexture2DAPI::Unbind(m_RenderTexture);
+        DepthTexture2DAPI::Unbind(m_DepthTexture);
+        SwapchainAPI::Unbind(m_Swapchain);
     }
 }  // namespace Sentinel

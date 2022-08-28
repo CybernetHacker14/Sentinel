@@ -120,18 +120,20 @@ namespace Sentinel {
 
         DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
 
+        ID3D11ShaderResourceView* nullSRV = {nullptr};
+
         if (dxDataObject->m_BindType != ShaderType::NONE) {
             switch (dxDataObject->m_BindType) {
                 case ShaderType::VERTEX:
-                    dxContext->VSSetShaderResources(dxDataObject->m_BindSlot, 1, nullptr);
+                    dxContext->VSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
                     dxDataObject->m_BindType = ShaderType::NONE;
                     break;
                 case ShaderType::PIXEL:
-                    dxContext->PSSetShaderResources(dxDataObject->m_BindSlot, 1, nullptr);
+                    dxContext->PSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
                     dxDataObject->m_BindType = ShaderType::NONE;
                     break;
                 case ShaderType::COMPUTE:
-                    dxContext->CSSetShaderResources(dxDataObject->m_BindSlot, 1, nullptr);
+                    dxContext->CSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
                     dxDataObject->m_BindType = ShaderType::NONE;
                     break;
                 case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid shader type"); break;
