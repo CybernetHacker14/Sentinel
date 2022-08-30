@@ -141,6 +141,9 @@ namespace Sentinel {
 
         inline T* operator[](const UInt32& index) { return m_ChunkAddressMap[index]; }
 
+        inline const UInt32 GetTotalAllocations() { return m_CurrentAllocations; }
+        inline const UInt32 GetFreeCount() { return m_FreeList.size(); }
+
     private:
         void* m_BlockStartingAddress = nullptr;
 

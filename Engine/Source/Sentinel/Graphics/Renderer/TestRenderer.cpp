@@ -43,7 +43,7 @@ namespace Sentinel {
     }
 
     TestRenderer::~TestRenderer() {
-        //m_GFXMemory->ReleaseRef();
+        // m_GFXMemory->ReleaseRef();
         ContextAPI::Clean(m_Context);
     }
 
@@ -71,8 +71,7 @@ namespace Sentinel {
         m_Shader = ShaderAPI::CreateShaderData(
             m_GFXMemory, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");
 
-        /*m_Shader = ShaderAPI::CreateShaderData(
-            m_GFXMemory, m_Context, "TextureShader.hlsl", "TexShader");*/
+        // m_Shader = ShaderAPI::CreateShaderData(m_GFXMemory, m_Context, "TextureShader.hlsl", "TexShader");
 
         VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
 
@@ -102,14 +101,15 @@ namespace Sentinel {
         Texture2DAPI::Bind(m_Texture, 0, ShaderType::PIXEL);
         RenderTexture2DAPI::Bind(m_RenderTexture, 1, ShaderType::PIXEL);
         DepthTexture2DAPI::Bind(m_DepthTexture, 2, ShaderType::PIXEL);
-        SwapchainAPI::Bind(m_Swapchain);
     }
 
     void TestRenderer::Draw() {
+        SwapchainAPI::Bind(m_Swapchain);
         RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.1f, 0.1f, 1.0f});
         DepthTexture2DAPI::Clear(m_DepthTexture);
         ContextAPI::DrawIndexed(m_Context, IndexbufferAPI::GetCount(m_IBuffer));
         SwapchainAPI::SwapBuffers(m_Swapchain);
+        SwapchainAPI::Unbind(m_Swapchain);
     }
 
     void TestRenderer::Unbind() {
@@ -121,6 +121,13 @@ namespace Sentinel {
         SwapchainAPI::UnsetBuffers(m_Swapchain);
         RenderTexture2DAPI::Unbind(m_RenderTexture);
         DepthTexture2DAPI::Unbind(m_DepthTexture);
-        SwapchainAPI::Unbind(m_Swapchain);
+    }
+
+    const UInt32 TestRenderer::GetTotalAllocations() {
+        return m_GFXMemory->GetTotalAllocations();
+    }
+
+    const UInt32 TestRenderer::GetTotalFreeCount() {
+        return m_GFXMemory->GetTotalFreeCount();
     }
 }  // namespace Sentinel

@@ -10,6 +10,10 @@
 #include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Common/CPU/CPUInfo.h"
 
+// const char* __asan_default_options() {
+//     return "verbosity=1:debug=true";
+// }
+
 namespace Sentinel {
     Application* Application::s_Instance = nullptr;
 
@@ -41,9 +45,12 @@ namespace Sentinel {
         ST_ENGINE_INFO("{0}", CPUInfo::GetCPUType());
         ST_ENGINE_INFO("{0}", CPUInfo::GetL1CacheLineSize());
 
-        m_Renderer = new TestRenderer();
+        m_Renderer = CreateSharedRef<TestRenderer>();
         m_Renderer->Construct();
         m_Renderer->Setup();
+
+        ST_ENGINE_INFO("Renderer Total allocations : {0}", m_Renderer->GetTotalAllocations());
+        ST_ENGINE_INFO("Renderer Total free chunks : {0}", m_Renderer->GetTotalFreeCount());
     }
 
     Application::~Application() {
@@ -74,31 +81,17 @@ namespace Sentinel {
     void Application::Run() {
         while (m_Running) {
             if (!m_Minimized) {
-                /* m_Renderer->PreRender();
-
-                 m_Camera->OnUpdate();
-                 ProcessLayerUpdate();
-
-                 m_Renderer->FramebufferBind();
-                 m_Renderer->DrawCommand();
-                 m_Renderer->ClearCommand();
-                 ProcessLayerImGuiRender();
-                 m_Renderer->FramebufferUnbind();
-
-                 m_Renderer->PostRender();*/
                 m_Renderer->GetCamera()->OnUpdate();
                 ProcessLayerUpdate();
 
                 m_Renderer->Draw();
-                //ProcessLayerImGuiRender();
+                // ProcessLayerImGuiRender();
             }
             m_Window->OnUpdate();
             Input::OnUpdate();
         }
-
-        // m_Renderer->InitShutdown();
         m_Renderer->Unbind();
-        delete m_Renderer;
+        m_Window->Shutdown();
     }
 
     void Application::RaiseEvent(UniqueRef<Event> eventData) {
@@ -130,6 +123,7 @@ namespace Sentinel {
 
     void Application::OnWindowResize(Event& event) {
         WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
+        ST_ENGINE_INFO("{0} {1}", e.GetWidth(), e.GetHeight());
         // m_Camera->OnResize(e.GetWidth(), e.GetHeight());
         // m_Renderer->Resize(e.GetWidth(), e.GetHeight());
     }

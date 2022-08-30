@@ -47,12 +47,19 @@ namespace Sentinel {
                 m_Data.Title.c_str(),
                 glfwGetPrimaryMonitor(),
                 nullptr);
+            ST_ENGINE_TRACE("Stage 1");
         } else {
             m_Window = glfwCreateWindow(
                 (Int32)m_Properties.Width, (Int32)m_Properties.Height, m_Data.Title.c_str(), nullptr, nullptr);
+            ST_ENGINE_TRACE("Stage 2");
             if (m_Properties.Mode == WindowMode::WINDOWEDMAXIMIZED) { glfwMaximizeWindow(m_Window); }
+            ST_ENGINE_TRACE("Stage 3");
         }
+        ST_ENGINE_TRACE("Stage 4");
+        ST_ENGINE_INFO("{0}", s_GLFWWindowCount);
         ++s_GLFWWindowCount;
+        ST_ENGINE_INFO("{0}", s_GLFWWindowCount);
+        ST_ENGINE_TRACE("Stage 5");
 
         // GLFWCallbacks
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, Int32 width, Int32 height) {

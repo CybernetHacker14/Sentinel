@@ -18,6 +18,8 @@ namespace Sentinel {
                     m_ResizeFunction = DX11SwapchainAPI::Resize;
                     m_BindFunction = DX11SwapchainAPI::Bind;
                     m_UnbindFunction = DX11SwapchainAPI::Unbind;
+                    m_SetFunction = DX11SwapchainAPI::SetBuffers;
+                    m_UnsetFunction = DX11SwapchainAPI::UnsetBuffers;
                 }
             }
         } _initializer;
@@ -33,6 +35,10 @@ namespace Sentinel {
 
         static void Bind(SwapchainData* dataObject);
         static void Unbind(SwapchainData* dataObject);
+
+        static void SetBuffers(
+            SwapchainData* dataObject, RenderTexture2DData* renderTexture, DepthTexture2DData* depthTexture);
+        static void UnsetBuffers(SwapchainData* dataObject);
 
     private:
         static void Init(DX11SwapchainData* dataObject, GLFWwindow* windowHandle);

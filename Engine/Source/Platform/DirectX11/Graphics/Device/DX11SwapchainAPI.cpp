@@ -30,9 +30,12 @@ namespace Sentinel {
             RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(swapchain->backbuffer);
 
         DX11DepthTexture2DData* depthTexture = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(swapchain->depthBuffer);
-
         ID3D11DeviceContext* nativeContext = DX11ContextAPI::GetNativeContext(context);
-        nativeContext->OMSetRenderTargets(1, &renderTexture->m_NativeRTV, depthTexture->m_NativeDSV);
+
+        Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRV[1];
+        pRV[0] = renderTexture->m_NativeRTV;
+
+        nativeContext->OMSetRenderTargets(1, pRV[0].GetAddressOf(), depthTexture->m_NativeDSV);
     }
 
     void DX11SwapchainAPI::Unbind(SwapchainData* dataObject) {
@@ -41,6 +44,28 @@ namespace Sentinel {
         ID3D11DeviceContext* nativeContext = DX11ContextAPI::GetNativeContext(context);
         ID3D11RenderTargetView* null = nullptr;
         nativeContext->OMSetRenderTargets(1, &null, NULL);
+    }
+
+    void DX11SwapchainAPI::SetBuffers(
+        SwapchainData* dataObject, RenderTexture2DData* renderTexture, DepthTexture2DData* depthTexture) {
+        DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
+        swapchain->backbuffer = renderTexture;
+        swapchain->depthBuffer = depthTexture;
+
+        // You aren't passing a texture resource to GetBuffer(), you're passing a pointer to a pointer to a
+        // texture.GetBuffer() overwrites the pointer to point to the backbuffer texture.
+        // The backbuffers are created when the swap chain is created/resized, you don't get to change them
+
+        if (swapchain->backbuffer) {
+            DX11RenderTexture2DData* tex = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(swapchain->backbuffer);
+            swapchain->m_Swapchain->GetBuffer(0, __uuidof(ID3D11Resource), (LPVOID*)&(tex->m_NativeTexture));
+        }
+    }
+
+    void DX11SwapchainAPI::UnsetBuffers(SwapchainData* dataObject) {
+        DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
+        swapchain->backbuffer = nullptr;
+        swapchain->depthBuffer = nullptr;
     }
 
     void DX11SwapchainAPI::Init(DX11SwapchainData* dataObject, GLFWwindow* windowHandle) {
@@ -73,5 +98,4 @@ namespace Sentinel {
         DX11ContextAPI::GetFactory(context)->CreateSwapChain(
             DX11ContextAPI::GetDevice(context), &swapChainDescription, &(dataObject->m_Swapchain));
     }
-
 }  // namespace Sentinel

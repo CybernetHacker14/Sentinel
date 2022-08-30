@@ -7,12 +7,12 @@
 namespace Sentinel {
     void DX11ContextAPI::Draw(ContextData* dataObject) {
         DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject);
-        DX11ContextAPI::GetNativeContext(context)->Draw(0, 0);
+        context->m_Context->Draw(0, 0);
     }
 
     void DX11ContextAPI::DrawIndexed(ContextData* dataObject, const UInt32 count) {
         DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject);
-        DX11ContextAPI::GetNativeContext(context)->DrawIndexed(count, 0, 0);
+        context->m_Context->DrawIndexed(count, 0, 0);
     }
 
     void DX11ContextAPI::Clean(ContextData* dataObject) {

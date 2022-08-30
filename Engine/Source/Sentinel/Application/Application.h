@@ -56,7 +56,7 @@ namespace Sentinel {
         ImGuiLayer* m_ImGuiLayer;
         ImGuiDebugLayer* m_ImGuiDebugLayer;
 
-        TestRenderer* m_Renderer;
+        SharedRef<TestRenderer> m_Renderer;
 
     private:
         static Application* s_Instance;

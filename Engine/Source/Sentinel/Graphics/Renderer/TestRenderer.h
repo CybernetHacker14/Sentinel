@@ -24,7 +24,7 @@ namespace Sentinel {
     class ImGuiLayer;
     class ImGuiDebugLayer;
 
-    class TestRenderer {
+    class TestRenderer: public ISharedRef {
     public:
         TestRenderer();
         ~TestRenderer();
@@ -36,6 +36,9 @@ namespace Sentinel {
         void Unbind();
 
         SharedRef<Camera> GetCamera() { return m_Camera; }
+
+        const UInt32 GetTotalAllocations();
+        const UInt32 GetTotalFreeCount();
 
     private:
         SharedRef<GraphicsMemoryManager> m_GFXMemory;
