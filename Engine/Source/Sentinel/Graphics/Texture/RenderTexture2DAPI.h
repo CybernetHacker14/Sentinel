@@ -16,8 +16,11 @@ namespace Sentinel {
             ContextData* context,
             const UInt32 width,
             const UInt32 height,
-            const ColorFormat format,
-            const Bool attachToSwapchain = false);
+            const ColorFormat format);
+
+        // Used to create an RT which will be attached to swapchain
+        static RenderTexture2DData* CreateRenderTexture2DData(
+            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, SwapchainData* swapchain);
 
         inline static void Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor) {
             if (!m_ClearFunction) return;

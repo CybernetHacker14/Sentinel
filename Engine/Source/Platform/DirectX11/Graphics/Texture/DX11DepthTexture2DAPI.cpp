@@ -21,7 +21,7 @@ namespace Sentinel {
             texDescription.MipLevels = 1;
             texDescription.ArraySize = 1;
             texDescription.Format = static_cast<DXGI_FORMAT>(dataObject->m_Format);
-            texDescription.SampleDesc.Count = 1;
+            texDescription.SampleDesc.Count = 4;
             texDescription.SampleDesc.Quality = 0;
             texDescription.Usage = D3D11_USAGE_DEFAULT;
             texDescription.CPUAccessFlags = 0;

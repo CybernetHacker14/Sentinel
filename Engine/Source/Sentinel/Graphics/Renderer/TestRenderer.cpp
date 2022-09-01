@@ -68,10 +68,10 @@ namespace Sentinel {
 
         m_VLayout = VertexbufferLayoutAPI::CreateVertexbufferLayoutData(m_GFXMemory, m_Context);
 
-        m_Shader = ShaderAPI::CreateShaderData(
-            m_GFXMemory, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");
+        /*m_Shader = ShaderAPI::CreateShaderData(
+            m_GFXMemory, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");*/
 
-        // m_Shader = ShaderAPI::CreateShaderData(m_GFXMemory, m_Context, "TextureShader.hlsl", "TexShader");
+        m_Shader = ShaderAPI::CreateShaderData(m_GFXMemory, m_Context, "TextureShader.hlsl", "TexShader");
 
         VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
 
@@ -84,8 +84,7 @@ namespace Sentinel {
         Window& window = Application::Get().GetWindow();
         // \TODO
 
-        m_RenderTexture = RenderTexture2DAPI::CreateRenderTexture2DData(
-            m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight(), ColorFormat::RGBA32F, true);
+        m_RenderTexture = RenderTexture2DAPI::CreateRenderTexture2DData(m_GFXMemory, m_Context, m_Swapchain);
 
         m_DepthTexture = DepthTexture2DAPI::CreateDepthTexture2DData(
             m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight(), DepthFormat::D24S8UINT, true);
@@ -105,10 +104,9 @@ namespace Sentinel {
 
     void TestRenderer::Draw() {
         SwapchainAPI::Bind(m_Swapchain);
-        RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.1f, 0.1f, 1.0f});
-        DepthTexture2DAPI::Clear(m_DepthTexture);
         ContextAPI::DrawIndexed(m_Context, IndexbufferAPI::GetCount(m_IBuffer));
         SwapchainAPI::SwapBuffers(m_Swapchain);
+        RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.8f, 0.1f, 1.0f});
         SwapchainAPI::Unbind(m_Swapchain);
     }
 

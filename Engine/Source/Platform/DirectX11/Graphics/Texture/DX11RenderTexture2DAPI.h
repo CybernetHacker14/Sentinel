@@ -4,6 +4,7 @@
 #include "Sentinel/Graphics/Texture/RenderTexture2DAPI.h"
 
 #include "Platform/DirectX11/Graphics/Texture/DX11RenderTexture2DData.h"
+#include "Platform/DirectX11/Graphics/Device/DX11SwapchainAPI.h"
 
 namespace Sentinel {
     class DX11RenderTexture2DAPI final: public RenderTexture2DAPI {
@@ -40,6 +41,7 @@ namespace Sentinel {
 
     private:
         static void Create(DX11RenderTexture2DData* dataObject);
+        static void Create(DX11RenderTexture2DData* dataObject, DX11SwapchainData* swapchain);
 
     private:
         static void Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor);

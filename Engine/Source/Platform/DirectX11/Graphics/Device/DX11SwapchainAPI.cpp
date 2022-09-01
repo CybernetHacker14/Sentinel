@@ -51,15 +51,6 @@ namespace Sentinel {
         DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
         swapchain->backbuffer = renderTexture;
         swapchain->depthBuffer = depthTexture;
-
-        // You aren't passing a texture resource to GetBuffer(), you're passing a pointer to a pointer to a
-        // texture.GetBuffer() overwrites the pointer to point to the backbuffer texture.
-        // The backbuffers are created when the swap chain is created/resized, you don't get to change them
-
-        if (swapchain->backbuffer) {
-            DX11RenderTexture2DData* tex = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(swapchain->backbuffer);
-            swapchain->m_Swapchain->GetBuffer(0, __uuidof(ID3D11Resource), (LPVOID*)&(tex->m_NativeTexture));
-        }
     }
 
     void DX11SwapchainAPI::UnsetBuffers(SwapchainData* dataObject) {
