@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 
 namespace Sentinel {
+    DX11ContextAPI::_init DX11ContextAPI::_initializer;
+
     void DX11ContextAPI::Draw(ContextData* dataObject) {
         DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject);
         context->m_Context->Draw(0, 0);

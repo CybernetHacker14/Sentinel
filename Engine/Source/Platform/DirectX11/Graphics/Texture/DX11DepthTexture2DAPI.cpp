@@ -34,7 +34,7 @@ namespace Sentinel {
             D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilDescription;
             SecureZeroMemory(&depthStencilDescription, sizeof(depthStencilDescription));
             depthStencilDescription.Format = static_cast<DXGI_FORMAT>(dataObject->m_Format);
-            depthStencilDescription.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+            depthStencilDescription.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
             depthStencilDescription.Texture2D.MipSlice = 0;
 
             dxDevice->CreateDepthStencilView(

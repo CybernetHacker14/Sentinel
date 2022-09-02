@@ -8,8 +8,6 @@
 #include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
 
 namespace Sentinel {
-    DX11VertexbufferLayoutAPI::_init DX11VertexbufferLayoutAPI::_initializer;
-
     static STL::unordered_map<DXGI_FORMAT, UInt32> s_ShaderDataTypeSizeMap = {
         {DXGI_FORMAT_R32_FLOAT, 4},
         {DXGI_FORMAT_R32_UINT, 4},
@@ -23,6 +21,8 @@ namespace Sentinel {
         {DXGI_FORMAT_R32G32B32A32_FLOAT, 16},
         {DXGI_FORMAT_R32G32B32A32_UINT, 16},
         {DXGI_FORMAT_R32G32B32A32_SINT, 16}};
+
+    DX11VertexbufferLayoutAPI::_init DX11VertexbufferLayoutAPI::_initializer;
 
     void DX11VertexbufferLayoutAPI::CreateLayout(VertexbufferLayoutData* dataObject, ShaderData* shader) {
         DX11VertexbufferLayoutData* layout = VertexbufferLayoutAPI::Cast<DX11VertexbufferLayoutData>(dataObject);

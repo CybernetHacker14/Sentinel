@@ -61,17 +61,17 @@ namespace Sentinel {
 
         STL::vector<UInt32> indices = {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
 
+        m_VLayout = VertexbufferLayoutAPI::CreateVertexbufferLayoutData(m_GFXMemory, m_Context);
+
         m_VBuffer = VertexbufferAPI::CreateVertexbufferData(
             m_GFXMemory, m_Context, vertices.data(), vertices.size() * sizeof(STL::pair<glm::vec4, glm::vec2>));
 
         m_IBuffer = IndexbufferAPI::CreateIndexbufferData(m_GFXMemory, m_Context, indices.data(), indices.size());
 
-        m_VLayout = VertexbufferLayoutAPI::CreateVertexbufferLayoutData(m_GFXMemory, m_Context);
+        m_Shader = ShaderAPI::CreateShaderData(
+            m_GFXMemory, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");
 
-        /*m_Shader = ShaderAPI::CreateShaderData(
-            m_GFXMemory, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");*/
-
-        m_Shader = ShaderAPI::CreateShaderData(m_GFXMemory, m_Context, "TextureShader.hlsl", "TexShader");
+        // m_Shader = ShaderAPI::CreateShaderData(m_GFXMemory, m_Context, "TextureShader.hlsl", "TexShader");
 
         VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
 
@@ -94,23 +94,24 @@ namespace Sentinel {
 
     void TestRenderer::Setup() {
         VertexbufferLayoutAPI::Bind(m_VLayout);
+        UInt32 value = VertexbufferLayoutAPI::GetStride(m_VLayout);
         VertexbufferAPI::Bind(m_VBuffer, VertexbufferLayoutAPI::GetStride(m_VLayout));
         IndexbufferAPI::Bind(m_IBuffer);
         ShaderAPI::Bind(m_Shader);
         Texture2DAPI::Bind(m_Texture, 0, ShaderType::PIXEL);
         RenderTexture2DAPI::Bind(m_RenderTexture, 1, ShaderType::PIXEL);
         DepthTexture2DAPI::Bind(m_DepthTexture, 2, ShaderType::PIXEL);
+        SwapchainAPI::Bind(m_Swapchain);
     }
 
     void TestRenderer::Draw() {
-        SwapchainAPI::Bind(m_Swapchain);
+        RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.8f, 0.1f, 1.0f});
         ContextAPI::DrawIndexed(m_Context, IndexbufferAPI::GetCount(m_IBuffer));
         SwapchainAPI::SwapBuffers(m_Swapchain);
-        RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.8f, 0.1f, 1.0f});
-        SwapchainAPI::Unbind(m_Swapchain);
     }
 
     void TestRenderer::Unbind() {
+        SwapchainAPI::Unbind(m_Swapchain);
         VertexbufferAPI::Unbind(m_VBuffer);
         IndexbufferAPI::Unbind(m_IBuffer);
         VertexbufferLayoutAPI::Unbind(m_VLayout);
