@@ -40,7 +40,7 @@ namespace Sentinel {
             dxDevice->CreateRenderTargetView(dataObject->m_NativeTexture, &rTVDescription, &(dataObject->m_NativeRTV));
 
             // SRV
-            if (!dataObject->m_SwapchainTarget) {
+            {
                 D3D11_SHADER_RESOURCE_VIEW_DESC sRVDescription;
                 SecureZeroMemory(&sRVDescription, sizeof(sRVDescription));
                 sRVDescription.Format = static_cast<DXGI_FORMAT>(dataObject->m_Format);
@@ -51,6 +51,15 @@ namespace Sentinel {
                     dataObject->m_NativeTexture, &sRVDescription, &(dataObject->m_NativeSRV));
             }
         }
+    }
+
+    void DX11RenderTexture2DAPI::Create(DX11RenderTexture2DData* dataObject, DX11SwapchainData* swapchain) {
+        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+        ID3D11Device* dxDevice = DX11ContextAPI::GetDevice(context);
+        IDXGISwapChain* nativeSC = DX11SwapchainAPI::GetNativeSwapchain(swapchain);
+
+        nativeSC->GetBuffer(0, __uuidof(ID3D11Resource), (LPVOID*)&(dataObject->m_NativeTexture));
+        dxDevice->CreateRenderTargetView(dataObject->m_NativeTexture, nullptr, &(dataObject->m_NativeRTV));
     }
 
     void DX11RenderTexture2DAPI::Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor) {
@@ -120,18 +129,20 @@ namespace Sentinel {
 
         DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
 
+        ID3D11ShaderResourceView* nullSRV = {nullptr};
+
         if (dxDataObject->m_BindType != ShaderType::NONE) {
             switch (dxDataObject->m_BindType) {
                 case ShaderType::VERTEX:
-                    dxContext->VSSetShaderResources(dxDataObject->m_BindSlot, 1, nullptr);
+                    dxContext->VSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
                     dxDataObject->m_BindType = ShaderType::NONE;
                     break;
                 case ShaderType::PIXEL:
-                    dxContext->PSSetShaderResources(dxDataObject->m_BindSlot, 1, nullptr);
+                    dxContext->PSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
                     dxDataObject->m_BindType = ShaderType::NONE;
                     break;
                 case ShaderType::COMPUTE:
-                    dxContext->CSSetShaderResources(dxDataObject->m_BindSlot, 1, nullptr);
+                    dxContext->CSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
                     dxDataObject->m_BindType = ShaderType::NONE;
                     break;
                 case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid shader type"); break;

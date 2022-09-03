@@ -2,21 +2,24 @@
 
 #include "Sentinel/Layers/Layer.h"
 
-namespace Sentinel
-{
-	class ImGuiLayer : public Layer {
-	public:
-		ImGuiLayer();
-		~ImGuiLayer();
+namespace Sentinel {
+    struct ContextData;
+    class Event;
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
+    class ImGuiLayer final: public Layer {
+    public:
+        ImGuiLayer(ContextData* context);
+        ~ImGuiLayer();
 
-		void Begin();
-		void End();
-		void OnResize(Event& event);
+        void OnAttach();
+        void OnDetach();
 
-	private:
-		UInt32 m_OnResizeCallbackIndex = 0;
-	};
-}
+        void Begin();
+        void End();
+        void OnResize(Event& event);
+
+    private:
+        ContextData* m_Context;
+        UInt32 m_OnResizeCallbackIndex = 0;
+    };
+}  // namespace Sentinel

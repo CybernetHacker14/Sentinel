@@ -38,15 +38,15 @@ namespace Sentinel {
         // So as of now, Swapchain backbuffer creation is EXPLICIT.
         inline static void SetBuffers(
             SwapchainData* dataObject, RenderTexture2DData* renderTexture, DepthTexture2DData* depthTexture) {
-            dataObject->backbuffer = renderTexture;
-            dataObject->depthBuffer = depthTexture;
+            if (!m_SetFunction) return;
+            m_SetFunction(dataObject, renderTexture, depthTexture);
         }
 
         // Since the creation is external, maybe the deletion can be external as well, and we just null the buffer
         // pointers here
         inline static void UnsetBuffers(SwapchainData* dataObject) {
-            dataObject->backbuffer = nullptr;
-            dataObject->depthBuffer = nullptr;
+            if (!m_UnsetFunction) return;
+            m_UnsetFunction(dataObject);
         }
 
     public:
@@ -57,6 +57,8 @@ namespace Sentinel {
         }
 
     protected:
+        inline static STL::delegate<void(SwapchainData*, RenderTexture2DData*, DepthTexture2DData*)> m_SetFunction;
+        inline static STL::delegate<void(SwapchainData*)> m_UnsetFunction;
         inline static STL::delegate<void(SwapchainData*)> m_SwapFunction;
         inline static STL::delegate<void(SwapchainData*, UInt32, UInt32)> m_ResizeFunction;
         inline static STL::delegate<void(SwapchainData*)> m_BindFunction;

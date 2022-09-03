@@ -21,18 +21,20 @@ namespace Sentinel {
             texDescription.MipLevels = 1;
             texDescription.ArraySize = 1;
             texDescription.Format = static_cast<DXGI_FORMAT>(dataObject->m_Format);
-            texDescription.SampleDesc.Count = 1;
+            texDescription.SampleDesc.Count = 4;
             texDescription.SampleDesc.Quality = 0;
             texDescription.Usage = D3D11_USAGE_DEFAULT;
             texDescription.CPUAccessFlags = 0;
             texDescription.MiscFlags = 0;
-            texDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+            texDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+            dxDevice->CreateTexture2D(&texDescription, nullptr, &(dataObject->m_NativeTexture));
 
             // DSV
             D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilDescription;
             SecureZeroMemory(&depthStencilDescription, sizeof(depthStencilDescription));
             depthStencilDescription.Format = static_cast<DXGI_FORMAT>(dataObject->m_Format);
-            depthStencilDescription.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+            depthStencilDescription.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
             depthStencilDescription.Texture2D.MipSlice = 0;
 
             dxDevice->CreateDepthStencilView(
@@ -119,18 +121,20 @@ namespace Sentinel {
 
         DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
 
+        ID3D11ShaderResourceView* nullSRV = {nullptr};
+
         if (dxDataObject->m_BindType != ShaderType::NONE) {
             switch (dxDataObject->m_BindType) {
                 case ShaderType::VERTEX:
-                    dxContext->VSSetShaderResources(dxDataObject->m_BindSlot, 1, nullptr);
+                    dxContext->VSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
                     dxDataObject->m_BindType = ShaderType::NONE;
                     break;
                 case ShaderType::PIXEL:
-                    dxContext->PSSetShaderResources(dxDataObject->m_BindSlot, 1, nullptr);
+                    dxContext->PSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
                     dxDataObject->m_BindType = ShaderType::NONE;
                     break;
                 case ShaderType::COMPUTE:
-                    dxContext->CSSetShaderResources(dxDataObject->m_BindSlot, 1, nullptr);
+                    dxContext->CSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
                     dxDataObject->m_BindType = ShaderType::NONE;
                     break;
                 case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid shader type"); break;

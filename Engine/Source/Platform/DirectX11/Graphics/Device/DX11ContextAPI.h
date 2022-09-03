@@ -8,6 +8,18 @@
 namespace Sentinel {
     class DX11ContextAPI final: public ContextAPI {
     public:
+        static class _init {
+        public:
+            inline _init() {
+                if (Backend::GetAPI() == Backend::API::DirectX11) {
+                    m_DrawFunction = DX11ContextAPI::Draw;
+                    m_DrawIndexedFunction = DX11ContextAPI::DrawIndexed;
+                    m_CleanFunction = DX11ContextAPI::Clean;
+                }
+            }
+        } _initializer;
+
+    public:
         inline static ID3D11Device* GetDevice(DX11ContextData* dataObject) { return dataObject->m_Device; }
         inline static ID3D11DeviceContext* GetNativeContext(DX11ContextData* dataObject) {
             return dataObject->m_Context;
@@ -15,6 +27,12 @@ namespace Sentinel {
         inline static IDXGIDevice* GetDXGIDevice(DX11ContextData* dataObject) { return dataObject->m_DXGIDevice; }
         inline static IDXGIAdapter* GetAdapter(DX11ContextData* dataObject) { return dataObject->m_Adapter; }
         inline static IDXGIFactory* GetFactory(DX11ContextData* dataObject) { return dataObject->m_Factory; }
+
+    private:
+        static void Draw(ContextData* dataObject);
+        static void DrawIndexed(ContextData* dataObject, const UInt32 count);
+
+        static void Clean(ContextData* dataObject);
 
     private:
         static void Create(DX11ContextData* dataObject, GLFWwindow* windowHandle);

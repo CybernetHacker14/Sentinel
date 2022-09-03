@@ -18,18 +18,18 @@
 
 namespace Sentinel {
     GraphicsMemoryManager::GraphicsMemoryManager() {
-        ContextAllocator.AllocateMemoryBlock(10);
-        SwapchainAllocator.AllocateMemoryBlock(10);
+        ContextAllocator.AllocateMemoryBlock(2);
+        SwapchainAllocator.AllocateMemoryBlock(2);
 
-        VertexbufferAllocator.AllocateMemoryBlock(10);
-        IndexbufferAllocator.AllocateMemoryBlock(10);
-        LayoutAllocator.AllocateMemoryBlock(10);
-        ConstantbufferAllocator.AllocateMemoryBlock(10);
+        VertexbufferAllocator.AllocateMemoryBlock(3);
+        IndexbufferAllocator.AllocateMemoryBlock(2);
+        LayoutAllocator.AllocateMemoryBlock(2);
+        ConstantbufferAllocator.AllocateMemoryBlock(2);
 
-        ShaderAllocator.AllocateMemoryBlock(5);
-        Texture2DAllocator.AllocateMemoryBlock(16);
+        ShaderAllocator.AllocateMemoryBlock(2);
+        Texture2DAllocator.AllocateMemoryBlock(3);
 
-        RenderTexture2DAllocator.AllocateMemoryBlock(6);
+        RenderTexture2DAllocator.AllocateMemoryBlock(2);
         DepthTexture2DAllocator.AllocateMemoryBlock(2);
     }
 
@@ -58,5 +58,21 @@ namespace Sentinel {
         SwapchainAllocator.DeallocateMemoryBlock();
         ContextAllocator.DeleteAll();
         ContextAllocator.DeallocateMemoryBlock();
+    }
+
+    const UInt32 GraphicsMemoryManager::GetTotalAllocations() {
+        return VertexbufferAllocator.GetTotalAllocations() + IndexbufferAllocator.GetTotalAllocations() +
+               LayoutAllocator.GetTotalAllocations() + ConstantbufferAllocator.GetTotalAllocations() +
+               ShaderAllocator.GetTotalAllocations() + Texture2DAllocator.GetTotalAllocations() +
+               RenderTexture2DAllocator.GetTotalAllocations() + DepthTexture2DAllocator.GetTotalAllocations() +
+               ContextAllocator.GetTotalAllocations() + SwapchainAllocator.GetTotalAllocations();
+    }
+
+    const UInt32 GraphicsMemoryManager::GetTotalFreeCount() {
+        return VertexbufferAllocator.GetFreeCount() + IndexbufferAllocator.GetFreeCount() +
+               LayoutAllocator.GetFreeCount() + ConstantbufferAllocator.GetFreeCount() +
+               ShaderAllocator.GetFreeCount() + Texture2DAllocator.GetFreeCount() +
+               RenderTexture2DAllocator.GetFreeCount() + DepthTexture2DAllocator.GetFreeCount() +
+               ContextAllocator.GetFreeCount() + SwapchainAllocator.GetFreeCount();
     }
 }  // namespace Sentinel

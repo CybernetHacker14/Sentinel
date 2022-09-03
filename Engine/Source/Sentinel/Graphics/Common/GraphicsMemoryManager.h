@@ -23,6 +23,9 @@ namespace Sentinel {
         GraphicsMemoryManager();
         ~GraphicsMemoryManager();
 
+        const UInt32 GetTotalAllocations();
+        const UInt32 GetTotalFreeCount();
+
     private:
         PoolAllocator<ContextData> ContextAllocator;
         PoolAllocator<SwapchainData> SwapchainAllocator;

@@ -3,6 +3,9 @@
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Events/EventBus.h"
 #include "Sentinel/Layers/LayerStack.h"
+#include "Sentinel/Window/Window.h"
+
+#include "Sentinel/Graphics/Renderer/TestRenderer.h"
 
 #include "Sentinel/GUI/ImGui/ImGuiLayer.h"
 #include "Sentinel/GUI/ImGui/ImGuiDebugLayer.h"
@@ -10,20 +13,18 @@
 int main(int argc, char** argv);
 
 namespace Sentinel {
-    class Window;
-
     class Application {
     public:
         Application(const STL::string& name = "Sentinel Engine");
         virtual ~Application();
-
-        Window& GetWindow();
 
         void PushLayer(Layer* layer);
         void PushOverlay(Layer* overlay);
 
         const UInt32 SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
         void UnsubscribeFromEvent(const EventType& eventType, const UInt32& callback);
+
+        inline Window& GetWindow() { return *m_Window; }
 
         // Returns the Instance of the Application, since it's a singleton
         static Application& Get() { return *s_Instance; }
@@ -49,10 +50,13 @@ namespace Sentinel {
         UInt32 m_KeyPressedCallbackIndex = 0;
 
     private:
+        UniqueRef<Window> m_Window;
         LayerStack m_LayerStack;
         EventBus m_EventBus;
         ImGuiLayer* m_ImGuiLayer;
         ImGuiDebugLayer* m_ImGuiDebugLayer;
+
+        SharedRef<TestRenderer> m_Renderer;
 
     private:
         static Application* s_Instance;

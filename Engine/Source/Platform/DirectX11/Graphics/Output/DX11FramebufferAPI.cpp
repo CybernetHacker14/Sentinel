@@ -8,6 +8,8 @@
 #include "Platform/DirectX11/Graphics/Device/DX11SwapchainAPI.h"
 
 namespace Sentinel {
+    DX11FramebufferAPI::_init DX11FramebufferAPI::_initializer;
+
     void DX11FramebufferAPI::Create(DX11FramebufferData* dataObject) {
         SecureZeroMemory(&(dataObject->m_Viewport), sizeof(dataObject->m_Viewport));
     }

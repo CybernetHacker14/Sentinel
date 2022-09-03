@@ -9,14 +9,16 @@ namespace Sentinel {
     struct ConstantbufferData;
     class ConstantbufferAPI;
 
+    struct ContextData;
     class GraphicsMemoryManager;
 
     enum class ProjectionMode { PERSPECTIVE = 0, ORTHOGRAPHIC = 1 };
 
     class Camera: public ISharedRef {
     public:
-        Camera(SharedRef<GraphicsMemoryManager> memoryHandle);
-        Camera(SharedRef<GraphicsMemoryManager> memoryHandle, const Float width, const Float height);
+        Camera(SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context);
+        Camera(
+            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, const Float width, const Float height);
 
         const ProjectionMode& GetProjectionMode() { return m_ProjectionMode; }
         void SetProjectionMode(const ProjectionMode& mode) { m_ProjectionMode = mode; }
@@ -59,13 +61,8 @@ namespace Sentinel {
         void OnResize(const Float width, const Float height);
         void OnUpdate();
 
-    public:
-        inline static SharedRef<Camera> Create(const Float width, const Float height) {
-            return CreateSharedRef<Camera>(width, height);
-        }
-
     protected:
-        void Init(SharedRef<GraphicsMemoryManager> memoryHandle);
+        void Init(SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context);
 
         void UpdateDirectionVectors();
         void UpdateProjectionMatrix();

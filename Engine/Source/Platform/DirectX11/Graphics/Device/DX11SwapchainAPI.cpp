@@ -30,9 +30,12 @@ namespace Sentinel {
             RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(swapchain->backbuffer);
 
         DX11DepthTexture2DData* depthTexture = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(swapchain->depthBuffer);
-
         ID3D11DeviceContext* nativeContext = DX11ContextAPI::GetNativeContext(context);
-        nativeContext->OMSetRenderTargets(1, &renderTexture->m_NativeRTV, depthTexture->m_NativeDSV);
+
+        Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRV[1];
+        pRV[0] = renderTexture->m_NativeRTV;
+
+        nativeContext->OMSetRenderTargets(1, pRV[0].GetAddressOf(), NULL);
     }
 
     void DX11SwapchainAPI::Unbind(SwapchainData* dataObject) {
@@ -41,6 +44,19 @@ namespace Sentinel {
         ID3D11DeviceContext* nativeContext = DX11ContextAPI::GetNativeContext(context);
         ID3D11RenderTargetView* null = nullptr;
         nativeContext->OMSetRenderTargets(1, &null, NULL);
+    }
+
+    void DX11SwapchainAPI::SetBuffers(
+        SwapchainData* dataObject, RenderTexture2DData* renderTexture, DepthTexture2DData* depthTexture) {
+        DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
+        swapchain->backbuffer = renderTexture;
+        swapchain->depthBuffer = depthTexture;
+    }
+
+    void DX11SwapchainAPI::UnsetBuffers(SwapchainData* dataObject) {
+        DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
+        swapchain->backbuffer = nullptr;
+        swapchain->depthBuffer = nullptr;
     }
 
     void DX11SwapchainAPI::Init(DX11SwapchainData* dataObject, GLFWwindow* windowHandle) {
@@ -72,6 +88,19 @@ namespace Sentinel {
 
         DX11ContextAPI::GetFactory(context)->CreateSwapChain(
             DX11ContextAPI::GetDevice(context), &swapChainDescription, &(dataObject->m_Swapchain));
-    }
 
+        SecureZeroMemory(&(dataObject->m_Viewport), sizeof(dataObject->m_Viewport));
+
+        // TEMP
+        Int32 width, height;
+        glfwGetWindowSize(windowHandle, &width, &height);
+        dataObject->m_Viewport.TopLeftX = 0.0f;
+        dataObject->m_Viewport.TopLeftY = 0.0f;
+        dataObject->m_Viewport.Width = static_cast<Float>(width);
+        dataObject->m_Viewport.Height = static_cast<Float>(height);
+        dataObject->m_Viewport.MinDepth = 0.0f;
+        dataObject->m_Viewport.MaxDepth = 1.0f;
+
+        DX11ContextAPI::GetNativeContext(context)->RSSetViewports(1, &(dataObject->m_Viewport));
+    }
 }  // namespace Sentinel

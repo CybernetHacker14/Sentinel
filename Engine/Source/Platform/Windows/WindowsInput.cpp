@@ -1,5 +1,6 @@
 #include "stpch.h"
 #include "Sentinel/Input/Input.h"
+#include "Sentinel/Window/Window.h"
 #include "Sentinel/Application/Application.h"
 
 #include <GLFW/glfw3.h>

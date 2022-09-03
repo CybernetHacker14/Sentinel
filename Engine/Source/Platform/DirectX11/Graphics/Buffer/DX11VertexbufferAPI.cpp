@@ -11,9 +11,10 @@ namespace Sentinel {
     void DX11VertexbufferAPI::Bind(VertexbufferData* dataObject, UInt32 stride) {
         DX11VertexbufferData* buffer = VertexbufferAPI::Cast<DX11VertexbufferData>(dataObject);
         UInt32 offset = 0;
+        UInt32 vStride = stride;
         DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
         DX11ContextAPI::GetNativeContext(dContext)->IASetVertexBuffers(
-            0, 1, &(buffer->m_VertexbufferPtr), &stride, &offset);
+            0, 1, &(buffer->m_VertexbufferPtr), &vStride, &offset);
     }
 
     void DX11VertexbufferAPI::Unbind(VertexbufferData* dataObject) {

@@ -7,7 +7,7 @@ namespace Sentinel
 {
 	class EventBus {
 	public:
-		using EventCallbackFn = STL::function<void(Event&)>;
+		using EventCallbackFn = STL::delegate<void(Event&)>;
 
 		EventBus();
 		~EventBus();

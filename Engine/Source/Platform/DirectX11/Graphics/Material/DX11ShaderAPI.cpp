@@ -63,6 +63,11 @@ namespace Sentinel {
         shader->m_Filepath.clear();
     }
 
+    void DX11ShaderAPI::Unbind(ShaderData* dataObject) {
+        DX11ShaderData* shader = ShaderAPI::Cast<DX11ShaderData>(dataObject);
+        DX11ShaderAPI::Reset(shader);
+    }
+
     STL::unordered_map<ShaderType, STL::string> DX11ShaderAPI::PreprocessSource(const STL::string& source) {
         STL::unordered_map<ShaderType, STL::string> shaderSources;
 
@@ -103,17 +108,20 @@ namespace Sentinel {
             ShaderType type = tuple.first;
             const STL::string& shader = tuple.second;
 
+            const char* ep = Utils::s_ShaderTypeEntryPointMap[type];
+            const char* profile = Utils::s_ShaderTypeProfileMap[type];
+
             result = D3DCompile(
                 shader.c_str(),
                 shader.size(),
                 nullptr,
                 nullptr,
                 D3D_COMPILE_STANDARD_FILE_INCLUDE,
-                Utils::s_ShaderTypeEntryPointMap.at(type),
-                Utils::s_ShaderTypeProfileMap.at(type),
+                ep,
+                profile,
                 flags,
                 0,
-                &dataObject->m_BinaryMap.at(type),
+                &(dataObject->m_BinaryMap[type]),
                 &errorMessages);
 
 #if ST_DEBUG
@@ -154,7 +162,7 @@ namespace Sentinel {
                 dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferSize(),
                 nullptr,
-                &dataObject->m_VertexShader);
+                &(dataObject->m_VertexShader));
         }
 
         if (dataObject->m_BinaryMap.at(ShaderType::PIXEL)) {
@@ -162,10 +170,10 @@ namespace Sentinel {
                 dataObject->m_BinaryMap.at(ShaderType::PIXEL)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::PIXEL)->GetBufferSize(),
                 nullptr,
-                &dataObject->m_PixelShader);
+                &(dataObject->m_PixelShader));
         }
 
-        if (dataObject->m_BinaryMap.at(ShaderType::COMPUTE)) {
+        if (dataObject->m_BinaryMap.find(ShaderType::COMPUTE) != dataObject->m_BinaryMap.end()) {
             device->CreateComputeShader(
                 dataObject->m_BinaryMap.at(ShaderType::COMPUTE)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::COMPUTE)->GetBufferSize(),

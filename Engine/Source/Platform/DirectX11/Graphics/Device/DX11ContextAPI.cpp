@@ -5,6 +5,27 @@
 #include <GLFW/glfw3.h>
 
 namespace Sentinel {
+    DX11ContextAPI::_init DX11ContextAPI::_initializer;
+
+    void DX11ContextAPI::Draw(ContextData* dataObject) {
+        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject);
+        context->m_Context->Draw(0, 0);
+    }
+
+    void DX11ContextAPI::DrawIndexed(ContextData* dataObject, const UInt32 count) {
+        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject);
+        context->m_Context->DrawIndexed(count, 0, 0);
+    }
+
+    void DX11ContextAPI::Clean(ContextData* dataObject) {
+        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject);
+        context->m_Context->Release();
+        context->m_Device->Release();
+        context->m_DXGIDevice->Release();
+        context->m_Factory->Release();
+        context->m_Adapter->Release();
+    }
+
     void DX11ContextAPI::Create(DX11ContextData* dataObject, GLFWwindow* windowHandle) {
         if (dataObject->m_ContextType == ContextType::IMMEDIATE) {
             D3D11CreateDevice(

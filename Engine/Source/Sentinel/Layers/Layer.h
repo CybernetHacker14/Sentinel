@@ -1,23 +1,47 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
-#include "Sentinel/Events/Event.h"
 
-namespace Sentinel
-{
-	class Layer {
-	public:
-		Layer(const STL::string& debugName = "Layer");
-		virtual ~Layer() = default;
+namespace Sentinel {
+    class Layer {
+    public:
+        inline Layer(const STL::string& debugName = "Layer") : m_DebugName(debugName) {}
 
-		virtual void OnAttach() {};
-		virtual void OnDetach() {};
-		virtual void OnUpdate() {};
-		virtual void OnRender() {};
-		virtual void OnImGuiRender() {};
+        inline void OnAttach() {
+            if (!m_AttachFunction) return;
+            m_AttachFunction();
+        };
 
-		const STL::string& GetName() const { return m_DebugName; }
-	private:
-		STL::string m_DebugName;
-	};
-}
+        inline void OnDetach() {
+            if (!m_DetachFunction) return;
+            m_DetachFunction();
+        };
+
+        inline void OnUpdate() {
+            if (!m_UpdateFunction) return;
+            m_UpdateFunction();
+        };
+
+        inline void OnRender() {
+            if (!m_RenderFunction) return;
+            m_RenderFunction();
+        };
+
+        inline void OnImGuiRender() {
+            if (!m_ImGuiRenderFunction) return;
+            m_ImGuiRenderFunction();
+        };
+
+        const STL::string& GetName() const { return m_DebugName; }
+
+    protected:
+        STL::delegate<void()> m_AttachFunction;
+        STL::delegate<void()> m_DetachFunction;
+        STL::delegate<void()> m_UpdateFunction;
+        STL::delegate<void()> m_RenderFunction;
+        STL::delegate<void()> m_ImGuiRenderFunction;
+
+    protected:
+        STL::string m_DebugName;
+    };
+}  // namespace Sentinel

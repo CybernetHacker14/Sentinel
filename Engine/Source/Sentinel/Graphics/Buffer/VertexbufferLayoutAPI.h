@@ -2,10 +2,10 @@
 
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Graphics/Buffer/VertexbufferLayoutData.h"
+#include "Sentinel/Graphics/Material/ShaderData.h"
 
 namespace Sentinel {
     class GraphicsMemoryManager;
-    struct ShaderData;
 
     class VertexbufferLayoutAPI {
     public:
@@ -32,7 +32,7 @@ namespace Sentinel {
             m_CleanFunction(dataObject);
         }
 
-        inline static const UInt32 GetStride(VertexbufferLayoutData* dataObject) { return dataObject->m_Stride; }
+        inline static UInt32 GetStride(VertexbufferLayoutData* dataObject) { return dataObject->m_Stride; }
 
     public:
         template<typename T>
@@ -44,9 +44,9 @@ namespace Sentinel {
         }
 
     protected:
-        inline static STL::delegate<void(VertexbufferLayoutData*, ShaderData*)> m_CreateLayoutFunction;
-        inline static STL::delegate<void(VertexbufferLayoutData*)> m_BindFunction;
-        inline static STL::delegate<void(VertexbufferLayoutData*)> m_UnbindFunction;
-        inline static STL::delegate<void(VertexbufferLayoutData*)> m_CleanFunction;
+        inline static STL::function<void(VertexbufferLayoutData*, ShaderData*)> m_CreateLayoutFunction;
+        inline static STL::function<void(VertexbufferLayoutData*)> m_BindFunction;
+        inline static STL::function<void(VertexbufferLayoutData*)> m_UnbindFunction;
+        inline static STL::function<void(VertexbufferLayoutData*)> m_CleanFunction;
     };
 }  // namespace Sentinel

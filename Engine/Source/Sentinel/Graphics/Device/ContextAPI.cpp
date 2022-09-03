@@ -16,6 +16,7 @@ namespace Sentinel {
                 ContextData* context = memoryHandle->ContextAllocator.New<DX11ContextData>();
                 context->m_ContextType = ContextType::IMMEDIATE;
                 DX11ContextAPI::Create(ContextAPI::Cast<DX11ContextData>(context), windowHandle);
+                m_DrawIndexedFunction = DX11ContextAPI::DrawIndexed;
                 return context;
             }
             case Backend::API::None: ST_ENGINE_ASSERT(false, "API::None currently not supported"); return nullptr;
