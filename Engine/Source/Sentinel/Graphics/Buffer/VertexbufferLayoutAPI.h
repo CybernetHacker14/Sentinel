@@ -44,9 +44,9 @@ namespace Sentinel {
         }
 
     protected:
-        inline static STL::function<void(VertexbufferLayoutData*, ShaderData*)> m_CreateLayoutFunction;
-        inline static STL::function<void(VertexbufferLayoutData*)> m_BindFunction;
-        inline static STL::function<void(VertexbufferLayoutData*)> m_UnbindFunction;
-        inline static STL::function<void(VertexbufferLayoutData*)> m_CleanFunction;
+        inline static STL::delegate<void(VertexbufferLayoutData*, ShaderData*)> m_CreateLayoutFunction;
+        inline static STL::delegate<void(VertexbufferLayoutData*)> m_BindFunction;
+        inline static STL::delegate<void(VertexbufferLayoutData*)> m_UnbindFunction;
+        inline static STL::delegate<void(VertexbufferLayoutData*)> m_CleanFunction;
     };
 }  // namespace Sentinel

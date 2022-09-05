@@ -1,6 +1,4 @@
 #include "stpch.h"
-#include "Sentinel/Application/Application.h"
-
 #include "Sentinel/Graphics/Common/Backend.h"
 #include "Sentinel/Graphics/Common/GraphicsMemoryManager.h"
 #include "Sentinel/Graphics/Buffer/VertexbufferLayoutAPI.h"

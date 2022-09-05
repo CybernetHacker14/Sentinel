@@ -15,6 +15,7 @@
 #include "Sentinel/Graphics/Texture/RenderTexture2DData.h"
 #include "Sentinel/Graphics/Texture/DepthTexture2DData.h"
 #include "Sentinel/Graphics/Output/FramebufferData.h"
+#include "Sentinel/Graphics/Output/ViewportData.h"
 
 namespace Sentinel {
     GraphicsMemoryManager::GraphicsMemoryManager() {
@@ -31,6 +32,8 @@ namespace Sentinel {
 
         RenderTexture2DAllocator.AllocateMemoryBlock(2);
         DepthTexture2DAllocator.AllocateMemoryBlock(2);
+
+        ViewportAllocator.AllocateMemoryBlock(2);
     }
 
     GraphicsMemoryManager::~GraphicsMemoryManager() {
@@ -54,6 +57,9 @@ namespace Sentinel {
         DepthTexture2DAllocator.DeleteAll();
         DepthTexture2DAllocator.DeallocateMemoryBlock();
 
+        ViewportAllocator.DeleteAll();
+        ViewportAllocator.DeallocateMemoryBlock();
+
         SwapchainAllocator.DeleteAll();
         SwapchainAllocator.DeallocateMemoryBlock();
         ContextAllocator.DeleteAll();
@@ -65,7 +71,8 @@ namespace Sentinel {
                LayoutAllocator.GetTotalAllocations() + ConstantbufferAllocator.GetTotalAllocations() +
                ShaderAllocator.GetTotalAllocations() + Texture2DAllocator.GetTotalAllocations() +
                RenderTexture2DAllocator.GetTotalAllocations() + DepthTexture2DAllocator.GetTotalAllocations() +
-               ContextAllocator.GetTotalAllocations() + SwapchainAllocator.GetTotalAllocations();
+               ContextAllocator.GetTotalAllocations() + SwapchainAllocator.GetTotalAllocations() +
+               ViewportAllocator.GetTotalAllocations();
     }
 
     const UInt32 GraphicsMemoryManager::GetTotalFreeCount() {
@@ -73,6 +80,6 @@ namespace Sentinel {
                LayoutAllocator.GetFreeCount() + ConstantbufferAllocator.GetFreeCount() +
                ShaderAllocator.GetFreeCount() + Texture2DAllocator.GetFreeCount() +
                RenderTexture2DAllocator.GetFreeCount() + DepthTexture2DAllocator.GetFreeCount() +
-               ContextAllocator.GetFreeCount() + SwapchainAllocator.GetFreeCount();
+               ContextAllocator.GetFreeCount() + SwapchainAllocator.GetFreeCount() + ViewportAllocator.GetFreeCount();
     }
 }  // namespace Sentinel

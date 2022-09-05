@@ -88,19 +88,5 @@ namespace Sentinel {
 
         DX11ContextAPI::GetFactory(context)->CreateSwapChain(
             DX11ContextAPI::GetDevice(context), &swapChainDescription, &(dataObject->m_Swapchain));
-
-        SecureZeroMemory(&(dataObject->m_Viewport), sizeof(dataObject->m_Viewport));
-
-        // TEMP
-        Int32 width, height;
-        glfwGetWindowSize(windowHandle, &width, &height);
-        dataObject->m_Viewport.TopLeftX = 0.0f;
-        dataObject->m_Viewport.TopLeftY = 0.0f;
-        dataObject->m_Viewport.Width = static_cast<Float>(width);
-        dataObject->m_Viewport.Height = static_cast<Float>(height);
-        dataObject->m_Viewport.MinDepth = 0.0f;
-        dataObject->m_Viewport.MaxDepth = 1.0f;
-
-        DX11ContextAPI::GetNativeContext(context)->RSSetViewports(1, &(dataObject->m_Viewport));
     }
 }  // namespace Sentinel

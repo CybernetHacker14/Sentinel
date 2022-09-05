@@ -17,6 +17,7 @@ namespace Sentinel {
     struct DepthTexture2DData;
     struct RenderTexture2DData;
     struct FramebufferData;
+    struct ViewportData;
 
     class GraphicsMemoryManager final: public ISharedRef {
     public:
@@ -41,6 +42,7 @@ namespace Sentinel {
         PoolAllocator<DepthTexture2DData> DepthTexture2DAllocator;
         PoolAllocator<RenderTexture2DData> RenderTexture2DAllocator;
         PoolAllocator<FramebufferData> FramebufferAllocator;
+        PoolAllocator<ViewportData> ViewportAllocator;
 
     private:
         friend class ContextAPI;
@@ -54,5 +56,6 @@ namespace Sentinel {
         friend class RenderTexture2DAPI;
         friend class DepthTexture2DAPI;
         friend class FramebufferAPI;
+        friend class ViewportAPI;
     };
 }  // namespace Sentinel

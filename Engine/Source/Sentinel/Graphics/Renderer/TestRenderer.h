@@ -10,6 +10,7 @@ namespace Sentinel {
     struct ContextData;
     struct SwapchainData;
     struct FramebufferData;
+    struct ViewportData;
 
     struct VertexbufferData;
     struct IndexbufferData;
@@ -48,6 +49,7 @@ namespace Sentinel {
         ContextData* m_Context;
         SwapchainData* m_Swapchain;
         FramebufferData* m_Framebuffer;
+        ViewportData* m_Viewport;
 
         VertexbufferData* m_VBuffer;
         IndexbufferData* m_IBuffer;
