@@ -15,7 +15,6 @@ namespace Sentinel {
             case Backend::API::DirectX11: {
                 FramebufferData* framebuffer = memoryHandle->FramebufferAllocator.New<DX11FramebufferData>();
                 framebuffer->Context = context;
-                DX11FramebufferAPI::Create(FramebufferAPI::Cast<DX11FramebufferData>(framebuffer));
                 Invalidate(framebuffer, memoryHandle);
                 return framebuffer;
             }

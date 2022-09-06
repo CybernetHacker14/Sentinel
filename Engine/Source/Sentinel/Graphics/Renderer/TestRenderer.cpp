@@ -11,6 +11,7 @@
 #include "Sentinel/Graphics/Device/ContextAPI.h"
 #include "Sentinel/Graphics/Device/SwapchainAPI.h"
 #include "Sentinel/Graphics/Output/FramebufferAPI.h"
+#include "Sentinel/Graphics/Output/ViewportAPI.h"
 
 #include "Sentinel/Graphics/Buffer/VertexbufferAPI.h"
 #include "Sentinel/Graphics/Buffer/IndexbufferAPI.h"
@@ -90,6 +91,9 @@ namespace Sentinel {
             m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight(), DepthFormat::D24S8UINT, true);
 
         SwapchainAPI::SetBuffers(m_Swapchain, m_RenderTexture, m_DepthTexture);
+
+        m_Viewport =
+            ViewportAPI::CreateViewportData(m_GFXMemory, m_Context, 0, 0, window.GetWidth(), window.GetHeight(), 0, 1);
     }
 
     void TestRenderer::Setup() {
@@ -102,6 +106,7 @@ namespace Sentinel {
         RenderTexture2DAPI::Bind(m_RenderTexture, 1, ShaderType::PIXEL);
         DepthTexture2DAPI::Bind(m_DepthTexture, 2, ShaderType::PIXEL);
         SwapchainAPI::Bind(m_Swapchain);
+        ViewportAPI::Bind(m_Viewport);
     }
 
     void TestRenderer::Draw() {

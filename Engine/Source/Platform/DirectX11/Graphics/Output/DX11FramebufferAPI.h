@@ -22,9 +22,6 @@ namespace Sentinel {
         } _initializer;
 
     private:
-        static void Create(DX11FramebufferData* dataObject);
-
-    private:
         static void Invalidate(FramebufferData* dataObject, SharedRef<GraphicsMemoryManager> memoryHandle);
 
         static void Bind(FramebufferData* dataObject);

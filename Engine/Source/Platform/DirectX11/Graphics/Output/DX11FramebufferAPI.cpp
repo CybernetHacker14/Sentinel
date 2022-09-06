@@ -10,18 +10,8 @@
 namespace Sentinel {
     DX11FramebufferAPI::_init DX11FramebufferAPI::_initializer;
 
-    void DX11FramebufferAPI::Create(DX11FramebufferData* dataObject) {
-        SecureZeroMemory(&(dataObject->m_Viewport), sizeof(dataObject->m_Viewport));
-    }
-
     void DX11FramebufferAPI::Invalidate(FramebufferData* dataObject, SharedRef<GraphicsMemoryManager> memoryHandle) {
         DX11FramebufferData* framebuffer = FramebufferAPI::Cast<DX11FramebufferData>(dataObject);
-        framebuffer->m_Viewport.TopLeftX = 0.0f;
-        framebuffer->m_Viewport.TopLeftY = 0.0f;
-        framebuffer->m_Viewport.Width = static_cast<Float>(framebuffer->m_Width);
-        framebuffer->m_Viewport.Height = static_cast<Float>(framebuffer->m_Height);
-        framebuffer->m_Viewport.MinDepth = 0.0f;
-        framebuffer->m_Viewport.MaxDepth = 1.0f;
 
         for (UInt16 i = 0; i < framebuffer->m_ColorFormats.size(); i++) {
             framebuffer->m_RTAttachments[i] = RenderTexture2DAPI::CreateRenderTexture2DData(
@@ -45,7 +35,6 @@ namespace Sentinel {
         DX11ContextData* dxContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
         ID3D11DeviceContext* nativeContext = DX11ContextAPI::GetNativeContext(dxContext);
 
-        nativeContext->RSSetViewports(1, &(framebuffer->m_Viewport));
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderViews[15];
 
         DX11RenderTexture2DData* dxRenderTexture = nullptr;
