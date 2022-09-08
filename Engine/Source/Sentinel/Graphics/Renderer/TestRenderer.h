@@ -64,5 +64,7 @@ namespace Sentinel {
         // Add ImGuiLayer and ImGuiDebugLayer here
         ImGuiLayer* m_ImGuiLayer;
         ImGuiDebugLayer* m_ImGuiDebugLayer;
+
+        Texture2DData* m_IconTexture;
     };
 }  // namespace Sentinel

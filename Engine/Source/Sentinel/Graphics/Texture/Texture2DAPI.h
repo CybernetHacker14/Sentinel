@@ -40,6 +40,8 @@ namespace Sentinel {
         inline static UInt32 GetBindSlot(Texture2DData* dataObject) { return dataObject->m_BindSlot; }
         inline static const ShaderType GetBindType(Texture2DData* dataObject) { return dataObject->m_BindType; }
 
+        inline static void* GetPixelData(Texture2DData* dataObject) { return dataObject->m_TexturePixels; }
+
     public:
         template<typename T>
         inline static T* Cast(Texture2DData* dataObject) {

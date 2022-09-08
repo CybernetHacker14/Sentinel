@@ -94,6 +94,14 @@ namespace Sentinel {
 
         m_Viewport =
             ViewportAPI::CreateViewportData(m_GFXMemory, m_Context, 0, 0, window.GetWidth(), window.GetHeight(), 0, 1);
+
+        Texture2DDataImportSettings settings2;
+        settings2.TextureFilepath = "Assets/Icon.png";
+
+        m_IconTexture = Texture2DAPI::CreateTexture2DData(m_GFXMemory, m_Context, settings2);
+        UInt8* data = static_cast<UInt8*>(Texture2DAPI::GetPixelData(m_IconTexture));
+        Filesystem::W
+
     }
 
     void TestRenderer::Setup() {

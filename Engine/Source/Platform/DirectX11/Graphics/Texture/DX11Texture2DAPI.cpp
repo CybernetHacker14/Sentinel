@@ -70,6 +70,8 @@ namespace Sentinel {
             texture->m_SamplerState->Release();
             texture->m_SamplerState = nullptr;
         }
+
+        free(texture->m_TexturePixels);
     }
 
     void DX11Texture2DAPI::Load(DX11Texture2DData* dataObject) {
@@ -131,8 +133,6 @@ namespace Sentinel {
 
         if (dataObject->m_Settings.GenerateMipMaps)
             DX11ContextAPI::GetNativeContext(context)->GenerateMips(dataObject->m_ResourceView);
-
-        free(dataObject->m_TexturePixels);
 
         {
             D3D11_SAMPLER_DESC samplerDesc;
