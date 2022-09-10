@@ -14,6 +14,7 @@ project "Sentinel"
 	{
 		"Source/**.h",
         "Source/**.cpp",
+		"Resources/**.inl",
 		"Resources/Shaders/**.hlsl",
         "Vendor/glm/module/glm/**.hpp",
         "Vendor/glm/module/glm/**.inl",

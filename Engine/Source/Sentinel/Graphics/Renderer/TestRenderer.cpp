@@ -77,7 +77,7 @@ namespace Sentinel {
         VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
 
         Texture2DDataImportSettings settings;
-        settings.TextureFilepath = "Assets/Tile1.jpg";
+        settings.TextureFilepath = "../Engine/Resources/Images/Icon/512.png";
 
         m_Texture = Texture2DAPI::CreateTexture2DData(m_GFXMemory, m_Context, settings);
 
@@ -95,11 +95,6 @@ namespace Sentinel {
         m_Viewport =
             ViewportAPI::CreateViewportData(m_GFXMemory, m_Context, 0, 0, window.GetWidth(), window.GetHeight(), 0, 1);
 
-        Texture2DDataImportSettings settings2;
-        settings2.TextureFilepath = "Assets/Icon.png";
-
-        m_IconTexture = Texture2DAPI::CreateTexture2DData(m_GFXMemory, m_Context, settings2);
-        UInt8* data = static_cast<UInt8*>(Texture2DAPI::GetPixelData(m_IconTexture));
     }
 
     void TestRenderer::Setup() {
