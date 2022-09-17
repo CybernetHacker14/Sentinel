@@ -3,7 +3,7 @@
 static const uint32_t LogoWidth = 256;
 static const uint32_t LogoHeight = 256;
 static const uint32_t LogoBPP = 4;
-static const uint8_t LogoPixels[] = {
+static uint8_t LogoPixels[] = {
     80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,
     0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,
     80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,

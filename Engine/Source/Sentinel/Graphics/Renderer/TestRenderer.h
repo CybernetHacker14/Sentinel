@@ -36,6 +36,8 @@ namespace Sentinel {
         void Draw();
         void Unbind();
 
+        void Resize(UInt16 width, UInt16 height);
+
         SharedRef<Camera> GetCamera() { return m_Camera; }
 
         const UInt32 GetTotalAllocations();

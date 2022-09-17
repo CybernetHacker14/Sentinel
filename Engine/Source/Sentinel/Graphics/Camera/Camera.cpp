@@ -8,7 +8,9 @@
 #include <glm/gtx/norm.hpp>
 
 namespace Sentinel {
-    Camera::Camera(SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context) { Init(memoryHandle, context); }
+    Camera::Camera(SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context) {
+        Init(memoryHandle, context);
+    }
 
     Camera::Camera(
         SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, const Float width, const Float height) {
@@ -16,7 +18,10 @@ namespace Sentinel {
         Init(memoryHandle, context);
     }
 
-    void Camera::OnResize(const Float width, const Float height) { m_AspectRatio = (!height) ? 0 : width / height; }
+    void Camera::OnResize(const Float width, const Float height) {
+        ST_ENGINE_INFO("{0} {1}", width, height);
+        m_AspectRatio = (!height) ? 0 : width / height;
+    }
 
     void Camera::OnUpdate() {
         UpdateDirectionVectors();

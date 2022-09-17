@@ -50,11 +50,17 @@ namespace Sentinel {
         SwapchainData* dataObject, RenderTexture2DData* renderTexture, DepthTexture2DData* depthTexture) {
         DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
         swapchain->backbuffer = renderTexture;
-        swapchain->depthBuffer = depthTexture;
+        // swapchain->depthBuffer = depthTexture;
+        RenderTexture2DAPI::SetSwapchainTarget(renderTexture, true);
+        // TODO: refactor
+        // if (depthTexture) DepthTexture2DAPI::SetSwapchainTarget(depthTexture, true);
     }
 
     void DX11SwapchainAPI::UnsetBuffers(SwapchainData* dataObject) {
         DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
+        RenderTexture2DAPI::SetSwapchainTarget(swapchain->backbuffer, false);
+        // TODO: refactor
+        // if (swapchain->depthBuffer) DepthTexture2DAPI::SetSwapchainTarget(swapchain->depthBuffer, false);
         swapchain->backbuffer = nullptr;
         swapchain->depthBuffer = nullptr;
     }

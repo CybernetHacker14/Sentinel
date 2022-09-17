@@ -51,6 +51,7 @@ project "Sentinel"
 		"shlwapi.lib",
 		"d3dcompiler.lib",
 		"dxguid.lib",
+		"dwmapi.lib",
 		"imgui"
     }
 	

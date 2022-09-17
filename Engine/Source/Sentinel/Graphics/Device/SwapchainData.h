@@ -13,8 +13,8 @@ namespace Sentinel {
 
     protected:
         Bool vSync;
-        RenderTexture2DData* backbuffer;
-        DepthTexture2DData* depthBuffer;
+        RenderTexture2DData* backbuffer = nullptr;
+        DepthTexture2DData* depthBuffer = nullptr;
 
     private:
         friend class SwapchainAPI;

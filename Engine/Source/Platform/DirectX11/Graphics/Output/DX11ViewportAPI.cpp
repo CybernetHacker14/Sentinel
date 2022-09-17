@@ -18,6 +18,7 @@ namespace Sentinel {
     void DX11ViewportAPI::Resize(ViewportData* dataObject, UInt16 width, UInt16 height) {
         dataObject->width = width;
         dataObject->height = height;
+        Create(ViewportAPI::Cast<DX11ViewportData>(dataObject));
     }
 
     void DX11ViewportAPI::Create(DX11ViewportData* dataObject) {

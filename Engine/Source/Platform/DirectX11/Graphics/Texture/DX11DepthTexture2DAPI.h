@@ -14,7 +14,6 @@ namespace Sentinel {
                 if (Backend::GetAPI() == Backend::API::DirectX11) {
                     m_ClearFunction = DX11DepthTexture2DAPI::Clear;
                     m_CleanFunction = DX11DepthTexture2DAPI::Clean;
-                    m_ResizeFunction = DX11DepthTexture2DAPI::Resize;
                     m_BindFunction = DX11DepthTexture2DAPI::Bind;
                     m_UnbindFunction = DX11DepthTexture2DAPI::Unbind;
                 }
@@ -40,7 +39,6 @@ namespace Sentinel {
     private:
         static void Clear(DepthTexture2DData* dataObject);
         static void Clean(DepthTexture2DData* dataObject);
-        static void Resize(DepthTexture2DData* dataObject, UInt32 width, UInt32 height);
 
         static void Bind(DepthTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType);
         static void Unbind(DepthTexture2DData* dataObject);

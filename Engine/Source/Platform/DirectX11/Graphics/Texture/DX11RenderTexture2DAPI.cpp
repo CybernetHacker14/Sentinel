@@ -60,6 +60,8 @@ namespace Sentinel {
 
         nativeSC->GetBuffer(0, __uuidof(ID3D11Resource), (LPVOID*)&(dataObject->m_NativeTexture));
         dxDevice->CreateRenderTargetView(dataObject->m_NativeTexture, nullptr, &(dataObject->m_NativeRTV));
+
+        dataObject->m_TargetSwapchain = swapchain;
     }
 
     void DX11RenderTexture2DAPI::Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor) {
@@ -76,24 +78,10 @@ namespace Sentinel {
     void DX11RenderTexture2DAPI::Clean(RenderTexture2DData* dataObject) {
         DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
 
-        if (dxDataObject->m_BindType != ShaderType::NONE) {
-            dxDataObject->m_NativeTexture->Release();
-            dxDataObject->m_NativeRTV->Release();
-            dxDataObject->m_NativeSRV->Release();
-            dxDataObject->m_NativeUAV->Release();
-        }
-    }
-
-    void DX11RenderTexture2DAPI::Resize(RenderTexture2DData* dataObject, UInt32 width, UInt32 height) {
-        if (width == 0 || height == 0 || width > s_MaxSize || height > s_MaxSize) return;
-
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
-
-        Unbind(dataObject);
-        Clean(dataObject);
-        dxDataObject->m_Width = width;
-        dxDataObject->m_Height = height;
-        Create(dxDataObject);
+        if (dxDataObject->m_NativeRTV) dxDataObject->m_NativeRTV->Release();
+        if (dxDataObject->m_NativeSRV) dxDataObject->m_NativeSRV->Release();
+        if (dxDataObject->m_NativeUAV) dxDataObject->m_NativeUAV->Release();
+        if (dxDataObject->m_NativeTexture) dxDataObject->m_NativeTexture->Release();
     }
 
     void DX11RenderTexture2DAPI::Bind(RenderTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
@@ -148,5 +136,19 @@ namespace Sentinel {
                 case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid shader type"); break;
             }
         }
+    }
+    void DX11RenderTexture2DAPI::Resize(RenderTexture2DData* dataObject, UInt16 width, UInt16 height) {
+        if (width == 0 || height == 0 || width > s_MaxSize || height > s_MaxSize) return;
+
+        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
+
+        /*Unbind(dataObject);
+        Clean(dataObject);*/
+        dxDataObject->m_Width = width;
+        dxDataObject->m_Height = height;
+
+        if (dxDataObject->m_SwapchainTarget)
+            Create(dxDataObject, dxDataObject->m_TargetSwapchain);
+        else {};
     }
 }  // namespace Sentinel

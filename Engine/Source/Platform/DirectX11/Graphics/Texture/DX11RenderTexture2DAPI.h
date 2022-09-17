@@ -15,9 +15,9 @@ namespace Sentinel {
                 if (Backend::GetAPI() == Backend::API::DirectX11) {
                     m_ClearFunction = DX11RenderTexture2DAPI::Clear;
                     m_CleanFunction = DX11RenderTexture2DAPI::Clean;
-                    m_ResizeFunction = DX11RenderTexture2DAPI::Resize;
                     m_BindFunction = DX11RenderTexture2DAPI::Bind;
                     m_UnbindFunction = DX11RenderTexture2DAPI::Unbind;
+                    m_ResizeFunction = DX11RenderTexture2DAPI::Resize;
                 }
             }
         } _initializer;
@@ -46,10 +46,11 @@ namespace Sentinel {
     private:
         static void Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor);
         static void Clean(RenderTexture2DData* dataObject);
-        static void Resize(RenderTexture2DData* dataObject, UInt32 width, UInt32 height);
 
         static void Bind(RenderTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType);
         static void Unbind(RenderTexture2DData* dataObject);
+
+        static void Resize(RenderTexture2DData* dataObject, UInt16 width, UInt16 height);
 
     private:
         friend class RenderTexture2DAPI;

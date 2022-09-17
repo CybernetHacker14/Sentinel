@@ -32,11 +32,6 @@ namespace Sentinel {
             m_CleanFunction(dataObject);
         }
 
-        inline static void Resize(RenderTexture2DData* dataObject, UInt32 width, UInt32 height) {
-            if (!m_ResizeFunction) return;
-            m_ResizeFunction(dataObject, width, height);
-        }
-
         inline static void Bind(RenderTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
             if (!m_BindFunction) return;
             m_BindFunction(dataObject, slot, shaderType);
@@ -45,6 +40,15 @@ namespace Sentinel {
         inline static void Unbind(RenderTexture2DData* dataObject) {
             if (!m_UnbindFunction) return;
             m_UnbindFunction(dataObject);
+        }
+
+        inline static void Resize(RenderTexture2DData* dataObject, UInt16 width, UInt16 height) {
+            if (!m_ResizeFunction) return;
+            m_ResizeFunction(dataObject, width, height);
+        }
+
+        inline static void SetSwapchainTarget(RenderTexture2DData* dataObject, Bool value) {
+            dataObject->m_SwapchainTarget = value;
         }
 
         inline static void* GetPixelData(RenderTexture2DData* dataObject) { return dataObject->m_PixelData; }
@@ -60,7 +64,7 @@ namespace Sentinel {
     protected:
         inline static STL::delegate<void(RenderTexture2DData*, const glm::vec4&)> m_ClearFunction;
         inline static STL::delegate<void(RenderTexture2DData*)> m_CleanFunction;
-        inline static STL::delegate<void(RenderTexture2DData*, UInt32, UInt32)> m_ResizeFunction;
+        inline static STL::delegate<void(RenderTexture2DData*, UInt16, UInt16)> m_ResizeFunction;
 
         inline static STL::delegate<void(RenderTexture2DData*, UInt32, const ShaderType)> m_BindFunction;
         inline static STL::delegate<void(RenderTexture2DData*)> m_UnbindFunction;
