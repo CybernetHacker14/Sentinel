@@ -142,8 +142,6 @@ namespace Sentinel {
 
         DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
 
-        /*Unbind(dataObject);
-        Clean(dataObject);*/
         dxDataObject->m_Width = width;
         dxDataObject->m_Height = height;
 

@@ -1,9 +1,9 @@
 #include "Sentinel/Common/Core/DataTypes.h"
 
-static const uint32_t LogoWidth = 128;
-static const uint32_t LogoHeight = 128;
-static const uint32_t LogoBPP = 4;
-static uint8_t LogoPixels[] = {
+static const uint32_t LogoWidth128 = 128;
+static const uint32_t LogoHeight128 = 128;
+static const uint32_t LogoBPP128 = 4;
+static uint8_t LogoPixels128[] = {
     80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,
     0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,
     80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,  80,  80,  0,   80,
