@@ -17,11 +17,11 @@
                 </p>
         </td>
         <td>
-            <img src="https://img.shields.io/github/stars/CybernetHacker14/Sentinel?logo=github&style=for-the-badge" /><br>
-            <img src="https://img.shields.io/tokei/lines/github/CybernetHacker14/Sentinel?logo=github&style=for-the-badge" /><br>
             <img src="https://img.shields.io/github/license/CybernetHacker14/Sentinel?color=%23D22128&logo=apache&style=for-the-badge" /><br>
-            <img src="https://img.shields.io/github/last-commit/CybernetHacker14/Sentinel/main?logo=github&style=for-the-badge" /><br>
-            <img src="https://img.shields.io/github/issues-pr-closed/CybernetHacker14/Sentinel?logo=github&style=for-the-badge" />
+            <img src="https://img.shields.io/github/stars/CybernetHacker14/Sentinel?style=for-the-badge" /><br>
+            <img src="https://img.shields.io/tokei/lines/github/CybernetHacker14/Sentinel?style=for-the-badge" /><br>
+            <img src="https://img.shields.io/github/last-commit/CybernetHacker14/Sentinel/main?style=for-the-badge" /><br>
+            <img src="https://img.shields.io/github/issues-pr-closed/CybernetHacker14/Sentinel?style=for-the-badge" />
         </td>
     </tr>
 </table>
