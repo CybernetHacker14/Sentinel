@@ -35,7 +35,9 @@ namespace Sentinel {
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRV[1];
         pRV[0] = renderTexture->m_NativeRTV;
 
-        nativeContext->OMSetRenderTargets(1, pRV[0].GetAddressOf(), NULL);
+        ID3D11DepthStencilView* pDV = depthTexture->m_NativeDSV;
+
+        nativeContext->OMSetRenderTargets(1, pRV[0].GetAddressOf(), pDV);
     }
 
     void DX11SwapchainAPI::Unbind(SwapchainData* dataObject) {
@@ -51,10 +53,14 @@ namespace Sentinel {
         DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
         swapchain->backbuffer = renderTexture;
         swapchain->depthBuffer = depthTexture;
+        RenderTexture2DAPI::SetSwapchainTarget(renderTexture, true);
+        DepthTexture2DAPI::SetSwapchainTarget(depthTexture, true);
     }
 
     void DX11SwapchainAPI::UnsetBuffers(SwapchainData* dataObject) {
         DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
+        RenderTexture2DAPI::SetSwapchainTarget(swapchain->backbuffer, false);
+        DepthTexture2DAPI::SetSwapchainTarget(swapchain->depthBuffer, false);
         swapchain->backbuffer = nullptr;
         swapchain->depthBuffer = nullptr;
     }

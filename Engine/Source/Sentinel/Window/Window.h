@@ -90,6 +90,8 @@ namespace Sentinel {
             Bool VSync;
 
             EventCallbackFn EventCallback;
+            EventCallbackFn InternalMouseMovedCallback;
+            EventCallbackFn InternalWindowResizeCallback;
         };
 
         WindowData m_Data;

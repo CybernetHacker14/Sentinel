@@ -10,10 +10,6 @@
 #include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Common/CPU/CPUInfo.h"
 
-// const char* __asan_default_options() {
-//     return "verbosity=1:debug=true";
-// }
-
 namespace Sentinel {
     Application* Application::s_Instance = nullptr;
 
@@ -81,7 +77,6 @@ namespace Sentinel {
     void Application::Run() {
         while (m_Running) {
             if (!m_Minimized) {
-                m_Renderer->GetCamera()->OnUpdate();
                 ProcessLayerUpdate();
 
                 m_Renderer->Draw();
@@ -123,9 +118,8 @@ namespace Sentinel {
 
     void Application::OnWindowResize(Event& event) {
         WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
-        ST_ENGINE_INFO("{0} {1}", e.GetWidth(), e.GetHeight());
-        // m_Camera->OnResize(e.GetWidth(), e.GetHeight());
-        // m_Renderer->Resize(e.GetWidth(), e.GetHeight());
+        m_Renderer->Resize(e.GetWidth(), e.GetHeight());
+        m_Renderer->GetCamera()->OnResize(e.GetWidth(), e.GetHeight());
     }
 
     void Application::OnKeyPressed(Event& event) {

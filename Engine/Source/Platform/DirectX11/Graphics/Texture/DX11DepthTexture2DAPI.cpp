@@ -69,11 +69,9 @@ namespace Sentinel {
     void DX11DepthTexture2DAPI::Clean(DepthTexture2DData* dataObject) {
         DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
 
-        if (dxDataObject->m_BindType != ShaderType::NONE) {
-            dxDataObject->m_NativeTexture->Release();
-            dxDataObject->m_NativeDSV->Release();
-            dxDataObject->m_NativeSRV->Release();
-        }
+        if (dxDataObject->m_NativeDSV) { dxDataObject->m_NativeDSV->Release(); }
+        if (dxDataObject->m_NativeSRV) { dxDataObject->m_NativeSRV->Release(); }
+        if (dxDataObject->m_NativeTexture) { dxDataObject->m_NativeTexture->Release(); }
     }
 
     void DX11DepthTexture2DAPI::Resize(DepthTexture2DData* dataObject, UInt32 width, UInt32 height) {
@@ -81,8 +79,6 @@ namespace Sentinel {
 
         DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
 
-        Unbind(dataObject);
-        Clean(dataObject);
         dxDataObject->m_Width = width;
         dxDataObject->m_Height = height;
         Create(dxDataObject);

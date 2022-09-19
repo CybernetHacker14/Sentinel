@@ -27,14 +27,15 @@
 #include "Sentinel/GUI/ImGui/ImGuiDebugLayer.h"
 
 namespace Sentinel {
+
+    Bool renderdocBuild = false;
+
     TestRenderer::TestRenderer() {
         Window& window = Application::Get().GetWindow();
         GLFWwindow* glfwWindow = window.GetNativeWindow<GLFWwindow>();
         m_GFXMemory = CreateSharedRef<GraphicsMemoryManager>();
         m_Context = ContextAPI::CreateImmediateContext(m_GFXMemory, glfwWindow);
         m_Swapchain = SwapchainAPI::CreateSwapchain(m_GFXMemory, m_Context, glfwWindow);
-        // m_Framebuffer =
-        // FramebufferAPI::CreateFramebufferData(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
         m_Camera = CreateSharedRef<Camera>(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
 
         /*m_ImGuiLayer = new ImGuiLayer(m_Context);
@@ -69,15 +70,22 @@ namespace Sentinel {
 
         m_IBuffer = IndexbufferAPI::CreateIndexbufferData(m_GFXMemory, m_Context, indices.data(), indices.size());
 
-        m_Shader = ShaderAPI::CreateShaderData(
-            m_GFXMemory, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");
+        if (renderdocBuild) {
+            m_Shader = ShaderAPI::CreateShaderData(m_GFXMemory, m_Context, "TextureShader.hlsl", "TexShader");
 
-        // m_Shader = ShaderAPI::CreateShaderData(m_GFXMemory, m_Context, "TextureShader.hlsl", "TexShader");
+        } else {
+            m_Shader = ShaderAPI::CreateShaderData(
+                m_GFXMemory, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");
+        }
 
         VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
 
         Texture2DDataImportSettings settings;
-        settings.TextureFilepath = "Assets/Tile1.jpg";
+        if (renderdocBuild) {
+            settings.TextureFilepath = "512.png";
+        } else {
+            settings.TextureFilepath = "../Engine/Resources/Images/Icon/512.png";
+        }
 
         m_Texture = Texture2DAPI::CreateTexture2DData(m_GFXMemory, m_Context, settings);
 
@@ -98,21 +106,23 @@ namespace Sentinel {
 
     void TestRenderer::Setup() {
         VertexbufferLayoutAPI::Bind(m_VLayout);
-        UInt32 value = VertexbufferLayoutAPI::GetStride(m_VLayout);
         VertexbufferAPI::Bind(m_VBuffer, VertexbufferLayoutAPI::GetStride(m_VLayout));
         IndexbufferAPI::Bind(m_IBuffer);
         ShaderAPI::Bind(m_Shader);
         Texture2DAPI::Bind(m_Texture, 0, ShaderType::PIXEL);
         RenderTexture2DAPI::Bind(m_RenderTexture, 1, ShaderType::PIXEL);
         DepthTexture2DAPI::Bind(m_DepthTexture, 2, ShaderType::PIXEL);
-        SwapchainAPI::Bind(m_Swapchain);
         ViewportAPI::Bind(m_Viewport);
     }
 
     void TestRenderer::Draw() {
-        RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.8f, 0.1f, 1.0f});
+        m_Camera->OnUpdate();
+        SwapchainAPI::Bind(m_Swapchain);
         ContextAPI::DrawIndexed(m_Context, IndexbufferAPI::GetCount(m_IBuffer));
         SwapchainAPI::SwapBuffers(m_Swapchain);
+        RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.8f, 0.1f, 1.0f});
+        DepthTexture2DAPI::Clear(m_DepthTexture);
+        SwapchainAPI::Unbind(m_Swapchain);
     }
 
     void TestRenderer::Unbind() {
@@ -125,6 +135,20 @@ namespace Sentinel {
         SwapchainAPI::UnsetBuffers(m_Swapchain);
         RenderTexture2DAPI::Unbind(m_RenderTexture);
         DepthTexture2DAPI::Unbind(m_DepthTexture);
+    }
+
+    void TestRenderer::Resize(UInt16 width, UInt16 height) {
+        RenderTexture2DAPI::Unbind(m_RenderTexture);
+        DepthTexture2DAPI::Unbind(m_DepthTexture);
+        RenderTexture2DAPI::Clean(m_RenderTexture);
+        DepthTexture2DAPI::Clean(m_DepthTexture);
+        SwapchainAPI::Resize(m_Swapchain, width, height);
+        RenderTexture2DAPI::Resize(m_RenderTexture, width, height);
+        DepthTexture2DAPI::Resize(m_DepthTexture, width, height);
+        ViewportAPI::Resize(m_Viewport, width, height);
+        ViewportAPI::Bind(m_Viewport);
+        RenderTexture2DAPI::Bind(m_RenderTexture, 1, ShaderType::PIXEL);
+        DepthTexture2DAPI::Bind(m_DepthTexture, 2, ShaderType::PIXEL);
     }
 
     const UInt32 TestRenderer::GetTotalAllocations() {

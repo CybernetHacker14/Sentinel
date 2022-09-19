@@ -36,6 +36,8 @@ namespace Sentinel {
         void Draw();
         void Unbind();
 
+        void Resize(UInt16 width, UInt16 height);
+
         SharedRef<Camera> GetCamera() { return m_Camera; }
 
         const UInt32 GetTotalAllocations();
@@ -64,5 +66,7 @@ namespace Sentinel {
         // Add ImGuiLayer and ImGuiDebugLayer here
         ImGuiLayer* m_ImGuiLayer;
         ImGuiDebugLayer* m_ImGuiDebugLayer;
+
+        Texture2DData* m_IconTexture;
     };
 }  // namespace Sentinel

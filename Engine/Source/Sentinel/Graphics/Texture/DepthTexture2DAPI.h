@@ -29,11 +29,6 @@ namespace Sentinel {
             m_CleanFunction(dataObject);
         }
 
-        inline static void Resize(DepthTexture2DData* dataObject, UInt32 width, UInt32 height) {
-            if (!m_ResizeFunction) return;
-            m_ResizeFunction(dataObject, width, height);
-        }
-
         inline static void Bind(DepthTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
             if (!m_BindFunction) return;
             m_BindFunction(dataObject, slot, shaderType);
@@ -42,6 +37,15 @@ namespace Sentinel {
         inline static void Unbind(DepthTexture2DData* dataObject) {
             if (!m_UnbindFunction) return;
             m_UnbindFunction(dataObject);
+        }
+
+        inline static void Resize(DepthTexture2DData* dataObject, UInt16 width, UInt16 height) {
+            if (!m_ResizeFunction) return;
+            m_ResizeFunction(dataObject, width, height);
+        }
+
+        inline static void SetSwapchainTarget(DepthTexture2DData* dataObject, Bool value) {
+            dataObject->m_SwapchainTarget = value;
         }
 
         inline static void* GetPixelData(DepthTexture2DData* dataObject) { return dataObject->m_PixelData; }
