@@ -8,6 +8,9 @@ struct IDXGIDevice;
 struct IDXGIAdapter;
 struct IDXGIFactory;
 
+// TODO: Refactor
+struct ID3D11BlendState;
+
 namespace Sentinel {
     class DX11ContextData final: public ContextData {
     private:
@@ -16,6 +19,8 @@ namespace Sentinel {
         IDXGIDevice* m_DXGIDevice;
         IDXGIAdapter* m_Adapter;
         IDXGIFactory* m_Factory;
+
+        ID3D11BlendState* m_BlendState;
 
     private:
         friend class DX11ContextAPI;
