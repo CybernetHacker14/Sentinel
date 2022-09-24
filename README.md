@@ -1,4 +1,4 @@
-<table>
+<table align="center">
     <tr>
         <td><img align="left" alt="ICON" width="170px" height="170px" src="Engine/Resources/Images/Icon/512.png" /></td>
         <td>
