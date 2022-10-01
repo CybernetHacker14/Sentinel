@@ -5,7 +5,9 @@
 #include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Events/Categories/KeyEvent.h"
 
+#define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 
 namespace Sentinel {
     static UInt8 s_GLFWWindowCount = 0;
@@ -39,6 +41,7 @@ namespace Sentinel {
         }
 
         glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, m_Properties.FramebufferTransparency ? 1 : 0);
+        glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
         if (m_Properties.Mode == WindowMode::FULLSCREEN) {
             m_Window = glfwCreateWindow(
@@ -47,19 +50,12 @@ namespace Sentinel {
                 m_Data.Title.c_str(),
                 glfwGetPrimaryMonitor(),
                 nullptr);
-            ST_ENGINE_TRACE("Stage 1");
         } else {
             m_Window = glfwCreateWindow(
                 (Int32)m_Properties.Width, (Int32)m_Properties.Height, m_Data.Title.c_str(), nullptr, nullptr);
-            ST_ENGINE_TRACE("Stage 2");
             if (m_Properties.Mode == WindowMode::WINDOWEDMAXIMIZED) { glfwMaximizeWindow(m_Window); }
-            ST_ENGINE_TRACE("Stage 3");
         }
-        ST_ENGINE_TRACE("Stage 4");
-        ST_ENGINE_INFO("{0}", s_GLFWWindowCount);
         ++s_GLFWWindowCount;
-        ST_ENGINE_INFO("{0}", s_GLFWWindowCount);
-        ST_ENGINE_TRACE("Stage 5");
 
         // GLFWCallbacks
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, Int32 width, Int32 height) {

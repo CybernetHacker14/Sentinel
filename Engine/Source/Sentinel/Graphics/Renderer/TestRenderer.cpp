@@ -38,14 +38,16 @@ namespace Sentinel {
         m_Swapchain = SwapchainAPI::CreateSwapchain(m_GFXMemory, m_Context, glfwWindow);
         m_Camera = CreateSharedRef<Camera>(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
 
-        /*m_ImGuiLayer = new ImGuiLayer(m_Context);
+        m_ImGuiLayer = new ImGuiLayer(m_Context);
         Application::Get().PushOverlay(m_ImGuiLayer);
         m_ImGuiDebugLayer = new ImGuiDebugLayer(m_Camera);
-        Application::Get().PushOverlay(m_ImGuiDebugLayer);*/
+        Application::Get().PushOverlay(m_ImGuiDebugLayer);
     }
 
     TestRenderer::~TestRenderer() {
         // m_GFXMemory->ReleaseRef();
+        delete (m_ImGuiDebugLayer);
+        delete (m_ImGuiLayer);
         ContextAPI::Clean(m_Context);
     }
 
@@ -113,6 +115,8 @@ namespace Sentinel {
         RenderTexture2DAPI::Bind(m_RenderTexture, 1, ShaderType::PIXEL);
         DepthTexture2DAPI::Bind(m_DepthTexture, 2, ShaderType::PIXEL);
         ViewportAPI::Bind(m_Viewport);
+
+        Resize(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
     }
 
     void TestRenderer::Draw() {
@@ -122,6 +126,7 @@ namespace Sentinel {
         SwapchainAPI::SwapBuffers(m_Swapchain);
         RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.8f, 0.1f, 1.0f});
         DepthTexture2DAPI::Clear(m_DepthTexture);
+        Application::Get().ProcessLayerImGuiRender();
         SwapchainAPI::Unbind(m_Swapchain);
     }
 

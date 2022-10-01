@@ -29,12 +29,12 @@ namespace Sentinel {
         // Returns the Instance of the Application, since it's a singleton
         static Application& Get() { return *s_Instance; }
 
+        void ProcessLayerImGuiRender();
     private:
         // The main application loop
         void Run();
         void RaiseEvent(UniqueRef<Event> eventData);
         void ProcessLayerUpdate();
-        void ProcessLayerImGuiRender();
 
     private:
         void OnWindowClose(Event& event);
