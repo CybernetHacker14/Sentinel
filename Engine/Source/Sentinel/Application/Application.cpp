@@ -37,10 +37,6 @@ namespace Sentinel {
 
         //====================================DO NOT DELETE========================================//
 
-        ST_ENGINE_INFO(sizeof(DWORD));
-        ST_ENGINE_INFO("{0}", CPUInfo::GetCPUType());
-        ST_ENGINE_INFO("{0}", CPUInfo::GetL1CacheLineSize());
-
         m_Renderer = CreateSharedRef<TestRenderer>();
         m_Renderer->Construct();
         m_Renderer->Setup();
@@ -80,7 +76,6 @@ namespace Sentinel {
                 ProcessLayerUpdate();
 
                 m_Renderer->Draw();
-                // ProcessLayerImGuiRender();
             }
             m_Window->OnUpdate();
             Input::OnUpdate();
