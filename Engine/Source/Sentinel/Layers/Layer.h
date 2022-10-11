@@ -32,6 +32,11 @@ namespace Sentinel {
             m_ImGuiRenderFunction();
         };
 
+        inline void OnPostRender() {
+            if (!m_PostRenderFunction) return;
+            m_PostRenderFunction();
+        }
+
         const STL::string& GetName() const { return m_DebugName; }
 
     protected:
@@ -40,6 +45,7 @@ namespace Sentinel {
         STL::delegate<void()> m_UpdateFunction;
         STL::delegate<void()> m_RenderFunction;
         STL::delegate<void()> m_ImGuiRenderFunction;
+        STL::delegate<void()> m_PostRenderFunction;
 
     protected:
         STL::string m_DebugName;

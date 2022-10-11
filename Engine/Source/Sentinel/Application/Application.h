@@ -5,61 +5,41 @@
 #include "Sentinel/Layers/LayerStack.h"
 #include "Sentinel/Window/Window.h"
 
-#include "Sentinel/Graphics/Renderer/TestRenderer.h"
-
-#include "Sentinel/GUI/ImGui/ImGuiLayer.h"
-#include "Sentinel/GUI/ImGui/ImGuiDebugLayer.h"
-
 int main(int argc, char** argv);
 
 namespace Sentinel {
     class Application {
     public:
-        Application(const STL::string& name = "Sentinel Engine");
-        virtual ~Application();
+        Application(const STL::string& name = "Application");
+        ~Application();
 
+        static Application& Get() { return *s_Instance; }
+
+        inline Window& GetWindow() { return *m_Window; }
+
+    public:
         void PushLayer(Layer* layer);
         void PushOverlay(Layer* overlay);
 
         const UInt32 SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
         void UnsubscribeFromEvent(const EventType& eventType, const UInt32& callback);
 
-        inline Window& GetWindow() { return *m_Window; }
-
-        // Returns the Instance of the Application, since it's a singleton
-        static Application& Get() { return *s_Instance; }
-
-        void ProcessLayerImGuiRender();
-    private:
-        // The main application loop
+    protected:
+        void Application::RaiseEvent(UniqueRef<Event> eventData);
         void Run();
-        void RaiseEvent(UniqueRef<Event> eventData);
-        void ProcessLayerUpdate();
 
-    private:
-        void OnWindowClose(Event& event);
-        void OnWindowResize(Event& event);
-        void OnKeyPressed(Event& event);
-
-    private:
-        Bool m_Running = true;
-        Bool m_Minimized = false;
-
-        UInt32 m_WindowResizeCallbackIndex = 0;
-        UInt32 m_WindowCloseCallbackIndex = 0;
-        UInt32 m_KeyPressedCallbackIndex = 0;
-
-    private:
+    protected:
         UniqueRef<Window> m_Window;
         LayerStack m_LayerStack;
         EventBus m_EventBus;
-        ImGuiLayer* m_ImGuiLayer;
-        ImGuiDebugLayer* m_ImGuiDebugLayer;
 
-        SharedRef<TestRenderer> m_Renderer;
+    protected:
+        STL::delegate<void()> m_RunFunction;
 
     private:
         static Application* s_Instance;
+
+    private:
         friend int ::main(int argc, char** argv);
     };
 
