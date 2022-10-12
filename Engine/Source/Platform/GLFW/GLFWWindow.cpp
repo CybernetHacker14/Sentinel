@@ -1,5 +1,5 @@
 #include "stpch.h"
-#include "Platform/Windows/WindowsWindow.h"
+#include "Platform/GLFW/GLFWWindow.h"
 
 #include "Sentinel/Events/Categories/WindowEvent.h"
 #include "Sentinel/Events/Categories/MouseEvent.h"
@@ -16,7 +16,7 @@ namespace Sentinel {
         ST_ENGINE_ERROR("GLFW Error ({0}): {1}", error, description);
     }
 
-    WindowsWindow::WindowsWindow(const WindowProperties& props) : Window(props) {
+    GLFWWindow::GLFWWindow(const WindowProperties& props) : Window(props) {
         m_InitFunction = ST_BIND_EVENT_FN(Init);
         m_OnUpdateFunction = ST_BIND_EVENT_FN(OnUpdate);
         m_SetVSyncFunction = ST_BIND_EVENT_FN(SetVSync);
@@ -26,7 +26,11 @@ namespace Sentinel {
         Init();
     }
 
-    void WindowsWindow::Init() {
+    void GLFWWindow::SetDragLogic(DragFn function) {
+        SetMouseDragCheckFn(function);
+    }
+
+    void GLFWWindow::Init() {
         m_Data.Title = m_Properties.Title;
         m_Data.Width = m_Properties.Width;
         m_Data.Height = m_Properties.Height;
@@ -53,7 +57,11 @@ namespace Sentinel {
         } else {
             m_Window = glfwCreateWindow(
                 (Int32)m_Properties.Width, (Int32)m_Properties.Height, m_Data.Title.c_str(), nullptr, nullptr);
-            if (m_Properties.Mode == WindowMode::WINDOWEDMAXIMIZED) { glfwMaximizeWindow(m_Window); }
+            if (m_Properties.Mode == WindowMode::WINDOWEDMAXIMIZED ||
+                m_Properties.Mode == WindowMode::BORDERLESSMAXIMIZED) {
+                glfwMaximizeWindow(m_Window);
+                glfwGetWindowSize(m_Window, (int*)&(m_Data.Width), (int*)&(m_Data.Height));
+            }
         }
         ++s_GLFWWindowCount;
 
@@ -139,16 +147,16 @@ namespace Sentinel {
         glfwSetWindowUserPointer(m_Window, &m_Data);
     }
 
-    void WindowsWindow::OnUpdate() {
+    void GLFWWindow::OnUpdate() {
         glfwPollEvents();
     }
 
-    void WindowsWindow::SetVSync(Bool enabled) {
+    void GLFWWindow::SetVSync(Bool enabled) {
         glfwSwapInterval(enabled ? 1 : 0);
         m_Data.VSync = enabled;
     }
 
-    void WindowsWindow::Shutdown() {
+    void GLFWWindow::Shutdown() {
         glfwDestroyWindow(m_Window);
         --s_GLFWWindowCount;
 

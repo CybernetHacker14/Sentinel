@@ -115,7 +115,6 @@ namespace Sentinel {
         RenderTexture2DAPI::Bind(m_RenderTexture, 1, ShaderType::PIXEL);
         DepthTexture2DAPI::Bind(m_DepthTexture, 2, ShaderType::PIXEL);
         ViewportAPI::Bind(m_Viewport);
-
         Resize(Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
     }
 
@@ -126,7 +125,7 @@ namespace Sentinel {
         SwapchainAPI::SwapBuffers(m_Swapchain);
         RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.8f, 0.1f, 1.0f});
         DepthTexture2DAPI::Clear(m_DepthTexture);
-        Application::Get().ProcessLayerImGuiRender();
+        // ImGui rendering will happen here
         SwapchainAPI::Unbind(m_Swapchain);
     }
 

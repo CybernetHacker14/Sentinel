@@ -4,7 +4,13 @@
 #include "Sentinel/Events/Event.h"
 
 namespace Sentinel {
-    enum class WindowMode { WINDOWED = 0, WINDOWEDMAXIMIZED = 1, FULLSCREEN = 2 };
+    enum class WindowMode : UInt8 {
+        WINDOWED = 0,
+        WINDOWEDMAXIMIZED = 1,
+        BORDERLESS = 2,
+        BORDERLESSMAXIMIZED = 3,
+        FULLSCREEN = 4
+    };
 
     struct WindowProperties {
         STL::string Title;
@@ -74,7 +80,7 @@ namespace Sentinel {
         static UniqueRef<Window> Create(const WindowProperties& props = WindowProperties());
 
     protected:
-        Window(const WindowProperties& props);
+        inline Window(const WindowProperties& props) : m_Properties(props) {}
 
     protected:
         STL::delegate<void()> m_InitFunction;

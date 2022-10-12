@@ -5,9 +5,12 @@
 struct GLFWwindow;
 
 namespace Sentinel {
-    class WindowsWindow final: public Window {
+    class GLFWWindow final: public Window {
     public:
-        WindowsWindow(const WindowProperties& props);
+        GLFWWindow(const WindowProperties& props);
+
+        typedef int (*DragFn)();
+        void SetDragLogic(DragFn function);
 
     private:
         void Init();
