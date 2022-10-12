@@ -5,9 +5,33 @@
 
 #include <Platform/GLFW/GLFWWindow.h>
 
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+
 extern "C" {
 __declspec(dllexport) uint32_t NvOptimusEnablement = 0x00000001;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+
+#ifdef ST_PLATFORM_WINDOWS
+    #include <Windows.h>
+#endif  // ST_PLATFORM_WINDOWS
+
+HWND handle;
+RECT rect;
+POINT cursor;
+
+int captionPadding = 25;
+
+int DragFunction() {
+    GetWindowRect(handle, &rect);
+    GetCursorPos(&cursor);
+
+    return (cursor.x > rect.left && cursor.x < rect.right && cursor.y > rect.top &&
+            cursor.y < rect.top + captionPadding)
+               ? 1
+               : 0;
 }
 
 namespace Sandbox {
@@ -25,6 +49,9 @@ namespace Sandbox {
 
         m_Window = Sentinel::CreateUniqueRef<Sentinel::GLFWWindow>(props);
         m_Window->SetEventCallback(ST_BIND_EVENT_FN(RaiseEvent));
+        static_cast<Sentinel::GLFWWindow*>(m_Window.get())->SetDragLogic(&DragFunction);
+
+        handle = glfwGetWin32Window(m_Window->GetNativeWindow<GLFWwindow>());
 
         //====================================DO NOT DELETE========================================//
 
