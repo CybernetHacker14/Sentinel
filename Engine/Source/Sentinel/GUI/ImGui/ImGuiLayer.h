@@ -18,8 +18,11 @@ namespace Sentinel {
         void End();
         void OnResize(Event& event);
 
+        void BlockEvents(Bool block) { m_BlockEvents = block; }
+
     private:
         ContextData* m_Context;
         UInt32 m_OnResizeCallbackIndex = 0;
+        Bool m_BlockEvents = false;
     };
 }  // namespace Sentinel

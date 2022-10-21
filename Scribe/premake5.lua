@@ -1,4 +1,4 @@
-project "Sentinel-Editor"
+project "Scribe"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -21,10 +21,12 @@ project "Sentinel-Editor"
 
     includedirs
     {
+        "Source",
         "%{IncludeInternalDir.Sentinel_Source}",
         "%{IncludeExternalDir.glm}",
         "%{IncludeExternalDir.EASTL}",
 		"%{IncludeExternalDir.EABase}",
+        "%{IncludeExternalDir.GLFW}",
         "%{IncludeExternalDir.spdlog}",
 		"%{IncludeExternalDir.cereal}"
     }
