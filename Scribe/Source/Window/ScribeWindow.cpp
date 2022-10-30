@@ -1,4 +1,4 @@
-#include "Window/EditorWindow.h"
+#include "Window/ScribeWindow.h"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
@@ -33,7 +33,7 @@ namespace Scribe {
             s_ShouldBlockDrag = value;
         }
 
-        EditorWindow::EditorWindow(const Sentinel::WindowProperties& props) : Window(props) {
+        ScribeWindow::ScribeWindow(const Sentinel::WindowProperties& props) : Window(props) {
             m_InitFunction = ST_BIND_EVENT_FN(Init);
             m_OnUpdateFunction = ST_BIND_EVENT_FN(OnUpdate);
             m_SetVSyncFunction = ST_BIND_EVENT_FN(SetVSync);
@@ -44,11 +44,11 @@ namespace Scribe {
             Init();
         }
 
-        void EditorWindow::SetDragLogic(DragFn function) {
+        void ScribeWindow::SetDragLogic(DragFn function) {
             SetMouseDragCheckFn(function);
         }
 
-        void EditorWindow::Init() {
+        void ScribeWindow::Init() {
             m_Data.Title = m_Properties.Title;
             m_Data.Width = m_Properties.Width;
             m_Data.Height = m_Properties.Height;
@@ -178,16 +178,16 @@ namespace Scribe {
             glfwSetWindowUserPointer(m_Window, &m_Data);
         }
 
-        void EditorWindow::OnUpdate() {
+        void ScribeWindow::OnUpdate() {
             glfwPollEvents();
         }
 
-        void EditorWindow::SetVSync(Sentinel::Bool enabled) {
+        void ScribeWindow::SetVSync(Sentinel::Bool enabled) {
             glfwSwapInterval(enabled ? 1 : 0);
             m_Data.VSync = enabled;
         }
 
-        void EditorWindow::Shutdown() {
+        void ScribeWindow::Shutdown() {
             glfwDestroyWindow(m_Window);
             --s_GLFWWindowCount;
 

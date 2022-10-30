@@ -8,9 +8,9 @@ namespace Scribe {
     namespace Window {
         static void BlockTitleBarDrag(Sentinel::Bool value);
 
-        class EditorWindow final: public Sentinel::Window {
+        class ScribeWindow final: public Sentinel::Window {
         public:
-            EditorWindow(const Sentinel::WindowProperties& props);
+            ScribeWindow(const Sentinel::WindowProperties& props);
 
             typedef int (*DragFn)();
             void SetDragLogic(DragFn function);

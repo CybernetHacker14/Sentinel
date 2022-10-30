@@ -28,7 +28,8 @@ project "Scribe"
 		"%{IncludeExternalDir.EABase}",
         "%{IncludeExternalDir.GLFW}",
         "%{IncludeExternalDir.spdlog}",
-		"%{IncludeExternalDir.cereal}"
+		"%{IncludeExternalDir.cereal}",
+        "%{IncludeExternalDir.imgui}"
     }
 
     links

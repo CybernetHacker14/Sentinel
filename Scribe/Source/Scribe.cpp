@@ -1,12 +1,12 @@
 #include "Scribe.h"
 
+#include "Window/ScribeWindow.h"
+
+#include "Renderer/ScribeRenderer.h"
+#include "Renderer/ScribeImGuiBase.h"
+
 #include <Sentinel/Application/EntryPoint.h>
-
-#include "Window/EditorWindow.h"
-
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
+#include <Sentinel/GUI/ImGui/ImGuiLayer.h>
 
 // For launching the application with Nvidia card if available by default
 extern "C" {
@@ -25,16 +25,55 @@ namespace Scribe {
         props.Mode = Sentinel::WindowMode::BORDERLESS;
         props.FramebufferTransparency = false;
 
-        m_Window = Sentinel::CreateUniqueRef<Window::EditorWindow>(props);
+        m_Window = Sentinel::CreateUniqueRef<Window::ScribeWindow>(props);
         m_Window->SetEventCallback(ST_BIND_EVENT_FN(RaiseEvent));
+
+        m_BaseRenderer = new Rendering::ScribeRenderer(m_Window.get());
+        PushLayer(m_BaseRenderer);
+
+        m_ImGuiLayer = new Sentinel::ImGuiLayer(m_BaseRenderer->GetRenderingContext());
+        PushOverlay(m_ImGuiLayer);
+
+        m_ImGuiBase = new Rendering::ScribeImGuiBase();
+        PushLayer(m_ImGuiBase);
     }
 
     void Scribe::Run() {
         while (m_Running) {
-            if (!m_Minimized) {}
+            if (!m_Minimized) {
+                ProcessLayerUpdate();
+                ProcessLayerRender();
+                ProcessLayerImGuiRender();
+                ProcessLayerPostRender();
+            }
             m_Window->OnUpdate();
             Sentinel::Input::OnUpdate();
         }
         m_Window->Shutdown();
+    }
+
+    void Scribe::ProcessLayerUpdate() {
+        if (m_LayerStack.GetSize() == 0) return;
+        for (Sentinel::Layer* layer: m_LayerStack) layer->OnUpdate();
+    }
+
+    void Scribe::ProcessLayerRender() {
+        if (m_LayerStack.GetSize() == 0) return;
+        for (Sentinel::Layer* layer: m_LayerStack) layer->OnRender();
+    }
+
+    void Scribe::ProcessLayerImGuiRender() {
+        if (m_LayerStack.GetSize() == 0) return;
+
+        m_ImGuiLayer->Begin();
+
+        for (Sentinel::Layer* layer: m_LayerStack) layer->OnImGuiRender();
+
+        m_ImGuiLayer->End();
+    }
+
+    void Scribe::ProcessLayerPostRender() {
+        if (m_LayerStack.GetSize() == 0) return;
+        for (Sentinel::Layer* layer: m_LayerStack) layer->OnPostRender();
     }
 }  // namespace Scribe
