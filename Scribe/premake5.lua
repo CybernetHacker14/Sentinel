@@ -10,7 +10,8 @@ project "Scribe"
     files
     {
         "Source/**.h",
-        "Source/**.cpp"
+        "Source/**.cpp",
+		"Assets/**.inl"
     }
 
     defines
@@ -22,6 +23,7 @@ project "Scribe"
     includedirs
     {
         "Source",
+        "Assets",
         "%{IncludeInternalDir.Sentinel_Source}",
         "%{IncludeExternalDir.glm}",
         "%{IncludeExternalDir.EASTL}",

@@ -15,6 +15,7 @@ namespace Sentinel {
                     m_BindFunction = DX11Texture2DAPI::Bind;
                     m_UnbindFunction = DX11Texture2DAPI::Unbind;
                     m_CleanFunction = DX11Texture2DAPI::Clean;
+                    m_ResourceFunction = DX11Texture2DAPI::GetResource;
                 }
             }
         } _initializer;
@@ -23,8 +24,10 @@ namespace Sentinel {
         static void Bind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType);
         static void Unbind(Texture2DData* dataObject);
         static void Clean(Texture2DData* dataObject);
+        static void* GetResource(Texture2DData* dataObject);
 
         static void Load(DX11Texture2DData* dataObject);
+        static void Load(DX11Texture2DData* dataObject, UInt32 width, UInt32 height, UInt8 channels);
 
     private:
         friend class Texture2DAPI;

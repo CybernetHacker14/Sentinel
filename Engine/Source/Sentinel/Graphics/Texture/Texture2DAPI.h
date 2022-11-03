@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
+#include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Graphics/Texture/Texture2DData.h"
 
 namespace Sentinel {
@@ -12,6 +13,18 @@ namespace Sentinel {
             SharedRef<GraphicsMemoryManager> memoryHandle,
             ContextData* context,
             const Texture2DDataImportSettings& settings);
+
+        static Texture2DData* CreateTexture2DData(
+            PoolAllocator<Texture2DData> allocator, ContextData* context, const Texture2DDataImportSettings& settings);
+
+        static Texture2DData* CreateTexture2DData(
+            PoolAllocator<Texture2DData> allocator,
+            ContextData* context,
+            const Texture2DDataImportSettings& settings,
+            UInt8* pixelData,
+            UInt32 width,
+            UInt32 height,
+            UInt8 channels);
 
         inline static void Bind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
             if (!m_BindFunction) return;
@@ -29,6 +42,11 @@ namespace Sentinel {
         inline static void Clean(Texture2DData* dataObject) {
             if (!m_CleanFunction) return;
             m_CleanFunction(dataObject);
+        }
+
+        inline static void* GetResource(Texture2DData* dataObject) {
+            if (!m_ResourceFunction) return nullptr;
+            return m_ResourceFunction(dataObject);
         }
 
         inline static Bool IsHDR(Texture2DData* dataObject) { return dataObject->m_HDR; }
@@ -53,5 +71,6 @@ namespace Sentinel {
         inline static STL::delegate<void(Texture2DData*, UInt32, const ShaderType)> m_BindFunction;
         inline static STL::delegate<void(Texture2DData*)> m_UnbindFunction;
         inline static STL::delegate<void(Texture2DData*)> m_CleanFunction;
+        inline static STL::delegate<void*(Texture2DData*)> m_ResourceFunction;
     };
 }  // namespace Sentinel

@@ -1,17 +1,30 @@
 #include "Renderer/ScribeImGuiBase.h"
 
+#include <Sentinel/Graphics/Texture/Texture2DAPI.h>
+
 #include <imgui.h>
+
+#include "Icons/Title/Logo_512.inl"
 
 namespace Scribe {
     namespace Rendering {
-        ScribeImGuiBase::ScribeImGuiBase() : Sentinel::Layer("EditorImGuiBase") {
+        ScribeImGuiBase::ScribeImGuiBase(Sentinel::ContextData* context)
+            : Sentinel::Layer("EditorImGuiBase"), m_Context(context) {
+            m_AttachFunction = ST_BIND_EVENT_FN(ScribeImGuiBase::OnAttach);
             m_ImGuiRenderFunction = ST_BIND_EVENT_FN(ScribeImGuiBase::OnImGuiRender);
+
+            m_TexMemAllocator.AllocateMemoryBlock(10);
         }
 
         ScribeImGuiBase::~ScribeImGuiBase() {
+            m_TexMemAllocator.DeleteAll();
+            m_TexMemAllocator.DeallocateMemoryBlock();
         }
 
         void ScribeImGuiBase::OnAttach() {
+            Sentinel::Texture2DDataImportSettings settings;
+            settings.TextureFilepath = "Assets/Icons/grid.png";
+            m_LogoTexture = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexMemAllocator, m_Context, settings);
         }
 
         void ScribeImGuiBase::OnDetach() {
@@ -62,6 +75,14 @@ namespace Scribe {
             }
 
             style.WindowMinSize.x = minWindowSizeX;
+            ImGuiWindowFlags window_flags_1 = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove |
+                                              ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize;
+
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            ImGui::Begin("Title bar", &dockspaceOpen, window_flags_1);
+            ImGui::PopStyleVar();
+            ImGui::Image((ImTextureID)Sentinel::Texture2DAPI::GetResource(m_LogoTexture), {60, 60});
+            ImGui::End();
 
             ImGui::End();
         }

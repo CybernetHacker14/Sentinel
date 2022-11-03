@@ -34,8 +34,8 @@ namespace Scribe {
         m_ImGuiLayer = new Sentinel::ImGuiLayer(m_BaseRenderer->GetRenderingContext());
         PushOverlay(m_ImGuiLayer);
 
-        m_ImGuiBase = new Rendering::ScribeImGuiBase();
-        PushLayer(m_ImGuiBase);
+        m_ImGuiBase = new Rendering::ScribeImGuiBase(m_BaseRenderer->GetRenderingContext());
+        PushOverlay(m_ImGuiBase);
     }
 
     void Scribe::Run() {
