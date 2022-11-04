@@ -35,7 +35,6 @@ int DragFunction() {
 }
 
 namespace Sandbox {
-
     Sandbox::Sandbox() {
         m_RunFunction = ST_BIND_EVENT_FN(Sandbox::Run);
 

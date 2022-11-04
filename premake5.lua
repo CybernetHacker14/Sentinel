@@ -6,7 +6,7 @@ include "Premake/customization/external_dependencies.lua"
 
 workspace "Sentinel"
     architecture "x86_64"
-    startproject "Sandbox"
+    startproject "Scribe"
 
     configurations
     {
@@ -40,7 +40,7 @@ group ""
 -- Include projects
 group "Core Modules"
     include "Engine"
-    include "Editor"
+    include "Scribe"
 group ""
 
 group "Test Modules"
