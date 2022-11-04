@@ -22,7 +22,7 @@ namespace Scribe {
         props.Title = "Scribe";
         props.Width = 1280;
         props.Height = 720;
-        props.Mode = Sentinel::WindowMode::BORDERLESS;
+        props.Mode = Sentinel::WindowMode::BORDERLESSMAXIMIZED;
         props.FramebufferTransparency = false;
 
         m_Window = Sentinel::CreateUniqueRef<Window::ScribeWindow>(props);

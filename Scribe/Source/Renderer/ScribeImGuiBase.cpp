@@ -23,7 +23,7 @@ namespace Scribe {
 
         void ScribeImGuiBase::OnAttach() {
             Sentinel::Texture2DDataImportSettings settings;
-            settings.TextureFilepath = "Assets/Icons/grid.png";
+            settings.TextureFilepath = "Assets/Icons/icon.png";
             m_LogoTexture = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexMemAllocator, m_Context, settings);
         }
 
@@ -37,6 +37,17 @@ namespace Scribe {
         }
 
         void ScribeImGuiBase::OnImGuiRender() {
+            /*static bool dockspaceOpen = true;
+            ImGuiWindowFlags window_flags_1 = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove |
+                                              ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize;
+
+            ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->WorkPos);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            ImGui::Begin("Title bar", &dockspaceOpen, window_flags_1);
+            ImGui::PopStyleVar();
+            ImGui::Image((ImTextureID)Sentinel::Texture2DAPI::GetResource(m_LogoTexture), {60, 60});
+            ImGui::End();*/
             static bool dockspaceOpen = true;
             static bool opt_fullscreen_persistant = true;
             bool opt_fullscreen = opt_fullscreen_persistant;
@@ -76,12 +87,15 @@ namespace Scribe {
 
             style.WindowMinSize.x = minWindowSizeX;
             ImGuiWindowFlags window_flags_1 = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove |
-                                              ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize;
+                                              ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+                                              ImGuiWindowFlags_NoBackground;
 
+            ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->WorkPos);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
             ImGui::Begin("Title bar", &dockspaceOpen, window_flags_1);
             ImGui::PopStyleVar();
-            ImGui::Image((ImTextureID)Sentinel::Texture2DAPI::GetResource(m_LogoTexture), {60, 60});
+            ImGui::Image((ImTextureID)Sentinel::Texture2DAPI::GetResource(m_LogoTexture), {64, 64});
             ImGui::End();
 
             ImGui::End();
