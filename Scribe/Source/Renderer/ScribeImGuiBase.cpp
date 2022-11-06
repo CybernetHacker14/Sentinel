@@ -1,15 +1,19 @@
 #include "Renderer/ScribeImGuiBase.h"
+#include "Window/ScribeWindow.h"
 
 #include <Sentinel/Graphics/Texture/Texture2DAPI.h>
 
 #include <imgui.h>
 
-#include "Icons/Title/Logo_512.inl"
+#include "Icons/Title/iconbw64.inl"
+#include "Icons/Title/close_dark20.inl"
 
 namespace Scribe {
     namespace Rendering {
-        ScribeImGuiBase::ScribeImGuiBase(Sentinel::ContextData* context)
-            : Sentinel::Layer("EditorImGuiBase"), m_Context(context) {
+        static Sentinel::Bool genericWindowOpen = true;
+
+        ScribeImGuiBase::ScribeImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window)
+            : Sentinel::Layer("EditorImGuiBase"), m_Context(context), m_Window(window) {
             m_AttachFunction = ST_BIND_EVENT_FN(ScribeImGuiBase::OnAttach);
             m_ImGuiRenderFunction = ST_BIND_EVENT_FN(ScribeImGuiBase::OnImGuiRender);
 
@@ -23,8 +27,25 @@ namespace Scribe {
 
         void ScribeImGuiBase::OnAttach() {
             Sentinel::Texture2DDataImportSettings settings;
-            settings.TextureFilepath = "Assets/Icons/icon.png";
-            m_LogoTexture = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexMemAllocator, m_Context, settings);
+            m_LogoTex = Sentinel::Texture2DAPI::CreateTexture2DData(
+                m_TexMemAllocator,
+                m_Context,
+                settings,
+                &(iconBW64Pixels[0]),
+                iconBW64Width,
+                iconBW64Height,
+                iconBW64BPP);
+
+            m_CloseTex = Sentinel::Texture2DAPI::CreateTexture2DData(
+                m_TexMemAllocator,
+                m_Context,
+                settings,
+                &(close_dark64Pixels[0]),
+                close_dark64Width,
+                close_dark64Height,
+                close_dark64BPP);
+
+            ST_ENGINE_INFO("{0}", m_TexMemAllocator.GetTotalAllocations());
         }
 
         void ScribeImGuiBase::OnDetach() {
@@ -37,17 +58,8 @@ namespace Scribe {
         }
 
         void ScribeImGuiBase::OnImGuiRender() {
-            /*static bool dockspaceOpen = true;
-            ImGuiWindowFlags window_flags_1 = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove |
-                                              ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize;
+            RenderImGuiTitleBar();
 
-            ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->WorkPos);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-            ImGui::Begin("Title bar", &dockspaceOpen, window_flags_1);
-            ImGui::PopStyleVar();
-            ImGui::Image((ImTextureID)Sentinel::Texture2DAPI::GetResource(m_LogoTexture), {60, 60});
-            ImGui::End();*/
             static bool dockspaceOpen = true;
             static bool opt_fullscreen_persistant = true;
             bool opt_fullscreen = opt_fullscreen_persistant;
@@ -66,7 +78,9 @@ namespace Scribe {
                 window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
             }
 
-            if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) window_flags |= ImGuiWindowFlags_NoBackground;
+            if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) {
+                window_flags |= ImGuiWindowFlags_NoBackground;
+            }
 
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
             ImGui::Begin("DockSpace", &dockspaceOpen, window_flags);
@@ -86,22 +100,28 @@ namespace Scribe {
             }
 
             style.WindowMinSize.x = minWindowSizeX;
-            ImGuiWindowFlags window_flags_1 = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove |
-                                              ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-                                              ImGuiWindowFlags_NoBackground;
-
-            ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->WorkPos);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-            ImGui::Begin("Title bar", &dockspaceOpen, window_flags_1);
-            ImGui::PopStyleVar();
-            ImGui::Image((ImTextureID)Sentinel::Texture2DAPI::GetResource(m_LogoTexture), {64, 64});
-            ImGui::End();
-
             ImGui::End();
         }
 
         void ScribeImGuiBase::OnPostRender() {
+        }
+
+        void ScribeImGuiBase::RenderImGuiTitleBar() {
+            ImGuiWindowFlags flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove |
+                                     ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize;
+
+            ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->WorkPos);
+            ImGui::SetNextWindowSize({viewport->WorkSize.x, 64});
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            ImGui::Begin("Title_Bar", &genericWindowOpen, flags);
+            ImGui::PopStyleVar();
+            ImGui::Image((ImTextureID)Sentinel::Texture2DAPI::GetResource(m_LogoTex), {64, 64});
+            ImGui::SetCursorPos({64, 0});
+            if (ImGui::ImageButton("Close", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_CloseTex), {64, 64})) {
+                m_Window->SecondaryShutdown();
+            }
+            ImGui::End();
         }
     }  // namespace Rendering
 }  // namespace Scribe

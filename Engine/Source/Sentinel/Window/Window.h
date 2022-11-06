@@ -76,9 +76,6 @@ namespace Sentinel {
             return static_cast<T*>(GetNativeWindowVPtr());
         }
 
-    public:
-        static UniqueRef<Window> Create(const WindowProperties& props = WindowProperties());
-
     protected:
         inline Window(const WindowProperties& props) : m_Properties(props) {}
 

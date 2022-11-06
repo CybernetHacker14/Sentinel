@@ -15,6 +15,8 @@ namespace Scribe {
             typedef int (*DragFn)();
             void SetDragLogic(DragFn function);
 
+            void SecondaryShutdown();
+
         private:
             void Init();
             void OnUpdate();

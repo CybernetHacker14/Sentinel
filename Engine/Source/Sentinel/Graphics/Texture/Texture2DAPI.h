@@ -15,16 +15,16 @@ namespace Sentinel {
             const Texture2DDataImportSettings& settings);
 
         static Texture2DData* CreateTexture2DData(
-            PoolAllocator<Texture2DData> allocator, ContextData* context, const Texture2DDataImportSettings& settings);
+            PoolAllocator<Texture2DData>& allocator, ContextData* context, const Texture2DDataImportSettings& settings);
 
         static Texture2DData* CreateTexture2DData(
-            PoolAllocator<Texture2DData> allocator,
+            PoolAllocator<Texture2DData>& allocator,
             ContextData* context,
             const Texture2DDataImportSettings& settings,
             UInt8* pixelData,
-            UInt32 width,
-            UInt32 height,
-            UInt8 channels);
+            const UInt32 width,
+            const UInt32 height,
+            const UInt8 channels);
 
         inline static void Bind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
             if (!m_BindFunction) return;

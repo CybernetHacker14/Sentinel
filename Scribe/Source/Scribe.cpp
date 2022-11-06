@@ -18,6 +18,8 @@ namespace Scribe {
     Scribe::Scribe() {
         m_RunFunction = ST_BIND_EVENT_FN(Scribe::Run);
 
+        m_CloseIndex = SubscribeToEvent(Sentinel::EventType::WindowClose, ST_BIND_EVENT_FN(OnWindowClose));
+
         Sentinel::WindowProperties props;
         props.Title = "Scribe";
         props.Width = 1280;
@@ -34,8 +36,13 @@ namespace Scribe {
         m_ImGuiLayer = new Sentinel::ImGuiLayer(m_BaseRenderer->GetRenderingContext());
         PushOverlay(m_ImGuiLayer);
 
-        m_ImGuiBase = new Rendering::ScribeImGuiBase(m_BaseRenderer->GetRenderingContext());
+        m_ImGuiBase = new Rendering::ScribeImGuiBase(
+            m_BaseRenderer->GetRenderingContext(), static_cast<Window::ScribeWindow*>(m_Window.get()));
         PushOverlay(m_ImGuiBase);
+    }
+
+    Scribe::~Scribe() {
+        UnsubscribeFromEvent(Sentinel::EventType::WindowClose, m_CloseIndex);
     }
 
     void Scribe::Run() {
@@ -49,6 +56,8 @@ namespace Scribe {
             m_Window->OnUpdate();
             Sentinel::Input::OnUpdate();
         }
+        m_LayerStack.PopOverlay(m_ImGuiBase);
+        m_LayerStack.PopOverlay(m_ImGuiLayer);
         m_Window->Shutdown();
     }
 
@@ -75,5 +84,10 @@ namespace Scribe {
     void Scribe::ProcessLayerPostRender() {
         if (m_LayerStack.GetSize() == 0) return;
         for (Sentinel::Layer* layer: m_LayerStack) layer->OnPostRender();
+    }
+
+    void Scribe::OnWindowClose(Sentinel::Event& event) {
+        Sentinel::WindowCloseEvent e = *(event.Cast<Sentinel::WindowCloseEvent>());
+        m_Running = false;
     }
 }  // namespace Scribe

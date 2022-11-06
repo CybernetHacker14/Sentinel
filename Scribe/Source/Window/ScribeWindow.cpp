@@ -193,5 +193,12 @@ namespace Scribe {
 
             if (s_GLFWWindowCount == 0) { glfwTerminate(); }
         }
+
+        void ScribeWindow::SecondaryShutdown() {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(m_Window);
+
+            Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::WindowCloseEvent());
+            data.EventCallback(Sentinel::STL::move(event));
+        }
     }  // namespace Window
 }  // namespace Scribe

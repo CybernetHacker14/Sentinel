@@ -29,7 +29,7 @@ namespace Sentinel {
     }
 
     Texture2DData* Texture2DAPI::CreateTexture2DData(
-        PoolAllocator<Texture2DData> allocator, ContextData* context, const Texture2DDataImportSettings& settings) {
+        PoolAllocator<Texture2DData>& allocator, ContextData* context, const Texture2DDataImportSettings& settings) {
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
                 Texture2DData* texObject = allocator.New<DX11Texture2DData>();
@@ -46,13 +46,13 @@ namespace Sentinel {
     }
 
     Texture2DData* Texture2DAPI::CreateTexture2DData(
-        PoolAllocator<Texture2DData> allocator,
+        PoolAllocator<Texture2DData>& allocator,
         ContextData* context,
         const Texture2DDataImportSettings& settings,
         UInt8* pixelData,
-        UInt32 width,
-        UInt32 height,
-        UInt8 channels) {
+        const UInt32 width,
+        const UInt32 height,
+        const UInt8 channels) {
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
                 Texture2DData* texObject = allocator.New<DX11Texture2DData>();

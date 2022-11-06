@@ -17,6 +17,7 @@ namespace Scribe {
     class Scribe final: public Sentinel::Application {
     public:
         Scribe();
+        ~Scribe();
 
     private:
         void Run();
@@ -27,6 +28,11 @@ namespace Scribe {
         void ProcessLayerPostRender();
 
     private:
+        void OnWindowClose(Sentinel::Event& event);
+
+    private:
+        Sentinel::UInt32 m_CloseIndex = 0;
+
         Sentinel::Bool m_Running = true;
         Sentinel::Bool m_Minimized = false;
 
