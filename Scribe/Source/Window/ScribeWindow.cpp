@@ -16,6 +16,8 @@ namespace Scribe {
         static Sentinel::Bool s_ShouldBlockDrag = false;
 
         int DragFunction() {
+            if (s_ShouldBlockDrag) return false;
+
             GetWindowRect(handle, &rect);
             GetCursorPos(&cursor);
 

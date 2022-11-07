@@ -110,6 +110,9 @@ namespace Scribe {
             ImGuiWindowFlags flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove |
                                      ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize;
 
+            ImGuiStyle& style = ImGui::GetStyle();
+
+            // Display the Engine logo
             ImGuiViewport* viewport = ImGui::GetMainViewport();
             ImGui::SetNextWindowPos(viewport->WorkPos);
             ImGui::SetNextWindowSize({viewport->WorkSize.x, 64});
@@ -117,10 +120,20 @@ namespace Scribe {
             ImGui::Begin("Title_Bar", &genericWindowOpen, flags);
             ImGui::PopStyleVar();
             ImGui::Image((ImTextureID)Sentinel::Texture2DAPI::GetResource(m_LogoTex), {64, 64});
-            ImGui::SetCursorPos({64, 0});
-            if (ImGui::ImageButton("Close", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_CloseTex), {64, 64})) {
+
+            ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 34, 0});
+            //  Render the close button
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(7, 5));
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.24f, 0.24f, 0.24f, 0.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.91f, 0.1f, 0.15f, 0.0f));
+            if (ImGui::ImageButton("Close", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_CloseTex), {20, 20})) {
                 m_Window->SecondaryShutdown();
             }
+            Window::BlockTitleBarDrag(ImGui::IsItemHovered());
+            ImGui::PopStyleColor(3);
+            ImGui::PopStyleVar();
+
             ImGui::End();
         }
     }  // namespace Rendering
