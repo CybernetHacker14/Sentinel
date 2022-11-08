@@ -100,6 +100,7 @@ namespace Scribe {
             }
 
             style.WindowMinSize.x = minWindowSizeX;
+
             ImGui::End();
         }
 
@@ -124,9 +125,9 @@ namespace Scribe {
             ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 34, 0});
             //  Render the close button
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(7, 5));
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.24f, 0.24f, 0.24f, 0.0f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.91f, 0.1f, 0.15f, 0.0f));
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.24f, 0.24f, 0.24f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.91f, 0.1f, 0.15f, 1.0f));
             if (ImGui::ImageButton("Close", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_CloseTex), {20, 20})) {
                 m_Window->SecondaryShutdown();
             }
