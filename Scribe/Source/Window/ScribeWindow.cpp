@@ -202,5 +202,28 @@ namespace Scribe {
             Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::WindowCloseEvent());
             data.EventCallback(Sentinel::STL::move(event));
         }
+
+        Sentinel::Bool ScribeWindow::IsMaximized() {
+            return Sentinel::Bool();
+        }
+
+        Sentinel::Bool ScribeWindow::IsMinimized() {
+            return Sentinel::Bool();
+        }
+
+        Sentinel::Bool ScribeWindow::IsWindowed() {
+            return Sentinel::Bool();
+        }
+
+        void ScribeWindow::Maximize() {
+            glfwMaximizeWindow(m_Window);
+        }
+
+        void ScribeWindow::Minimize() {
+            glfwIconifyWindow(m_Window);
+        }
+
+        void ScribeWindow::RestoreDown() {
+        }
     }  // namespace Window
 }  // namespace Scribe

@@ -17,6 +17,14 @@ namespace Scribe {
 
             void SecondaryShutdown();
 
+            Sentinel::Bool IsMaximized();
+            Sentinel::Bool IsMinimized();
+            Sentinel::Bool IsWindowed();
+
+            void Maximize();
+            void Minimize();
+            void RestoreDown();
+
         private:
             void Init();
             void OnUpdate();

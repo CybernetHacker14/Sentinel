@@ -7,6 +7,7 @@
 
 #include "Icons/Title/iconbw64.inl"
 #include "Icons/Title/close_dark20.inl"
+#include "Icons/Title/minimize_dark20.inl"
 
 namespace Scribe {
     namespace Rendering {
@@ -40,12 +41,19 @@ namespace Scribe {
                 m_TexMemAllocator,
                 m_Context,
                 settings,
-                &(close_dark64Pixels[0]),
-                close_dark64Width,
-                close_dark64Height,
-                close_dark64BPP);
+                &(close_dark20Pixels[0]),
+                close_dark20Width,
+                close_dark20Height,
+                close_dark20BPP);
 
-            ST_ENGINE_INFO("{0}", m_TexMemAllocator.GetTotalAllocations());
+            m_MinimizeTex = Sentinel::Texture2DAPI::CreateTexture2DData(
+                m_TexMemAllocator,
+                m_Context,
+                settings,
+                &(minimize_dark20Pixels[0]),
+                minimize_dark20Width,
+                minimize_dark20Height,
+                minimize_dark20BPP);
         }
 
         void ScribeImGuiBase::OnDetach() {
@@ -122,17 +130,30 @@ namespace Scribe {
             ImGui::PopStyleVar();
             ImGui::Image((ImTextureID)Sentinel::Texture2DAPI::GetResource(m_LogoTex), {64, 64});
 
-            ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 34, 0});
             //  Render the close button
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(7, 5));
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.24f, 0.24f, 0.24f, 1.0f));
+
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+            ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 69, 0});
+            if (ImGui::ImageButton(
+                    "Minimize", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_MinimizeTex), {20, 20})) {
+                m_Window->Minimize();
+            }
+            ImGui::PopStyleColor();
+            Sentinel::Bool minimizeHover = ImGui::IsItemHovered();
+
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.91f, 0.1f, 0.15f, 1.0f));
+            ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 34, 0});
             if (ImGui::ImageButton("Close", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_CloseTex), {20, 20})) {
                 m_Window->SecondaryShutdown();
             }
-            Window::BlockTitleBarDrag(ImGui::IsItemHovered());
-            ImGui::PopStyleColor(3);
+            Sentinel::Bool closeHover = ImGui::IsItemHovered();
+            Window::BlockTitleBarDrag(minimizeHover || closeHover);
+            ImGui::PopStyleColor();
+
+            ImGui::PopStyleColor(2);
             ImGui::PopStyleVar();
 
             ImGui::End();

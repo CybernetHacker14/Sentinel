@@ -39,6 +39,7 @@ namespace Scribe {
 
             Sentinel::Texture2DData* m_LogoTex;
             Sentinel::Texture2DData* m_CloseTex;
+            Sentinel::Texture2DData* m_MinimizeTex;
         };
     }  // namespace Rendering
 }  // namespace Scribe
