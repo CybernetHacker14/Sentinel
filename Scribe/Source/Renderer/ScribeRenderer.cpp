@@ -39,6 +39,7 @@ namespace Scribe {
         }
 
         ScribeRenderer::~ScribeRenderer() {
+            Sentinel::Application::Get().UnsubscribeFromEvent(Sentinel::EventType::WindowResize, m_ResizeIndex);
         }
 
         void ScribeRenderer::OnAttach() {

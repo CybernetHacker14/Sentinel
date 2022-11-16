@@ -16,6 +16,8 @@ namespace Scribe {
         static Sentinel::Bool s_ShouldBlockDrag = false;
 
         int DragFunction() {
+            if (s_ShouldBlockDrag) return false;
+
             GetWindowRect(handle, &rect);
             GetCursorPos(&cursor);
 
@@ -192,6 +194,37 @@ namespace Scribe {
             --s_GLFWWindowCount;
 
             if (s_GLFWWindowCount == 0) { glfwTerminate(); }
+        }
+
+        Sentinel::Bool ScribeWindow::IsMaximized() {
+            return glfwGetWindowAttrib(m_Window, GLFW_MAXIMIZED);
+        }
+
+        Sentinel::Bool ScribeWindow::IsMinimized() {
+            return Sentinel::Bool();
+        }
+
+        Sentinel::Bool ScribeWindow::IsWindowed() {
+            return Sentinel::Bool();
+        }
+
+        void ScribeWindow::Minimize() {
+            glfwIconifyWindow(m_Window);
+        }
+
+        void ScribeWindow::Maximize() {
+            glfwMaximizeWindow(m_Window);
+        }
+
+        void ScribeWindow::RestoreDown() {
+            glfwRestoreWindow(m_Window);
+        }
+
+        void ScribeWindow::InvokeShutdown() {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(m_Window);
+
+            Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::WindowCloseEvent());
+            data.EventCallback(Sentinel::STL::move(event));
         }
     }  // namespace Window
 }  // namespace Scribe

@@ -6,7 +6,7 @@ struct GLFWwindow;
 
 namespace Scribe {
     namespace Window {
-        static void BlockTitleBarDrag(Sentinel::Bool value);
+        void BlockTitleBarDrag(Sentinel::Bool value);
 
         class ScribeWindow final: public Sentinel::Window {
         public:
@@ -14,6 +14,15 @@ namespace Scribe {
 
             typedef int (*DragFn)();
             void SetDragLogic(DragFn function);
+
+            Sentinel::Bool IsMaximized();
+            Sentinel::Bool IsMinimized();
+            Sentinel::Bool IsWindowed();
+
+            void Minimize();
+            void Maximize();
+            void RestoreDown();
+            void InvokeShutdown();
 
         private:
             void Init();
