@@ -15,15 +15,14 @@ namespace Scribe {
             typedef int (*DragFn)();
             void SetDragLogic(DragFn function);
 
-            void SecondaryShutdown();
-
             Sentinel::Bool IsMaximized();
             Sentinel::Bool IsMinimized();
             Sentinel::Bool IsWindowed();
 
-            void Maximize();
             void Minimize();
+            void Maximize();
             void RestoreDown();
+            void InvokeShutdown();
 
         private:
             void Init();

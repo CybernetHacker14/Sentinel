@@ -8,6 +8,8 @@
 #include "Icons/Title/iconbw64.inl"
 #include "Icons/Title/close_dark20.inl"
 #include "Icons/Title/minimize_dark20.inl"
+#include "Icons/Title/maximize_dark20.inl"
+#include "Icons/Title/restore_down_dark20.inl"
 
 namespace Scribe {
     namespace Rendering {
@@ -54,6 +56,24 @@ namespace Scribe {
                 minimize_dark20Width,
                 minimize_dark20Height,
                 minimize_dark20BPP);
+
+            m_MaximizeTex = Sentinel::Texture2DAPI::CreateTexture2DData(
+                m_TexMemAllocator,
+                m_Context,
+                settings,
+                &(maximize_dark20Pixels[0]),
+                maximize_dark20Width,
+                maximize_dark20Height,
+                maximize_dark20BPP);
+
+            m_RestoreDownTex = Sentinel::Texture2DAPI::CreateTexture2DData(
+                m_TexMemAllocator,
+                m_Context,
+                settings,
+                &(restore_down_dark20Pixels[0]),
+                restore_down_dark20Width,
+                restore_down_dark20Height,
+                restore_down_dark20BPP);
         }
 
         void ScribeImGuiBase::OnDetach() {
@@ -136,21 +156,31 @@ namespace Scribe {
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.24f, 0.24f, 0.24f, 1.0f));
 
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
-            ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 69, 0});
+            ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 104, 0});
             if (ImGui::ImageButton(
                     "Minimize", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_MinimizeTex), {20, 20})) {
                 m_Window->Minimize();
             }
-            ImGui::PopStyleColor();
             Sentinel::Bool minimizeHover = ImGui::IsItemHovered();
+
+            ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 69, 0});
+            if (ImGui::ImageButton(
+                    "Maximize_Restore",
+                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(
+                        m_Window->IsMaximized() ? m_RestoreDownTex : m_MaximizeTex),
+                    {20, 20})) {
+                m_Window->IsMaximized() ? m_Window->RestoreDown() : m_Window->Maximize();
+            }
+            Sentinel::Bool max_restoreHover = ImGui::IsItemHovered();
+            ImGui::PopStyleColor();
 
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.91f, 0.1f, 0.15f, 1.0f));
             ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 34, 0});
             if (ImGui::ImageButton("Close", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_CloseTex), {20, 20})) {
-                m_Window->SecondaryShutdown();
+                m_Window->InvokeShutdown();
             }
             Sentinel::Bool closeHover = ImGui::IsItemHovered();
-            Window::BlockTitleBarDrag(minimizeHover || closeHover);
+            Window::BlockTitleBarDrag(minimizeHover || closeHover || max_restoreHover);
             ImGui::PopStyleColor();
 
             ImGui::PopStyleColor(2);

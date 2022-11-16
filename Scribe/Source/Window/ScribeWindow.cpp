@@ -196,15 +196,8 @@ namespace Scribe {
             if (s_GLFWWindowCount == 0) { glfwTerminate(); }
         }
 
-        void ScribeWindow::SecondaryShutdown() {
-            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(m_Window);
-
-            Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::WindowCloseEvent());
-            data.EventCallback(Sentinel::STL::move(event));
-        }
-
         Sentinel::Bool ScribeWindow::IsMaximized() {
-            return Sentinel::Bool();
+            return glfwGetWindowAttrib(m_Window, GLFW_MAXIMIZED);
         }
 
         Sentinel::Bool ScribeWindow::IsMinimized() {
@@ -215,15 +208,23 @@ namespace Scribe {
             return Sentinel::Bool();
         }
 
-        void ScribeWindow::Maximize() {
-            glfwMaximizeWindow(m_Window);
-        }
-
         void ScribeWindow::Minimize() {
             glfwIconifyWindow(m_Window);
         }
 
+        void ScribeWindow::Maximize() {
+            glfwMaximizeWindow(m_Window);
+        }
+
         void ScribeWindow::RestoreDown() {
+            glfwRestoreWindow(m_Window);
+        }
+
+        void ScribeWindow::InvokeShutdown() {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(m_Window);
+
+            Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::WindowCloseEvent());
+            data.EventCallback(Sentinel::STL::move(event));
         }
     }  // namespace Window
 }  // namespace Scribe

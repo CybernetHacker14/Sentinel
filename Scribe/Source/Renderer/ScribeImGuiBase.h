@@ -38,8 +38,10 @@ namespace Scribe {
             Window::ScribeWindow* m_Window;
 
             Sentinel::Texture2DData* m_LogoTex;
-            Sentinel::Texture2DData* m_CloseTex;
             Sentinel::Texture2DData* m_MinimizeTex;
+            Sentinel::Texture2DData* m_MaximizeTex;
+            Sentinel::Texture2DData* m_RestoreDownTex;
+            Sentinel::Texture2DData* m_CloseTex;
         };
     }  // namespace Rendering
 }  // namespace Scribe
