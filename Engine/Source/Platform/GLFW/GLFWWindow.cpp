@@ -46,6 +46,7 @@ namespace Sentinel {
 
         glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, m_Properties.FramebufferTransparency ? 1 : 0);
         glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
         if (m_Properties.Mode == WindowMode::FULLSCREEN) {
             m_Window = glfwCreateWindow(

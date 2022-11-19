@@ -34,11 +34,11 @@ namespace Scribe {
         PushLayer(m_BaseRenderer);
 
         m_ImGuiLayer = new Sentinel::ImGuiLayer(m_BaseRenderer->GetRenderingContext());
-        PushOverlay(m_ImGuiLayer);
+        PushLayer(m_ImGuiLayer);
 
         m_ImGuiBase = new Rendering::ScribeImGuiBase(
             m_BaseRenderer->GetRenderingContext(), static_cast<Window::ScribeWindow*>(m_Window.get()));
-        PushOverlay(m_ImGuiBase);
+        PushLayer(m_ImGuiBase);
     }
 
     Scribe::~Scribe() {
@@ -56,8 +56,9 @@ namespace Scribe {
             m_Window->OnUpdate();
             Sentinel::Input::OnUpdate();
         }
-        m_LayerStack.PopOverlay(m_ImGuiBase);
-        m_LayerStack.PopOverlay(m_ImGuiLayer);
+        m_LayerStack.PopLayer(m_ImGuiBase);
+        m_LayerStack.PopLayer(m_ImGuiLayer);
+        m_LayerStack.PopLayer(m_BaseRenderer);
         m_Window->Shutdown();
     }
 
