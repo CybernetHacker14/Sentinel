@@ -24,7 +24,6 @@
 #include "Sentinel/Graphics/Texture/DepthTexture2DAPI.h"
 
 #include "Sentinel/GUI/ImGui/ImGuiLayer.h"
-#include "Sentinel/GUI/ImGui/ImGuiDebugLayer.h"
 
 namespace Sentinel {
 
@@ -40,13 +39,10 @@ namespace Sentinel {
 
         m_ImGuiLayer = new ImGuiLayer(m_Context);
         Application::Get().PushOverlay(m_ImGuiLayer);
-        m_ImGuiDebugLayer = new ImGuiDebugLayer(m_Camera);
-        Application::Get().PushOverlay(m_ImGuiDebugLayer);
     }
 
     TestRenderer::~TestRenderer() {
         // m_GFXMemory->ReleaseRef();
-        delete (m_ImGuiDebugLayer);
         delete (m_ImGuiLayer);
         ContextAPI::Clean(m_Context);
     }

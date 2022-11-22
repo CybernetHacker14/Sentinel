@@ -37,7 +37,7 @@ namespace Sentinel {
 
         ID3D11DepthStencilView* pDV = depthTexture->m_NativeDSV;
 
-        nativeContext->OMSetRenderTargets(1, pRV[0].GetAddressOf(), pDV);
+        if (pRV && pDV) { nativeContext->OMSetRenderTargets(1, pRV[0].GetAddressOf(), pDV); }
     }
 
     void DX11SwapchainAPI::Unbind(SwapchainData* dataObject) {

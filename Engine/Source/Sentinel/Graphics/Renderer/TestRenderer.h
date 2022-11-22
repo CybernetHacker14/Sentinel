@@ -23,7 +23,6 @@ namespace Sentinel {
     struct DepthTexture2DData;
 
     class ImGuiLayer;
-    class ImGuiDebugLayer;
 
     class TestRenderer: public ISharedRef {
     public:
@@ -65,7 +64,6 @@ namespace Sentinel {
 
         // Add ImGuiLayer and ImGuiDebugLayer here
         ImGuiLayer* m_ImGuiLayer;
-        ImGuiDebugLayer* m_ImGuiDebugLayer;
 
         Texture2DData* m_IconTexture;
     };

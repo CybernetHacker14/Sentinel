@@ -192,7 +192,7 @@ namespace Sentinel {
             texture2D, 0, nullptr, dataObject->m_TexturePixels, rowPitch, 0);
 
         D3D11_SHADER_RESOURCE_VIEW_DESC viewDescription;
-        SecureZeroMemory(&viewDescription, sizeof(viewDescription));
+        SecureZeroMemory(&viewDescription, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
         viewDescription.Format = textureDescription.Format;
         viewDescription.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
         viewDescription.Texture2D.MostDetailedMip = 0;

@@ -186,6 +186,8 @@ namespace Scribe {
             ImGui::PopStyleColor(2);
             ImGui::PopStyleVar();
 
+            ImGui::ShowAboutWindow();
+
             ImGui::End();
         }
     }  // namespace Rendering
