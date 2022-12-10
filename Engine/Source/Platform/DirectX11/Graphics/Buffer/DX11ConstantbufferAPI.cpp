@@ -1,6 +1,6 @@
 #include "stpch.h"
 
-#if ST_RENDERER_DX11
+#ifdef ST_RENDERER_DX11
     #include "Sentinel/Graphics/Buffer/ConstantbufferAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
@@ -51,6 +51,7 @@ namespace Sentinel {
 
     void ConstantbufferAPI::Clean(ConstantbufferData* dataObject) {
         dataObject->m_Buffer->Release();
+        dataObject->m_Buffer = 0;
     }
 
     void ConstantbufferAPI::Create(

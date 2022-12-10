@@ -1,6 +1,6 @@
 #include "stpch.h"
 
-#if ST_RENDERER_DX11
+#ifdef ST_RENDERER_DX11
     #include "Sentinel/Graphics/Buffer/IndexbufferAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 

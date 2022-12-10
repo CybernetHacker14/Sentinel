@@ -2,7 +2,7 @@
 
 #include "Sentinel/Common/Common.h"
 
-#if ST_RENDERER_DX11
+#ifdef ST_RENDERER_DX11
 struct ID3D11Buffer;
 #endif  // ST_RENDERER_DX11
 
@@ -20,7 +20,7 @@ namespace Sentinel {
         CBufferUsageType m_UsageType = CBufferUsageType::DEFAULT;
 
     private:
-#if ST_RENDERER_DX11
+#ifdef ST_RENDERER_DX11
         ID3D11Buffer* m_Buffer;
         UInt32 m_BindSlot;
 #endif  // ST_RENDERER_DX11

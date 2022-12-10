@@ -1,11 +1,11 @@
 #include "stpch.h"
-#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
-#include "Platform/DirectX11/Graphics/Buffer/DX11VertexbufferLayoutAPI.h"
-#include "Platform/DirectX11/Graphics/Buffer/DX11VertexbufferLayoutData.h"
 
-#include "Platform/DirectX11/Graphics/Material/DX11ShaderAPI.h"
+#ifdef ST_RENDERER_DX11
+    #include "Sentinel/Graphics/Buffer/VertexbufferLayoutAPI.h"
+    #include "Sentinel/Graphics/Material/ShaderAPI.h"
+    #include "Sentinel/Graphics/Device/ContextAPI.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel {
     static STL::unordered_map<DXGI_FORMAT, UInt32> s_ShaderDataTypeSizeMap = {
@@ -22,11 +22,15 @@ namespace Sentinel {
         {DXGI_FORMAT_R32G32B32A32_UINT, 16},
         {DXGI_FORMAT_R32G32B32A32_SINT, 16}};
 
-    DX11VertexbufferLayoutAPI::_init DX11VertexbufferLayoutAPI::_initializer;
+    VertexbufferLayoutData* VertexbufferLayoutAPI::CreateVertexbufferLayoutData(
+        PoolAllocator<VertexbufferLayoutData>& allocator, ContextData* context) {
+        VertexbufferLayoutData* layoutObject = allocator.New();
+        layoutObject->Context = context;
+        return layoutObject;
+    }
 
-    void DX11VertexbufferLayoutAPI::CreateLayout(VertexbufferLayoutData* dataObject, ShaderData* shader) {
-        DX11VertexbufferLayoutData* layout = VertexbufferLayoutAPI::Cast<DX11VertexbufferLayoutData>(dataObject);
-        ID3DBlob* binary = DX11ShaderAPI::GetVertexShaderBinary(ShaderAPI::Cast<DX11ShaderData>(shader));
+    void VertexbufferLayoutAPI::CreateLayout(VertexbufferLayoutData* dataObject, ShaderData* shader) {
+        ID3D10Blob* binary = ShaderAPI::GetBinary(shader, ShaderType::VERTEX);
 
         // Excerpts from https://gist.github.com/mobius/b678970c61a93c81fffef1936734909f
 
@@ -42,7 +46,7 @@ namespace Sentinel {
         D3D11_SHADER_DESC shaderDescription;
         vertexShaderReflection->GetDesc(&shaderDescription);
 
-        layout->m_Stride = 0;
+        dataObject->m_Stride = 0;
 
         STL::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDescriptions;
         for (UInt32 i = 0; i < shaderDescription.InputParameters; i++) {
@@ -89,35 +93,33 @@ namespace Sentinel {
 
             inputLayoutDescriptions.emplace_back(elementDescription);
 
-            layout->m_Stride += s_ShaderDataTypeSizeMap.at(elementDescription.Format);
+            dataObject->m_Stride += s_ShaderDataTypeSizeMap.at(elementDescription.Format);
         }
 
-        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-
-        DX11ContextAPI::GetDevice(dContext)->CreateInputLayout(
-            &inputLayoutDescriptions[0],
-            static_cast<UInt32>(inputLayoutDescriptions.size()),
-            binary->GetBufferPointer(),
-            binary->GetBufferSize(),
-            &layout->m_InputLayout);
+        ContextAPI::GetDevice(dataObject->Context)
+            ->CreateInputLayout(
+                &inputLayoutDescriptions[0],
+                static_cast<UInt32>(inputLayoutDescriptions.size()),
+                binary->GetBufferPointer(),
+                binary->GetBufferSize(),
+                &(dataObject->m_Layout));
 
         vertexShaderReflection->Release();
     }
 
-    void DX11VertexbufferLayoutAPI::Bind(VertexbufferLayoutData* dataObject) {
-        DX11VertexbufferLayoutData* layout = VertexbufferLayoutAPI::Cast<DX11VertexbufferLayoutData>(dataObject);
-        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        DX11ContextAPI::GetNativeContext(dContext)->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        DX11ContextAPI::GetNativeContext(dContext)->IASetInputLayout(layout->m_InputLayout);
+    void VertexbufferLayoutAPI::Bind(VertexbufferLayoutData* dataObject) {
+        ContextAPI::GetNativeContext(dataObject->Context)
+            ->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        ContextAPI::GetNativeContext(dataObject->Context)->IASetInputLayout(dataObject->m_Layout);
     }
 
-    void DX11VertexbufferLayoutAPI::Unbind(VertexbufferLayoutData* dataObject) {
-        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        DX11ContextAPI::GetNativeContext(dContext)->IASetInputLayout(nullptr);
+    void VertexbufferLayoutAPI::Unbind(VertexbufferLayoutData* dataObject) {
+        ContextAPI::GetNativeContext(dataObject->Context)->IASetInputLayout(nullptr);
     }
 
-    void DX11VertexbufferLayoutAPI::Clean(VertexbufferLayoutData* dataObject) {
-        DX11VertexbufferLayoutData* layout = VertexbufferLayoutAPI::Cast<DX11VertexbufferLayoutData>(dataObject);
-        if (layout->m_InputLayout) layout->m_InputLayout->Release();
+    void VertexbufferLayoutAPI::Clean(VertexbufferLayoutData* dataObject) {
+        dataObject->m_Layout->Release();
+        dataObject->m_Layout = 0;
     }
 }  // namespace Sentinel
+#endif  // ST_RENDERER_DX11

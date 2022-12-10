@@ -35,7 +35,7 @@ namespace Sentinel {
 
 #if ST_RENDERER_DX11
         inline static ID3D11Texture2D* GetNativeTexture(DepthTexture2DData* dataObject) {
-            return dataObject->m_NativeTexture;
+            return dataObject->m_NativeTex;
         }
 
         inline static ID3D11DepthStencilView* GetNativeDSV(DepthTexture2DData* dataObject) {

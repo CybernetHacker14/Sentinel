@@ -5,7 +5,7 @@
 #include "Sentinel/Events/Categories/WindowEvent.h"
 #include "Sentinel/Graphics/Common/Backend.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+#include "Sentinel/Graphics/Device/ContextAPI.h"
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
@@ -55,9 +55,8 @@ namespace Sentinel {
 
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
-                DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(m_Context);
-                auto device = DX11ContextAPI::GetDevice(context);
-                auto nativeContext = DX11ContextAPI::GetNativeContext(context);
+                auto device = ContextAPI::GetDevice(m_Context);
+                auto nativeContext = ContextAPI::GetNativeContext(m_Context);
                 ImGui_ImplDX11_Init(device, nativeContext);
                 break;
             }

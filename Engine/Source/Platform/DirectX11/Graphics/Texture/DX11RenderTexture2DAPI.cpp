@@ -49,10 +49,25 @@ namespace Sentinel {
     }
 
     void RenderTexture2DAPI::Clean(RenderTexture2DData* dataObject) {
-        if (dataObject->m_NativeRTV) dataObject->m_NativeRTV->Release();
-        if (!dataObject->m_SwapchainTarget && dataObject->m_NativeSRV) dataObject->m_NativeSRV->Release();
-        if (!dataObject->m_SwapchainTarget && dataObject->m_NativeUAV) dataObject->m_NativeUAV->Release();
-        if (dataObject->m_NativeTexture) dataObject->m_NativeTexture->Release();
+        if (dataObject->m_NativeRTV) {
+            dataObject->m_NativeRTV->Release();
+            dataObject->m_NativeRTV = 0;
+        }
+
+        if (!dataObject->m_SwapchainTarget && dataObject->m_NativeSRV) {
+            dataObject->m_NativeSRV->Release();
+            dataObject->m_NativeSRV = 0;
+        }
+
+        if (!dataObject->m_SwapchainTarget && dataObject->m_NativeUAV) {
+            dataObject->m_NativeUAV->Release();
+            dataObject->m_NativeUAV = 0;
+        }
+
+        if (dataObject->m_NativeTex) {
+            dataObject->m_NativeTex->Release();
+            dataObject->m_NativeTex = 0;
+        }
     }
 
     void RenderTexture2DAPI::Bind(RenderTexture2DData* dataObject, UInt8 slot, const ShaderType shaderType) {
@@ -130,7 +145,7 @@ namespace Sentinel {
             texDescription.CPUAccessFlags = 0;
             texDescription.MiscFlags = 0;
 
-            dxDevice->CreateTexture2D(&texDescription, nullptr, &(dataObject->m_NativeTexture));
+            dxDevice->CreateTexture2D(&texDescription, nullptr, &(dataObject->m_NativeTex));
 
             // RTV
             D3D11_RENDER_TARGET_VIEW_DESC rTVDescription;
@@ -139,7 +154,7 @@ namespace Sentinel {
             rTVDescription.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
             rTVDescription.Texture2D.MipSlice = 0;
 
-            dxDevice->CreateRenderTargetView(dataObject->m_NativeTexture, &rTVDescription, &(dataObject->m_NativeRTV));
+            dxDevice->CreateRenderTargetView(dataObject->m_NativeTex, &rTVDescription, &(dataObject->m_NativeRTV));
 
             // SRV
             {
@@ -150,7 +165,7 @@ namespace Sentinel {
                 sRVDescription.Texture2D.MipLevels = 1;
                 sRVDescription.Texture2D.MostDetailedMip = 0;
                 dxDevice->CreateShaderResourceView(
-                    dataObject->m_NativeTexture, &sRVDescription, &(dataObject->m_NativeSRV));
+                    dataObject->m_NativeTex, &sRVDescription, &(dataObject->m_NativeSRV));
             }
         }
     }
@@ -159,8 +174,8 @@ namespace Sentinel {
         ID3D11Device* dxDevice = ContextAPI::GetDevice(dataObject->Context);
         IDXGISwapChain* nativeSC = SwapchainAPI::GetNativeSwapchain(swapchain);
 
-        nativeSC->GetBuffer(0, __uuidof(ID3D11Resource), (LPVOID*)&(dataObject->m_NativeTexture));
-        dxDevice->CreateRenderTargetView(dataObject->m_NativeTexture, nullptr, &(dataObject->m_NativeRTV));
+        nativeSC->GetBuffer(0, __uuidof(ID3D11Resource), (LPVOID*)&(dataObject->m_NativeTex));
+        dxDevice->CreateRenderTargetView(dataObject->m_NativeTex, nullptr, &(dataObject->m_NativeRTV));
 
         dataObject->TargetSwapchain = swapchain;
     }

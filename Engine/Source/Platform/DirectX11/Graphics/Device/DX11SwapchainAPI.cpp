@@ -64,6 +64,12 @@ namespace Sentinel {
         dataObject->depthBuffer = nullptr;
     }
 
+    void SwapchainAPI::Clean(SwapchainData* dataObject) {
+        dataObject->m_Swapchain->SetFullscreenState(false, NULL);
+        dataObject->m_Swapchain->Release();
+        dataObject->m_Swapchain = 0;
+    }
+
     void SwapchainAPI::Init(SwapchainData* dataObject, GLFWwindow* windowHandle) {
         DXGI_SWAP_CHAIN_DESC swapChainDescription;
         SecureZeroMemory(&swapChainDescription, sizeof(swapChainDescription));

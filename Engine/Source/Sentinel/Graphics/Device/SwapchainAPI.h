@@ -30,6 +30,8 @@ namespace Sentinel {
         // pointers here
         static void UnsetBuffers(SwapchainData* dataObject);
 
+        static void Clean(SwapchainData* dataObject);
+
 #ifdef ST_RENDERER_DX11
         inline static IDXGISwapChain* GetNativeSwapchain(SwapchainData* databject) { return databject->m_Swapchain; }
 #endif  // ST_RENDERER_DX11

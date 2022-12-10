@@ -1,6 +1,6 @@
 #include "stpch.h"
 
-#if ST_RENDERER_DX11
+#ifdef ST_RENDERER_DX11
 
     #include "Sentinel/Graphics/Texture/DepthTexture2DAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
@@ -38,9 +38,20 @@ namespace Sentinel {
     }
 
     void DepthTexture2DAPI::Clean(DepthTexture2DData* dataObject) {
-        if (dataObject->m_NativeDSV) { dataObject->m_NativeDSV->Release(); }
-        if (dataObject->m_NativeSRV) { dataObject->m_NativeSRV->Release(); }
-        if (dataObject->m_NativeTexture) { dataObject->m_NativeTexture->Release(); }
+        if (dataObject->m_NativeDSV) {
+            dataObject->m_NativeDSV->Release();
+            dataObject->m_NativeDSV = 0;
+        }
+
+        if (dataObject->m_NativeSRV) {
+            dataObject->m_NativeSRV->Release();
+            dataObject->m_NativeSRV = 0;
+        }
+
+        if (dataObject->m_NativeTex) {
+            dataObject->m_NativeTex->Release();
+            dataObject->m_NativeTex = 0;
+        }
     }
 
     void DepthTexture2DAPI::Bind(DepthTexture2DData* dataObject, UInt8 slot, const ShaderType shaderType) {
@@ -116,7 +127,7 @@ namespace Sentinel {
             texDescription.MiscFlags = 0;
             texDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-            dxDevice->CreateTexture2D(&texDescription, nullptr, &(dataObject->m_NativeTexture));
+            dxDevice->CreateTexture2D(&texDescription, nullptr, &(dataObject->m_NativeTex));
 
             // DSV
             D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilDescription;
@@ -126,7 +137,7 @@ namespace Sentinel {
             depthStencilDescription.Texture2D.MipSlice = 0;
 
             dxDevice->CreateDepthStencilView(
-                dataObject->m_NativeTexture, &depthStencilDescription, &(dataObject->m_NativeDSV));
+                dataObject->m_NativeTex, &depthStencilDescription, &(dataObject->m_NativeDSV));
 
             // SRV
             if (!dataObject->m_SwapchainTarget) {
@@ -137,7 +148,7 @@ namespace Sentinel {
                 sRVDescription.Texture2D.MipLevels = 1;
                 sRVDescription.Texture2D.MostDetailedMip = 0;
                 dxDevice->CreateShaderResourceView(
-                    dataObject->m_NativeTexture, &sRVDescription, &(dataObject->m_NativeSRV));
+                    dataObject->m_NativeTex, &sRVDescription, &(dataObject->m_NativeSRV));
             }
         }
     }

@@ -9,7 +9,7 @@ namespace Sentinel {
         inline void AllocateMemoryBlock(UInt32 maxCount) {
             ST_ENGINE_ASSERT(m_BlockStartingAddress == nullptr, "Bad Allocation");
 
-            m_BlockStartingAddress = calloc(maxCount, sizeof(T));
+            m_BlockStartingAddress = _aligned_malloc(maxCount * sizeof(T), 16);
             m_MaxAllowedAllocations = maxCount;
             m_CurrentAllocations = 0;
             m_FreeList.reserve(maxCount);

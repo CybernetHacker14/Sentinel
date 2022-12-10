@@ -30,7 +30,7 @@ namespace Sentinel {
 
     private:
 #ifdef ST_RENDERER_DX11
-        ID3D11Texture2D* m_NativeTexture;
+        ID3D11Texture2D* m_NativeTex;
         ID3D11RenderTargetView* m_NativeRTV;
         ID3D11ShaderResourceView* m_NativeSRV;
         ID3D11UnorderedAccessView* m_NativeUAV;

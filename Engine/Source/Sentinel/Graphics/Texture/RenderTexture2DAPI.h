@@ -38,7 +38,7 @@ namespace Sentinel {
 
 #ifdef ST_RENDERER_DX11
         inline static ID3D11Texture2D* GetNativeTexture(RenderTexture2DData* dataObject) {
-            return dataObject->m_NativeTexture;
+            return dataObject->m_NativeTex;
         }
 
         inline static ID3D11RenderTargetView* GetNativeRTV(RenderTexture2DData* dataObject) {

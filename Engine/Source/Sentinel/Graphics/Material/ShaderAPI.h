@@ -29,8 +29,8 @@ namespace Sentinel {
         inline static const STL::string& GetName(ShaderData* dataObject) { return dataObject->m_ShaderName; }
         inline static const STL::string& GetFilepath(ShaderData* dataObject) { return dataObject->m_Filepath; }
 
-#if ST_RENDERER_DX11
-        inline static ID3DBlob* GetBinary(ShaderData* dataObject, const ShaderType type) {
+#ifdef ST_RENDERER_DX11
+        inline static ID3D10Blob* GetBinary(ShaderData* dataObject, const ShaderType type) {
             return dataObject->m_BinaryMap.at(type);
         }
 #endif  // ST_RENDERER_DX11

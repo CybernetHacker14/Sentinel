@@ -1,26 +1,25 @@
 #pragma once
 
 #include <Sentinel.h>
+#include <Sentinel/Memory/PoolAllocator.h>
+
+#include <Sentinel/Graphics/Device/ContextAPI.h>
+#include <Sentinel/Graphics/Device/SwapchainAPI.h>
+#include <Sentinel/Graphics/Output/ViewportAPI.h>
+
+#include <Sentinel/Graphics/Buffer/VertexbufferAPI.h>
+#include <Sentinel/Graphics/Buffer/IndexbufferAPI.h>
+#include <Sentinel/Graphics/Buffer/VertexbufferLayoutAPI.h>
+#include <Sentinel/Graphics/Buffer/ConstantbufferAPI.h>
+
+#include <Sentinel/Graphics/Material/ShaderAPI.h>
+#include <Sentinel/Graphics/Texture/Texture2DAPI.h>
+
+#include <Sentinel/Graphics/Texture/RenderTexture2DAPI.h>
+#include <Sentinel/Graphics/Texture/DepthTexture2DAPI.h>
 
 namespace Sentinel {
-    class Backend;
-    class GraphicsMemoryManager;
     class Camera;
-
-    struct ContextData;
-    struct SwapchainData;
-    struct FramebufferData;
-    struct ViewportData;
-
-    struct VertexbufferData;
-    struct IndexbufferData;
-    struct VertexbufferLayoutData;
-
-    struct ShaderData;
-    struct Texture2DData;
-
-    struct RenderTexture2DData;
-    struct DepthTexture2DData;
 
     class ImGuiLayer;
     class ImGuiDebugLayer;
@@ -31,6 +30,7 @@ namespace Sandbox {
         class RendererLayer final {
         public:
             RendererLayer(Sentinel::Window* window);
+            ~RendererLayer();
 
             void OnAttach();
             void OnDetach();
@@ -47,12 +47,25 @@ namespace Sandbox {
             Sentinel::ContextData* m_Context;
 
         private:
-            Sentinel::SharedRef<Sentinel::GraphicsMemoryManager> m_GFXMemory;
+            Sentinel::PoolAllocator<Sentinel::ContextData> m_CtxAlloc;
+            Sentinel::PoolAllocator<Sentinel::SwapchainData> m_SCAlloc;
+            Sentinel::PoolAllocator<Sentinel::ViewportData> m_VPortAlloc;
+
+            Sentinel::PoolAllocator<Sentinel::VertexbufferData> m_VBufferAlloc;
+            Sentinel::PoolAllocator<Sentinel::IndexbufferData> m_IBufferAlloc;
+            Sentinel::PoolAllocator<Sentinel::VertexbufferLayoutData> m_LayoutAlloc;
+            Sentinel::PoolAllocator<Sentinel::ConstantbufferData> m_CBufferAlloc;
+
+            Sentinel::PoolAllocator<Sentinel::ShaderData> m_ShaderAlloc;
+            Sentinel::PoolAllocator<Sentinel::Texture2DData> m_TexAlloc;
+
+            Sentinel::PoolAllocator<Sentinel::RenderTexture2DData> m_RTAlloc;
+            Sentinel::PoolAllocator<Sentinel::DepthTexture2DData> m_DTAlloc;
+
             Sentinel::SharedRef<Sentinel::Camera> m_Camera;
 
             Sentinel::Window* m_Window;
             Sentinel::SwapchainData* m_Swapchain;
-            Sentinel::FramebufferData* m_Framebuffer;
             Sentinel::ViewportData* m_Viewport;
 
             Sentinel::VertexbufferData* m_VBuffer;

@@ -1,6 +1,6 @@
 #include "stpch.h"
 
-#if ST_RENDERER_DX11
+#ifdef ST_RENDERER_DX11
     #include "Sentinel/Graphics/Material/ShaderAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
@@ -37,7 +37,7 @@ namespace Sentinel {
         return shaderObject;
     }
 
-    inline void ShaderAPI::Bind(ShaderData* dataObject) {
+    void ShaderAPI::Bind(ShaderData* dataObject) {
         ID3D11DeviceContext* context = ContextAPI::GetNativeContext(dataObject->Context);
 
         if (dataObject->m_NativeVS) context->VSSetShader(dataObject->m_NativeVS, nullptr, 0);
@@ -45,30 +45,43 @@ namespace Sentinel {
         if (dataObject->m_NativeCS) context->CSSetShader(dataObject->m_NativeCS, nullptr, 0);
     }
 
-    inline void ShaderAPI::Reload(ShaderData* dataObject) {
+    void ShaderAPI::Reload(ShaderData* dataObject) {
         ID3D11DeviceContext* context = ContextAPI::GetNativeContext(dataObject->Context);
         Load(dataObject);
     }
 
-    inline void ShaderAPI::Clean(ShaderData* dataObject) {
-        ID3D11DeviceContext* context = ContextAPI::GetNativeContext(dataObject->Context);
-
-        for (auto& binary: dataObject->m_BinaryMap) {
-            if (binary.second) binary.second->Release();
+    void ShaderAPI::Clean(ShaderData* dataObject) {
+        if (dataObject->m_NativeVS) {
+            dataObject->m_NativeVS->Release();
+            dataObject->m_NativeVS = 0;
         }
 
-        if (dataObject->m_NativeVS) dataObject->m_NativeVS->Release();
-        if (dataObject->m_NativePS) dataObject->m_NativePS->Release();
-        if (dataObject->m_NativeCS) dataObject->m_NativeCS->Release();
+        if (dataObject->m_NativePS) {
+            dataObject->m_NativePS->Release();
+            dataObject->m_NativePS = 0;
+        }
+
+        if (dataObject->m_NativeCS) {
+            dataObject->m_NativeCS->Release();
+            dataObject->m_NativeCS = 0;
+        }
+
+        for (auto& binary: dataObject->m_BinaryMap) {
+            if (binary.second) {
+                binary.second->Release();
+                binary.second = 0;
+            }
+        }
 
         dataObject->m_BinaryMap.clear();
+
         dataObject->m_ShaderSources.clear();
 
         dataObject->m_ShaderName.clear();
         dataObject->m_Filepath.clear();
     }
 
-    inline void ShaderAPI::Unbind(ShaderData* dataObject) {
+    void ShaderAPI::Unbind(ShaderData* dataObject) {
         for (auto& binary: dataObject->m_BinaryMap) {
             if (binary.second != nullptr) {
                 binary.second->Release();
@@ -148,7 +161,7 @@ namespace Sentinel {
                 profile,
                 flags,
                 0,
-                &(dataObject->m_BinaryMap[type]),
+                &(dataObject->m_BinaryMap.at(type)),
                 &errorMessages);
 
     #if ST_DEBUG
