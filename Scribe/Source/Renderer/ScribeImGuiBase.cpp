@@ -13,13 +13,10 @@
 
 namespace Scribe {
     namespace Rendering {
-        static Sentinel::Bool genericWindowOpen = true;
+        static Sentinel::Bool genericWindowOpen = false;
 
         ScribeImGuiBase::ScribeImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window)
-            : Sentinel::Layer("EditorImGuiBase"), m_Context(context), m_Window(window) {
-            m_AttachFunction = ST_BIND_EVENT_FN(ScribeImGuiBase::OnAttach);
-            m_ImGuiRenderFunction = ST_BIND_EVENT_FN(ScribeImGuiBase::OnImGuiRender);
-
+            : m_Context(context), m_Window(window) {
             m_TexMemAllocator.AllocateMemoryBlock(10);
         }
 
@@ -29,15 +26,7 @@ namespace Scribe {
         }
 
         void ScribeImGuiBase::OnAttach() {
-            Sentinel::Texture2DDataImportSettings settings;
-            m_LogoTex = Sentinel::Texture2DAPI::CreateTexture2DData(
-                m_TexMemAllocator,
-                m_Context,
-                settings,
-                &(iconBW64Pixels[0]),
-                iconBW64Width,
-                iconBW64Height,
-                iconBW64BPP);
+            Sentinel::Texture2DDataImportSettings settings, settings2;
 
             m_CloseTex = Sentinel::Texture2DAPI::CreateTexture2DData(
                 m_TexMemAllocator,
@@ -48,6 +37,14 @@ namespace Scribe {
                 close_dark20Height,
                 close_dark20BPP);
 
+            m_LogoTex = Sentinel::Texture2DAPI::CreateTexture2DData(
+                m_TexMemAllocator,
+                m_Context,
+                settings2,
+                &(iconBW64Pixels[0]),
+                iconBW64Width,
+                iconBW64Height,
+                iconBW64BPP);
             m_MinimizeTex = Sentinel::Texture2DAPI::CreateTexture2DData(
                 m_TexMemAllocator,
                 m_Context,
@@ -139,7 +136,7 @@ namespace Scribe {
             ImGuiWindowFlags flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove |
                                      ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize;
 
-            ImGuiStyle& style = ImGui::GetStyle();
+            ImGui::ShowMetricsWindow();
 
             // Display the Engine logo
             ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -185,8 +182,6 @@ namespace Scribe {
 
             ImGui::PopStyleColor(2);
             ImGui::PopStyleVar();
-
-            ImGui::ShowAboutWindow();
 
             ImGui::End();
         }

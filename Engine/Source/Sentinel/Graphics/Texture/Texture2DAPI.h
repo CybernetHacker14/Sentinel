@@ -5,15 +5,8 @@
 #include "Sentinel/Graphics/Texture/Texture2DData.h"
 
 namespace Sentinel {
-    class GraphicsMemoryManager;
-
     class Texture2DAPI {
     public:
-        static Texture2DData* CreateTexture2DData(
-            SharedRef<GraphicsMemoryManager> memoryHandle,
-            ContextData* context,
-            const Texture2DDataImportSettings& settings);
-
         static Texture2DData* CreateTexture2DData(
             PoolAllocator<Texture2DData>& allocator, ContextData* context, const Texture2DDataImportSettings& settings);
 
@@ -26,51 +19,39 @@ namespace Sentinel {
             const UInt32 height,
             const UInt8 channels);
 
-        inline static void Bind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
-            if (!m_BindFunction) return;
-            dataObject->m_BindSlot = slot;
-            dataObject->m_BindType = shaderType;
-            m_BindFunction(dataObject, slot, shaderType);
+        static void Bind(Texture2DData* dataObject, UInt32 slot, const ShaderType shaderType);
+
+        static void Unbind(Texture2DData* dataObject);
+
+        static void Clean(Texture2DData* dataObject);
+
+        static void* GetResource(Texture2DData* dataObject);
+
+        inline static Bool IsHDR(Texture2DData* dataObject);
+        inline static Bool IsLoaded(Texture2DData* dataObject);
+
+        inline static UInt16 GetWidth(Texture2DData* dataObject);
+        inline static UInt16 GetHeight(Texture2DData* dataObject);
+
+        inline static UInt8 GetBindSlot(Texture2DData* dataObject);
+        inline static const ShaderType GetBindType(Texture2DData* dataObject);
+
+        inline static void* GetPixelData(Texture2DData* dataObject);
+
+#ifdef ST_RENDERER_DX11
+        inline static ID3D11Texture2D* GetNativeTexture(Texture2DData* dataObject) { return dataObject->m_Texture2D; }
+
+        inline static ID3D11SamplerState* GetNativeSampler(Texture2DData* dataObject) {
+            return dataObject->m_SamplerState;
         }
 
-        inline static void Unbind(Texture2DData* dataObject) {
-            if (!m_UnbindFunction) return;
-            m_UnbindFunction(dataObject);
-            dataObject->m_BindType = ShaderType::NONE;
+        inline static ID3D11ShaderResourceView* GetNativeResource(Texture2DData* dataObject) {
+            return dataObject->m_ResourceView;
         }
+#endif  // ST_RENDERER_DX11
 
-        inline static void Clean(Texture2DData* dataObject) {
-            if (!m_CleanFunction) return;
-            m_CleanFunction(dataObject);
-        }
-
-        inline static void* GetResource(Texture2DData* dataObject) {
-            if (!m_ResourceFunction) return nullptr;
-            return m_ResourceFunction(dataObject);
-        }
-
-        inline static Bool IsHDR(Texture2DData* dataObject) { return dataObject->m_HDR; }
-        inline static Bool IsLoaded(Texture2DData* dataObject) { return dataObject->m_Loaded; }
-
-        inline static UInt32 GetWidth(Texture2DData* dataObject) { return dataObject->m_Width; }
-        inline static UInt32 GetHeight(Texture2DData* dataObject) { return dataObject->m_Height; }
-
-        inline static UInt32 GetBindSlot(Texture2DData* dataObject) { return dataObject->m_BindSlot; }
-        inline static const ShaderType GetBindType(Texture2DData* dataObject) { return dataObject->m_BindType; }
-
-        inline static void* GetPixelData(Texture2DData* dataObject) { return dataObject->m_TexturePixels; }
-
-    public:
-        template<typename T>
-        inline static T* Cast(Texture2DData* dataObject) {
-            static_assert(STL::is_base_of<Texture2DData, T>::value, "'T' should be derived from Texture2DData.");
-            return static_cast<T*>(dataObject);
-        }
-
-    protected:
-        inline static STL::delegate<void(Texture2DData*, UInt32, const ShaderType)> m_BindFunction;
-        inline static STL::delegate<void(Texture2DData*)> m_UnbindFunction;
-        inline static STL::delegate<void(Texture2DData*)> m_CleanFunction;
-        inline static STL::delegate<void*(Texture2DData*)> m_ResourceFunction;
+    private:
+        static void Load(Texture2DData* data);
+        static void Load(Texture2DData* data, UInt16 width, UInt16 height, UInt8 channels);
     };
 }  // namespace Sentinel

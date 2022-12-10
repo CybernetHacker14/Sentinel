@@ -1,17 +1,119 @@
 #include "stpch.h"
-#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
-#include "Platform/DirectX11/Graphics/Texture/DX11RenderTexture2DAPI.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+#ifdef ST_RENDERER_DX11
+
+    #include "Sentinel/Graphics/Texture/RenderTexture2DAPI.h"
+    #include "Sentinel/Graphics/Device/ContextAPI.h"
+    #include "Sentinel/Graphics/Device/SwapchainAPI.h"
+
+    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+
+    #include <glm/glm.hpp>
 
 namespace Sentinel {
     static const UInt32 s_MaxSize = 8192;  // 8K
 
-    DX11RenderTexture2DAPI::_init DX11RenderTexture2DAPI::_initializer;
+    RenderTexture2DData* RenderTexture2DAPI::CreateRenderTexture2DData(
+        PoolAllocator<RenderTexture2DData>& allocator,
+        ContextData* context,
+        const UInt16 width,
+        const UInt16 height,
+        const ColorFormat format) {
+        RenderTexture2DData* texObject = allocator.New();
+        texObject->Context = context;
+        texObject->m_Format = format;
+        texObject->m_Width = width;
+        texObject->m_Height = height;
+        texObject->m_BindType = ShaderType::NONE;
+        texObject->m_SwapchainTarget = false;
+        Create(texObject);
+        return texObject;
+    }
 
-    void DX11RenderTexture2DAPI::Create(DX11RenderTexture2DData* dataObject) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11Device* dxDevice = DX11ContextAPI::GetDevice(context);
+    RenderTexture2DData* RenderTexture2DAPI::CreateRenderTexture2DData(
+        PoolAllocator<RenderTexture2DData>& allocator, ContextData* context, SwapchainData* swapchain) {
+        RenderTexture2DData* texObject = allocator.New();
+        texObject->Context = context;
+        texObject->m_Format = ColorFormat::RGBA32F;
+        texObject->m_BindType = ShaderType::NONE;
+        texObject->m_SwapchainTarget = true;
+        Create(texObject, swapchain);
+        return texObject;
+    }
+
+    void RenderTexture2DAPI::Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor) {
+        ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
+
+        if (dataObject->m_BindType != ShaderType::NONE)
+            dxContext->ClearRenderTargetView(dataObject->m_NativeRTV, (Float*)&clearColor);
+    }
+
+    void RenderTexture2DAPI::Clean(RenderTexture2DData* dataObject) {
+        if (dataObject->m_NativeRTV) dataObject->m_NativeRTV->Release();
+        if (!dataObject->m_SwapchainTarget && dataObject->m_NativeSRV) dataObject->m_NativeSRV->Release();
+        if (!dataObject->m_SwapchainTarget && dataObject->m_NativeUAV) dataObject->m_NativeUAV->Release();
+        if (dataObject->m_NativeTexture) dataObject->m_NativeTexture->Release();
+    }
+
+    void RenderTexture2DAPI::Bind(RenderTexture2DData* dataObject, UInt8 slot, const ShaderType shaderType) {
+        ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
+
+        switch (shaderType) {
+            case ShaderType::VERTEX:
+                dxContext->VSSetShaderResources(slot, 1, &(dataObject->m_NativeSRV));
+                dataObject->m_BindSlot = slot;
+                dataObject->m_BindType = shaderType;
+                break;
+            case ShaderType::PIXEL:
+                dxContext->PSSetShaderResources(slot, 1, &(dataObject->m_NativeSRV));
+                dataObject->m_BindSlot = slot;
+                dataObject->m_BindType = shaderType;
+                break;
+            case ShaderType::COMPUTE:
+                dxContext->CSSetShaderResources(slot, 1, &(dataObject->m_NativeSRV));
+                dataObject->m_BindSlot = slot;
+                dataObject->m_BindType = shaderType;
+                break;
+            case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid shader type"); break;
+        }
+    }
+
+    void RenderTexture2DAPI::Unbind(RenderTexture2DData* dataObject) {
+        ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
+        ID3D11ShaderResourceView* nullSRV = {nullptr};
+
+        if (dataObject->m_BindType == ShaderType::NONE) return;
+
+        switch (dataObject->m_BindType) {
+            case ShaderType::VERTEX:
+                dxContext->VSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
+                dataObject->m_BindType = ShaderType::NONE;
+                break;
+            case ShaderType::PIXEL:
+                dxContext->PSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
+                dataObject->m_BindType = ShaderType::NONE;
+                break;
+            case ShaderType::COMPUTE:
+                dxContext->CSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
+                dataObject->m_BindType = ShaderType::NONE;
+                break;
+        }
+    }
+
+    void RenderTexture2DAPI::Resize(RenderTexture2DData* dataObject, UInt16 width, UInt16 height) {
+        if (width == 0 || height == 0 || width > s_MaxSize || height > s_MaxSize) return;
+
+        dataObject->m_Width = width;
+        dataObject->m_Height = height;
+
+        if (dataObject->m_SwapchainTarget)
+            Create(dataObject, dataObject->TargetSwapchain);
+        else
+            Create(dataObject);
+    }
+
+    void RenderTexture2DAPI::Create(RenderTexture2DData* dataObject) {
+        ID3D11Device* dxDevice = ContextAPI::GetDevice(dataObject->Context);
 
         if (dataObject->m_Format != ColorFormat::NONE) {
             D3D11_TEXTURE2D_DESC texDescription;
@@ -53,100 +155,15 @@ namespace Sentinel {
         }
     }
 
-    void DX11RenderTexture2DAPI::Create(DX11RenderTexture2DData* dataObject, DX11SwapchainData* swapchain) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11Device* dxDevice = DX11ContextAPI::GetDevice(context);
-        IDXGISwapChain* nativeSC = DX11SwapchainAPI::GetNativeSwapchain(swapchain);
+    void RenderTexture2DAPI::Create(RenderTexture2DData* dataObject, SwapchainData* swapchain) {
+        ID3D11Device* dxDevice = ContextAPI::GetDevice(dataObject->Context);
+        IDXGISwapChain* nativeSC = SwapchainAPI::GetNativeSwapchain(swapchain);
 
         nativeSC->GetBuffer(0, __uuidof(ID3D11Resource), (LPVOID*)&(dataObject->m_NativeTexture));
         dxDevice->CreateRenderTargetView(dataObject->m_NativeTexture, nullptr, &(dataObject->m_NativeRTV));
 
-        dataObject->m_TargetSwapchain = swapchain;
+        dataObject->TargetSwapchain = swapchain;
     }
 
-    void DX11RenderTexture2DAPI::Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11DeviceContext* dxContext = DX11ContextAPI::GetNativeContext(context);
-
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
-
-        if (dxDataObject->m_BindType != ShaderType::NONE) {
-            dxContext->ClearRenderTargetView(dxDataObject->m_NativeRTV, (Float*)&clearColor);
-        }
-    }
-
-    void DX11RenderTexture2DAPI::Clean(RenderTexture2DData* dataObject) {
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
-
-        if (dxDataObject->m_NativeRTV) dxDataObject->m_NativeRTV->Release();
-        if (dxDataObject->m_NativeSRV) dxDataObject->m_NativeSRV->Release();
-        if (dxDataObject->m_NativeUAV) dxDataObject->m_NativeUAV->Release();
-        if (dxDataObject->m_NativeTexture) dxDataObject->m_NativeTexture->Release();
-    }
-
-    void DX11RenderTexture2DAPI::Bind(RenderTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11DeviceContext* dxContext = DX11ContextAPI::GetNativeContext(context);
-
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
-        ID3D11ShaderResourceView* srv = dxDataObject->m_NativeSRV;
-
-        switch (shaderType) {
-            case ShaderType::VERTEX:
-                dxContext->VSSetShaderResources(slot, 1, &srv);
-                dxDataObject->m_BindSlot = slot;
-                dxDataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::PIXEL:
-                dxContext->PSSetShaderResources(slot, 1, &srv);
-                dxDataObject->m_BindSlot = slot;
-                dxDataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::COMPUTE:
-                dxContext->CSSetShaderResources(slot, 1, &srv);
-                dxDataObject->m_BindSlot = slot;
-                dxDataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid shader type"); break;
-        }
-    }
-
-    void DX11RenderTexture2DAPI::Unbind(RenderTexture2DData* dataObject) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11DeviceContext* dxContext = DX11ContextAPI::GetNativeContext(context);
-
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
-
-        ID3D11ShaderResourceView* nullSRV = {nullptr};
-
-        if (dxDataObject->m_BindType != ShaderType::NONE) {
-            switch (dxDataObject->m_BindType) {
-                case ShaderType::VERTEX:
-                    dxContext->VSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
-                    dxDataObject->m_BindType = ShaderType::NONE;
-                    break;
-                case ShaderType::PIXEL:
-                    dxContext->PSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
-                    dxDataObject->m_BindType = ShaderType::NONE;
-                    break;
-                case ShaderType::COMPUTE:
-                    dxContext->CSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
-                    dxDataObject->m_BindType = ShaderType::NONE;
-                    break;
-                case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid shader type"); break;
-            }
-        }
-    }
-    void DX11RenderTexture2DAPI::Resize(RenderTexture2DData* dataObject, UInt16 width, UInt16 height) {
-        if (width == 0 || height == 0 || width > s_MaxSize || height > s_MaxSize) return;
-
-        DX11RenderTexture2DData* dxDataObject = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(dataObject);
-
-        dxDataObject->m_Width = width;
-        dxDataObject->m_Height = height;
-
-        if (dxDataObject->m_SwapchainTarget)
-            Create(dxDataObject, dxDataObject->m_TargetSwapchain);
-        else {};
-    }
 }  // namespace Sentinel
+#endif  // ST_RENDERER_DX11

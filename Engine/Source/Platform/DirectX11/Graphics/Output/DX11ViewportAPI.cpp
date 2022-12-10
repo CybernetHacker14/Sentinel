@@ -1,27 +1,46 @@
 #include "stpch.h"
-#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
-#include "Platform/DirectX11/Graphics/Output/DX11ViewportAPI.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+#if ST_RENDERER_DX11
+
+    #include "Sentinel/Graphics/Output/ViewportAPI.h"
+    #include "Sentinel/Graphics/Device/ContextAPI.h"
+
+    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel {
-    DX11ViewportAPI::_init DX11ViewportAPI::_initializer;
-
-    void DX11ViewportAPI::Bind(ViewportData* dataObject) {
-        DX11ViewportData* dxViewport = ViewportAPI::Cast<DX11ViewportData>(dataObject);
-        DX11ContextData* dxContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11DeviceContext* nativeContext = DX11ContextAPI::GetNativeContext(dxContext);
-
-        nativeContext->RSSetViewports(1, &(dxViewport->m_Viewport));
+    ViewportData* Sentinel::ViewportAPI::CreateViewportData(
+        PoolAllocator<ViewportData>& allocator,
+        ContextData* context,
+        UInt16 x,
+        UInt16 y,
+        UInt16 width,
+        UInt16 height,
+        UInt8 minDepth,
+        UInt8 maxDepth) {
+        ViewportData* viewport = allocator.New();
+        viewport->Context = context;
+        viewport->x = x;
+        viewport->y = y;
+        viewport->width = width;
+        viewport->height = height;
+        viewport->depthMin = minDepth;
+        viewport->depthMax = maxDepth;
+        Create(viewport);
+        return viewport;
     }
 
-    void DX11ViewportAPI::Resize(ViewportData* dataObject, UInt16 width, UInt16 height) {
+    void ViewportAPI::Bind(ViewportData* dataObject) {
+        ID3D11DeviceContext* nativeContext = ContextAPI::GetNativeContext(dataObject->Context);
+        nativeContext->RSSetViewports(1, &(dataObject->m_Viewport));
+    }
+
+    void ViewportAPI::Resize(ViewportData* dataObject, UInt16 width, UInt16 height) {
         dataObject->width = width;
         dataObject->height = height;
-        Create(ViewportAPI::Cast<DX11ViewportData>(dataObject));
+        Create(dataObject);
     }
 
-    void DX11ViewportAPI::Create(DX11ViewportData* dataObject) {
+    void ViewportAPI::Create(ViewportData* dataObject) {
         SecureZeroMemory(&(dataObject->m_Viewport), sizeof(dataObject->m_Viewport));
 
         dataObject->m_Viewport.TopLeftX = dataObject->x;
@@ -32,3 +51,4 @@ namespace Sentinel {
         dataObject->m_Viewport.MaxDepth = dataObject->depthMax;
     }
 }  // namespace Sentinel
+#endif  // ST_RENDERER_DX11

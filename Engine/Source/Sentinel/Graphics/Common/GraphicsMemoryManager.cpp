@@ -30,8 +30,8 @@ namespace Sentinel {
         ShaderAllocator.AllocateMemoryBlock(2);
         Texture2DAllocator.AllocateMemoryBlock(3);
 
-        RenderTexture2DAllocator.AllocateMemoryBlock(2);
-        DepthTexture2DAllocator.AllocateMemoryBlock(2);
+        RenderTexture2DAllocator.AllocateMemoryBlock(1);
+        DepthTexture2DAllocator.AllocateMemoryBlock(1);
 
         ViewportAllocator.AllocateMemoryBlock(2);
     }

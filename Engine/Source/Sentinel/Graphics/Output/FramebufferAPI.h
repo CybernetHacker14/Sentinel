@@ -1,47 +1,34 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
+#include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Graphics/Output/FramebufferData.h"
+
+#include "Sentinel/Graphics/Texture/RenderTexture2DData.h"
+#include "Sentinel/Graphics/Texture/DepthTexture2DData.h"
 
 #include <glm/fwd.hpp>
 
 namespace Sentinel {
-    class GraphicsMemoryManager;
-
     class FramebufferAPI {
     public:
         static FramebufferData* CreateFramebufferData(
-            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, UInt32 width, UInt32 height);
+            PoolAllocator<FramebufferData>& allocator,
+            PoolAllocator<RenderTexture2DData>& rtAllocator,
+            PoolAllocator<DepthTexture2DData>& dtAllocator,
+            ContextData* context,
+            UInt16 width,
+            UInt16 height);
 
-        inline static void Invalidate(FramebufferData* dataObject, SharedRef<GraphicsMemoryManager> memoryHandle) {
-            if (!m_InvalidateFunction) return;
-            m_InvalidateFunction(dataObject, memoryHandle);
-        }
+        static void Bind(FramebufferData* dataObject);
 
-        inline static void Bind(FramebufferData* dataObject) {
-            if (!m_BindFunction) return;
-            m_BindFunction(dataObject);
-        }
+        static void Unbind(FramebufferData* dataObject);
 
-        inline static void Unbind(FramebufferData* dataObject) {
-            if (!m_UnbindFunction) return;
-            m_UnbindFunction(dataObject);
-        }
+        static void Clear(FramebufferData* dataObject, const glm::vec4& clearColor);
 
-        inline static void Clear(FramebufferData* dataObject, const glm::vec4& clearColor) {
-            if (!m_ClearFunction) return;
-            m_ClearFunction(dataObject, clearColor);
-        }
+        static void Resize(FramebufferData* dataObject, const UInt16 width, const UInt16 height);
 
-        inline static void Resize(FramebufferData* dataObject, const UInt32 width, const UInt32 height) {
-            if (!m_ResizeFunction) return;
-            m_ResizeFunction(dataObject, width, height);
-        }
-
-        inline static void Clean(FramebufferData* dataObject) {
-            if (!m_CleanFunction) return;
-            m_CleanFunction(dataObject);
-        }
+        static void Clean(FramebufferData* dataObject);
 
         inline static void SetAttachments(
             FramebufferData* dataObject,
@@ -51,7 +38,7 @@ namespace Sentinel {
             dataObject->m_DepthFormat = depthFormat;
         }
 
-        inline static const ColorFormat GetColorFormat(FramebufferData* dataObject, UInt16 index) {
+        inline static const ColorFormat GetColorFormat(FramebufferData* dataObject, UInt8 index) {
             return dataObject->m_ColorFormats[index];
         }
 
@@ -59,12 +46,12 @@ namespace Sentinel {
             return dataObject->m_DepthFormat;
         }
 
-        inline static RenderTexture2DData* GetRenderTexture(FramebufferData* dataObject, UInt16 index) {
+        inline static RenderTexture2DData* GetRenderTexture(FramebufferData* dataObject, UInt8 index) {
             return dataObject->m_RTAttachments[index];
         }
 
         inline static void SetRenderTexture(
-            FramebufferData* dataObject, UInt16 index, RenderTexture2DData* renderTexture) {
+            FramebufferData* dataObject, UInt8 index, RenderTexture2DData* renderTexture) {
             dataObject->m_RTAttachments[index] = renderTexture;
         }
 
@@ -75,20 +62,5 @@ namespace Sentinel {
         inline static void SetHeight(FramebufferData* dataObject, const UInt32 height) {
             dataObject->m_Height = height;
         }
-
-    public:
-        template<typename T>
-        inline static T* Cast(FramebufferData* dataObject) {
-            static_assert(STL::is_base_of<FramebufferData, T>::value, "'T' should be derived from FramebufferData.");
-            return static_cast<T*>(dataObject);
-        }
-
-    protected:
-        inline static STL::delegate<void(FramebufferData*, SharedRef<GraphicsMemoryManager>)> m_InvalidateFunction;
-        inline static STL::delegate<void(FramebufferData*)> m_BindFunction;
-        inline static STL::delegate<void(FramebufferData*)> m_UnbindFunction;
-        inline static STL::delegate<void(FramebufferData*, const glm::vec4&)> m_ClearFunction;
-        inline static STL::delegate<void(FramebufferData*, const UInt32, const UInt32)> m_ResizeFunction;
-        inline static STL::delegate<void(FramebufferData*)> m_CleanFunction;
     };
 }  // namespace Sentinel

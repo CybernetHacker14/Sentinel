@@ -1,48 +1,36 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
+#include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Graphics/Device/ContextData.h"
 
 struct GLFWwindow;
 
 namespace Sentinel {
-    class GraphicsMemoryManager;
-
     class ContextAPI {
     public:
-        static ContextData* CreateImmediateContext(
-            SharedRef<GraphicsMemoryManager> memoryHandle, GLFWwindow* windowHandle);
-        static ContextData* CreateDeferredContext(
-            SharedRef<GraphicsMemoryManager> memoryHandle, GLFWwindow* windowHandle);
+        static ContextData* CreateImmediateContext(PoolAllocator<ContextData>& allocator, GLFWwindow* windowHandle);
 
-        inline static void Draw(ContextData* dataObject) {
-            if (!m_DrawFunction) return;
-            m_DrawFunction(dataObject);
-        }
+        static ContextData* CreateDeferredContext(PoolAllocator<ContextData>& allocator, GLFWwindow* windowHandle);
 
-        inline static void DrawIndexed(ContextData* dataObject, const UInt32 count) {
-            if (!m_DrawIndexedFunction) return;
-            m_DrawIndexedFunction(dataObject, count);
-        }
+        static void Draw(ContextData* dataObject);
 
-        inline static void Clean(ContextData* dataObject) {
-            if (!m_CleanFunction) return;
-            m_CleanFunction(dataObject);
-        }
+        static void DrawIndexed(ContextData* dataObject, const UInt32 count);
+
+        static void Clean(ContextData* dataObject);
 
         inline static const ContextInfo& GetContextInfo(ContextData* dataObject) { return dataObject->m_ContextInfo; }
         inline static ContextType GetContextType(ContextData* dataObject) { return dataObject->m_ContextType; }
 
-    public:
-        template<typename T>
-        inline static T* Cast(ContextData* dataObject) {
-            static_assert(STL::is_base_of<ContextData, T>::value, "'T' should be derived from ContextData.");
-            return static_cast<T*>(dataObject);
-        }
+#ifdef ST_RENDERER_DX11
+        inline static ID3D11Device* GetDevice(ContextData* databject) { return databject->m_Device; }
+        inline static ID3D11DeviceContext* GetNativeContext(ContextData* dataObject) { return dataObject->m_Context; }
+        inline static IDXGIDevice* GetDXGIDevice(ContextData* dataObject) { return dataObject->m_DXGIDevice; }
+        inline static IDXGIAdapter* GetAdapter(ContextData* dataObject) { return dataObject->m_Adapter; }
+        inline static IDXGIFactory* GetFactory(ContextData* dataObject) { return dataObject->m_Factory; }
+#endif  // ST_RENDERER_DX11
 
-    protected:
-        inline static STL::delegate<void(ContextData*)> m_DrawFunction;
-        inline static STL::delegate<void(ContextData*, const UInt32)> m_DrawIndexedFunction;
-        inline static STL::delegate<void(ContextData*)> m_CleanFunction;
+    private:
+        static void Create(ContextData* dataObject, GLFWwindow* windowHandle);
     };
 }  // namespace Sentinel

@@ -36,11 +36,11 @@ namespace Scribe {
         }
 
         ScribeWindow::ScribeWindow(const Sentinel::WindowProperties& props) : Window(props) {
-            m_InitFunction = ST_BIND_EVENT_FN(Init);
-            m_OnUpdateFunction = ST_BIND_EVENT_FN(OnUpdate);
-            m_SetVSyncFunction = ST_BIND_EVENT_FN(SetVSync);
-            m_GetNativeWindowFunction = ST_BIND_EVENT_FN(GetNativeWindow);
-            m_ShutdownFunction = ST_BIND_EVENT_FN(Shutdown);
+            m_InitFunction = ST_BIND_FN(Init);
+            m_OnUpdateFunction = ST_BIND_FN(OnUpdate);
+            m_SetVSyncFunction = ST_BIND_FN(SetVSync);
+            m_GetNativeWindowFunction = ST_BIND_FN(GetNativeWindow);
+            m_ShutdownFunction = ST_BIND_FN(Shutdown);
 
             SetDragLogic(DragFunction);
             Init();

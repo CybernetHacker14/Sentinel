@@ -22,11 +22,6 @@ namespace Scribe {
     private:
         void Run();
 
-        void ProcessLayerUpdate();
-        void ProcessLayerRender();
-        void ProcessLayerImGuiRender();
-        void ProcessLayerPostRender();
-
     private:
         void OnWindowClose(Sentinel::Event& event);
 

@@ -1,5 +1,6 @@
 include "Premake/customization/solution_items.lua"
 include "Premake/customization/clean_project.lua"
+include "Premake/customization/cmdargs.lua"
 include "Premake/customization/shader_file_locations.lua"
 include "Premake/customization/internal_dependencies.lua"
 include "Premake/customization/external_dependencies.lua"
@@ -35,6 +36,7 @@ group "Dependencies"
     include "Engine/Vendor/EASTL"
     include "Engine/Vendor/cereal"
     include "Engine/Vendor/imgui"
+    include "Engine/Vendor/flecs"
 group ""
 
 -- Include projects

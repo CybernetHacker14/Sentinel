@@ -9,16 +9,14 @@
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_win32.h>
 
 #include <GLFW/glfw3.h>
 
 #include <backends/imgui_impl_dx11.h>
 
 namespace Sentinel {
-    ImGuiLayer::ImGuiLayer(ContextData* context) : Layer("ImGuiLayer"), m_Context(context) {
-        m_AttachFunction = ST_BIND_EVENT_FN(ImGuiLayer::OnAttach);
-        m_DetachFunction = ST_BIND_EVENT_FN(ImGuiLayer::OnDetach);
+    ImGuiLayer::ImGuiLayer(ContextData* context) : m_Context(context) {
+        Application::Get().SubscribeToEvent(EventType::WindowResize, ST_BIND_FN(OnResize));
     }
 
     ImGuiLayer::~ImGuiLayer() {
@@ -66,15 +64,14 @@ namespace Sentinel {
             case Backend::API::None: ST_ENGINE_ASSERT(false, "API::None currently not supported"); break;
         }
 
-        m_OnResizeCallbackIndex =
-            Application::Get().SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(OnResize));
+        m_OnResizeCallbackIndex = Application::Get().SubscribeToEvent(EventType::WindowResize, ST_BIND_FN(OnResize));
     }
 
     void ImGuiLayer::OnDetach() {
+        Application::Get().UnsubscribeFromEvent(EventType::WindowResize, m_OnResizeCallbackIndex);
         ImGui_ImplDX11_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
-        Application::Get().UnsubscribeFromEvent(EventType::WindowResize, m_OnResizeCallbackIndex);
     }
 
     void ImGuiLayer::Begin() {

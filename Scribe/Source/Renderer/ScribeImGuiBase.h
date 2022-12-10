@@ -15,12 +15,11 @@ namespace Scribe {
     }
 
     namespace Rendering {
-        class ScribeImGuiBase final: public Sentinel::Layer {
+        class ScribeImGuiBase final {
         public:
             ScribeImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window);
             ~ScribeImGuiBase();
 
-        private:
             void OnAttach();
             void OnDetach();
             void OnUpdate();

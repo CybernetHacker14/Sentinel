@@ -2,7 +2,6 @@
 
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/Events/EventBus.h"
-#include "Sentinel/Layers/LayerStack.h"
 #include "Sentinel/Window/Window.h"
 
 int main(int argc, char** argv);
@@ -18,19 +17,16 @@ namespace Sentinel {
         inline Window& GetWindow() { return *m_Window; }
 
     public:
-        void PushLayer(Layer* layer);
-        void PushOverlay(Layer* overlay);
-
         const UInt32 SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
         void UnsubscribeFromEvent(const EventType& eventType, const UInt32& callback);
 
     protected:
         void Application::RaiseEvent(UniqueRef<Event> eventData);
+
         void Run();
 
     protected:
-        UniqueRef<Window> m_Window;
-        LayerStack m_LayerStack;
+        Window* m_Window;
         EventBus m_EventBus;
 
     protected:

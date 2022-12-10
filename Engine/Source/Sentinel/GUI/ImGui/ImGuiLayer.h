@@ -1,12 +1,10 @@
 #pragma once
 
-#include "Sentinel/Layers/Layer.h"
-
 namespace Sentinel {
     struct ContextData;
     class Event;
 
-    class ImGuiLayer final: public Layer {
+    class ImGuiLayer final {
     public:
         ImGuiLayer(ContextData* context);
         ~ImGuiLayer();

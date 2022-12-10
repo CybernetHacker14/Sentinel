@@ -15,7 +15,6 @@ project "Sentinel"
 		"Source/**.h",
         "Source/**.cpp",
 		"Resources/**.inl",
-		"Resources/Shaders/**.hlsl",
         "Vendor/glm/module/glm/**.hpp",
         "Vendor/glm/module/glm/**.inl",
 		"Vendor/stb_image/**.cpp",
@@ -54,32 +53,7 @@ project "Sentinel"
 		"dwmapi.lib",
 		"imgui"
     }
-	
-	shadermodel("5.0")
-	
-	shaderassembler("AssemblyCode")
-	local shader_dir = "%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}/Shader/"
-	
-	-- HLSL files that don't end with 'Extensions' will be ignored as they will be
-    -- used as includes
-	filter("files:**.hlsl")
-		flags("ExcludeFromBuild")
-		shaderobjectfileoutput(shader_dir.."%{file.basename}"..".cso")
-		shaderassembleroutput(shader_dir.."%{file.basename}"..".asm")
 		
-	filter("files:**_vs.hlsl")
-		removeflags("ExcludeFromBuild")
-		shadertype("Vertex")
-		shaderentry("VShader")
-		
-	filter("files.**_ps.hlsl")
-		removeflags("ExcludeFromBuild")
-		shadertype("Pixel")
-		shaderentry("PShader")
-		
-	-- Warnings as errors
-	shaderoptions({"/WX"})
-
     filter "system:windows"
         systemversion "latest"
 		
@@ -87,6 +61,9 @@ project "Sentinel"
 		{
 			"{COPYDIR} \"%{ShaderFilesDir.Engine}\" \"%{cfg.targetdir}\""
 		}
+
+    filter { "options:gfxapi=DX11" }
+        defines "ST_RENDERER_DX11"
 
     filter "configurations:Debug"
         defines "ST_DEBUG"

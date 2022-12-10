@@ -10,17 +10,6 @@ namespace Sentinel {
     }
 
     Application::~Application() {
-        m_LayerStack.CleanLayerstack();
-    }
-
-    void Application::PushLayer(Layer* layer) {
-        m_LayerStack.PushLayer(layer);
-        layer->OnAttach();
-    }
-
-    void Application::PushOverlay(Layer* overlay) {
-        m_LayerStack.PushOverlay(overlay);
-        overlay->OnAttach();
     }
 
     const UInt32 Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {

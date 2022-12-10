@@ -1,21 +1,31 @@
 #include "stpch.h"
-#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
-#include "Platform/DirectX11/Graphics/Output/DX11FramebufferAPI.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
-#include "Platform/DirectX11/Graphics/Texture/DX11RenderTexture2DAPI.h"
-#include "Platform/DirectX11/Graphics/Texture/DX11DepthTexture2DAPI.h"
-#include "Platform/DirectX11/Graphics/Device/DX11SwapchainAPI.h"
+#if ST_RENDERER_DX11
+
+    #include "Sentinel/Graphics/Output/FramebufferAPI.h"
+    #include "Sentinel/Graphics/Device/ContextAPI.h"
+    #include "Sentinel/Graphics/Texture/RenderTexture2DAPI.h"
+    #include "Sentinel/Graphics/Texture/DepthTexture2DAPI.h"
+
+    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+
+    #include <glm/glm.hpp>
 
 namespace Sentinel {
-    DX11FramebufferAPI::_init DX11FramebufferAPI::_initializer;
 
-    void DX11FramebufferAPI::Invalidate(FramebufferData* dataObject, SharedRef<GraphicsMemoryManager> memoryHandle) {
-        DX11FramebufferData* framebuffer = FramebufferAPI::Cast<DX11FramebufferData>(dataObject);
+    FramebufferData* Sentinel::FramebufferAPI::CreateFramebufferData(
+        PoolAllocator<FramebufferData>& allocator,
+        PoolAllocator<RenderTexture2DData>& rtAllocator,
+        PoolAllocator<DepthTexture2DData>& dtAllocator,
+        ContextData* context,
+        UInt16 width,
+        UInt16 height) {
+        FramebufferData* framebuffer = allocator.New();
+        framebuffer->Context = context;
 
-        for (UInt16 i = 0; i < framebuffer->m_ColorFormats.size(); i++) {
+        for (UInt8 i = 0; i < framebuffer->m_ColorFormats.size(); i++) {
             framebuffer->m_RTAttachments[i] = RenderTexture2DAPI::CreateRenderTexture2DData(
-                memoryHandle,
+                rtAllocator,
                 framebuffer->Context,
                 framebuffer->m_Width,
                 framebuffer->m_Height,
@@ -23,76 +33,68 @@ namespace Sentinel {
         }
 
         framebuffer->m_DTAttachment = DepthTexture2DAPI::CreateDepthTexture2DData(
-            memoryHandle,
-            framebuffer->Context,
-            framebuffer->m_Width,
-            framebuffer->m_Height,
-            framebuffer->m_DepthFormat);
+            dtAllocator, framebuffer->Context, framebuffer->m_Width, framebuffer->m_Height, framebuffer->m_DepthFormat);
+
+        return framebuffer;
     }
 
-    void DX11FramebufferAPI::Bind(FramebufferData* dataObject) {
-        DX11FramebufferData* framebuffer = FramebufferAPI::Cast<DX11FramebufferData>(dataObject);
-        DX11ContextData* dxContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11DeviceContext* nativeContext = DX11ContextAPI::GetNativeContext(dxContext);
+    void FramebufferAPI::Bind(FramebufferData* dataObject) {
+        ID3D11DeviceContext* nativeContext = ContextAPI::GetNativeContext(dataObject->Context);
 
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderViews[15];
 
-        DX11RenderTexture2DData* dxRenderTexture = nullptr;
-
-        for (UInt16 i = 0; i < framebuffer->m_ColorFormats.size(); i++) {
-            dxRenderTexture = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(framebuffer->m_RTAttachments[i]);
-            pRenderViews[i] = dxRenderTexture->m_NativeRTV;
+        for (UInt8 i = 0; i < dataObject->m_ColorFormats.size(); i++) {
+            pRenderViews[i] = RenderTexture2DAPI::GetNativeRTV(dataObject->m_RTAttachments[i]);
         }
-
-        DX11DepthTexture2DData* dxDepthTexture =
-            DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(framebuffer->m_DTAttachment);
 
         nativeContext->OMSetRenderTargets(
-            framebuffer->m_ColorFormats.size(),
+            dataObject->m_ColorFormats.size(),
             pRenderViews[0].GetAddressOf(),
-            framebuffer->m_DepthFormat == DepthFormat::NONE ? NULL : dxDepthTexture->m_NativeDSV);
+            dataObject->m_DepthFormat == DepthFormat::NONE
+                ? NULL
+                : DepthTexture2DAPI::GetNativeDSV(dataObject->m_DTAttachment));
     }
 
-    void DX11FramebufferAPI::Unbind(FramebufferData* dataObject) {
+    void FramebufferAPI::Unbind(FramebufferData* dataObject) {
         ID3D11RenderTargetView* null = nullptr;
-        DX11ContextData* dxContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        DX11ContextAPI::GetNativeContext(dxContext)->OMSetRenderTargets(1, &null, NULL);
+        ContextAPI::GetNativeContext(dataObject->Context)->OMSetRenderTargets(1, &null, NULL);
     }
 
-    void DX11FramebufferAPI::Clear(FramebufferData* dataObject, const glm::vec4& clearColor) {
-        DX11FramebufferData* framebuffer = FramebufferAPI::Cast<DX11FramebufferData>(dataObject);
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(framebuffer->Context);
-        ID3D11DeviceContext* dxContext = DX11ContextAPI::GetNativeContext(context);
-        DX11DepthTexture2DData* dxDepthTexture =
-            DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(framebuffer->m_DTAttachment);
-        DX11RenderTexture2DData* dxRenderTexture = nullptr;
+    void FramebufferAPI::Clear(FramebufferData* dataObject, const glm::vec4& clearColor) {
+        ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
 
-        for (UInt16 i = 0; i < framebuffer->m_ColorFormats.size(); i++) {
-            if (!framebuffer->m_RTAttachments[i]) continue;
+        for (UInt16 i = 0; i < dataObject->m_ColorFormats.size(); i++) {
+            if (!dataObject->m_RTAttachments[i]) continue;
 
-            dxRenderTexture = RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(framebuffer->m_RTAttachments[i]);
-            dxContext->ClearRenderTargetView(dxRenderTexture->m_NativeRTV, (Float*)&(clearColor));
+            dxContext->ClearRenderTargetView(
+                RenderTexture2DAPI::GetNativeRTV(dataObject->m_RTAttachments[i]), (Float*)&(clearColor));
         }
 
-        if (dxDepthTexture) {
+        if (dataObject->m_DTAttachment) {
             dxContext->ClearDepthStencilView(
-                dxDepthTexture->m_NativeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+                DepthTexture2DAPI::GetNativeDSV(dataObject->m_DTAttachment),
+                D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+                1.0f,
+                0);
         }
     }
 
-    void DX11FramebufferAPI::Resize(FramebufferData* dataObject, const UInt32 width, const UInt32 height) {
-        DX11FramebufferData* framebuffer = FramebufferAPI::Cast<DX11FramebufferData>(dataObject);
+    void FramebufferAPI::Resize(FramebufferData* dataObject, const UInt16 width, const UInt16 height) {
         Unbind(dataObject);
         Clean(dataObject);
-        framebuffer->m_Width = width;
-        framebuffer->m_Height = height;
+        dataObject->m_Width = width;
+        dataObject->m_Height = height;
     }
 
-    void DX11FramebufferAPI::Clean(FramebufferData* dataObject) {
+    void FramebufferAPI::Clean(FramebufferData* dataObject) {
         RenderTexture2DData* renderTexture;
         for (UInt8 i = 0; i < 16; i++) {
-            renderTexture = FramebufferAPI::GetRenderTexture(dataObject, i);
+            renderTexture = GetRenderTexture(dataObject, i);
             if (renderTexture) RenderTexture2DAPI::Clean(renderTexture);
         }
+
+        if (dataObject->m_DTAttachment) DepthTexture2DAPI::Clean(dataObject->m_DTAttachment);
     }
+
 }  // namespace Sentinel
+#endif  // ST_RENDERER_DX11

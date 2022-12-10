@@ -19,14 +19,13 @@ namespace Sentinel {
 
 namespace Scribe {
     namespace Rendering {
-        class ScribeRenderer final: public Sentinel::Layer {
+        class ScribeRenderer final {
         public:
             ScribeRenderer(Sentinel::Window* window);
             ~ScribeRenderer();
 
             inline Sentinel::ContextData* GetRenderingContext() { return m_Context; }
 
-        private:
             void OnAttach();
             void OnDetach();
             void OnUpdate();

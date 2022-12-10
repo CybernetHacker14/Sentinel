@@ -28,18 +28,18 @@ namespace Sentinel {
 
 namespace Sandbox {
     namespace Rendering {
-        class RendererLayer final: public Sentinel::Layer {
+        class RendererLayer final {
         public:
             RendererLayer(Sentinel::Window* window);
 
-        private:
             void OnAttach();
-            void Detach();
+            void OnDetach();
             void OnUpdate();
             void OnRender();
             void OnImGuiRender();
             void OnPostRender();
 
+        private:
             void OnWindowResize(Sentinel::Event& event);
             void Resize(Sentinel::UInt16 width, Sentinel::UInt16 height);
 

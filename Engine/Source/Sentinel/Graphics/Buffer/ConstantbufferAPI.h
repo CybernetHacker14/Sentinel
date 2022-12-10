@@ -1,70 +1,36 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
+#include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Graphics/Buffer/ConstantbufferData.h"
 
 namespace Sentinel {
-    class GraphicsMemoryManager;
-
     class ConstantbufferAPI {
     public:
         static ConstantbufferData* CreateConstantbufferData(
-            SharedRef<GraphicsMemoryManager> memoryHandle,
+            PoolAllocator<ConstantbufferData>& allocator,
             ContextData* context,
             UInt32 size,
             UInt32 bindSlot,
             CBufferUsageType usageType);
 
-        inline static void VSBind(ConstantbufferData* dataObject) {
-            if (!m_VSBindFunction) return;
-            m_VSBindFunction(dataObject);
-        }
+        static void VSBind(ConstantbufferData* dataObject);
 
-        inline static void PSBind(ConstantbufferData* dataObject) {
-            if (!m_PSBindFunction) return;
-            m_PSBindFunction(dataObject);
-        }
+        static void PSBind(ConstantbufferData* dataObject);
 
-        inline static void CSBind(ConstantbufferData* dataObject) {
-            if (!m_CSBindFunction) return;
-            m_CSBindFunction(dataObject);
-        }
+        static void CSBind(ConstantbufferData* dataObject);
 
-        inline static void SetStaticData(ConstantbufferData* dataObject, void* data) {
-            if (!m_SetStaticDataFunction) return;
-            m_SetStaticDataFunction(dataObject, data);
-        }
+        static void SetStaticData(ConstantbufferData* dataObject, void* data);
 
-        inline static void SetDynamicData(ConstantbufferData* dataObject, void* data) {
-            if (!m_SetDynamicDataFunction) return;
-            m_SetDynamicDataFunction(dataObject, data);
-        }
+        static void SetDynamicData(ConstantbufferData* dataObject, void* data);
 
-        inline static void Clean(ConstantbufferData* dataObject) {
-            if (!m_CleanFunction) return;
-            m_CleanFunction(dataObject);
-        }
+        static void Clean(ConstantbufferData* dataObject);
 
         inline static const void* GetData(ConstantbufferData* dataObject) { dataObject->m_Data; }
         inline static const UInt32 GetSize(ConstantbufferData* dataObject) { dataObject->m_Size; }
         inline static const CBufferUsageType GetUsageType(ConstantbufferData* dataObject) { dataObject->m_UsageType; }
 
-    public:
-        template<typename T>
-        inline static T* Cast(ConstantbufferData* dataObject) {
-            static_assert(
-                STL::is_base_of<ConstantbufferData, T>::value, "'T' should be derived from ConstantbufferData.");
-            return static_cast<T*>(dataObject);
-        }
-
-    protected:
-        inline static STL::delegate<void(ConstantbufferData*)> m_VSBindFunction;
-        inline static STL::delegate<void(ConstantbufferData*)> m_PSBindFunction;
-        inline static STL::delegate<void(ConstantbufferData*)> m_CSBindFunction;
-
-        inline static STL::delegate<void(ConstantbufferData*, void*)> m_SetStaticDataFunction;
-        inline static STL::delegate<void(ConstantbufferData*, void*)> m_SetDynamicDataFunction;
-
-        inline static STL::delegate<void(ConstantbufferData*)> m_CleanFunction;
+    private:
+        static void Create(ConstantbufferData* dataObject, UInt32 size, UInt32 bindSlot, CBufferUsageType usageType);
     };
 }  // namespace Sentinel

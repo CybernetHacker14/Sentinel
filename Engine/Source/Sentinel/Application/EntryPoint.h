@@ -38,10 +38,6 @@ int main(int argc, char** argv) {
     // @DSpider - when you hit "Play" in Unity (or Unreal), at least two things start happening: 1.) physics simulations
     // become active, and 2.) camera changes position (and rotation) to a "camera" object in the scene also, 3.) the
     // editor UI goes away 3 is easy, since you can toggle it on / off with a bool
-
-    // OPINION2 @Ujjwal : In Ghost engine, asset management was quite a pain :-
-    //  So in Sentinel engine, a proper asset management system, if worked on early, should work wonders in handling
-    //  data in future development
     application->Run();
 
     delete application;

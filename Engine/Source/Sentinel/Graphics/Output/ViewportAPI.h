@@ -1,42 +1,29 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
+#include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Graphics/Output/ViewportData.h"
 
 namespace Sentinel {
-    class GraphicsMemoryManager;
-
     class ViewportAPI {
     public:
         static ViewportData* CreateViewportData(
-            SharedRef<GraphicsMemoryManager> memoryHandle,
+            PoolAllocator<ViewportData>& allocator,
             ContextData* context,
             UInt16 x,
             UInt16 y,
             UInt16 width,
             UInt16 height,
-            UInt16 minDepth,
-            UInt16 maxDepth);
+            UInt8 minDepth,
+            UInt8 maxDepth);
 
-        inline static void Bind(ViewportData* dataObject) {
-            if (!m_BindFunction) return;
-            m_BindFunction(dataObject);
-        }
+        static void Bind(ViewportData* dataObject);
 
-        inline static void Resize(ViewportData* dataObject, UInt16 width, UInt16 height) {
-            if (!m_ResizeFunction) return;
-            m_ResizeFunction(dataObject, width, height);
-        }
+        static void Resize(ViewportData* dataObject, UInt16 width, UInt16 height);
 
-    public:
-        template<typename T>
-        inline static T* Cast(ViewportData* dataObject) {
-            static_assert(STL::is_base_of<ViewportData, T>::value, "'T' should be derived from ViewportData.");
-            return static_cast<T*>(dataObject);
-        }
-
-    protected:
-        inline static STL::delegate<void(ViewportData*)> m_BindFunction;
-        inline static STL::delegate<void(ViewportData*, UInt16, UInt16)> m_ResizeFunction;
+    private:
+#if ST_RENDERER_DX11
+        static void Create(ViewportData* dataObject);
+#endif  // ST_RENDERER_DX11
     };
 }  // namespace Sentinel

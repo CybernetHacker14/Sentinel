@@ -7,7 +7,7 @@ struct ID3D11Buffer;
 namespace Sentinel {
     struct DX11VertexbufferData final: public VertexbufferData {
     private:
-        ID3D11Buffer* m_VertexbufferPtr;
+        ID3D11Buffer* m_Buffer;
 
     private:
         friend class DX11VertexbufferAPI;

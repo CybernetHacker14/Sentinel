@@ -36,7 +36,7 @@ int DragFunction() {
 
 namespace Sandbox {
     Sandbox::Sandbox() {
-        m_RunFunction = ST_BIND_EVENT_FN(Sandbox::Run);
+        m_RunFunction = ST_BIND_FN(Sandbox::Run);
 
         //====================================WINDOW CREATION=======================================//
         Sentinel::WindowProperties props;
@@ -46,57 +46,34 @@ namespace Sandbox {
         props.Mode = Sentinel::WindowMode::BORDERLESS;
         props.FramebufferTransparency = false;
 
-        m_Window = Sentinel::CreateUniqueRef<Sentinel::GLFWWindow>(props);
-        m_Window->SetEventCallback(ST_BIND_EVENT_FN(RaiseEvent));
-        static_cast<Sentinel::GLFWWindow*>(m_Window.get())->SetDragLogic(&DragFunction);
+        m_Window = new Sentinel::GLFWWindow(props);
+        m_Window->SetEventCallback(ST_BIND_FN(RaiseEvent));
+        static_cast<Sentinel::GLFWWindow*>(m_Window)->SetDragLogic(&DragFunction);
 
         handle = glfwGetWin32Window(m_Window->GetNativeWindow<GLFWwindow>());
 
         //====================================DO NOT DELETE========================================//
 
-        m_RenderLayer = new Rendering::RendererLayer(m_Window.get());
-        PushLayer(m_RenderLayer);
-
+        m_RenderLayer = new Rendering::RendererLayer(m_Window);
         m_ImGuiLayer = new Sentinel::ImGuiLayer(m_RenderLayer->m_Context);
-        PushOverlay(m_ImGuiLayer);
+        m_ImGuiLayer->OnAttach();
+        m_RenderLayer->OnAttach();
     }
 
     void Sandbox::Run() {
         while (m_Running) {
             if (!m_Minimized) {
-                ProcessLayerUpdate();
-                ProcessLayerRender();
-                ProcessLayerImGuiRender();
-                ProcessLayerPostRender();
+                m_RenderLayer->OnUpdate();
+                m_RenderLayer->OnRender();
+                m_ImGuiLayer->Begin();
+                m_ImGuiLayer->End();
+                m_RenderLayer->OnPostRender();
             }
             m_Window->OnUpdate();
             Sentinel::Input::OnUpdate();
         }
+        m_ImGuiLayer->OnDetach();
+        m_RenderLayer->OnDetach();
         m_Window->Shutdown();
-    }
-
-    void Sandbox::ProcessLayerUpdate() {
-        if (m_LayerStack.GetSize() == 0) return;
-        for (Sentinel::Layer* layer: m_LayerStack) layer->OnUpdate();
-    }
-
-    void Sandbox::ProcessLayerRender() {
-        if (m_LayerStack.GetSize() == 0) return;
-        for (Sentinel::Layer* layer: m_LayerStack) layer->OnRender();
-    }
-
-    void Sandbox::ProcessLayerImGuiRender() {
-        if (m_LayerStack.GetSize() == 0) return;
-
-        m_ImGuiLayer->Begin();
-
-        for (Sentinel::Layer* layer: m_LayerStack) layer->OnImGuiRender();
-
-        m_ImGuiLayer->End();
-    }
-
-    void Sandbox::ProcessLayerPostRender() {
-        if (m_LayerStack.GetSize() == 0) return;
-        for (Sentinel::Layer* layer: m_LayerStack) layer->OnPostRender();
     }
 }  // namespace Sandbox

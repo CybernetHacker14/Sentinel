@@ -1,9 +1,10 @@
 #include "stpch.h"
-#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
-#include "Platform/DirectX11/Graphics/Material/DX11ShaderAPI.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextData.h"
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+#if ST_RENDERER_DX11
+    #include "Sentinel/Graphics/Material/ShaderAPI.h"
+    #include "Sentinel/Graphics/Device/ContextAPI.h"
+
+    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel {
 
@@ -23,52 +24,78 @@ namespace Sentinel {
 
     }  // namespace Utils
 
-    DX11ShaderAPI::_init DX11ShaderAPI::_initializer;
-
-    void DX11ShaderAPI::Bind(ShaderData* dataObject) {
-        ID3D11DeviceContext* context =
-            DX11ContextAPI::GetNativeContext(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
-        DX11ShaderData* shader = ShaderAPI::Cast<DX11ShaderData>(dataObject);
-
-        if (shader->m_VertexShader) context->VSSetShader(shader->m_VertexShader, nullptr, 0);
-        if (shader->m_PixelShader) context->PSSetShader(shader->m_PixelShader, nullptr, 0);
-        if (shader->m_ComputeShader) context->CSSetShader(shader->m_ComputeShader, nullptr, 0);
+    ShaderData* Sentinel::ShaderAPI::CreateShaderData(
+        PoolAllocator<ShaderData>& allocator,
+        ContextData* context,
+        const STL::string& filepath,
+        const STL::string& name) {
+        ShaderData* shaderObject = allocator.New();  // Remove the <T> from New calls in other classes
+        shaderObject->m_Filepath = filepath;
+        shaderObject->m_ShaderName = name;
+        shaderObject->Context = context;
+        Load(shaderObject);
+        return shaderObject;
     }
 
-    void DX11ShaderAPI::Reload(ShaderData* dataObject) {
-        ID3D11DeviceContext* context =
-            DX11ContextAPI::GetNativeContext(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
-        DX11ShaderData* shader = ShaderAPI::Cast<DX11ShaderData>(dataObject);
+    inline void ShaderAPI::Bind(ShaderData* dataObject) {
+        ID3D11DeviceContext* context = ContextAPI::GetNativeContext(dataObject->Context);
 
-        DX11ShaderAPI::Load(shader);
+        if (dataObject->m_NativeVS) context->VSSetShader(dataObject->m_NativeVS, nullptr, 0);
+        if (dataObject->m_NativePS) context->PSSetShader(dataObject->m_NativePS, nullptr, 0);
+        if (dataObject->m_NativeCS) context->CSSetShader(dataObject->m_NativeCS, nullptr, 0);
     }
 
-    void DX11ShaderAPI::Clean(ShaderData* dataObject) {
-        ID3D11DeviceContext* context =
-            DX11ContextAPI::GetNativeContext(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
-        DX11ShaderData* shader = ShaderAPI::Cast<DX11ShaderData>(dataObject);
+    inline void ShaderAPI::Reload(ShaderData* dataObject) {
+        ID3D11DeviceContext* context = ContextAPI::GetNativeContext(dataObject->Context);
+        Load(dataObject);
+    }
 
-        for (auto& binary: shader->m_BinaryMap) {
+    inline void ShaderAPI::Clean(ShaderData* dataObject) {
+        ID3D11DeviceContext* context = ContextAPI::GetNativeContext(dataObject->Context);
+
+        for (auto& binary: dataObject->m_BinaryMap) {
             if (binary.second) binary.second->Release();
         }
 
-        if (shader->m_VertexShader) shader->m_VertexShader->Release();
-        if (shader->m_PixelShader) shader->m_PixelShader->Release();
-        if (shader->m_ComputeShader) shader->m_ComputeShader->Release();
+        if (dataObject->m_NativeVS) dataObject->m_NativeVS->Release();
+        if (dataObject->m_NativePS) dataObject->m_NativePS->Release();
+        if (dataObject->m_NativeCS) dataObject->m_NativeCS->Release();
 
-        shader->m_BinaryMap.clear();
-        shader->m_ShaderSources.clear();
+        dataObject->m_BinaryMap.clear();
+        dataObject->m_ShaderSources.clear();
 
-        shader->m_ShaderName.clear();
-        shader->m_Filepath.clear();
+        dataObject->m_ShaderName.clear();
+        dataObject->m_Filepath.clear();
     }
 
-    void DX11ShaderAPI::Unbind(ShaderData* dataObject) {
-        DX11ShaderData* shader = ShaderAPI::Cast<DX11ShaderData>(dataObject);
-        DX11ShaderAPI::Reset(shader);
+    inline void ShaderAPI::Unbind(ShaderData* dataObject) {
+        for (auto& binary: dataObject->m_BinaryMap) {
+            if (binary.second != nullptr) {
+                binary.second->Release();
+                binary.second = nullptr;
+            }
+        }
+
+        dataObject->m_BinaryMap.clear();
+        dataObject->m_ShaderSources.clear();
+
+        if (dataObject->m_NativeVS != nullptr) {
+            dataObject->m_NativeVS->Release();
+            dataObject->m_NativeVS = nullptr;
+        }
+
+        if (dataObject->m_NativePS != nullptr) {
+            dataObject->m_NativePS->Release();
+            dataObject->m_NativePS = nullptr;
+        }
+
+        if (dataObject->m_NativeCS != nullptr) {
+            dataObject->m_NativeCS->Release();
+            dataObject->m_NativeCS = nullptr;
+        }
     }
 
-    STL::unordered_map<ShaderType, STL::string> DX11ShaderAPI::PreprocessSource(const STL::string& source) {
+    STL::unordered_map<ShaderType, STL::string> ShaderAPI::PreprocessSource(const STL::string& source) {
         STL::unordered_map<ShaderType, STL::string> shaderSources;
 
         const char* typeToken = "#type";
@@ -94,15 +121,15 @@ namespace Sentinel {
         return shaderSources;
     }
 
-    void DX11ShaderAPI::CompileFromSource(DX11ShaderData* dataObject) {
+    void ShaderAPI::CompileFromSource(ShaderData* dataObject) {
         HRESULT result;
         ID3DBlob* errorMessages;
 
         UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
 
-#ifdef ST_DEBUG
+    #ifdef ST_DEBUG
         flags |= D3DCOMPILE_DEBUG;
-#endif  // ST_DEBUG
+    #endif  // ST_DEBUG
 
         for (auto& tuple: dataObject->m_ShaderSources) {
             ShaderType type = tuple.first;
@@ -124,7 +151,7 @@ namespace Sentinel {
                 &(dataObject->m_BinaryMap[type]),
                 &errorMessages);
 
-#if ST_DEBUG
+    #if ST_DEBUG
             if (FAILED(result)) {
                 char* error = (char*)errorMessages->GetBufferPointer();
                 error[strnlen_s(error, 128) - 1] = '\0';
@@ -137,14 +164,14 @@ namespace Sentinel {
                     Utils::s_ShaderTypeStringMap.at(type).c_str());
                 ST_ENGINE_ASSERT(false, "");
             }
-#endif
+    #endif
 
             if (errorMessages) errorMessages->Release();
         }
     }
 
-    void DX11ShaderAPI::Load(DX11ShaderData* dataObject) {
-        DX11ShaderAPI::Reset(dataObject);
+    void ShaderAPI::Load(ShaderData* dataObject) {
+        Unbind(dataObject);
         STL::string& source = Filesystem::ReadTextFileAtPath(dataObject->m_Filepath);
 
         if (source.empty()) {
@@ -152,17 +179,17 @@ namespace Sentinel {
             return;
         }
 
-        dataObject->m_ShaderSources = DX11ShaderAPI::PreprocessSource(source);
-        DX11ShaderAPI::CompileFromSource(dataObject);
+        dataObject->m_ShaderSources = PreprocessSource(source);
+        CompileFromSource(dataObject);
 
-        ID3D11Device* device = DX11ContextAPI::GetDevice(ContextAPI::Cast<DX11ContextData>(dataObject->Context));
+        ID3D11Device* device = ContextAPI::GetDevice(dataObject->Context);
 
         if (dataObject->m_BinaryMap.at(ShaderType::VERTEX)) {
             device->CreateVertexShader(
                 dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferSize(),
                 nullptr,
-                &(dataObject->m_VertexShader));
+                &(dataObject->m_NativeVS));
         }
 
         if (dataObject->m_BinaryMap.at(ShaderType::PIXEL)) {
@@ -170,7 +197,7 @@ namespace Sentinel {
                 dataObject->m_BinaryMap.at(ShaderType::PIXEL)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::PIXEL)->GetBufferSize(),
                 nullptr,
-                &(dataObject->m_PixelShader));
+                &(dataObject->m_NativePS));
         }
 
         if (dataObject->m_BinaryMap.find(ShaderType::COMPUTE) != dataObject->m_BinaryMap.end()) {
@@ -178,34 +205,8 @@ namespace Sentinel {
                 dataObject->m_BinaryMap.at(ShaderType::COMPUTE)->GetBufferPointer(),
                 dataObject->m_BinaryMap.at(ShaderType::COMPUTE)->GetBufferSize(),
                 nullptr,
-                &dataObject->m_ComputeShader);
-        }
-    }
-
-    void DX11ShaderAPI::Reset(DX11ShaderData* dataObject) {
-        for (auto& binary: dataObject->m_BinaryMap) {
-            if (binary.second != nullptr) {
-                binary.second->Release();
-                binary.second = nullptr;
-            }
-        }
-
-        dataObject->m_BinaryMap.clear();
-        dataObject->m_ShaderSources.clear();
-
-        if (dataObject->m_VertexShader != nullptr) {
-            dataObject->m_VertexShader->Release();
-            dataObject->m_VertexShader = nullptr;
-        }
-
-        if (dataObject->m_PixelShader != nullptr) {
-            dataObject->m_PixelShader->Release();
-            dataObject->m_PixelShader = nullptr;
-        }
-
-        if (dataObject->m_ComputeShader != nullptr) {
-            dataObject->m_ComputeShader->Release();
-            dataObject->m_ComputeShader = nullptr;
+                &dataObject->m_NativeCS);
         }
     }
 }  // namespace Sentinel
+#endif  // ST_RENDERER_DX11

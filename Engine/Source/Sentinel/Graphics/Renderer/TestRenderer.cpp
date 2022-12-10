@@ -33,12 +33,11 @@ namespace Sentinel {
         Window& window = Application::Get().GetWindow();
         GLFWwindow* glfwWindow = window.GetNativeWindow<GLFWwindow>();
         m_GFXMemory = CreateSharedRef<GraphicsMemoryManager>();
-        m_Context = ContextAPI::CreateImmediateContext(m_GFXMemory, glfwWindow);
-        m_Swapchain = SwapchainAPI::CreateSwapchain(m_GFXMemory, m_Context, glfwWindow);
+        m_Context = ContextAPI::CreateImmediateContext(m_GFXMemory->ContextAllocator, glfwWindow);
+        m_Swapchain = SwapchainAPI::CreateSwapchain(m_GFXMemory->SwapchainAllocator, m_Context, glfwWindow);
         m_Camera = CreateSharedRef<Camera>(m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight());
 
         m_ImGuiLayer = new ImGuiLayer(m_Context);
-        Application::Get().PushOverlay(m_ImGuiLayer);
     }
 
     TestRenderer::~TestRenderer() {
@@ -85,16 +84,20 @@ namespace Sentinel {
             settings.TextureFilepath = "../Engine/Resources/Images/Icon/512.png";
         }
 
-        m_Texture = Texture2DAPI::CreateTexture2DData(m_GFXMemory, m_Context, settings);
-
         // TODO: Possible refactor
         Window& window = Application::Get().GetWindow();
         // \TODO
 
-        m_RenderTexture = RenderTexture2DAPI::CreateRenderTexture2DData(m_GFXMemory, m_Context, m_Swapchain);
+        m_RenderTexture = RenderTexture2DAPI::CreateRenderTexture2DData(
+            m_GFXMemory->RenderTexture2DAllocator, m_Context, m_Swapchain);
 
         m_DepthTexture = DepthTexture2DAPI::CreateDepthTexture2DData(
-            m_GFXMemory, m_Context, window.GetWidth(), window.GetHeight(), DepthFormat::D24S8UINT, true);
+            m_GFXMemory->DepthTexture2DAllocator,
+            m_Context,
+            window.GetWidth(),
+            window.GetHeight(),
+            DepthFormat::D24S8UINT,
+            true);
 
         SwapchainAPI::SetBuffers(m_Swapchain, m_RenderTexture, m_DepthTexture);
 

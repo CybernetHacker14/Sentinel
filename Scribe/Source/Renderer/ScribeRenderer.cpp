@@ -22,15 +22,10 @@ namespace Scribe {
         Sentinel::Bool renderdocBuild = false;
 
         ScribeRenderer::ScribeRenderer(Sentinel::Window* window)
-            : Sentinel::Layer("EditorRendererLayer"), m_Window(window) {
-            m_AttachFunction = ST_BIND_EVENT_FN(ScribeRenderer::OnAttach);
-            m_DetachFunction = ST_BIND_EVENT_FN(ScribeRenderer::OnDetach);
-            m_UpdateFunction = ST_BIND_EVENT_FN(ScribeRenderer::OnUpdate);
-            m_RenderFunction = ST_BIND_EVENT_FN(ScribeRenderer::OnRender);
-            m_PostRenderFunction = ST_BIND_EVENT_FN(ScribeRenderer::OnPostRender);
+            : m_Window(window) {
 
             m_ResizeIndex = Sentinel::Application::Get().SubscribeToEvent(
-                Sentinel::EventType::WindowResize, ST_BIND_EVENT_FN(ScribeRenderer::OnWindowResize));
+                Sentinel::EventType::WindowResize, ST_BIND_FN(ScribeRenderer::OnWindowResize));
 
             GLFWwindow* glfwWindow = m_Window->GetNativeWindow<GLFWwindow>();
             m_GFXMemory = Sentinel::CreateSharedRef<Sentinel::GraphicsMemoryManager>();
@@ -67,8 +62,8 @@ namespace Scribe {
                 m_GFXMemory, m_Context, 0, 0, m_Window->GetWidth(), m_Window->GetHeight(), 0, 1);
 
             Sentinel::ShaderAPI::Bind(m_Shader);
-            Sentinel::RenderTexture2DAPI::Bind(m_SwapchainRT, 1, Sentinel::ShaderType::PIXEL);
-            Sentinel::DepthTexture2DAPI::Bind(m_SwapchainDRT, 2, Sentinel::ShaderType::PIXEL);
+            // Sentinel::RenderTexture2DAPI::Bind(m_SwapchainRT, 1, Sentinel::ShaderType::PIXEL);
+            // Sentinel::DepthTexture2DAPI::Bind(m_SwapchainDRT, 2, Sentinel::ShaderType::PIXEL);
             Sentinel::ViewportAPI::Bind(m_Viewport);
 
             Sentinel::SwapchainAPI::SetBuffers(m_Swapchain, m_SwapchainRT, m_SwapchainDRT);
@@ -88,7 +83,7 @@ namespace Scribe {
         void ScribeRenderer::OnRender() {
             Sentinel::SwapchainAPI::Bind(m_Swapchain);
             Sentinel::RenderTexture2DAPI::Clear(m_SwapchainRT, {0.1f, 0.5f, 0.1f, 1.0f});
-            // Sentinel::ContextAPI::Draw(m_Context);
+            //Sentinel::ContextAPI::Draw(m_Context);
         }
 
         void ScribeRenderer::OnPostRender() {

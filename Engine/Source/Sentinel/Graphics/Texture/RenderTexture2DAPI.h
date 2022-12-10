@@ -1,51 +1,34 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
+#include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Graphics/Texture/RenderTexture2DData.h"
 
 #include <glm/fwd.hpp>
 
 namespace Sentinel {
-    class GraphicsMemoryManager;
-    struct SwapchainData;
-
     class RenderTexture2DAPI {
     public:
         static RenderTexture2DData* CreateRenderTexture2DData(
-            SharedRef<GraphicsMemoryManager> memoryHandle,
+            PoolAllocator<RenderTexture2DData>& allocator,
             ContextData* context,
-            const UInt32 width,
-            const UInt32 height,
+            const UInt16 width,
+            const UInt16 height,
             const ColorFormat format);
 
         // Used to create an RT which will be attached to swapchain
         static RenderTexture2DData* CreateRenderTexture2DData(
-            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, SwapchainData* swapchain);
+            PoolAllocator<RenderTexture2DData>& allocator, ContextData* context, SwapchainData* swapchain);
 
-        inline static void Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor) {
-            if (!m_ClearFunction) return;
-            m_ClearFunction(dataObject, clearColor);
-        }
+        static void Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor);
 
-        inline static void Clean(RenderTexture2DData* dataObject) {
-            if (!m_CleanFunction) return;
-            m_CleanFunction(dataObject);
-        }
+        static void Clean(RenderTexture2DData* dataObject);
 
-        inline static void Bind(RenderTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
-            if (!m_BindFunction) return;
-            m_BindFunction(dataObject, slot, shaderType);
-        }
+        static void Bind(RenderTexture2DData* dataObject, UInt8 slot, const ShaderType shaderType);
 
-        inline static void Unbind(RenderTexture2DData* dataObject) {
-            if (!m_UnbindFunction) return;
-            m_UnbindFunction(dataObject);
-        }
+        static void Unbind(RenderTexture2DData* dataObject);
 
-        inline static void Resize(RenderTexture2DData* dataObject, UInt16 width, UInt16 height) {
-            if (!m_ResizeFunction) return;
-            m_ResizeFunction(dataObject, width, height);
-        }
+        static void Resize(RenderTexture2DData* dataObject, UInt16 width, UInt16 height);
 
         inline static void SetSwapchainTarget(RenderTexture2DData* dataObject, Bool value) {
             dataObject->m_SwapchainTarget = value;
@@ -53,20 +36,26 @@ namespace Sentinel {
 
         inline static void* GetPixelData(RenderTexture2DData* dataObject) { return dataObject->m_PixelData; }
 
-    public:
-        template<typename T>
-        inline static T* Cast(RenderTexture2DData* dataObject) {
-            static_assert(
-                STL::is_base_of<RenderTexture2DData, T>::value, "'T' should be derived from RenderTexture2DData.");
-            return static_cast<T*>(dataObject);
+#ifdef ST_RENDERER_DX11
+        inline static ID3D11Texture2D* GetNativeTexture(RenderTexture2DData* dataObject) {
+            return dataObject->m_NativeTexture;
         }
 
-    protected:
-        inline static STL::delegate<void(RenderTexture2DData*, const glm::vec4&)> m_ClearFunction;
-        inline static STL::delegate<void(RenderTexture2DData*)> m_CleanFunction;
-        inline static STL::delegate<void(RenderTexture2DData*, UInt16, UInt16)> m_ResizeFunction;
+        inline static ID3D11RenderTargetView* GetNativeRTV(RenderTexture2DData* dataObject) {
+            return dataObject->m_NativeRTV;
+        }
 
-        inline static STL::delegate<void(RenderTexture2DData*, UInt32, const ShaderType)> m_BindFunction;
-        inline static STL::delegate<void(RenderTexture2DData*)> m_UnbindFunction;
+        inline static ID3D11ShaderResourceView* GetNativeSRV(RenderTexture2DData* dataObject) {
+            return dataObject->m_NativeSRV;
+        }
+
+        inline static ID3D11UnorderedAccessView* GetNativeUAV(RenderTexture2DData* dataObject) {
+            return dataObject->m_NativeUAV;
+        }
+#endif  // ST_RENDERER_DX11
+
+    private:
+        static void Create(RenderTexture2DData* dataObject);
+        static void Create(RenderTexture2DData* dataObject, SwapchainData* swapchain);
     };
 }  // namespace Sentinel
