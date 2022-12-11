@@ -7,16 +7,16 @@ namespace Sentinel {
     class PoolAllocator {
     public:
         inline void AllocateMemoryBlock(UInt32 maxCount) {
-            ST_ENGINE_ASSERT(m_BlockStartingAddress == nullptr, "Bad Allocation");
+            /*ST_ENGINE_ASSERT(m_BlockStartingAddress == nullptr, "Bad Allocation");
 
-            m_BlockStartingAddress = _aligned_malloc(maxCount * sizeof(T), 16);
+            m_BlockStartingAddress = malloc(maxCount * sizeof(T));
             m_MaxAllowedAllocations = maxCount;
             m_CurrentAllocations = 0;
             m_FreeList.reserve(maxCount);
 
             m_AllocatedList.reserve(maxCount);
 
-            DivideBlockIntoChunks();
+            DivideBlockIntoChunks();*/
         }
 
         inline void DeallocateMemoryBlock() {
@@ -38,7 +38,7 @@ namespace Sentinel {
 
         template<typename... Args>
         inline T* New(Args&&... args) {
-            if (m_CurrentAllocations == m_MaxAllowedAllocations) {
+            /*if (m_CurrentAllocations == m_MaxAllowedAllocations) {
                 ST_ENGINE_ASSERT(false, "Max count reached");
                 return nullptr;
             }
@@ -52,7 +52,9 @@ namespace Sentinel {
 
             m_CurrentAllocations++;
 
-            return static_cast<T*>(new (address) T(STL::forward<Args>(args)...));
+            return static_cast<T*>(new (address) T(STL::forward<Args>(args)...));*/
+
+            return new T(STL::forward<Args>(args)...);
         }
 
         template<typename... Args>

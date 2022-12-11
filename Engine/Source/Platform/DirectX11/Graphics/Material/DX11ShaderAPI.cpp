@@ -161,7 +161,7 @@ namespace Sentinel {
                 profile,
                 flags,
                 0,
-                &(dataObject->m_BinaryMap.at(type)),
+                &(dataObject->m_BinaryMap[type]),
                 &errorMessages);
 
     #if ST_DEBUG

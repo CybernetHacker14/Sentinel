@@ -94,7 +94,7 @@ namespace Sentinel {
             // TODO : R&D and implement this
         }
 
-        D3D11_BLEND_DESC blendDesc;
+        /*D3D11_BLEND_DESC blendDesc;
         SecureZeroMemory(&blendDesc, sizeof(blendDesc));
         blendDesc.AlphaToCoverageEnable = false;
         blendDesc.RenderTarget[0].BlendEnable = true;
@@ -111,7 +111,7 @@ namespace Sentinel {
         blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
         dataObject->m_Device->CreateBlendState(&blendDesc, &(dataObject->m_BlendState));
-        dataObject->m_Context->OMSetBlendState(dataObject->m_BlendState, nullptr, 0xffffffff);
+        dataObject->m_Context->OMSetBlendState(dataObject->m_BlendState, nullptr, 0xffffffff);*/
     }
 }  // namespace Sentinel
 #endif  // ST_RENDERER_DX11

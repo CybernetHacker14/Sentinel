@@ -43,7 +43,7 @@ namespace Sandbox {
         props.Title = "Sandbox";
         props.Width = 1280;
         props.Height = 720;
-        props.Mode = Sentinel::WindowMode::BORDERLESS;
+        props.Mode = Sentinel::WindowMode::WINDOWED;
         props.FramebufferTransparency = false;
 
         m_Window = new Sentinel::GLFWWindow(props);
@@ -55,8 +55,8 @@ namespace Sandbox {
         //====================================DO NOT DELETE========================================//
 
         m_RenderLayer = new Rendering::RendererLayer(m_Window);
-        m_ImGuiLayer = new Sentinel::ImGuiLayer(m_RenderLayer->m_Context);
-        m_ImGuiLayer->OnAttach();
+        // m_ImGuiLayer = new Sentinel::ImGuiLayer(m_RenderLayer->m_Context);
+        // m_ImGuiLayer->OnAttach();
         m_RenderLayer->OnAttach();
     }
 
@@ -65,14 +65,14 @@ namespace Sandbox {
             if (!m_Minimized) {
                 m_RenderLayer->OnUpdate();
                 m_RenderLayer->OnRender();
-                m_ImGuiLayer->Begin();
-                m_ImGuiLayer->End();
+                //m_ImGuiLayer->Begin();
+                //m_ImGuiLayer->End();
                 m_RenderLayer->OnPostRender();
             }
             m_Window->OnUpdate();
             Sentinel::Input::OnUpdate();
         }
-        m_ImGuiLayer->OnDetach();
+        //m_ImGuiLayer->OnDetach();
         m_RenderLayer->OnDetach();
         m_Window->Shutdown();
     }

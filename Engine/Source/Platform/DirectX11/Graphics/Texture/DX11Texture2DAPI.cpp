@@ -135,8 +135,6 @@ namespace Sentinel {
     }
 
     void Texture2DAPI::Load(Texture2DData* data) {
-        ID3D11Texture2D* texture2D = nullptr;
-
         D3D11_TEXTURE2D_DESC textureDescription;
         SecureZeroMemory(&textureDescription, sizeof(textureDescription));
         textureDescription.ArraySize = 1;
@@ -173,9 +171,11 @@ namespace Sentinel {
 
         if (data->m_Settings.GenerateMipMaps) textureDescription.BindFlags |= D3D11_BIND_RENDER_TARGET;
 
+        ContextAPI::GetDevice(data->Context)->CreateTexture2D(&textureDescription, nullptr, &(data->m_Texture2D));
+
         UInt32 rowPitch = data->m_Width * 4 * (data->m_HDR ? sizeof(float) : sizeof(unsigned char));
         ContextAPI::GetNativeContext(data->Context)
-            ->UpdateSubresource(texture2D, 0, nullptr, data->m_TexturePixels, rowPitch, 0);
+            ->UpdateSubresource(data->m_Texture2D, 0, nullptr, data->m_TexturePixels, rowPitch, 0);
 
         D3D11_SHADER_RESOURCE_VIEW_DESC viewDescription;
         SecureZeroMemory(&viewDescription, sizeof(viewDescription));
@@ -185,7 +185,7 @@ namespace Sentinel {
         viewDescription.Texture2D.MipLevels = data->m_Settings.GenerateMipMaps ? -1 : 1;
 
         ContextAPI::GetDevice(data->Context)
-            ->CreateShaderResourceView(texture2D, &viewDescription, &(data->m_ResourceView));
+            ->CreateShaderResourceView(data->m_Texture2D, &viewDescription, &(data->m_ResourceView));
 
         if (data->m_Settings.GenerateMipMaps)
             ContextAPI::GetNativeContext(data->Context)->GenerateMips(data->m_ResourceView);

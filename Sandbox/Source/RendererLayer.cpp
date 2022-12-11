@@ -7,6 +7,8 @@
 namespace Sandbox {
     namespace Rendering {
 
+        static Sentinel::Bool renderdocBuild = false;
+
         RendererLayer::RendererLayer(Sentinel::Window* window) : m_Window(window) {
             m_ResizeIndex = Sentinel::Application::Get().SubscribeToEvent(
                 Sentinel::EventType::WindowResize, ST_BIND_FN(RendererLayer::OnWindowResize));
@@ -22,6 +24,9 @@ namespace Sandbox {
 
             m_ShaderAlloc.AllocateMemoryBlock(1);
             m_TexAlloc.AllocateMemoryBlock(1);
+
+            m_RTAlloc.AllocateMemoryBlock(1);
+            m_DTAlloc.AllocateMemoryBlock(1);
 
             GLFWwindow* glfwWindow = m_Window->GetNativeWindow<GLFWwindow>();
             m_Context = Sentinel::ContextAPI::CreateImmediateContext(m_CtxAlloc, glfwWindow);
@@ -87,16 +92,23 @@ namespace Sandbox {
             m_IBuffer = Sentinel::IndexbufferAPI::CreateIndexbufferData(
                 m_IBufferAlloc, m_Context, indices.data(), indices.size());
 
-            m_Shader = Sentinel::ShaderAPI::CreateShaderData(
-                m_ShaderAlloc, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");
-            /*m_Shader =
-                Sentinel::ShaderAPI::CreateShaderData(m_GFXMemory, m_Context, "TextureShader.hlsl", "TexShader");*/
+            if (!renderdocBuild) {
+                m_Shader = Sentinel::ShaderAPI::CreateShaderData(
+                    m_ShaderAlloc, m_Context, "../Engine/Resources/Shaders/TextureShader.hlsl", "TexShader");
+
+            } else {
+                m_Shader =
+                    Sentinel::ShaderAPI::CreateShaderData(m_ShaderAlloc, m_Context, "TextureShader.hlsl", "TexShader");
+            }
 
             Sentinel::VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
 
             Sentinel::Texture2DDataImportSettings settings;
-            settings.TextureFilepath = "../Engine/Resources/Images/Icon/512.png";
-            /*settings.TextureFilepath = "512.png";*/
+
+            if (!renderdocBuild)
+                settings.TextureFilepath = "../Engine/Resources/Images/Icon/512.png";
+            else
+                settings.TextureFilepath = "512.png";
 
             m_Texture = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexAlloc, m_Context, settings);
 
@@ -116,15 +128,16 @@ namespace Sandbox {
             m_Viewport = Sentinel::ViewportAPI::CreateViewportData(
                 m_VPortAlloc, m_Context, 0, 0, m_Window->GetWidth(), m_Window->GetHeight(), 0, 1);
 
+            Sentinel::ViewportAPI::Bind(m_Viewport);
+
             Sentinel::VertexbufferLayoutAPI::Bind(m_VLayout);
             Sentinel::VertexbufferAPI::Bind(m_VBuffer, Sentinel::VertexbufferLayoutAPI::GetStride(m_VLayout));
             Sentinel::IndexbufferAPI::Bind(m_IBuffer);
             Sentinel::ShaderAPI::Bind(m_Shader);
-            Sentinel::Texture2DAPI::Bind(m_Texture, 0, Sentinel::ShaderType::PIXEL);
-            Sentinel::RenderTexture2DAPI::Bind(m_RenderTexture, 1, Sentinel::ShaderType::PIXEL);
-            //  Sentinel::DepthTexture2DAPI::Bind(m_DepthTexture, 2, Sentinel::ShaderType::PIXEL);
-            Sentinel::ViewportAPI::Bind(m_Viewport);
-            Resize(m_Window->GetWidth(), m_Window->GetHeight());
+            Sentinel::Texture2DAPI::Bind(m_Texture, 1, Sentinel::ShaderType::PIXEL);
+            Sentinel::RenderTexture2DAPI::Bind(m_RenderTexture, 0, Sentinel::ShaderType::PIXEL);
+            // Sentinel::DepthTexture2DAPI::Bind(m_DepthTexture, 2, Sentinel::ShaderType::PIXEL);
+            // Resize(m_Window->GetWidth(), m_Window->GetHeight());
         }
 
         void RendererLayer::OnDetach() {
@@ -148,7 +161,7 @@ namespace Sandbox {
             Sentinel::ShaderAPI::Clean(m_Shader);
 
             Sentinel::RenderTexture2DAPI::Clean(m_RenderTexture);
-            Sentinel::DepthTexture2DAPI::Clean(m_DepthTexture);
+            // Sentinel::DepthTexture2DAPI::Clean(m_DepthTexture);
 
             Sentinel::SwapchainAPI::Clean(m_Swapchain);
             Sentinel::ContextAPI::Clean(m_Context);
@@ -192,8 +205,8 @@ namespace Sandbox {
             Sentinel::SwapchainAPI::Bind(m_Swapchain);
             Sentinel::ContextAPI::DrawIndexed(m_Context, Sentinel::IndexbufferAPI::GetCount(m_IBuffer));
             Sentinel::SwapchainAPI::SwapBuffers(m_Swapchain);
-            Sentinel::RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.8f, 0.1f, 1.0f});
-            Sentinel::DepthTexture2DAPI::Clear(m_DepthTexture);
+            Sentinel::RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.5f, 0.1f, 1.0f});
+            // Sentinel::DepthTexture2DAPI::Clear(m_DepthTexture);
         }
 
         void RendererLayer::OnImGuiRender() {
@@ -214,12 +227,13 @@ namespace Sandbox {
             // Sentinel::DepthTexture2DAPI::Unbind(m_DepthTexture);
             Sentinel::RenderTexture2DAPI::Clean(m_RenderTexture);
             // Sentinel::DepthTexture2DAPI::Clean(m_DepthTexture);
+            Sentinel::SwapchainAPI::Unbind(m_Swapchain);
             Sentinel::SwapchainAPI::Resize(m_Swapchain, width, height);
             Sentinel::RenderTexture2DAPI::Resize(m_RenderTexture, width, height);
             // Sentinel::DepthTexture2DAPI::Resize(m_DepthTexture, width, height);
             Sentinel::ViewportAPI::Resize(m_Viewport, width, height);
             Sentinel::ViewportAPI::Bind(m_Viewport);
-            Sentinel::RenderTexture2DAPI::Bind(m_RenderTexture, 1, Sentinel::ShaderType::PIXEL);
+            Sentinel::RenderTexture2DAPI::Bind(m_RenderTexture, 0, Sentinel::ShaderType::PIXEL);
             // Sentinel::DepthTexture2DAPI::Bind(m_DepthTexture, 2, Sentinel::ShaderType::PIXEL);
         }
     }  // namespace Rendering

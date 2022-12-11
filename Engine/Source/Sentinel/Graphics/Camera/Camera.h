@@ -23,9 +23,7 @@ namespace Sentinel {
 
         const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
         const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
-        glm::mat4& GetViewProjectionMatrix() const {
-            return SIMDMath::SSEMatrixMultiply(m_ProjectionMatrix, m_ViewMatrix);
-        }
+        glm::mat4& GetViewProjectionMatrix() const { return m_ProjectionMatrix * m_ViewMatrix; }
 
         const glm::vec3& GetCPosition() const { return m_Position; }
         const glm::vec3& GetCOrientation() const { return m_Orientation; }

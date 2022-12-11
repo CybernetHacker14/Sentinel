@@ -37,12 +37,15 @@ namespace Sentinel {
         texObject->m_Format = ColorFormat::RGBA32F;
         texObject->m_BindType = ShaderType::NONE;
         texObject->m_SwapchainTarget = true;
+        texObject->TargetSwapchain = swapchain;
         Create(texObject, swapchain);
         return texObject;
     }
 
     void RenderTexture2DAPI::Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor) {
         ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
+
+        if (!dataObject->m_NativeRTV) { return; }
 
         if (dataObject->m_BindType != ShaderType::NONE)
             dxContext->ClearRenderTargetView(dataObject->m_NativeRTV, (Float*)&clearColor);
@@ -176,8 +179,6 @@ namespace Sentinel {
 
         nativeSC->GetBuffer(0, __uuidof(ID3D11Resource), (LPVOID*)&(dataObject->m_NativeTex));
         dxDevice->CreateRenderTargetView(dataObject->m_NativeTex, nullptr, &(dataObject->m_NativeRTV));
-
-        dataObject->TargetSwapchain = swapchain;
     }
 
 }  // namespace Sentinel
