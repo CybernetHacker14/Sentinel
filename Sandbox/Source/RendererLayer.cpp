@@ -7,7 +7,7 @@
 namespace Sandbox {
     namespace Rendering {
 
-        static Sentinel::Bool renderdocBuild = false;
+        static Sentinel::Bool renderdocBuild = true;
 
         RendererLayer::RendererLayer(Sentinel::Window* window) : m_Window(window) {
             m_ResizeIndex = Sentinel::Application::Get().SubscribeToEvent(
@@ -31,8 +31,9 @@ namespace Sandbox {
             GLFWwindow* glfwWindow = m_Window->GetNativeWindow<GLFWwindow>();
             m_Context = Sentinel::ContextAPI::CreateImmediateContext(m_CtxAlloc, glfwWindow);
             m_Swapchain = Sentinel::SwapchainAPI::CreateSwapchain(m_SCAlloc, m_Context, glfwWindow);
-            m_Camera = Sentinel::CreateSharedRef<Sentinel::Camera>(
-                m_CBufferAlloc, m_Context, m_Window->GetWidth(), m_Window->GetHeight());
+            m_CamCBuffer = Sentinel::ConstantbufferAPI::CreateConstantbufferData(
+                m_CBufferAlloc, m_Context, sizeof(glm::mat4), 0, Sentinel::CBufferUsageType::DYNAMIC);
+            m_Camera = Sentinel::CreateSharedRef<Sentinel::Camera>(m_Window->GetWidth(), m_Window->GetHeight());
         }
 
         RendererLayer::~RendererLayer() {
@@ -68,6 +69,8 @@ namespace Sandbox {
         }
 
         void RendererLayer::OnAttach() {
+            Sentinel::ConstantbufferAPI::VSBind(m_CamCBuffer);
+
             Sentinel::STL::vector<Sentinel::STL::pair<glm::vec4, glm::vec2>> vertices = {
                 {{-3.0f, 3.0f, -7.0f, 1.0f}, {0.0f, 0.0f}},
                 {{-1.0f, 3.0f, -7.0f, 1.0f}, {1.0f, 0.0f}},
@@ -123,8 +126,6 @@ namespace Sandbox {
                 Sentinel::DepthFormat::D24S8UINT,
                 true);
 
-            Sentinel::SwapchainAPI::SetBuffers(m_Swapchain, m_RenderTexture, nullptr);
-
             m_Viewport = Sentinel::ViewportAPI::CreateViewportData(
                 m_VPortAlloc, m_Context, 0, 0, m_Window->GetWidth(), m_Window->GetHeight(), 0, 1);
 
@@ -134,10 +135,14 @@ namespace Sandbox {
             Sentinel::VertexbufferAPI::Bind(m_VBuffer, Sentinel::VertexbufferLayoutAPI::GetStride(m_VLayout));
             Sentinel::IndexbufferAPI::Bind(m_IBuffer);
             Sentinel::ShaderAPI::Bind(m_Shader);
-            Sentinel::Texture2DAPI::Bind(m_Texture, 1, Sentinel::ShaderType::PIXEL);
-            Sentinel::RenderTexture2DAPI::Bind(m_RenderTexture, 0, Sentinel::ShaderType::PIXEL);
-            // Sentinel::DepthTexture2DAPI::Bind(m_DepthTexture, 2, Sentinel::ShaderType::PIXEL);
-            // Resize(m_Window->GetWidth(), m_Window->GetHeight());
+            Sentinel::Texture2DAPI::Bind(m_Texture, 0, Sentinel::ShaderType::PIXEL);
+
+            Sentinel::RenderTexture2DAPI::Bind(m_RenderTexture, 1, Sentinel::ShaderType::PIXEL);
+            Sentinel::DepthTexture2DAPI::Bind(m_DepthTexture, 2, Sentinel::ShaderType::PIXEL);
+
+            Sentinel::SwapchainAPI::SetBuffers(m_Swapchain, m_RenderTexture, m_DepthTexture);
+
+            Resize(m_Window->GetWidth(), m_Window->GetHeight());
         }
 
         void RendererLayer::OnDetach() {
@@ -149,9 +154,10 @@ namespace Sandbox {
             Sentinel::Texture2DAPI::Unbind(m_Texture);
             Sentinel::SwapchainAPI::UnsetBuffers(m_Swapchain);
             Sentinel::RenderTexture2DAPI::Unbind(m_RenderTexture);
-            // Sentinel::DepthTexture2DAPI::Unbind(m_DepthTexture);
+            Sentinel::DepthTexture2DAPI::Unbind(m_DepthTexture);
 
-            m_Camera->Clean();
+            // m_Camera->Clean();
+            Sentinel::ConstantbufferAPI::Clean(m_CamCBuffer);
 
             Sentinel::VertexbufferAPI::Clean(m_VBuffer);
             Sentinel::IndexbufferAPI::Clean(m_IBuffer);
@@ -161,7 +167,7 @@ namespace Sandbox {
             Sentinel::ShaderAPI::Clean(m_Shader);
 
             Sentinel::RenderTexture2DAPI::Clean(m_RenderTexture);
-            // Sentinel::DepthTexture2DAPI::Clean(m_DepthTexture);
+            Sentinel::DepthTexture2DAPI::Clean(m_DepthTexture);
 
             Sentinel::SwapchainAPI::Clean(m_Swapchain);
             Sentinel::ContextAPI::Clean(m_Context);
@@ -199,6 +205,7 @@ namespace Sandbox {
 
         void RendererLayer::OnUpdate() {
             m_Camera->OnUpdate();
+            Sentinel::ConstantbufferAPI::SetDynamicData(m_CamCBuffer, &(m_Camera->GetViewProjection()));
         }
 
         void RendererLayer::OnRender() {
@@ -206,7 +213,7 @@ namespace Sandbox {
             Sentinel::ContextAPI::DrawIndexed(m_Context, Sentinel::IndexbufferAPI::GetCount(m_IBuffer));
             Sentinel::SwapchainAPI::SwapBuffers(m_Swapchain);
             Sentinel::RenderTexture2DAPI::Clear(m_RenderTexture, {0.1f, 0.5f, 0.1f, 1.0f});
-            // Sentinel::DepthTexture2DAPI::Clear(m_DepthTexture);
+            Sentinel::DepthTexture2DAPI::Clear(m_DepthTexture);
         }
 
         void RendererLayer::OnImGuiRender() {
@@ -223,18 +230,19 @@ namespace Sandbox {
         }
 
         void RendererLayer::Resize(Sentinel::UInt16 width, Sentinel::UInt16 height) {
+            m_Camera->OnResize(width, height);
             Sentinel::RenderTexture2DAPI::Unbind(m_RenderTexture);
-            // Sentinel::DepthTexture2DAPI::Unbind(m_DepthTexture);
+            Sentinel::DepthTexture2DAPI::Unbind(m_DepthTexture);
             Sentinel::RenderTexture2DAPI::Clean(m_RenderTexture);
-            // Sentinel::DepthTexture2DAPI::Clean(m_DepthTexture);
+            Sentinel::DepthTexture2DAPI::Clean(m_DepthTexture);
             Sentinel::SwapchainAPI::Unbind(m_Swapchain);
             Sentinel::SwapchainAPI::Resize(m_Swapchain, width, height);
             Sentinel::RenderTexture2DAPI::Resize(m_RenderTexture, width, height);
-            // Sentinel::DepthTexture2DAPI::Resize(m_DepthTexture, width, height);
+            Sentinel::DepthTexture2DAPI::Resize(m_DepthTexture, width, height);
             Sentinel::ViewportAPI::Resize(m_Viewport, width, height);
             Sentinel::ViewportAPI::Bind(m_Viewport);
-            Sentinel::RenderTexture2DAPI::Bind(m_RenderTexture, 0, Sentinel::ShaderType::PIXEL);
-            // Sentinel::DepthTexture2DAPI::Bind(m_DepthTexture, 2, Sentinel::ShaderType::PIXEL);
+            Sentinel::RenderTexture2DAPI::Bind(m_RenderTexture, 1, Sentinel::ShaderType::PIXEL);
+            Sentinel::DepthTexture2DAPI::Bind(m_DepthTexture, 2, Sentinel::ShaderType::PIXEL);
         }
     }  // namespace Rendering
 }  // namespace Sandbox

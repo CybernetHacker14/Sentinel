@@ -1,5 +1,4 @@
 #type vertex
-#pragma pack_matrix(row_major)
 cbuffer Camera: register(b0) {
     float4x4 u_ViewProjection;
 }
@@ -24,8 +23,8 @@ struct VOut {
     float2 texCoord: TEXCOORD;
 };
 
-Texture2D testTexture: register(t1);
-SamplerState textureSampler: register(s1);
+Texture2D testTexture;
+SamplerState textureSampler: register(s0);
 
 float4 PShader(VOut input) : SV_TARGET {
     return testTexture.Sample(textureSampler, input.texCoord);

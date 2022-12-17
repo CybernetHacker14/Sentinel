@@ -11,6 +11,7 @@ struct IDXGIFactory;
 
 // TODO: Refactor
 struct ID3D11BlendState;
+struct ID3D11RasterizerState;
 #endif  // ST_RENDERER_DX11
 
 namespace Sentinel {
@@ -37,6 +38,8 @@ namespace Sentinel {
         IDXGIFactory* m_Factory;
 
         ID3D11BlendState* m_BlendState;
+        ID3D11RasterizerState* m_FrontCullRS;
+        ID3D11RasterizerState* m_BackCullRS;
 #endif  // ST_RENDERER_DX11
 
         friend class ContextAPI;

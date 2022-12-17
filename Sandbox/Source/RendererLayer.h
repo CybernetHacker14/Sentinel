@@ -67,6 +67,7 @@ namespace Sandbox {
             Sentinel::Window* m_Window;
             Sentinel::SwapchainData* m_Swapchain;
             Sentinel::ViewportData* m_Viewport;
+            Sentinel::ConstantbufferData* m_CamCBuffer;
 
             Sentinel::VertexbufferData* m_VBuffer;
             Sentinel::IndexbufferData* m_IBuffer;

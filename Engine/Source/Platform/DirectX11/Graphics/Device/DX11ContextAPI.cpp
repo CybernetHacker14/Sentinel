@@ -35,6 +35,9 @@ namespace Sentinel {
         dataObject->m_DXGIDevice->Release();
         dataObject->m_Factory->Release();
         dataObject->m_Adapter->Release();
+
+        dataObject->m_BlendState->Release();
+        dataObject->m_FrontCullRS->Release();
     }
 
     void ContextAPI::Create(ContextData* dataObject, GLFWwindow* windowHandle) {
@@ -94,7 +97,7 @@ namespace Sentinel {
             // TODO : R&D and implement this
         }
 
-        /*D3D11_BLEND_DESC blendDesc;
+        D3D11_BLEND_DESC blendDesc;
         SecureZeroMemory(&blendDesc, sizeof(blendDesc));
         blendDesc.AlphaToCoverageEnable = false;
         blendDesc.RenderTarget[0].BlendEnable = true;
@@ -111,7 +114,17 @@ namespace Sentinel {
         blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
         dataObject->m_Device->CreateBlendState(&blendDesc, &(dataObject->m_BlendState));
-        dataObject->m_Context->OMSetBlendState(dataObject->m_BlendState, nullptr, 0xffffffff);*/
+        dataObject->m_Context->OMSetBlendState(dataObject->m_BlendState, nullptr, 0xffffffff);
+
+        {
+            D3D11_RASTERIZER_DESC desc;
+            SecureZeroMemory(&desc, sizeof(desc));
+            desc.CullMode = D3D11_CULL_FRONT;
+            desc.FrontCounterClockwise = true;
+            dataObject->m_Device->CreateRasterizerState(&desc, &dataObject->m_FrontCullRS);
+        }
+
+        dataObject->m_Context->RSSetState(dataObject->m_FrontCullRS);
     }
 }  // namespace Sentinel
 #endif  // ST_RENDERER_DX11

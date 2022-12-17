@@ -1,93 +1,58 @@
 #include "stpch.h"
 #include "Sentinel/Graphics/Camera/Camera.h"
-#include "Sentinel/Graphics/Buffer/ConstantbufferAPI.h"
 
 #include <glm/gtx/norm.hpp>
 
 namespace Sentinel {
-    Camera::Camera(PoolAllocator<ConstantbufferData>& allocator, ContextData* context) {
-        Init(allocator, context);
+    Camera::Camera() {
+        Init();
     }
 
-    Camera::Camera(
-        PoolAllocator<ConstantbufferData>& allocator, ContextData* context, const Float width, const Float height) {
+    Camera::Camera(const Float width, const Float height) {
         OnResize(width, height);
-        Init(allocator, context);
+        Init();
     }
 
     void Camera::OnResize(const Float width, const Float height) {
-        m_AspectRatio = (!height) ? 0 : width / height;
+        m_AspectRatio = width / height;
     }
 
     void Camera::OnUpdate() {
-        UpdateDirectionVectors();
-        UpdateViewMatrix();
+        UpdateRotation();
         UpdateProjectionMatrix();
-        ConstantbufferAPI::SetDynamicData(m_CBuffer, &(GetViewProjectionMatrix()));
+        UpdateViewMatrix();
     }
 
-    void Sentinel::Camera::Clean() {
-        ConstantbufferAPI::Clean(m_CBuffer);
+    glm::mat4& Camera::GetViewProjection() {
+        return m_Projection * m_View;
     }
 
-    void Camera::Init(PoolAllocator<ConstantbufferData>& allocator, ContextData* context) {
-        m_CBuffer = ConstantbufferAPI::CreateConstantbufferData(
-            allocator, context, sizeof(glm::mat4), 0, CBufferUsageType::DYNAMIC);
-        ConstantbufferAPI::VSBind(m_CBuffer);
-        OnUpdate();
+    void Camera::Init() {
+        m_Position = {0.0f, 0.0f, 5.0f};
+        m_FOVRadians = 45.0f;
+        m_Near = 0.1f;
+        m_Far = 100.0f;
+        m_Pitch = 0;
+        m_Yaw = -Math::PI_HALF;
     }
 
-    void Camera::UpdateDirectionVectors() {
-        m_DirectionFront = Math::FastNormalize(
-            {Math::FastCos(glm::radians(-90 + m_Orientation.x)) * Math::FastSin(glm::radians(m_Orientation.y)),
-             Math::FastSin(glm::radians(m_Orientation.y)),
-             Math::FastSin(glm::radians(-90 + m_Orientation.x)) * Math::FastCos(glm::radians(m_Orientation.y))});
+    void Camera::UpdateRotation() {
+        m_Pitch = std::max(std::min(m_Pitch, Math::PI_HALF), -Math::PI_HALF);
 
-        m_DirectionRight = Math::FastNormalize(SIMDMath::SSECrossProduct(m_DirectionFront, m_WorldUp));
-        m_DirectionUp = Math::FastNormalize(SIMDMath::SSECrossProduct(m_DirectionRight, m_DirectionFront));
-    }
+        glm::vec3 center = {
+            (std::cos(glm::radians(-90 + m_Yaw)) * std::cos(glm::radians(m_Pitch))),  // X
+            std::sin(glm::radians(m_Pitch)),                                          // Y
+            (std::sin(glm::radians(-90 + m_Yaw)) * std::cos(glm::radians(m_Pitch)))   // Z
+        };
 
-    void Camera::UpdateProjectionMatrix() {
-        switch (m_ProjectionMode) {
-            case ProjectionMode::PERSPECTIVE: {
-                m_ProjectionMatrix =
-                    glm::perspectiveRH(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
-                break;
-            }
-            case ProjectionMode::ORTHOGRAPHIC: {
-                Float left = -m_OrthographicSize * m_AspectRatio * 0.5f;
-                Float right = m_OrthographicSize * m_AspectRatio * 0.5f;
-                Float bottom = -m_OrthographicSize * 0.5f;
-                Float top = m_OrthographicSize * 0.5f;
-
-                m_ProjectionMatrix = glm::orthoRH(left, right, bottom, top, m_OrthographicNear, m_OrthographicFar);
-                break;
-            }
-        }
+        m_Front = glm::normalize(center);
     }
 
     void Camera::UpdateViewMatrix() {
-        switch (m_ProjectionMode) {
-            case ProjectionMode::PERSPECTIVE: {
-                glm::mat4 transform(1.0f);
-                transform = glm::lookAtRH(m_Position, m_Position + m_DirectionFront, m_DirectionUp);
-                transform = glm::rotate(transform, m_Orientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-                transform = glm::rotate(transform, m_Orientation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-                transform = glm::rotate(transform, m_Orientation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+        m_View = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
+    }
 
-                m_ViewMatrix = glm::inverse(transform);
-                break;
-            }
-            case ProjectionMode::ORTHOGRAPHIC: {
-                glm::mat4 transform(1.0f);
-                transform = glm::translate(transform, m_Position);
-                transform = glm::rotate(transform, m_Orientation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-                transform = glm::rotate(transform, m_Orientation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-                transform = glm::rotate(transform, m_Orientation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-
-                m_ViewMatrix = glm::inverse(transform);
-                break;
-            }
-        }
+    void Camera::UpdateProjectionMatrix() {
+        m_Projection = glm::perspective(m_FOVRadians, m_AspectRatio, m_Near, m_Far);
     }
 }  // namespace Sentinel

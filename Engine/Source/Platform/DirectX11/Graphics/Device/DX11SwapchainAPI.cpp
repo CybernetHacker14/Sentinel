@@ -35,10 +35,10 @@ namespace Sentinel {
 
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRV[1];
         pRV[0] = RenderTexture2DAPI::GetNativeRTV(dataObject->backbuffer);
-        ID3D11DepthStencilView* pDV = NULL;
+        ID3D11DepthStencilView* pDV;
         if (dataObject->depthBuffer) { pDV = DepthTexture2DAPI::GetNativeDSV(dataObject->depthBuffer); }
 
-        if (pRV) { nativeContext->OMSetRenderTargets(1, pRV[0].GetAddressOf(), pDV); }
+        if (pRV) { nativeContext->OMSetRenderTargets(1, pRV[0].GetAddressOf(), dataObject->depthBuffer ? pDV : NULL); }
     }
 
     void SwapchainAPI::Unbind(SwapchainData* dataObject) {
