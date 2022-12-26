@@ -6,22 +6,25 @@ namespace Sentinel {
     template<typename T>
     class PoolAllocator {
     public:
-        inline void AllocateMemoryBlock(UInt32 maxCount) {
-            /*ST_ENGINE_ASSERT(m_BlockStartingAddress == nullptr, "Bad Allocation");
+        using word_t = intptr_t;
 
-            m_BlockStartingAddress = malloc(maxCount * sizeof(T));
+        inline Size_t align(Size_t n) { return (n + sizeof(word_t) - 1) & ~(sizeof(word_t) - 1); }
+
+        inline void AllocateMemoryBlock(UInt32 maxCount) {
+            ST_ENGINE_ASSERT(m_BlockStartingAddress == nullptr, "Bad Allocation");
+
+            m_BlockStartingAddress = new T[maxCount];
             m_MaxAllowedAllocations = maxCount;
             m_CurrentAllocations = 0;
             m_FreeList.reserve(maxCount);
-
             m_AllocatedList.reserve(maxCount);
 
-            DivideBlockIntoChunks();*/
+            DivideBlockIntoChunks();
         }
 
         inline void DeallocateMemoryBlock() {
             if (m_BlockStartingAddress != nullptr) {
-                free(m_BlockStartingAddress);
+                delete[] m_BlockStartingAddress;
                 m_BlockStartingAddress = nullptr;
                 m_CurrentAllocations = 0;
             }
@@ -29,7 +32,7 @@ namespace Sentinel {
 
         inline void DivideBlockIntoChunks() {
             for (UInt32 i = 0; i < m_MaxAllowedAllocations; i++) {
-                T* startPtr = (T*)m_BlockStartingAddress;
+                T* startPtr = m_BlockStartingAddress;
                 m_ChunkAddressMap[i] = &(startPtr[i]);
                 m_IndexAddressMap[m_ChunkAddressMap[i]] = i;
                 m_FreeList.emplace_back(i);
@@ -38,7 +41,7 @@ namespace Sentinel {
 
         template<typename... Args>
         inline T* New(Args&&... args) {
-            /*if (m_CurrentAllocations == m_MaxAllowedAllocations) {
+            if (m_CurrentAllocations == m_MaxAllowedAllocations) {
                 ST_ENGINE_ASSERT(false, "Max count reached");
                 return nullptr;
             }
@@ -52,9 +55,7 @@ namespace Sentinel {
 
             m_CurrentAllocations++;
 
-            return static_cast<T*>(new (address) T(STL::forward<Args>(args)...));*/
-
-            return new T(STL::forward<Args>(args)...);
+            return static_cast<T*>(new (address) T(STL::forward<Args>(args)...));
         }
 
         template<typename... Args>
@@ -148,7 +149,7 @@ namespace Sentinel {
         inline const UInt32 GetFreeCount() { return m_FreeList.size(); }
 
     private:
-        void* m_BlockStartingAddress = nullptr;
+        T* m_BlockStartingAddress = nullptr;
 
         // The key is the supposed index of the block
         STL::unordered_map<UInt32, T*> m_ChunkAddressMap;

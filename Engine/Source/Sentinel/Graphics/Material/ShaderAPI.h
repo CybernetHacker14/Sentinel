@@ -23,7 +23,7 @@ namespace Sentinel {
 
         inline static const STL::string& GetShaderSource(
             ShaderData* dataObject, const ShaderType& type = ShaderType::NONE) {
-            return dataObject->m_ShaderSources.at(type);
+            return dataObject->m_Sources[(UInt8)type].source;
         }
 
         inline static const STL::string& GetName(ShaderData* dataObject) { return dataObject->m_ShaderName; }
@@ -31,12 +31,12 @@ namespace Sentinel {
 
 #ifdef ST_RENDERER_DX11
         inline static ID3D10Blob* GetBinary(ShaderData* dataObject, const ShaderType type) {
-            return dataObject->m_BinaryMap.at(type);
+            return dataObject->m_Binaries[(UInt8)type].binary;
         }
 #endif  // ST_RENDERER_DX11
 
     private:
-        static STL::unordered_map<ShaderType, STL::string> PreprocessSource(const STL::string& source);
+        static void PreprocessSource(const STL::string& source, ShaderSource* sources);
         static void CompileFromSource(ShaderData* dataObject);
         static void Load(ShaderData* dataObject);
     };

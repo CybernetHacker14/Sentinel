@@ -9,7 +9,6 @@
 namespace Sentinel {
 
     namespace Utils {
-
         static STL::unordered_map<STL::string, Sentinel::ShaderType> s_ShaderStringTypeMap = {
             {"vertex", ShaderType::VERTEX}, {"pixel", ShaderType::PIXEL}, {"compute", ShaderType::COMPUTE}};
 
@@ -33,6 +32,13 @@ namespace Sentinel {
         shaderObject->m_Filepath = filepath;
         shaderObject->m_ShaderName = name;
         shaderObject->Context = context;
+
+        shaderObject->m_Sources[0].type = shaderObject->m_Binaries[0].type = ShaderType::NONE;
+        shaderObject->m_Sources[1].type = shaderObject->m_Binaries[1].type = ShaderType::VERTEX;
+        shaderObject->m_Sources[2].type = shaderObject->m_Binaries[2].type = ShaderType::PIXEL;
+        shaderObject->m_Sources[3].type = shaderObject->m_Binaries[3].type = ShaderType::COMPUTE;
+
+        Unbind(shaderObject);
         Load(shaderObject);
         return shaderObject;
     }
@@ -47,6 +53,7 @@ namespace Sentinel {
 
     void ShaderAPI::Reload(ShaderData* dataObject) {
         ID3D11DeviceContext* context = ContextAPI::GetNativeContext(dataObject->Context);
+        Unbind(dataObject);
         Load(dataObject);
     }
 
@@ -66,31 +73,24 @@ namespace Sentinel {
             dataObject->m_NativeCS = 0;
         }
 
-        for (auto& binary: dataObject->m_BinaryMap) {
-            if (binary.second) {
-                binary.second->Release();
-                binary.second = 0;
+        for (auto& binary: dataObject->m_Binaries) {
+            if (binary.binary) {
+                binary.binary->Release();
+                binary.binary = NULL;
             }
         }
-
-        dataObject->m_BinaryMap.clear();
-
-        dataObject->m_ShaderSources.clear();
 
         dataObject->m_ShaderName.clear();
         dataObject->m_Filepath.clear();
     }
 
     void ShaderAPI::Unbind(ShaderData* dataObject) {
-        for (auto& binary: dataObject->m_BinaryMap) {
-            if (binary.second != nullptr) {
-                binary.second->Release();
-                binary.second = nullptr;
+        for (auto& binary: dataObject->m_Binaries) {
+            if (binary.binary != NULL) {
+                binary.binary->Release();
+                binary.binary = nullptr;
             }
         }
-
-        dataObject->m_BinaryMap.clear();
-        dataObject->m_ShaderSources.clear();
 
         if (dataObject->m_NativeVS != nullptr) {
             dataObject->m_NativeVS->Release();
@@ -108,7 +108,7 @@ namespace Sentinel {
         }
     }
 
-    STL::unordered_map<ShaderType, STL::string> ShaderAPI::PreprocessSource(const STL::string& source) {
+    void ShaderAPI::PreprocessSource(const STL::string& source, ShaderSource* sources) {
         STL::unordered_map<ShaderType, STL::string> shaderSources;
 
         const char* typeToken = "#type";
@@ -127,11 +127,9 @@ namespace Sentinel {
             ST_ENGINE_ASSERT(nextLinePos != STL::string::npos, "Syntax error");
             pos = source.find(typeToken, nextLinePos);  // Start of next shader type declaration line
 
-            shaderSources[Utils::s_ShaderStringTypeMap.at(type)] =
+            sources[(UInt8)(Utils::s_ShaderStringTypeMap.at(type))].source =
                 (pos == STL::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
         }
-
-        return shaderSources;
     }
 
     void ShaderAPI::CompileFromSource(ShaderData* dataObject) {
@@ -144,13 +142,15 @@ namespace Sentinel {
         flags |= D3DCOMPILE_DEBUG;
     #endif  // ST_DEBUG
 
-        for (auto& tuple: dataObject->m_ShaderSources) {
-            ShaderType type = tuple.first;
-            const STL::string& shader = tuple.second;
+        for (auto& tuple: dataObject->m_Sources) {
+            if (tuple.type == ShaderType::NONE || tuple.source.empty()) continue;
 
-            const char* ep = Utils::s_ShaderTypeEntryPointMap[type];
-            const char* profile = Utils::s_ShaderTypeProfileMap[type];
+            const STL::string& shader = tuple.source;
 
+            const char* ep = Utils::s_ShaderTypeEntryPointMap[tuple.type];
+            const char* profile = Utils::s_ShaderTypeProfileMap[tuple.type];
+
+            ID3DBlob* blob;
             result = D3DCompile(
                 shader.c_str(),
                 shader.size(),
@@ -161,8 +161,10 @@ namespace Sentinel {
                 profile,
                 flags,
                 0,
-                &(dataObject->m_BinaryMap[type]),
+                &blob,
                 &errorMessages);
+
+            dataObject->m_Binaries[(UInt8)tuple.type].binary = blob;
 
     #if ST_DEBUG
             if (FAILED(result)) {
@@ -174,7 +176,7 @@ namespace Sentinel {
                 ST_ENGINE_ERROR(
                     "{0}::{1} Shader Compilation error",
                     dataObject->m_ShaderName.c_str(),
-                    Utils::s_ShaderTypeStringMap.at(type).c_str());
+                    Utils::s_ShaderTypeStringMap.at(tuple.type).c_str());
                 ST_ENGINE_ASSERT(false, "");
             }
     #endif
@@ -184,7 +186,6 @@ namespace Sentinel {
     }
 
     void ShaderAPI::Load(ShaderData* dataObject) {
-        Unbind(dataObject);
         STL::string& source = Filesystem::ReadTextFileAtPath(dataObject->m_Filepath);
 
         if (source.empty()) {
@@ -192,31 +193,31 @@ namespace Sentinel {
             return;
         }
 
-        dataObject->m_ShaderSources = PreprocessSource(source);
+        PreprocessSource(source, dataObject->m_Sources);
         CompileFromSource(dataObject);
 
         ID3D11Device* device = ContextAPI::GetDevice(dataObject->Context);
 
-        if (dataObject->m_BinaryMap.at(ShaderType::VERTEX)) {
+        if (dataObject->m_Binaries[(UInt8)ShaderType::VERTEX].binary) {
             device->CreateVertexShader(
-                dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferPointer(),
-                dataObject->m_BinaryMap.at(ShaderType::VERTEX)->GetBufferSize(),
+                dataObject->m_Binaries[(UInt8)ShaderType::VERTEX].binary->GetBufferPointer(),
+                dataObject->m_Binaries[(UInt8)ShaderType::VERTEX].binary->GetBufferSize(),
                 nullptr,
                 &(dataObject->m_NativeVS));
         }
 
-        if (dataObject->m_BinaryMap.at(ShaderType::PIXEL)) {
+        if (dataObject->m_Binaries[(UInt8)ShaderType::PIXEL].binary) {
             device->CreatePixelShader(
-                dataObject->m_BinaryMap.at(ShaderType::PIXEL)->GetBufferPointer(),
-                dataObject->m_BinaryMap.at(ShaderType::PIXEL)->GetBufferSize(),
+                dataObject->m_Binaries[(UInt8)ShaderType::PIXEL].binary->GetBufferPointer(),
+                dataObject->m_Binaries[(UInt8)ShaderType::PIXEL].binary->GetBufferSize(),
                 nullptr,
                 &(dataObject->m_NativePS));
         }
 
-        if (dataObject->m_BinaryMap.find(ShaderType::COMPUTE) != dataObject->m_BinaryMap.end()) {
+        if (dataObject->m_Binaries[(UInt8)ShaderType::COMPUTE].binary) {
             device->CreateComputeShader(
-                dataObject->m_BinaryMap.at(ShaderType::COMPUTE)->GetBufferPointer(),
-                dataObject->m_BinaryMap.at(ShaderType::COMPUTE)->GetBufferSize(),
+                dataObject->m_Binaries[(UInt8)ShaderType::COMPUTE].binary->GetBufferPointer(),
+                dataObject->m_Binaries[(UInt8)ShaderType::COMPUTE].binary->GetBufferSize(),
                 nullptr,
                 &dataObject->m_NativeCS);
         }

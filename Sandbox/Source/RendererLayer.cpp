@@ -7,13 +7,13 @@
 namespace Sandbox {
     namespace Rendering {
 
-        static Sentinel::Bool renderdocBuild = true;
+        static Sentinel::Bool renderdocBuild = false;
 
         RendererLayer::RendererLayer(Sentinel::Window* window) : m_Window(window) {
             m_ResizeIndex = Sentinel::Application::Get().SubscribeToEvent(
                 Sentinel::EventType::WindowResize, ST_BIND_FN(RendererLayer::OnWindowResize));
 
-            m_CtxAlloc.AllocateMemoryBlock(1);
+            // m_CtxAlloc.AllocateMemoryBlock(1);
             m_SCAlloc.AllocateMemoryBlock(1);
             m_VPortAlloc.AllocateMemoryBlock(1);
 
@@ -66,6 +66,8 @@ namespace Sandbox {
             m_VPortAlloc.DeallocateMemoryBlock();
             m_SCAlloc.DeallocateMemoryBlock();
             m_CtxAlloc.DeallocateMemoryBlock();
+
+            delete (m_Context);
         }
 
         void RendererLayer::OnAttach() {
@@ -205,7 +207,8 @@ namespace Sandbox {
 
         void RendererLayer::OnUpdate() {
             m_Camera->OnUpdate();
-            Sentinel::ConstantbufferAPI::SetDynamicData(m_CamCBuffer, &(m_Camera->GetViewProjection()));
+            m_ViewProj = m_Camera->GetViewProjectionMatrix();
+            Sentinel::ConstantbufferAPI::SetDynamicData(m_CamCBuffer, &m_ViewProj);
         }
 
         void RendererLayer::OnRender() {

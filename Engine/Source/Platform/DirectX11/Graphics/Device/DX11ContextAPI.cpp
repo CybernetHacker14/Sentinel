@@ -11,7 +11,7 @@
 namespace Sentinel {
     ContextData* Sentinel::ContextAPI::CreateImmediateContext(
         PoolAllocator<ContextData>& allocator, GLFWwindow* windowHandle) {
-        ContextData* context = allocator.New();
+        ContextData* context = new ContextData();
         context->m_ContextType = ContextType::IMMEDIATE;
         Create(context, windowHandle);
         return context;
@@ -119,7 +119,8 @@ namespace Sentinel {
         {
             D3D11_RASTERIZER_DESC desc;
             SecureZeroMemory(&desc, sizeof(desc));
-            desc.CullMode = D3D11_CULL_FRONT;
+            desc.CullMode = D3D11_CULL_NONE;
+            desc.FillMode = D3D11_FILL_SOLID;
             desc.FrontCounterClockwise = true;
             dataObject->m_Device->CreateRasterizerState(&desc, &dataObject->m_FrontCullRS);
         }

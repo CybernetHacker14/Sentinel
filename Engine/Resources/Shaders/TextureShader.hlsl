@@ -1,4 +1,5 @@
 #type vertex
+#pragma pack_matrix(row_major)
 cbuffer Camera: register(b0) {
     float4x4 u_ViewProjection;
 }

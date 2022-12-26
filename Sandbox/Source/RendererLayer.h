@@ -81,6 +81,8 @@ namespace Sandbox {
 
         private:
             Sentinel::UInt32 m_ResizeIndex = 0;
+
+            glm::mat4 m_ViewProj = glm::mat4(1.0f);
         };
     }  // namespace Rendering
 }  // namespace Sandbox
