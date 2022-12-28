@@ -27,16 +27,19 @@ namespace Sentinel {
 
         static void* GetResource(Texture2DData* dataObject);
 
-        inline static Bool IsHDR(Texture2DData* dataObject);
-        inline static Bool IsLoaded(Texture2DData* dataObject);
+        inline static Bool IsHDR(Texture2DData* dataObject) { return dataObject->m_HDR; }
 
-        inline static UInt16 GetWidth(Texture2DData* dataObject);
-        inline static UInt16 GetHeight(Texture2DData* dataObject);
+        inline static Bool IsLoaded(Texture2DData* dataObject) { return dataObject->m_Loaded; }
 
-        inline static UInt8 GetBindSlot(Texture2DData* dataObject);
-        inline static const ShaderType GetBindType(Texture2DData* dataObject);
+        inline static UInt16 GetWidth(Texture2DData* dataObject) { return dataObject->m_Width; }
 
-        inline static void* GetPixelData(Texture2DData* dataObject);
+        inline static UInt16 GetHeight(Texture2DData* dataObject) { return dataObject->m_Height; }
+
+        inline static UInt8 GetBindSlot(Texture2DData* dataObject) { return dataObject->m_BindSlot; }
+
+        inline static const ShaderType GetBindType(Texture2DData* dataObject) { return dataObject->m_BindType; }
+
+        inline static void* GetPixelData(Texture2DData* dataObject) { return dataObject->m_TexturePixels; }
 
 #ifdef ST_RENDERER_DX11
         inline static ID3D11Texture2D* GetNativeTexture(Texture2DData* dataObject) { return dataObject->m_Texture2D; }

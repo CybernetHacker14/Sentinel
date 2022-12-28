@@ -47,6 +47,8 @@ namespace Sentinel {
 
     class Event {
     public:
+        virtual ~Event() = default;
+
         inline const EventCategory GetEventCategoryFlags() const {
             if (!m_GetFlagsFunction) return EventCategory();
 

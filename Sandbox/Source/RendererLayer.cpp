@@ -13,7 +13,7 @@ namespace Sandbox {
             m_ResizeIndex = Sentinel::Application::Get().SubscribeToEvent(
                 Sentinel::EventType::WindowResize, ST_BIND_FN(RendererLayer::OnWindowResize));
 
-            // m_CtxAlloc.AllocateMemoryBlock(1);
+            m_CtxAlloc.AllocateMemoryBlock(1);
             m_SCAlloc.AllocateMemoryBlock(1);
             m_VPortAlloc.AllocateMemoryBlock(1);
 

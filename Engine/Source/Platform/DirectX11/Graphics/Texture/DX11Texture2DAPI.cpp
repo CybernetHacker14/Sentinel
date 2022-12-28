@@ -106,34 +106,6 @@ namespace Sentinel {
         return dataObject->m_ResourceView;
     }
 
-    Bool Texture2DAPI::IsHDR(Texture2DData* dataObject) {
-        return dataObject->m_HDR;
-    }
-
-    Bool Texture2DAPI::IsLoaded(Texture2DData* dataObject) {
-        return dataObject->m_Loaded;
-    }
-
-    UInt16 Texture2DAPI::GetWidth(Texture2DData* dataObject) {
-        return dataObject->m_Width;
-    }
-
-    UInt16 Texture2DAPI::GetHeight(Texture2DData* dataObject) {
-        return dataObject->m_Height;
-    }
-
-    UInt8 Texture2DAPI::GetBindSlot(Texture2DData* dataObject) {
-        return dataObject->m_BindSlot;
-    }
-
-    const ShaderType Texture2DAPI::GetBindType(Texture2DData* dataObject) {
-        return dataObject->m_BindType;
-    }
-
-    void* Texture2DAPI::GetPixelData(Texture2DData* dataObject) {
-        return dataObject->m_TexturePixels;
-    }
-
     void Texture2DAPI::Load(Texture2DData* data) {
         D3D11_TEXTURE2D_DESC textureDescription;
         SecureZeroMemory(&textureDescription, sizeof(textureDescription));

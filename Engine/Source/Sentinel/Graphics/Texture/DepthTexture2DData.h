@@ -21,8 +21,8 @@ namespace Sentinel {
 
     protected:
         void* m_PixelData;
-        UInt32 m_Width, m_Height;
-        UInt32 m_BindSlot;
+        UInt16 m_Width, m_Height;
+        UInt8 m_BindSlot;
         DepthFormat m_Format = DepthFormat::NONE;
         ShaderType m_BindType = ShaderType::NONE;
         Bool m_SwapchainTarget = false;

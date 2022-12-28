@@ -48,10 +48,6 @@ namespace Sentinel {
         inline static ID3D11ShaderResourceView* GetNativeSRV(RenderTexture2DData* dataObject) {
             return dataObject->m_NativeSRV;
         }
-
-        inline static ID3D11UnorderedAccessView* GetNativeUAV(RenderTexture2DData* dataObject) {
-            return dataObject->m_NativeUAV;
-        }
 #endif  // ST_RENDERER_DX11
 
     private:

@@ -9,9 +9,6 @@ namespace Sentinel {
         s_Instance = this;
     }
 
-    Application::~Application() {
-    }
-
     const UInt32 Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {
         return m_EventBus.SubscribeToEvent(eventType, STL::move(callback));
     }

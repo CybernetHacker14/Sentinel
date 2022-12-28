@@ -14,6 +14,7 @@ namespace Sentinel {
             ST_ENGINE_ASSERT(m_BlockStartingAddress == nullptr, "Bad Allocation");
 
             m_BlockStartingAddress = new T[maxCount];
+            for (UInt32 i = 0; i < maxCount; i++) { m_BlockStartingAddress[i].~T(); }
             m_MaxAllowedAllocations = maxCount;
             m_CurrentAllocations = 0;
             m_FreeList.reserve(maxCount);
@@ -32,8 +33,7 @@ namespace Sentinel {
 
         inline void DivideBlockIntoChunks() {
             for (UInt32 i = 0; i < m_MaxAllowedAllocations; i++) {
-                T* startPtr = m_BlockStartingAddress;
-                m_ChunkAddressMap[i] = &(startPtr[i]);
+                m_ChunkAddressMap[i] = &(m_BlockStartingAddress[i]);
                 m_IndexAddressMap[m_ChunkAddressMap[i]] = i;
                 m_FreeList.emplace_back(i);
             }

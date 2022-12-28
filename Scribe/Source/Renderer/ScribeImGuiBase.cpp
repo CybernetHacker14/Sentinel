@@ -17,7 +17,7 @@ namespace Scribe {
 
         ScribeImGuiBase::ScribeImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window)
             : m_Context(context), m_Window(window) {
-            m_TexMemAllocator.AllocateMemoryBlock(10);
+            m_TexMemAllocator.AllocateMemoryBlock(5);
         }
 
         ScribeImGuiBase::~ScribeImGuiBase() {

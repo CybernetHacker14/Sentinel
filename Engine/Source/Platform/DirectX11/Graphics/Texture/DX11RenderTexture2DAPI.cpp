@@ -62,11 +62,6 @@ namespace Sentinel {
             dataObject->m_NativeSRV = 0;
         }
 
-        if (!dataObject->m_SwapchainTarget && dataObject->m_NativeUAV) {
-            dataObject->m_NativeUAV->Release();
-            dataObject->m_NativeUAV = 0;
-        }
-
         if (dataObject->m_NativeTex) {
             dataObject->m_NativeTex->Release();
             dataObject->m_NativeTex = 0;

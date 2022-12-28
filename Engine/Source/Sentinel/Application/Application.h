@@ -10,7 +10,7 @@ namespace Sentinel {
     class Application {
     public:
         Application(const STL::string& name = "Application");
-        ~Application();
+        virtual ~Application() = default;
 
         static Application& Get() { return *s_Instance; }
 
