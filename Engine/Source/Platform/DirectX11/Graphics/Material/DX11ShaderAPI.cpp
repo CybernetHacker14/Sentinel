@@ -80,8 +80,8 @@ namespace Sentinel {
             }
         }
 
-        dataObject->m_ShaderName.clear();
-        dataObject->m_Filepath.clear();
+        // dataObject->m_ShaderName.clear();
+        // dataObject->m_Filepath.clear();
     }
 
     void ShaderAPI::Unbind(ShaderData* dataObject) {

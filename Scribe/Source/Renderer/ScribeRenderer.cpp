@@ -94,7 +94,7 @@ namespace Scribe {
 
         void ScribeRenderer::OnRender() {
             Sentinel::SwapchainAPI::Bind(m_Swapchain);
-            //Sentinel::ContextAPI::Draw(m_Context);
+            // Sentinel::ContextAPI::Draw(m_Context);
             Sentinel::SwapchainAPI::SwapBuffers(m_Swapchain);
             Sentinel::RenderTexture2DAPI::Clear(m_SwapchainRT, {0.1f, 0.5f, 0.1f, 1.0f});
         }

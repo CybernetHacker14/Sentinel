@@ -11,6 +11,10 @@
 #include "Icons/Title/maximize_dark20.inl"
 #include "Icons/Title/restore_down_dark20.inl"
 
+#ifdef ST_RENDERER_DX11
+#include <d3d11.h>
+#endif  // ST_RENDERER_DX11
+
 namespace Scribe {
     namespace Rendering {
         static Sentinel::Bool genericWindowOpen = false;
@@ -154,6 +158,9 @@ namespace Scribe {
 
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
             ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 104, 0});
+#ifdef ST_RENDERER_DX11
+            ID3D11ShaderResourceView* srv = Sentinel::Texture2DAPI::GetNativeResource(m_MinimizeTex);
+#endif  // ST_RENDERER_DX11
             if (ImGui::ImageButton(
                     "Minimize", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_MinimizeTex), {20, 20})) {
                 m_Window->Minimize();
