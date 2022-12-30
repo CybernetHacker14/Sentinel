@@ -70,14 +70,14 @@ namespace Scribe {
             Sentinel::SwapchainAPI::Clean(m_Swapchain);
             Sentinel::ContextAPI::Clean(m_Context);
 
-            /*m_ShaderAlloc.DeleteAll();
+            m_ShaderAlloc.DeleteAll();
 
             m_RTAlloc.DeleteAll();
             m_DTAlloc.DeleteAll();
 
             m_VPortAlloc.DeleteAll();
             m_SCAlloc.DeleteAll();
-            m_CtxAlloc.DeleteAll();*/
+            m_CtxAlloc.DeleteAll();
 
             m_ShaderAlloc.DeallocateMemoryBlock();
 

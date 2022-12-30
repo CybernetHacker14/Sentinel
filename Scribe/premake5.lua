@@ -41,6 +41,9 @@ project "Scribe"
         "Sentinel"
     }
 
+    filter { "options:gfxapi=DX11" }
+        defines "ST_RENDERER_DX11"
+
     filter "system:windows"
         systemversion "latest"
 

@@ -2,6 +2,8 @@
 
 #include "Sentinel/Common/Common.h"
 
+#define ALIGN_TO(size, alignment) (((size) + (alignment)-1) & ~((alignment)-1))
+
 namespace Sentinel {
     template<typename T>
     class PoolAllocator {
