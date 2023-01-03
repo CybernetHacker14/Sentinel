@@ -40,7 +40,8 @@ project "Sentinel"
         "%{IncludeExternalDir.spdlog}",
 		"%{IncludeExternalDir.stb_image}",
 		"%{IncludeExternalDir.cereal}",
-		"%{IncludeExternalDir.imgui}"
+		"%{IncludeExternalDir.imgui}",
+        "%{IncludeExternalDir.flecs}"
     }
 
     links

@@ -3,13 +3,12 @@
 #include "Sentinel/Common/Common.h"
 #include "Sentinel/System/UUID.h"
 
+#include <flecs.h>
+
 namespace Sentinel {
     struct Entity {
     public:
+    public:
         UUID uuid;
-
-        Entity* parent;
-
-        STL::vector<Entity*> children;
     };
 }  // namespace Sentinel
