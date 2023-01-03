@@ -24,9 +24,6 @@ struct VOut {
     float2 texCoord: TEXCOORD;
 };
 
-Texture2D testTexture;
-SamplerState textureSampler: register(s0);
-
 float4 PShader(VOut input) : SV_TARGET {
-    return testTexture.Sample(textureSampler, input.texCoord);
+    return float4(0.1f, 0.5f, 0.1f, 1.0f);
 }

@@ -16,9 +16,8 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 namespace Scribe {
     Scribe::Scribe() {
-        m_RunFunction = ST_BIND_EVENT_FN(Scribe::Run);
-
-        m_CloseIndex = SubscribeToEvent(Sentinel::EventType::WindowClose, ST_BIND_EVENT_FN(OnWindowClose));
+        m_CloseIndex = SubscribeToEvent(Sentinel::EventType::WindowClose, ST_BIND_FN(OnWindowClose));
+        m_RunFunction = ST_BIND_FN(Run);
 
         Sentinel::WindowProperties props;
         props.Title = "Scribe";
@@ -27,63 +26,40 @@ namespace Scribe {
         props.Mode = Sentinel::WindowMode::BORDERLESSMAXIMIZED;
         props.FramebufferTransparency = false;
 
-        m_Window = Sentinel::CreateUniqueRef<Window::ScribeWindow>(props);
-        m_Window->SetEventCallback(ST_BIND_EVENT_FN(RaiseEvent));
+        m_Window = new Window::ScribeWindow(props);
+        m_Window->SetEventCallback(ST_BIND_FN(RaiseEvent));
 
-        m_BaseRenderer = new Rendering::ScribeRenderer(m_Window.get());
-        PushLayer(m_BaseRenderer);
-
+        m_BaseRenderer = new Rendering::ScribeRenderer(m_Window);
         m_ImGuiLayer = new Sentinel::ImGuiLayer(m_BaseRenderer->GetRenderingContext());
-        PushOverlay(m_ImGuiLayer);
-
         m_ImGuiBase = new Rendering::ScribeImGuiBase(
-            m_BaseRenderer->GetRenderingContext(), static_cast<Window::ScribeWindow*>(m_Window.get()));
-        PushOverlay(m_ImGuiBase);
+            m_BaseRenderer->GetRenderingContext(), static_cast<Window::ScribeWindow*>(m_Window));
+
+        m_BaseRenderer->OnAttach();
+        m_ImGuiLayer->OnAttach();
+        m_ImGuiBase->OnAttach();
     }
 
     Scribe::~Scribe() {
         UnsubscribeFromEvent(Sentinel::EventType::WindowClose, m_CloseIndex);
+        delete m_Window;
     }
 
     void Scribe::Run() {
         while (m_Running) {
             if (!m_Minimized) {
-                ProcessLayerUpdate();
-                ProcessLayerRender();
-                ProcessLayerImGuiRender();
-                ProcessLayerPostRender();
+                m_BaseRenderer->OnRender();
+                m_ImGuiLayer->Begin();
+                m_ImGuiBase->OnImGuiRender();
+                m_ImGuiLayer->End();
+                m_ImGuiBase->OnPostRender();
             }
             m_Window->OnUpdate();
             Sentinel::Input::OnUpdate();
         }
-        m_LayerStack.PopOverlay(m_ImGuiBase);
-        m_LayerStack.PopOverlay(m_ImGuiLayer);
+        m_ImGuiBase->OnDetach();
+        m_ImGuiLayer->OnDetach();
+        m_BaseRenderer->OnDetach();
         m_Window->Shutdown();
-    }
-
-    void Scribe::ProcessLayerUpdate() {
-        if (m_LayerStack.GetSize() == 0) return;
-        for (Sentinel::Layer* layer: m_LayerStack) layer->OnUpdate();
-    }
-
-    void Scribe::ProcessLayerRender() {
-        if (m_LayerStack.GetSize() == 0) return;
-        for (Sentinel::Layer* layer: m_LayerStack) layer->OnRender();
-    }
-
-    void Scribe::ProcessLayerImGuiRender() {
-        if (m_LayerStack.GetSize() == 0) return;
-
-        m_ImGuiLayer->Begin();
-
-        for (Sentinel::Layer* layer: m_LayerStack) layer->OnImGuiRender();
-
-        m_ImGuiLayer->End();
-    }
-
-    void Scribe::ProcessLayerPostRender() {
-        if (m_LayerStack.GetSize() == 0) return;
-        for (Sentinel::Layer* layer: m_LayerStack) layer->OnPostRender();
     }
 
     void Scribe::OnWindowClose(Sentinel::Event& event) {

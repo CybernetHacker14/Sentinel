@@ -1,21 +1,16 @@
 #include "stpch.h"
 #include "Sentinel/Graphics/Camera/Camera.h"
 
-#include "Sentinel/Graphics/Buffer/ConstantbufferAPI.h"
-
-#include "Sentinel/Graphics/Common/GraphicsMemoryManager.h"
-
 #include <glm/gtx/norm.hpp>
 
 namespace Sentinel {
-    Camera::Camera(SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context) {
-        Init(memoryHandle, context);
+    Camera::Camera() {
+        Init();
     }
 
-    Camera::Camera(
-        SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, const Float width, const Float height) {
+    Camera::Camera(const Float width, const Float height) {
         OnResize(width, height);
-        Init(memoryHandle, context);
+        Init();
     }
 
     void Camera::OnResize(const Float width, const Float height) {
@@ -26,13 +21,9 @@ namespace Sentinel {
         UpdateDirectionVectors();
         UpdateViewMatrix();
         UpdateProjectionMatrix();
-        ConstantbufferAPI::SetDynamicData(m_CameraConstantbuffer, &(GetViewProjectionMatrix()));
     }
 
-    void Camera::Init(SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context) {
-        m_CameraConstantbuffer = ConstantbufferAPI::CreateConstantbufferData(
-            memoryHandle, context, sizeof(glm::mat4), 0, CBufferUsageType::DYNAMIC);
-        ConstantbufferAPI::VSBind(m_CameraConstantbuffer);
+    void Camera::Init() {
         OnUpdate();
     }
 
@@ -50,7 +41,7 @@ namespace Sentinel {
         switch (m_ProjectionMode) {
             case ProjectionMode::PERSPECTIVE: {
                 m_ProjectionMatrix =
-                    glm::perspectiveRH(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
+                    glm::perspectiveRH_ZO(m_PerspectiveFOV, m_AspectRatio, m_PerspectiveNear, m_PerspectiveFar);
                 break;
             }
             case ProjectionMode::ORTHOGRAPHIC: {
@@ -59,7 +50,7 @@ namespace Sentinel {
                 Float bottom = -m_OrthographicSize * 0.5f;
                 Float top = m_OrthographicSize * 0.5f;
 
-                m_ProjectionMatrix = glm::orthoRH(left, right, bottom, top, m_OrthographicNear, m_OrthographicFar);
+                m_ProjectionMatrix = glm::orthoRH_ZO(left, right, bottom, top, m_OrthographicNear, m_OrthographicFar);
                 break;
             }
         }

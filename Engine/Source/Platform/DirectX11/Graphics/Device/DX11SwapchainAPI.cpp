@@ -1,72 +1,76 @@
 #include "stpch.h"
-#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
-#include "Platform/DirectX11/Graphics/Device/DX11SwapchainAPI.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
-#include "Platform/DirectX11/Graphics/Texture/DX11RenderTexture2DAPI.h"
-#include "Platform/DirectX11/Graphics/Texture/DX11DepthTexture2DAPI.h"
+#ifdef ST_RENDERER_DX11
 
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
+    #include "Sentinel/Graphics/Device/SwapchainAPI.h"
+    #include "Sentinel/Graphics/Device/ContextAPI.h"
+    #include "Sentinel/Graphics/Texture/RenderTexture2DAPI.h"
+    #include "Sentinel/Graphics/Texture/DepthTexture2DAPI.h"
+
+    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+
+    #define GLFW_EXPOSE_NATIVE_WIN32
+    #include <GLFW/glfw3.h>
+    #include <GLFW/glfw3native.h>
 
 namespace Sentinel {
-    DX11SwapchainAPI::_init DX11SwapchainAPI::_initializer;
-
-    void DX11SwapchainAPI::SwapBuffers(SwapchainData* dataObject) {
-        DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
-        swapchain->m_Swapchain->Present(swapchain->vSync ? 1 : 0, 0);
+    SwapchainData* Sentinel::SwapchainAPI::CreateSwapchain(
+        PoolAllocator<SwapchainData>& allocator, ContextData* context, GLFWwindow* windowHandle) {
+        SwapchainData* swapchain = allocator.New();
+        swapchain->Context = context;
+        Init(swapchain, windowHandle);
+        return swapchain;
     }
 
-    void DX11SwapchainAPI::Resize(SwapchainData* dataObject, UInt32 width, UInt32 height) {
-        DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
-        swapchain->m_Swapchain->ResizeBuffers(swapchain->m_BufferCount, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+    void SwapchainAPI::SwapBuffers(SwapchainData* dataObject) {
+        dataObject->m_Swapchain->Present(dataObject->vSync ? 1 : 0, 0);
     }
 
-    void DX11SwapchainAPI::Bind(SwapchainData* dataObject) {
-        DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        DX11RenderTexture2DData* renderTexture =
-            RenderTexture2DAPI::Cast<DX11RenderTexture2DData>(swapchain->backbuffer);
+    void SwapchainAPI::Resize(SwapchainData* dataObject, UInt16 width, UInt16 height) {
+        dataObject->m_Swapchain->ResizeBuffers(dataObject->m_BufferCount, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+    }
 
-        DX11DepthTexture2DData* depthTexture = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(swapchain->depthBuffer);
-        ID3D11DeviceContext* nativeContext = DX11ContextAPI::GetNativeContext(context);
+    void SwapchainAPI::Bind(SwapchainData* dataObject) {
+        ID3D11DeviceContext* nativeContext = ContextAPI::GetNativeContext(dataObject->Context);
 
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRV[1];
-        pRV[0] = renderTexture->m_NativeRTV;
+        pRV[0] = RenderTexture2DAPI::GetNativeRTV(dataObject->backbuffer);
+        ID3D11DepthStencilView* pDV;
+        if (dataObject->depthBuffer) { pDV = DepthTexture2DAPI::GetNativeDSV(dataObject->depthBuffer); }
 
-        ID3D11DepthStencilView* pDV = depthTexture->m_NativeDSV;
-
-        nativeContext->OMSetRenderTargets(1, pRV[0].GetAddressOf(), pDV);
+        if (pRV) { nativeContext->OMSetRenderTargets(1, pRV[0].GetAddressOf(), dataObject->depthBuffer ? pDV : NULL); }
     }
 
-    void DX11SwapchainAPI::Unbind(SwapchainData* dataObject) {
-        DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11DeviceContext* nativeContext = DX11ContextAPI::GetNativeContext(context);
+    void SwapchainAPI::Unbind(SwapchainData* dataObject) {
+        ID3D11DeviceContext* nativeContext = ContextAPI::GetNativeContext(dataObject->Context);
         ID3D11RenderTargetView* null = nullptr;
         nativeContext->OMSetRenderTargets(1, &null, NULL);
     }
 
-    void DX11SwapchainAPI::SetBuffers(
+    void SwapchainAPI::SetBuffers(
         SwapchainData* dataObject, RenderTexture2DData* renderTexture, DepthTexture2DData* depthTexture) {
-        DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
-        swapchain->backbuffer = renderTexture;
-        swapchain->depthBuffer = depthTexture;
+        dataObject->backbuffer = renderTexture;
         RenderTexture2DAPI::SetSwapchainTarget(renderTexture, true);
-        DepthTexture2DAPI::SetSwapchainTarget(depthTexture, true);
+        if (depthTexture) {
+            dataObject->depthBuffer = depthTexture;
+            DepthTexture2DAPI::SetSwapchainTarget(depthTexture, true);
+        }
     }
 
-    void DX11SwapchainAPI::UnsetBuffers(SwapchainData* dataObject) {
-        DX11SwapchainData* swapchain = SwapchainAPI::Cast<DX11SwapchainData>(dataObject);
-        RenderTexture2DAPI::SetSwapchainTarget(swapchain->backbuffer, false);
-        DepthTexture2DAPI::SetSwapchainTarget(swapchain->depthBuffer, false);
-        swapchain->backbuffer = nullptr;
-        swapchain->depthBuffer = nullptr;
+    void SwapchainAPI::UnsetBuffers(SwapchainData* dataObject) {
+        RenderTexture2DAPI::SetSwapchainTarget(dataObject->backbuffer, false);
+        DepthTexture2DAPI::SetSwapchainTarget(dataObject->depthBuffer, false);
+        dataObject->backbuffer = nullptr;
+        dataObject->depthBuffer = nullptr;
     }
 
-    void DX11SwapchainAPI::Init(DX11SwapchainData* dataObject, GLFWwindow* windowHandle) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
+    void SwapchainAPI::Clean(SwapchainData* dataObject) {
+        dataObject->m_Swapchain->SetFullscreenState(false, NULL);
+        dataObject->m_Swapchain->Release();
+        dataObject->m_Swapchain = 0;
+    }
+
+    void SwapchainAPI::Init(SwapchainData* dataObject, GLFWwindow* windowHandle) {
         DXGI_SWAP_CHAIN_DESC swapChainDescription;
         SecureZeroMemory(&swapChainDescription, sizeof(swapChainDescription));
 
@@ -92,7 +96,9 @@ namespace Sentinel {
         swapChainDescription.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
         swapChainDescription.Flags = 0;
 
-        DX11ContextAPI::GetFactory(context)->CreateSwapChain(
-            DX11ContextAPI::GetDevice(context), &swapChainDescription, &(dataObject->m_Swapchain));
+        ContextAPI::GetFactory(dataObject->Context)
+            ->CreateSwapChain(
+                ContextAPI::GetDevice(dataObject->Context), &swapChainDescription, &(dataObject->m_Swapchain));
     }
 }  // namespace Sentinel
+#endif  // ST_RENDERER_DX11

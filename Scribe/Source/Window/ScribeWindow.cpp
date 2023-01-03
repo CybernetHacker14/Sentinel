@@ -36,11 +36,11 @@ namespace Scribe {
         }
 
         ScribeWindow::ScribeWindow(const Sentinel::WindowProperties& props) : Window(props) {
-            m_InitFunction = ST_BIND_EVENT_FN(Init);
-            m_OnUpdateFunction = ST_BIND_EVENT_FN(OnUpdate);
-            m_SetVSyncFunction = ST_BIND_EVENT_FN(SetVSync);
-            m_GetNativeWindowFunction = ST_BIND_EVENT_FN(GetNativeWindow);
-            m_ShutdownFunction = ST_BIND_EVENT_FN(Shutdown);
+            m_InitFunction = ST_BIND_FN(Init);
+            m_OnUpdateFunction = ST_BIND_FN(OnUpdate);
+            m_SetVSyncFunction = ST_BIND_FN(SetVSync);
+            m_GetNativeWindowFunction = ST_BIND_FN(GetNativeWindow);
+            m_ShutdownFunction = ST_BIND_FN(Shutdown);
 
             SetDragLogic(DragFunction);
             Init();
@@ -66,6 +66,7 @@ namespace Scribe {
 
             glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, m_Properties.FramebufferTransparency ? 1 : 0);
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
             if (m_Properties.Mode == Sentinel::WindowMode::FULLSCREEN) {
                 m_Window = glfwCreateWindow(

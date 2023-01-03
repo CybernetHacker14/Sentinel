@@ -1,17 +1,116 @@
 #include "stpch.h"
-#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
-#include "Platform/DirectX11/Graphics/Texture/DX11DepthTexture2DAPI.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+#ifdef ST_RENDERER_DX11
+
+    #include "Sentinel/Graphics/Texture/DepthTexture2DAPI.h"
+    #include "Sentinel/Graphics/Device/ContextAPI.h"
+    #include "Sentinel/Graphics/Device/SwapchainAPI.h"
+
+    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel {
     static const UInt32 s_MaxSize = 8192;  // 8K
 
-    DX11DepthTexture2DAPI::_init DX11DepthTexture2DAPI::_initializer;
+    DepthTexture2DData* Sentinel::DepthTexture2DAPI::CreateDepthTexture2DData(
+        PoolAllocator<DepthTexture2DData>& allocator,
+        ContextData* context,
+        const UInt16 width,
+        const UInt16 height,
+        const DepthFormat format,
+        const Bool attachToSwapchain) {
+        DepthTexture2DData* texObject = allocator.New();
+        texObject->Context = context;
+        texObject->m_Format = format;
+        texObject->m_Width = width;
+        texObject->m_Height = height;
+        texObject->m_BindType = ShaderType::NONE;
+        texObject->m_SwapchainTarget = attachToSwapchain;
+        Create(texObject);
+        return texObject;
+    }
 
-    void DX11DepthTexture2DAPI::Create(DX11DepthTexture2DData* dataObject) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11Device* dxDevice = DX11ContextAPI::GetDevice(context);
+    void DepthTexture2DAPI::Clear(DepthTexture2DData* dataObject) {
+        ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
+
+        if (dataObject->m_BindType != ShaderType::NONE) {
+            dxContext->ClearDepthStencilView(dataObject->m_NativeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+        }
+    }
+
+    void DepthTexture2DAPI::Clean(DepthTexture2DData* dataObject) {
+        if (dataObject->m_NativeDSV) {
+            dataObject->m_NativeDSV->Release();
+            dataObject->m_NativeDSV = 0;
+        }
+
+        if (dataObject->m_NativeSRV) {
+            dataObject->m_NativeSRV->Release();
+            dataObject->m_NativeSRV = 0;
+        }
+
+        if (dataObject->m_NativeTex) {
+            dataObject->m_NativeTex->Release();
+            dataObject->m_NativeTex = 0;
+        }
+    }
+
+    void DepthTexture2DAPI::Bind(DepthTexture2DData* dataObject, UInt8 slot, const ShaderType shaderType) {
+        ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
+        ID3D11ShaderResourceView* srv = dataObject->m_NativeSRV;
+
+        if (shaderType == ShaderType::NONE) return;
+
+        switch (shaderType) {
+            case ShaderType::VERTEX:
+                dxContext->VSSetShaderResources(slot, 1, &srv);
+                dataObject->m_BindSlot = slot;
+                dataObject->m_BindType = shaderType;
+                break;
+            case ShaderType::PIXEL:
+                dxContext->PSSetShaderResources(slot, 1, &srv);
+                dataObject->m_BindSlot = slot;
+                dataObject->m_BindType = shaderType;
+                break;
+            case ShaderType::COMPUTE:
+                dxContext->CSSetShaderResources(slot, 1, &srv);
+                dataObject->m_BindSlot = slot;
+                dataObject->m_BindType = shaderType;
+                break;
+        }
+    }
+
+    void DepthTexture2DAPI::Unbind(DepthTexture2DData* dataObject) {
+        ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
+        ID3D11ShaderResourceView* nullSRV = {nullptr};
+
+        if (dataObject->m_BindType == ShaderType::NONE) return;
+
+        switch (dataObject->m_BindType) {
+            case ShaderType::VERTEX:
+                dxContext->VSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
+                dataObject->m_BindType = ShaderType::NONE;
+                break;
+            case ShaderType::PIXEL:
+                dxContext->PSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
+                dataObject->m_BindType = ShaderType::NONE;
+                break;
+            case ShaderType::COMPUTE:
+                dxContext->CSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
+                dataObject->m_BindType = ShaderType::NONE;
+                break;
+        }
+    }
+
+    void DepthTexture2DAPI::Resize(DepthTexture2DData* dataObject, UInt16 width, UInt16 height) {
+        if (width == 0 || height == 0 || width > s_MaxSize || height > s_MaxSize) return;
+
+        dataObject->m_Width = width;
+        dataObject->m_Height = height;
+        Create(dataObject);
+    }
+
+    void DepthTexture2DAPI::Create(DepthTexture2DData* dataObject) {
+        ID3D11Device* dxDevice = ContextAPI::GetDevice(dataObject->Context);
 
         if (dataObject->m_Format != DepthFormat::NONE) {
             D3D11_TEXTURE2D_DESC texDescription;
@@ -28,7 +127,7 @@ namespace Sentinel {
             texDescription.MiscFlags = 0;
             texDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-            dxDevice->CreateTexture2D(&texDescription, nullptr, &(dataObject->m_NativeTexture));
+            dxDevice->CreateTexture2D(&texDescription, nullptr, &(dataObject->m_NativeTex));
 
             // DSV
             D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilDescription;
@@ -38,7 +137,7 @@ namespace Sentinel {
             depthStencilDescription.Texture2D.MipSlice = 0;
 
             dxDevice->CreateDepthStencilView(
-                dataObject->m_NativeTexture, &depthStencilDescription, &(dataObject->m_NativeDSV));
+                dataObject->m_NativeTex, &depthStencilDescription, &(dataObject->m_NativeDSV));
 
             // SRV
             if (!dataObject->m_SwapchainTarget) {
@@ -49,92 +148,10 @@ namespace Sentinel {
                 sRVDescription.Texture2D.MipLevels = 1;
                 sRVDescription.Texture2D.MostDetailedMip = 0;
                 dxDevice->CreateShaderResourceView(
-                    dataObject->m_NativeTexture, &sRVDescription, &(dataObject->m_NativeSRV));
+                    dataObject->m_NativeTex, &sRVDescription, &(dataObject->m_NativeSRV));
             }
         }
     }
 
-    void DX11DepthTexture2DAPI::Clear(DepthTexture2DData* dataObject) {
-        DX11DepthTexture2DData* depthTexture = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
-
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11DeviceContext* dxContext = DX11ContextAPI::GetNativeContext(context);
-
-        if (depthTexture->m_BindType != ShaderType::NONE) {
-            dxContext->ClearDepthStencilView(
-                depthTexture->m_NativeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-        }
-    }
-
-    void DX11DepthTexture2DAPI::Clean(DepthTexture2DData* dataObject) {
-        DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
-
-        if (dxDataObject->m_NativeDSV) { dxDataObject->m_NativeDSV->Release(); }
-        if (dxDataObject->m_NativeSRV) { dxDataObject->m_NativeSRV->Release(); }
-        if (dxDataObject->m_NativeTexture) { dxDataObject->m_NativeTexture->Release(); }
-    }
-
-    void DX11DepthTexture2DAPI::Resize(DepthTexture2DData* dataObject, UInt32 width, UInt32 height) {
-        if (width == 0 || height == 0 || width > s_MaxSize || height > s_MaxSize) return;
-
-        DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
-
-        dxDataObject->m_Width = width;
-        dxDataObject->m_Height = height;
-        Create(dxDataObject);
-    }
-
-    void DX11DepthTexture2DAPI::Bind(DepthTexture2DData* dataObject, UInt32 slot, const ShaderType shaderType) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11DeviceContext* dxContext = DX11ContextAPI::GetNativeContext(context);
-
-        DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
-        ID3D11ShaderResourceView* srv = dxDataObject->m_NativeSRV;
-
-        switch (shaderType) {
-            case ShaderType::VERTEX:
-                dxContext->VSSetShaderResources(slot, 1, &srv);
-                dxDataObject->m_BindSlot = slot;
-                dxDataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::PIXEL:
-                dxContext->PSSetShaderResources(slot, 1, &srv);
-                dxDataObject->m_BindSlot = slot;
-                dxDataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::COMPUTE:
-                dxContext->CSSetShaderResources(slot, 1, &srv);
-                dxDataObject->m_BindSlot = slot;
-                dxDataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid shader type"); break;
-        }
-    }
-
-    void DX11DepthTexture2DAPI::Unbind(DepthTexture2DData* dataObject) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        ID3D11DeviceContext* dxContext = DX11ContextAPI::GetNativeContext(context);
-
-        DX11DepthTexture2DData* dxDataObject = DepthTexture2DAPI::Cast<DX11DepthTexture2DData>(dataObject);
-
-        ID3D11ShaderResourceView* nullSRV = {nullptr};
-
-        if (dxDataObject->m_BindType != ShaderType::NONE) {
-            switch (dxDataObject->m_BindType) {
-                case ShaderType::VERTEX:
-                    dxContext->VSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
-                    dxDataObject->m_BindType = ShaderType::NONE;
-                    break;
-                case ShaderType::PIXEL:
-                    dxContext->PSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
-                    dxDataObject->m_BindType = ShaderType::NONE;
-                    break;
-                case ShaderType::COMPUTE:
-                    dxContext->CSSetShaderResources(dxDataObject->m_BindSlot, 1, &nullSRV);
-                    dxDataObject->m_BindType = ShaderType::NONE;
-                    break;
-                case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid shader type"); break;
-            }
-        }
-    }
 }  // namespace Sentinel
+#endif  // ST_RENDERER_DX11

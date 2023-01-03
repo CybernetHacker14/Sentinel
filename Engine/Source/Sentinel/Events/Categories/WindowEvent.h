@@ -9,9 +9,9 @@ namespace Sentinel
 		WindowCloseEvent() {
 			Type = EventType::WindowClose;
 
-			m_GetEventCategoryFlagsFunction = ST_BIND_EVENT_FN(GetEventCategoryFlags);
-			m_GetNameFunction = ST_BIND_EVENT_FN(GetName);
-			m_ToStringFunction = ST_BIND_EVENT_FN(ToString);
+			m_GetFlagsFunction = ST_BIND_FN(GetEventCategoryFlags);
+			m_GetNameFunction = ST_BIND_FN(GetName);
+			m_ToStringFunction = ST_BIND_FN(ToString);
 		};
 
 	private:
@@ -26,9 +26,9 @@ namespace Sentinel
 			: m_Width(width), m_Height(height) {
 			Type = EventType::WindowResize;
 
-			m_GetEventCategoryFlagsFunction = ST_BIND_EVENT_FN(GetEventCategoryFlags);
-			m_GetNameFunction = ST_BIND_EVENT_FN(GetName);
-			m_ToStringFunction = ST_BIND_EVENT_FN(ToString);
+			m_GetFlagsFunction = ST_BIND_FN(GetEventCategoryFlags);
+			m_GetNameFunction = ST_BIND_FN(GetName);
+			m_ToStringFunction = ST_BIND_FN(ToString);
 		}
 
 	public:

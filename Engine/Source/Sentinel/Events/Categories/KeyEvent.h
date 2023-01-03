@@ -11,9 +11,9 @@ namespace Sentinel
 			: m_KeyCode(keycode), m_RepeatCount(repeatCount) {
 			Type = EventType::KeyPressed;
 
-			m_GetEventCategoryFlagsFunction = ST_BIND_EVENT_FN(GetEventCategoryFlags);
-			m_GetNameFunction = ST_BIND_EVENT_FN(GetName);
-			m_ToStringFunction = ST_BIND_EVENT_FN(ToString);
+			m_GetFlagsFunction = ST_BIND_FN(GetEventCategoryFlags);
+			m_GetNameFunction = ST_BIND_FN(GetName);
+			m_ToStringFunction = ST_BIND_FN(ToString);
 		}
 
 		Int16 GetRepeatCount() const { return m_RepeatCount; }
@@ -43,9 +43,9 @@ namespace Sentinel
 			: m_KeyCode(keycode) {
 			Type = EventType::KeyReleased;
 
-			m_GetEventCategoryFlagsFunction = ST_BIND_EVENT_FN(GetEventCategoryFlags);
-			m_GetNameFunction = ST_BIND_EVENT_FN(GetName);
-			m_ToStringFunction = ST_BIND_EVENT_FN(ToString);
+			m_GetFlagsFunction = ST_BIND_FN(GetEventCategoryFlags);
+			m_GetNameFunction = ST_BIND_FN(GetName);
+			m_ToStringFunction = ST_BIND_FN(ToString);
 		}
 
 	private:
@@ -71,9 +71,9 @@ namespace Sentinel
 			: m_KeyCode(keycode) {
 			Type = EventType::KeyTyped;
 
-			m_GetEventCategoryFlagsFunction = ST_BIND_EVENT_FN(GetEventCategoryFlags);
-			m_GetNameFunction = ST_BIND_EVENT_FN(GetName);
-			m_ToStringFunction = ST_BIND_EVENT_FN(ToString);
+			m_GetFlagsFunction = ST_BIND_FN(GetEventCategoryFlags);
+			m_GetNameFunction = ST_BIND_FN(GetName);
+			m_ToStringFunction = ST_BIND_FN(ToString);
 		}
 
 	private:

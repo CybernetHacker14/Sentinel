@@ -1,50 +1,29 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
+#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Graphics/Buffer/VertexbufferData.h"
 
 namespace Sentinel {
-    class GraphicsMemoryManager;
-    struct VertexbufferData;
     struct ContextData;
 
     class VertexbufferAPI {
     public:
         static VertexbufferData* CreateVertexbufferData(
-            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, UInt32 size);
+            PoolAllocator<VertexbufferData>& allocator, ContextData* context, UInt32 size);
         static VertexbufferData* CreateVertexbufferData(
-            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, void* vertices, UInt32 size);
+            PoolAllocator<VertexbufferData>& allocator, ContextData* context, void* vertices, UInt32 size);
 
-        inline static void Bind(VertexbufferData* dataObject, UInt32 stride) {
-            if (!m_BindFunction) return;
-            m_BindFunction(dataObject, stride);
-        }
+        static void Bind(VertexbufferData* dataObject, UInt32 stride);
 
-        inline static void Unbind(VertexbufferData* dataObject) {
-            if (!m_UnbindFunction) return;
-            m_UnbindFunction(dataObject);
-        }
+        static void Unbind(VertexbufferData* dataObject);
 
-        inline static void SetData(VertexbufferData* dataObject, const void* vertices, UInt32 size) {
-            if (!m_SetDataFunction) return;
-            m_SetDataFunction(dataObject, vertices, size);
-        }
+        static void SetData(VertexbufferData* dataObject, const void* vertices, UInt32 size);
 
-        inline static void Clean(VertexbufferData* dataObject) {
-            if (!m_CleanFunction) return;
-            m_CleanFunction(dataObject);
-        }
+        static void Clean(VertexbufferData* dataObject);
 
-    public:
-        template<typename T>
-        inline static T* Cast(VertexbufferData* dataObject) {
-            static_assert(STL::is_base_of<VertexbufferData, T>::value, "'T' should be derived from VertexbufferData.");
-            return static_cast<T*>(dataObject);
-        }
-
-    protected:
-        inline static STL::delegate<void(VertexbufferData*, UInt32)> m_BindFunction;
-        inline static STL::delegate<void(VertexbufferData*)> m_UnbindFunction;
-        inline static STL::delegate<void(VertexbufferData*, const void*, UInt32)> m_SetDataFunction;
-        inline static STL::delegate<void(VertexbufferData*)> m_CleanFunction;
+    private:
+        static void Create(VertexbufferData* dataObject, UInt32 size);
+        static void Create(VertexbufferData* dataObject, void* vertices, UInt32 size);
     };
 }  // namespace Sentinel

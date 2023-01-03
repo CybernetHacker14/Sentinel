@@ -1,17 +1,26 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
-#include "Sentinel/Graphics/Device/ContextData.h"
+
+#ifdef ST_RENDERER_DX11
+struct ID3D11Buffer;
+#endif  // ST_RENDERER_DX11
 
 namespace Sentinel {
+    struct ContextData;
+
     struct VertexbufferData {
     public:
         ContextData* Context;
 
-    protected:
+    private:
         void* m_Vertices;
 
     private:
+#ifdef ST_RENDERER_DX11
+        ID3D11Buffer* m_Buffer;
+#endif  // ST_RENDERER_DX11
+
         friend class VertexbufferAPI;
     };
 }  // namespace Sentinel

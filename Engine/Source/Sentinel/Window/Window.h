@@ -14,15 +14,15 @@ namespace Sentinel {
 
     struct WindowProperties {
         STL::string Title;
-        UInt32 Width;
-        UInt32 Height;
+        UInt16 Width;
+        UInt16 Height;
         WindowMode Mode;
         Bool FramebufferTransparency;
 
         WindowProperties(
             const STL::string& title = "Sentinel-Engine",
-            UInt32 width = 900,
-            UInt32 height = 900,
+            UInt16 width = 900,
+            UInt16 height = 900,
             Sentinel::WindowMode mode = WindowMode::WINDOWED,
             Bool transparency = false)
             : Title(title), Width(width), Height(height), Mode(mode), FramebufferTransparency(transparency) {}
@@ -31,6 +31,8 @@ namespace Sentinel {
     // Interface representing a desktop system based Window
     class Window {
     public:
+        virtual ~Window() = default;
+
         using EventCallbackFn = STL::delegate<void(UniqueRef<Event>)>;
 
         inline void Init() const {
@@ -57,8 +59,8 @@ namespace Sentinel {
             m_ShutdownFunction();
         }
 
-        inline const UInt32 GetWidth() const { return m_Data.Width; }
-        inline const UInt32 GetHeight() const { return m_Data.Height; }
+        inline const UInt16 GetWidth() const { return m_Data.Width; }
+        inline const UInt16 GetHeight() const { return m_Data.Height; }
 
         inline const Bool IsVSync() const { return m_Data.VSync; };
 
@@ -89,12 +91,10 @@ namespace Sentinel {
     protected:
         struct WindowData {
             STL::string Title;
-            UInt32 Width, Height;
+            UInt16 Width, Height;
             Bool VSync;
 
             EventCallbackFn EventCallback;
-            EventCallbackFn InternalMouseMovedCallback;
-            EventCallbackFn InternalWindowResizeCallback;
         };
 
         WindowData m_Data;

@@ -9,9 +9,9 @@ namespace Sentinel
 		AppTickEvent() {
 			Type = EventType::AppTick;
 
-			m_GetEventCategoryFlagsFunction = ST_BIND_EVENT_FN(GetEventCategoryFlags);
-			m_GetNameFunction = ST_BIND_EVENT_FN(GetName);
-			m_ToStringFunction = ST_BIND_EVENT_FN(ToString);
+			m_GetFlagsFunction = ST_BIND_FN(GetEventCategoryFlags);
+			m_GetNameFunction = ST_BIND_FN(GetName);
+			m_ToStringFunction = ST_BIND_FN(ToString);
 		};
 
 	private:
@@ -25,9 +25,9 @@ namespace Sentinel
 		AppUpdateEvent() {
 			Type = EventType::AppUpdate;
 
-			m_GetEventCategoryFlagsFunction = ST_BIND_EVENT_FN(GetEventCategoryFlags);
-			m_GetNameFunction = ST_BIND_EVENT_FN(GetName);
-			m_ToStringFunction = ST_BIND_EVENT_FN(ToString);
+			m_GetFlagsFunction = ST_BIND_FN(GetEventCategoryFlags);
+			m_GetNameFunction = ST_BIND_FN(GetName);
+			m_ToStringFunction = ST_BIND_FN(ToString);
 		};
 
 	private:
@@ -41,9 +41,9 @@ namespace Sentinel
 		AppRenderEvent() {
 			Type = EventType::AppRender;
 
-			m_GetEventCategoryFlagsFunction = ST_BIND_EVENT_FN(GetEventCategoryFlags);
-			m_GetNameFunction = ST_BIND_EVENT_FN(GetName);
-			m_ToStringFunction = ST_BIND_EVENT_FN(ToString);
+			m_GetFlagsFunction = ST_BIND_FN(GetEventCategoryFlags);
+			m_GetNameFunction = ST_BIND_FN(GetName);
+			m_ToStringFunction = ST_BIND_FN(ToString);
 		};
 
 	private:

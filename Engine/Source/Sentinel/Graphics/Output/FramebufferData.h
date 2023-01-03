@@ -13,7 +13,7 @@ namespace Sentinel {
     public:
         ContextData* Context;
 
-    protected:
+    private:
         STL::vector<ColorFormat> m_ColorFormats;
         DepthFormat m_DepthFormat;
         RenderTexture2DData* m_RTAttachments[5];

@@ -23,3 +23,6 @@
 	path = Engine/Vendor/imgui/module
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
+[submodule "Engine/Vendor/flecs/module"]
+	path = Engine/Vendor/flecs/module
+	url = https://github.com/SanderMertens/flecs.git

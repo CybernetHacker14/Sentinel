@@ -1,19 +1,20 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
+#include "Sentinel/Memory/Malloc.h"
 
 namespace Sentinel {
     template<typename T>
     class PoolAllocator {
     public:
-        inline void AllocateMemoryBlock(UInt32 maxCount) {
-            DeallocateMemoryBlock();
+        inline void AllocateMemoryBlock(UInt8 maxCount) {
+            ST_ENGINE_ASSERT(m_BlockStartingAddress == nullptr, "Bad Allocation");
 
-            m_BlockStartingAddress = malloc(sizeof(T) * maxCount);
+            m_BlockStartingAddress = Calloc(maxCount, sizeof(T));
+
             m_MaxAllowedAllocations = maxCount;
             m_CurrentAllocations = 0;
             m_FreeList.reserve(maxCount);
-
             m_AllocatedList.reserve(maxCount);
 
             DivideBlockIntoChunks();
@@ -21,7 +22,7 @@ namespace Sentinel {
 
         inline void DeallocateMemoryBlock() {
             if (m_BlockStartingAddress != nullptr) {
-                free(m_BlockStartingAddress);
+                Free(m_BlockStartingAddress);
                 m_BlockStartingAddress = nullptr;
                 m_CurrentAllocations = 0;
             }
@@ -29,7 +30,8 @@ namespace Sentinel {
 
         inline void DivideBlockIntoChunks() {
             for (UInt32 i = 0; i < m_MaxAllowedAllocations; i++) {
-                m_ChunkAddressMap[i] = static_cast<T*>(((T*)m_BlockStartingAddress) + (i * sizeof(T)));
+                T* startPtr = (T*)m_BlockStartingAddress;
+                m_ChunkAddressMap[i] = &(startPtr[i]);
                 m_IndexAddressMap[m_ChunkAddressMap[i]] = i;
                 m_FreeList.emplace_back(i);
             }
@@ -57,7 +59,7 @@ namespace Sentinel {
         template<typename... Args>
         inline T* New(UInt32& outIndex, Args&&... args) {
             if (m_CurrentAllocations == m_MaxAllowedAllocations) {
-                ST_ENGINE_ASSERT("Max count reached");
+                ST_ENGINE_ASSERT(false, "Max count reached");
                 return nullptr;
             }
 
@@ -71,48 +73,6 @@ namespace Sentinel {
 
             m_CurrentAllocations++;
             return static_cast<T*>(new (address) T(STL::forward<Args>(args)...));
-        }
-
-        template<typename U, typename... Args>
-        inline T* New(Args&&... args) {
-            if (m_CurrentAllocations == m_MaxAllowedAllocations) {
-                ST_ENGINE_ASSERT(false, "Max count reached");
-                return nullptr;
-            }
-
-            static_assert(STL::is_base_of<T, U>::value, "'U' should be a derived from 'T'");
-
-            T* address = m_ChunkAddressMap[m_FreeList[0]];
-            m_AllocatedList.emplace_back(m_FreeList[0]);
-            std::swap(m_FreeList[0], m_FreeList.back());
-            m_FreeList.pop_back();
-            std::sort(m_FreeList.begin(), m_FreeList.end());
-            std::sort(m_AllocatedList.begin(), m_AllocatedList.end());
-
-            m_CurrentAllocations++;
-
-            return static_cast<T*>(new (address) U(STL::forward<Args>(args)...));
-        }
-
-        template<typename U, typename... Args>
-        inline T* New(UInt32& outIndex, Args&&... args) {
-            if (m_CurrentAllocations == m_MaxAllowedAllocations) {
-                ST_ENGINE_ASSERT("Max count reached");
-                return nullptr;
-            }
-
-            static_assert(STL::is_base_of<T, U>::value, "'U' should be a derived from 'T'");
-
-            outIndex = m_FreeList[0];
-            T* address = m_ChunkAddressMap[m_FreeList[0]];
-            m_AllocatedList.emplace_back(m_FreeList[0]);
-            std::swap(m_FreeList[0], m_FreeList.back());
-            m_FreeList.pop_back();
-            std::sort(m_FreeList.begin(), m_FreeList.end());
-            std::sort(m_AllocatedList.begin(), m_AllocatedList.end());
-
-            m_CurrentAllocations++;
-            return static_cast<T*>(new (address) U(STL::forward<Args>(args)...));
         }
 
         template<typename... Args>
@@ -156,6 +116,6 @@ namespace Sentinel {
         STL::vector<UInt32> m_AllocatedList;
 
         UInt32 m_CurrentAllocations = 0;
-        UInt32 m_MaxAllowedAllocations;
+        UInt32 m_MaxAllowedAllocations = 0;
     };
 }  // namespace Sentinel

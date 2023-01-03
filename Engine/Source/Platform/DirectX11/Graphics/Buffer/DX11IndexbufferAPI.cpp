@@ -1,30 +1,35 @@
 #include "stpch.h"
-#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
-#include "Platform/DirectX11/Graphics/Buffer/DX11IndexbufferAPI.h"
-#include "Platform/DirectX11/Graphics/Buffer/DX11IndexbufferData.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+#ifdef ST_RENDERER_DX11
+    #include "Sentinel/Graphics/Buffer/IndexbufferAPI.h"
+    #include "Sentinel/Graphics/Device/ContextAPI.h"
+
+    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel {
-    DX11IndexbufferAPI::_init DX11IndexbufferAPI::_initializer;
-
-    void DX11IndexbufferAPI::Bind(IndexbufferData* dataObject) {
-        DX11IndexbufferData* buffer = IndexbufferAPI::Cast<DX11IndexbufferData>(dataObject);
-        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        DX11ContextAPI::GetNativeContext(dContext)->IASetIndexBuffer(buffer->m_IndexbufferPtr, DXGI_FORMAT_R32_UINT, 0);
+    IndexbufferData* Sentinel::IndexbufferAPI::CreateIndexbufferData(
+        PoolAllocator<IndexbufferData>& allocator, ContextData* context, void* indices, UInt32 count) {
+        IndexbufferData* bufferObject = allocator.New();
+        bufferObject->Context = context;
+        Create(bufferObject, indices, count);
+        bufferObject->m_Count = count;
+        return bufferObject;
     }
 
-    void DX11IndexbufferAPI::Unbind(IndexbufferData* dataObject) {
-        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        DX11ContextAPI::GetNativeContext(dContext)->IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
+    void IndexbufferAPI::Bind(IndexbufferData* dataObject) {
+        ContextAPI::GetNativeContext(dataObject->Context)
+            ->IASetIndexBuffer(dataObject->m_Buffer, DXGI_FORMAT_R32_UINT, 0);
     }
 
-    void DX11IndexbufferAPI::Clean(IndexbufferData* dataObject) {
-        DX11IndexbufferData* buffer = IndexbufferAPI::Cast<DX11IndexbufferData>(dataObject);
-        buffer->m_IndexbufferPtr->Release();
+    void IndexbufferAPI::Unbind(IndexbufferData* dataObject) {
+        ContextAPI::GetNativeContext(dataObject->Context)->IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
     }
 
-    void DX11IndexbufferAPI::CreateNative(DX11IndexbufferData* dataObject, void* indices, UInt32 count) {
+    void IndexbufferAPI::Clean(IndexbufferData* dataObject) {
+        dataObject->m_Buffer->Release();
+    }
+
+    void IndexbufferAPI::Create(IndexbufferData* dataObject, void* indices, UInt32 count) {
         D3D11_BUFFER_DESC description;
         SecureZeroMemory(&description, sizeof(description));
 
@@ -41,7 +46,7 @@ namespace Sentinel {
         subresource.SysMemPitch = 0;
         subresource.SysMemSlicePitch = 0;
 
-        DX11ContextData* dContext = ContextAPI::Cast<DX11ContextData>(dataObject->Context);
-        DX11ContextAPI::GetDevice(dContext)->CreateBuffer(&description, &subresource, &(dataObject->m_IndexbufferPtr));
+        ContextAPI::GetDevice(dataObject->Context)->CreateBuffer(&description, &subresource, &(dataObject->m_Buffer));
     }
 }  // namespace Sentinel
+#endif  // ST_RENDERER_DX11

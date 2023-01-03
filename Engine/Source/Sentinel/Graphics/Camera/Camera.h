@@ -6,19 +6,12 @@
 #include <glm/glm.hpp>
 
 namespace Sentinel {
-    struct ConstantbufferData;
-    class ConstantbufferAPI;
-
-    struct ContextData;
-    class GraphicsMemoryManager;
-
     enum class ProjectionMode { PERSPECTIVE = 0, ORTHOGRAPHIC = 1 };
 
     class Camera: public ISharedRef {
     public:
-        Camera(SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context);
-        Camera(
-            SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context, const Float width, const Float height);
+        Camera();
+        Camera(const Float width, const Float height);
 
         const ProjectionMode& GetProjectionMode() { return m_ProjectionMode; }
         void SetProjectionMode(const ProjectionMode& mode) { m_ProjectionMode = mode; }
@@ -62,7 +55,7 @@ namespace Sentinel {
         void OnUpdate();
 
     protected:
-        void Init(SharedRef<GraphicsMemoryManager> memoryHandle, ContextData* context);
+        void Init();
 
         void UpdateDirectionVectors();
         void UpdateProjectionMatrix();
@@ -100,9 +93,6 @@ namespace Sentinel {
         // Experimental
         Float m_Exposure = 0.0f;
         glm::vec3 m_FocalPoint = {0.0f, 0.0f, 0.0f};
-
-    protected:
-        ConstantbufferData* m_CameraConstantbuffer;
     };
 
 }  // namespace Sentinel

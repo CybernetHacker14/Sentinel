@@ -1,32 +1,46 @@
 #include "stpch.h"
-#include "Platform/DirectX11/Graphics/Core/DX11Common.h"
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
 
-#include <GLFW/glfw3.h>
+#ifdef ST_RENDERER_DX11
+
+    #include "Sentinel/Graphics/Device/ContextAPI.h"
+
+    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+
+    #include <GLFW/glfw3.h>
 
 namespace Sentinel {
-    DX11ContextAPI::_init DX11ContextAPI::_initializer;
-
-    void DX11ContextAPI::Draw(ContextData* dataObject) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject);
-        context->m_Context->Draw(0, 0);
+    ContextData* Sentinel::ContextAPI::CreateImmediateContext(
+        PoolAllocator<ContextData>& allocator, GLFWwindow* windowHandle) {
+        ContextData* context = new ContextData();
+        context->m_ContextType = ContextType::IMMEDIATE;
+        Create(context, windowHandle);
+        return context;
     }
 
-    void DX11ContextAPI::DrawIndexed(ContextData* dataObject, const UInt32 count) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject);
-        context->m_Context->DrawIndexed(count, 0, 0);
+    ContextData* ContextAPI::CreateDeferredContext(PoolAllocator<ContextData>& allocator, GLFWwindow* windowHandle) {
+        return nullptr;
     }
 
-    void DX11ContextAPI::Clean(ContextData* dataObject) {
-        DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(dataObject);
-        context->m_Context->Release();
-        context->m_Device->Release();
-        context->m_DXGIDevice->Release();
-        context->m_Factory->Release();
-        context->m_Adapter->Release();
+    void ContextAPI::Draw(ContextData* dataObject) {
+        dataObject->m_Context->Draw(0, 0);
     }
 
-    void DX11ContextAPI::Create(DX11ContextData* dataObject, GLFWwindow* windowHandle) {
+    void ContextAPI::DrawIndexed(ContextData* dataObject, const UInt32 count) {
+        dataObject->m_Context->DrawIndexed(count, 0, 0);
+    }
+
+    void ContextAPI::Clean(ContextData* dataObject) {
+        dataObject->m_Context->Release();
+        dataObject->m_Device->Release();
+        dataObject->m_DXGIDevice->Release();
+        dataObject->m_Factory->Release();
+        dataObject->m_Adapter->Release();
+
+        dataObject->m_BlendState->Release();
+        dataObject->m_FrontCullRS->Release();
+    }
+
+    void ContextAPI::Create(ContextData* dataObject, GLFWwindow* windowHandle) {
         if (dataObject->m_ContextType == ContextType::IMMEDIATE) {
             D3D11CreateDevice(
                 nullptr,
@@ -101,5 +115,17 @@ namespace Sentinel {
 
         dataObject->m_Device->CreateBlendState(&blendDesc, &(dataObject->m_BlendState));
         dataObject->m_Context->OMSetBlendState(dataObject->m_BlendState, nullptr, 0xffffffff);
+
+        {
+            D3D11_RASTERIZER_DESC desc;
+            SecureZeroMemory(&desc, sizeof(desc));
+            desc.CullMode = D3D11_CULL_NONE;
+            desc.FillMode = D3D11_FILL_SOLID;
+            desc.FrontCounterClockwise = true;
+            dataObject->m_Device->CreateRasterizerState(&desc, &dataObject->m_FrontCullRS);
+        }
+
+        dataObject->m_Context->RSSetState(dataObject->m_FrontCullRS);
     }
 }  // namespace Sentinel
+#endif  // ST_RENDERER_DX11

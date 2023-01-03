@@ -13,11 +13,6 @@ namespace Sandbox {
     private:
         void Run();
 
-        void ProcessLayerUpdate();
-        void ProcessLayerRender();
-        void ProcessLayerImGuiRender();
-        void ProcessLayerPostRender();
-
     private:
         Sentinel::ImGuiLayer* m_ImGuiLayer;
         Rendering::RendererLayer* m_RenderLayer;

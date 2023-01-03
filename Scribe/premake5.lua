@@ -17,7 +17,9 @@ project "Scribe"
     defines
     {
         "_CRT_SECURE_NO_WARNINGS",
-        "GLFW_INCLUDE_NONE"
+        "GLFW_INCLUDE_NONE",
+        "_DISABLE_VECTOR_ANNOTATION",
+        "_DISABLE_STRING_ANNOTATION"
     }
 
     includedirs
@@ -38,6 +40,9 @@ project "Scribe"
     {
         "Sentinel"
     }
+
+    filter { "options:gfxapi=DX11" }
+        defines "ST_RENDERER_DX11"
 
     filter "system:windows"
         systemversion "latest"

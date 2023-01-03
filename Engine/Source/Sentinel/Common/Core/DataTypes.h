@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Core/STL.h"
+#include <stdint.h>
 
 namespace Sentinel {
     typedef int8_t Int8;
@@ -17,8 +17,8 @@ namespace Sentinel {
 
     typedef long Long;
     typedef size_t Size_t;
-    typedef float_t Float;
-    typedef double_t Double;
+    typedef float Float;
+    typedef double Double;
 
     typedef bool Bool;
 

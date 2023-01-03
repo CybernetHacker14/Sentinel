@@ -5,20 +5,18 @@
 #include "Sentinel/Events/Categories/WindowEvent.h"
 #include "Sentinel/Graphics/Common/Backend.h"
 
-#include "Platform/DirectX11/Graphics/Device/DX11ContextAPI.h"
+#include "Sentinel/Graphics/Device/ContextAPI.h"
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_win32.h>
 
 #include <GLFW/glfw3.h>
 
 #include <backends/imgui_impl_dx11.h>
 
 namespace Sentinel {
-    ImGuiLayer::ImGuiLayer(ContextData* context) : Layer("ImGuiLayer"), m_Context(context) {
-        m_AttachFunction = ST_BIND_EVENT_FN(ImGuiLayer::OnAttach);
-        m_DetachFunction = ST_BIND_EVENT_FN(ImGuiLayer::OnDetach);
+    ImGuiLayer::ImGuiLayer(ContextData* context) : m_Context(context) {
+        Application::Get().SubscribeToEvent(EventType::WindowResize, ST_BIND_FN(OnResize));
     }
 
     ImGuiLayer::~ImGuiLayer() {
@@ -57,24 +55,22 @@ namespace Sentinel {
 
         switch (Backend::GetAPI()) {
             case Backend::API::DirectX11: {
-                DX11ContextData* context = ContextAPI::Cast<DX11ContextData>(m_Context);
-                auto device = DX11ContextAPI::GetDevice(context);
-                auto nativeContext = DX11ContextAPI::GetNativeContext(context);
+                auto device = ContextAPI::GetDevice(m_Context);
+                auto nativeContext = ContextAPI::GetNativeContext(m_Context);
                 ImGui_ImplDX11_Init(device, nativeContext);
                 break;
             }
             case Backend::API::None: ST_ENGINE_ASSERT(false, "API::None currently not supported"); break;
         }
 
-        m_OnResizeCallbackIndex =
-            Application::Get().SubscribeToEvent(EventType::WindowResize, ST_BIND_EVENT_FN(OnResize));
+        m_OnResizeCallbackIndex = Application::Get().SubscribeToEvent(EventType::WindowResize, ST_BIND_FN(OnResize));
     }
 
     void ImGuiLayer::OnDetach() {
+        Application::Get().UnsubscribeFromEvent(EventType::WindowResize, m_OnResizeCallbackIndex);
         ImGui_ImplDX11_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
-        Application::Get().UnsubscribeFromEvent(EventType::WindowResize, m_OnResizeCallbackIndex);
     }
 
     void ImGuiLayer::Begin() {
