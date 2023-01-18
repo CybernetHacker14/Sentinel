@@ -8,7 +8,6 @@
 namespace Sentinel {
     struct Entity {
     public:
-    public:
         UUID uuid;
     };
 }  // namespace Sentinel

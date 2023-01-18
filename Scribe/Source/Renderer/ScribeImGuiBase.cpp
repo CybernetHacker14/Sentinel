@@ -17,7 +17,7 @@ namespace Scribe {
 
         ScribeImGuiBase::ScribeImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window)
             : m_Context(context), m_Window(window) {
-            m_TexMemAllocator.AllocateMemoryBlock(5);
+            m_TexMemAllocator.AllocateMemoryBlock(1);
         }
 
         ScribeImGuiBase::~ScribeImGuiBase() {
@@ -26,51 +26,10 @@ namespace Scribe {
         }
 
         void ScribeImGuiBase::OnAttach() {
-            Sentinel::Texture2DDataImportSettings settings, settings2;
+            Sentinel::Texture2DDataImportSettings settings;
+            settings.TextureFilepath = "Assets/Icons/Title/TitlebarSpritesheet.png";
 
-            m_CloseTex = Sentinel::Texture2DAPI::CreateTexture2DData(
-                m_TexMemAllocator,
-                m_Context,
-                settings,
-                &(close_dark20Pixels[0]),
-                close_dark20Width,
-                close_dark20Height,
-                close_dark20BPP);
-
-            m_LogoTex = Sentinel::Texture2DAPI::CreateTexture2DData(
-                m_TexMemAllocator,
-                m_Context,
-                settings2,
-                &(iconBW64Pixels[0]),
-                iconBW64Width,
-                iconBW64Height,
-                iconBW64BPP);
-            m_MinimizeTex = Sentinel::Texture2DAPI::CreateTexture2DData(
-                m_TexMemAllocator,
-                m_Context,
-                settings,
-                &(minimize_dark20Pixels[0]),
-                minimize_dark20Width,
-                minimize_dark20Height,
-                minimize_dark20BPP);
-
-            m_MaximizeTex = Sentinel::Texture2DAPI::CreateTexture2DData(
-                m_TexMemAllocator,
-                m_Context,
-                settings,
-                &(maximize_dark20Pixels[0]),
-                maximize_dark20Width,
-                maximize_dark20Height,
-                maximize_dark20BPP);
-
-            m_RestoreDownTex = Sentinel::Texture2DAPI::CreateTexture2DData(
-                m_TexMemAllocator,
-                m_Context,
-                settings,
-                &(restore_down_dark20Pixels[0]),
-                restore_down_dark20Width,
-                restore_down_dark20Height,
-                restore_down_dark20BPP);
+            m_SpriteSheetTex = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexMemAllocator, m_Context, settings);
         }
 
         void ScribeImGuiBase::OnDetach() {
@@ -145,7 +104,8 @@ namespace Scribe {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
             ImGui::Begin("Title_Bar", &genericWindowOpen, flags);
             ImGui::PopStyleVar();
-            ImGui::Image((ImTextureID)Sentinel::Texture2DAPI::GetResource(m_LogoTex), {64, 64});
+            ImGui::Image(
+                (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex), m_IconSize, m_IconUV0, m_IconUV1);
 
             //  Render the close button
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(7, 5));
@@ -156,7 +116,11 @@ namespace Scribe {
             ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 104, 0});
 
             if (ImGui::ImageButton(
-                    "Minimize", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_MinimizeTex), {20, 20})) {
+                    "Minimize",
+                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex),
+                    m_ControlBtnSize,
+                    m_MinimizeUV0,
+                    m_MinimizeUV1)) {
                 m_Window->Minimize();
             }
             Sentinel::Bool minimizeHover = ImGui::IsItemHovered();
@@ -164,9 +128,10 @@ namespace Scribe {
             ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 69, 0});
             if (ImGui::ImageButton(
                     "Maximize_Restore",
-                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(
-                        m_Window->IsMaximized() ? m_RestoreDownTex : m_MaximizeTex),
-                    {20, 20})) {
+                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex),
+                    m_ControlBtnSize,
+                    m_Window->IsMaximized() ? m_RestoreUV0 : m_MaximizeUV0,
+                    m_Window->IsMaximized() ? m_RestoreUV1 : m_MaximizeUV1)) {
                 m_Window->IsMaximized() ? m_Window->RestoreDown() : m_Window->Maximize();
             }
             Sentinel::Bool max_restoreHover = ImGui::IsItemHovered();
@@ -174,7 +139,12 @@ namespace Scribe {
 
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.91f, 0.1f, 0.15f, 1.0f));
             ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 34, 0});
-            if (ImGui::ImageButton("Close", (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_CloseTex), {20, 20})) {
+            if (ImGui::ImageButton(
+                    "Close",
+                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex),
+                    m_ControlBtnSize,
+                    m_CloseUV0,
+                    m_CloseUV1)) {
                 m_Window->InvokeShutdown();
             }
             Sentinel::Bool closeHover = ImGui::IsItemHovered();
