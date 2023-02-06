@@ -9,6 +9,10 @@
     #include <GLFW/glfw3.h>
 
 namespace Sentinel {
+
+    static STL::unordered_map<UInt32, STL::string> s_VendorCodeMap = {
+        {0x10DE, "NVIDIA Corporation"}, {0x1002, "AMD Inc."}, {0x8086, "Intel"}, {0x1414, "Microsoft"}};
+
     ContextData* Sentinel::ContextAPI::CreateImmediateContext(
         PoolAllocator<ContextData>& allocator, GLFWwindow* windowHandle) {
         ContextData* context = new ContextData();
@@ -68,13 +72,7 @@ namespace Sentinel {
             dataObject->m_Adapter->GetDesc(&adapterDescription);
             wcstombs_s(NULL, videoCardDescription, 128, adapterDescription.Description, 128);
 
-            switch (adapterDescription.VendorId) {
-                case 0x10DE: vendor = "NVIDIA Corporation"; break;
-                case 0x1002: vendor = "AMD Inc."; break;
-                case 0x8086: vendor = "Intel"; break;
-                case 0x1414: vendor = "Microsoft"; break;
-                default: vendor = "Unknown vendor"; break;
-            }
+            vendor = s_VendorCodeMap[adapterDescription.VendorId];
 
             dataObject->m_Adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice), &driverVersion);
 

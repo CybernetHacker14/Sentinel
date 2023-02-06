@@ -1,5 +1,6 @@
 #include "Renderer/ScribeImGuiBase.h"
 #include "Window/ScribeWindow.h"
+#include "Panels/SceneHierarchyPanel.h"
 
 #include <Sentinel/Graphics/Texture/Texture2DAPI.h>
 
@@ -18,9 +19,11 @@ namespace Scribe {
         ScribeImGuiBase::ScribeImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window)
             : m_Context(context), m_Window(window) {
             m_TexMemAllocator.AllocateMemoryBlock(1);
+            m_SceneHierarchyPanel = new Panel::SceneHierarchyPanel();
         }
 
         ScribeImGuiBase::~ScribeImGuiBase() {
+            delete m_SceneHierarchyPanel;
             m_TexMemAllocator.DeleteAll();
             m_TexMemAllocator.DeallocateMemoryBlock();
         }
@@ -52,8 +55,8 @@ namespace Scribe {
             ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
             if (opt_fullscreen) {
                 ImGuiViewport* viewport = ImGui::GetMainViewport();
-                ImGui::SetNextWindowPos(viewport->WorkPos);
-                ImGui::SetNextWindowSize(viewport->WorkSize);
+                ImGui::SetNextWindowPos({viewport->WorkPos.x, viewport->WorkPos.y + m_TitleBarHeight});
+                ImGui::SetNextWindowSize({viewport->WorkSize.x, viewport->WorkSize.y - m_TitleBarHeight});
                 ImGui::SetNextWindowViewport(viewport->ID);
                 ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
                 ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -85,6 +88,13 @@ namespace Scribe {
 
             style.WindowMinSize.x = minWindowSizeX;
 
+            ImGuiViewport* viewport = ImGui::GetMainViewport();
+            // ImGui::SetNextWindowPos({viewport->WorkPos.x, viewport->WorkPos.y + 64});
+            ImGui::Begin("Test Window");
+            ImGui::End();
+
+            m_SceneHierarchyPanel->DisplayScenePanel();
+
             ImGui::End();
         }
 
@@ -94,8 +104,6 @@ namespace Scribe {
         void ScribeImGuiBase::RenderImGuiTitleBar() {
             ImGuiWindowFlags flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove |
                                      ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize;
-
-            ImGui::ShowMetricsWindow();
 
             // Display the Engine logo
             ImGuiViewport* viewport = ImGui::GetMainViewport();

@@ -18,6 +18,10 @@ namespace Scribe {
         class ScribeWindow;
     }
 
+    namespace Panel {
+        class SceneHierarchyPanel;
+    }
+
     namespace Rendering {
         class ScribeImGuiBase final {
         public:
@@ -37,13 +41,17 @@ namespace Scribe {
         private:
             Sentinel::PoolAllocator<Sentinel::Texture2DData> m_TexMemAllocator;
 
-            Sentinel::ContextData* m_Context;
-            Window::ScribeWindow* m_Window;
+            Sentinel::ContextData* m_Context = nullptr;
+            Window::ScribeWindow* m_Window = nullptr;
 
-            Sentinel::Texture2DData* m_SpriteSheetTex;
+            Sentinel::Texture2DData* m_SpriteSheetTex = nullptr;
+
+            Panel::SceneHierarchyPanel* m_SceneHierarchyPanel = nullptr;
 
         private:
-            const glm::vec2& m_IconSize {64, 64};
+            const float m_TitleBarHeight = 64.0f;
+
+            const glm::vec2& m_IconSize {m_TitleBarHeight, m_TitleBarHeight};
             const glm::vec2& m_IconUV0 {0, 0};
             const glm::vec2& m_IconUV1 {0.5f, 1.0f};
 
