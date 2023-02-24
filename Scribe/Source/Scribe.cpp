@@ -5,6 +5,8 @@
 #include "Renderer/ScribeRenderer.h"
 #include "Renderer/ScribeImGuiBase.h"
 
+#include "Panels/SceneHierarchyPanel.h"
+
 #include <Sentinel/Application/EntryPoint.h>
 #include <Sentinel/GUI/ImGui/ImGuiLayer.h>
 
@@ -54,6 +56,8 @@ namespace Scribe {
         m_Entity4->SetParent(m_Entity1);
         m_Entity6->SetParent(m_Entity5);
         m_Entity7->SetParent(m_Entity5);
+
+        m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
     }
 
     Scribe::~Scribe() {

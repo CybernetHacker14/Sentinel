@@ -35,6 +35,8 @@ namespace Scribe {
             void OnImGuiRender();
             void OnPostRender();
 
+            inline Panel::SceneHierarchyPanel* GetSceneHierarchyPanel() { return m_SceneHierarchyPanel; }
+
         private:
             void RenderImGuiTitleBar();
 

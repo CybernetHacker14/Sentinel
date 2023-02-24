@@ -2,6 +2,8 @@
 
 #include <Sentinel.h>
 
+#include <flecs.h>
+
 namespace Sentinel {
     class Scene;
     class Entity;
@@ -16,10 +18,12 @@ namespace Scribe {
             void DisplayScenePanel();
 
         private:
-            void DrawEntityNode(Sentinel::Entity* entity);
+            Sentinel::Bool DisplayNode(Sentinel::Entity* entity);
 
         private:
             Sentinel::Scene* m_LoadedScene = nullptr;
+            Sentinel::Entity* m_SelectedEntity = nullptr;
+            Sentinel::Entity* m_MarkedForDelete = nullptr;
         };
     }  // namespace Panel
 }  // namespace Scribe

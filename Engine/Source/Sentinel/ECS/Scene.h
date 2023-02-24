@@ -11,22 +11,21 @@
 namespace Sentinel {
     struct Scene {
     public:
-        Scene();
+        Scene(const STL::string& name = "New Scene");
         ~Scene();
 
         Entity* CreateEntity(const STL::string& name = "New Entity");
         void DeleteEntity(Entity* entity);
 
         inline const UUID& GetUUID() { return m_UUID; }
-        inline const flecs::world& GetNativeScene() { return m_Scene; }
+        inline flecs::world* GetNativeScene() { return &m_Scene; }
 
     public:
-        STL::vector<Entity*> entities;
+        STL::unordered_map<flecs::entity, Entity*> registry;
 
     private:
         PoolAllocator<Entity> m_Allocator;
         UUID m_UUID {};
         flecs::world m_Scene;
-        Entity* m_RootEntity;
     };
 }  // namespace Sentinel

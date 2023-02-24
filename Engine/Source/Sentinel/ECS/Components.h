@@ -5,10 +5,13 @@
 #include <glm/glm.hpp>
 
 namespace Sentinel {
-    struct Transforms {
+    // Just a shell
+    struct Component {};
+
+    struct TransformComponent: public Component {
     public:
-        STL::vector<glm::vec3> Positions;
-        STL::vector<glm::vec3> Rotations;
-        STL::vector<glm::vec3> Scales;
+        glm::vec3 Position {0, 0, 0};
+        glm::vec3 Rotation {0, 0, 0};
+        glm::vec3 Scale {0, 0, 0};
     };
 }  // namespace Sentinel

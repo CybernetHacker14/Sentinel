@@ -10,18 +10,37 @@ namespace Sentinel {
 
     struct Entity {
     public:
-        Entity(Scene* scene, const STL::string& name);
+        Entity(Scene* scene);
 
         void SetParent(Entity* entity);
         Entity* GetParent();
-        Bool IsParent();
+        Bool HasParent();
+        Bool HasChildren();
 
-        inline const flecs::entity& GetNative() { return m_Entity; }
+        inline flecs::entity* GetNative() { return m_Native; }
+        inline Scene* GetScene() { return m_Scene; }
 
     private:
-        flecs::entity m_Entity;
+        Entity() = default;
 
+        void SetEntity(flecs::entity* native);
+
+    private:
+        flecs::entity* m_Native = nullptr;
         Scene* m_Scene = nullptr;
-        Entity* m_Parent = nullptr;
+        STL::string name = "";
+
+    private:
+        friend struct Scene;
     };
 }  // namespace Sentinel
+
+namespace std {
+    template<typename T>
+    struct hash;
+
+    template<>
+    struct hash<flecs::entity> {
+        Sentinel::Size_t operator()(const flecs::entity& entity) const { return (Sentinel::UInt64)entity; }
+    };
+}  // namespace std

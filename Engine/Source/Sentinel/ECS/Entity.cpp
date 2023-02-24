@@ -2,23 +2,32 @@
 #include "Sentinel/ECS/Entity.h"
 #include "Sentinel/ECS/Scene.h"
 
+#include "Sentinel/ECS/Components.h"
+
 namespace Sentinel {
-    Entity::Entity(Scene* scene, const STL::string& name) {
-        m_Scene = scene;
-        m_Entity = m_Scene->GetNativeScene().entity(name.c_str());
+    Entity::Entity(Scene* scene) : m_Scene(scene) {
     }
 
     void Entity::SetParent(Entity* entity) {
-        m_Entity.child_of(entity->m_Entity);
-        entity->m_Parent = entity;
+        m_Native->child_of(*(entity->m_Native));
     }
 
     Entity* Entity::GetParent() {
-        return m_Parent;
+        return m_Scene->registry[m_Native->parent()];
     }
 
-    Bool Entity::IsParent() {
-        return m_Parent != nullptr;
+    Bool Entity::HasParent() {
+        return m_Scene->registry[m_Native->parent()] != nullptr;
+    }
+
+    Bool Entity::HasChildren() {
+        auto f = m_Scene->GetNativeScene()->filter_builder().with(flecs::ChildOf, *m_Native).build();
+        return f.is_true();
+    }
+
+    void Entity::SetEntity(flecs::entity* native) {
+        m_Native = native;
+        m_Native->add<TransformComponent>();
     }
 
 }  // namespace Sentinel

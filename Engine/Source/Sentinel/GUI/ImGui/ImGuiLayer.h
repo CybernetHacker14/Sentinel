@@ -16,6 +16,8 @@ namespace Sentinel {
         void End();
         void OnResize(Event& event);
 
+        void SetDarkThemeColors();
+
         void BlockEvents(Bool block) { m_BlockEvents = block; }
 
     private:

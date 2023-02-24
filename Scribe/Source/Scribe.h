@@ -13,6 +13,10 @@ namespace Scribe {
         class ScribeRenderer;
         class ScribeImGuiBase;
     }  // namespace Rendering
+
+    namespace Panel {
+        class SceneHierarchyPanel;
+    }
 }  // namespace Scribe
 
 namespace Scribe {
