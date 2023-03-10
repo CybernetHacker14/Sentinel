@@ -12,6 +12,10 @@ namespace Sentinel {
         operator UInt64() { return m_UUID; }
         operator const UInt64() const { return m_UUID; }
 
+        UInt64& GetNative() { return m_UUID; }
+
+        STL::string ToString() const { return STL::to_string(m_UUID); }
+
     private:
         UInt64 m_UUID;
     };

@@ -11,6 +11,7 @@
 #include <Sentinel/GUI/ImGui/ImGuiLayer.h>
 
 #include <Sentinel/ECS/Scene.h>
+#include <Sentinel/ECS/SceneManager.h>
 
 // For launching the application with Nvidia card if available by default
 extern "C" {
@@ -42,7 +43,7 @@ namespace Scribe {
         m_ImGuiLayer->OnAttach();
         m_ImGuiBase->OnAttach();
 
-        m_TestScene = new Sentinel::Scene();
+        m_TestScene = new Sentinel::Scene("New Scene");
         m_Entity1 = m_TestScene->CreateEntity("Entity 1");
         m_Entity2 = m_TestScene->CreateEntity("Entity 2");
         m_Entity3 = m_TestScene->CreateEntity("Entity 3");
@@ -58,6 +59,7 @@ namespace Scribe {
         m_Entity7->SetParent(m_Entity5);
 
         m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
+        m_TestScene->SerializeScene("C:/Test.scene");
     }
 
     Scribe::~Scribe() {

@@ -29,9 +29,7 @@ namespace Scribe {
             }*/
 
             scene->each<Sentinel::TransformComponent>([&](flecs::entity e, Sentinel::TransformComponent& transform) {
-                if (!m_LoadedScene->registry[e]->HasParent()) {
-                    if (DisplayNode(m_LoadedScene->registry[e])) {}
-                }
+                if (!m_LoadedScene->registry[e]->HasParent()) { DisplayNode(m_LoadedScene->registry[e]); }
             });
 
             ImGui::End();
@@ -42,17 +40,16 @@ namespace Scribe {
             }
         }
 
-        Sentinel::Bool SceneHierarchyPanel::DisplayNode(Sentinel::Entity* entity) {
+        void SceneHierarchyPanel::DisplayNode(Sentinel::Entity* entity) {
             ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
             flags |= entity->HasChildren() ? ImGuiTreeNodeFlags_OpenOnArrow : ImGuiTreeNodeFlags_Leaf;
 
             flecs::entity* e = entity->GetNative();
             bool opened = ImGui::TreeNodeEx((void*)(Sentinel::UInt64)*e, flags, e->name().c_str());
-            if (!opened && ImGui::IsItemClicked(0)) m_SelectedEntity = entity;
+            // if (!opened && ImGui::IsItemClicked(0)) m_SelectedEntity = entity;
 
-            bool deleted = false;
             if (ImGui::BeginPopupContextItem()) {
-                if (ImGui::MenuItem("Delete Entity")) { deleted = true; }
+                if (ImGui::MenuItem("Delete Entity")) { m_MarkedForDelete = entity; }
                 ImGui::EndPopup();
             }
 
@@ -62,12 +59,6 @@ namespace Scribe {
                 });
                 ImGui::TreePop();
             }
-
-            if (deleted) {
-                if (m_SelectedEntity == entity) { m_SelectedEntity = nullptr; }
-                m_MarkedForDelete = entity;
-            }
-            return deleted;
         }
     }  // namespace Panel
 }  // namespace Scribe

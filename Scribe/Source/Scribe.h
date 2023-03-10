@@ -4,8 +4,8 @@
 
 namespace Sentinel {
     class ImGuiLayer;
-    class Scene;
-    class Entity;
+    struct Scene;
+    struct Entity;
 }  // namespace Sentinel
 
 namespace Scribe {

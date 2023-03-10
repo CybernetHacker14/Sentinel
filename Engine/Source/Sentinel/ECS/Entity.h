@@ -28,7 +28,6 @@ namespace Sentinel {
     private:
         flecs::entity* m_Native = nullptr;
         Scene* m_Scene = nullptr;
-        STL::string name = "";
 
     private:
         friend struct Scene;

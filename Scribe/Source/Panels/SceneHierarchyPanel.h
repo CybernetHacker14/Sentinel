@@ -5,8 +5,8 @@
 #include <flecs.h>
 
 namespace Sentinel {
-    class Scene;
-    class Entity;
+    struct Scene;
+    struct Entity;
 }  // namespace Sentinel
 
 namespace Scribe {
@@ -18,7 +18,7 @@ namespace Scribe {
             void DisplayScenePanel();
 
         private:
-            Sentinel::Bool DisplayNode(Sentinel::Entity* entity);
+            void DisplayNode(Sentinel::Entity* entity);
 
         private:
             Sentinel::Scene* m_LoadedScene = nullptr;

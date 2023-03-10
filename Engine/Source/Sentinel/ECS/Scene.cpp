@@ -15,13 +15,11 @@ namespace Sentinel {
         // Heavy dependency on std::unordered_map class here
         auto pair = registry.emplace(m_Scene.entity(name.c_str()), m_Allocator.New(this));
         Entity* entity = pair.first->second;
-        entity->name = name;
         pair.first->second->SetEntity(&(const_cast<flecs::entity&>(pair.first->first)));
         return entity;
     }
 
     void Scene::DeleteEntity(Entity* entity) {
-        entity->GetScene()->GetNativeScene()->defer_begin();
         flecs::entity* e = entity->GetNative();
         e->children([&](flecs::entity e) {
             m_Allocator.Delete(registry[e]);
@@ -31,6 +29,11 @@ namespace Sentinel {
         e->destruct();
         registry.erase(*e);
         m_Allocator.Delete(entity);
-        entity->GetScene()->GetNativeScene()->defer_end();
+    }
+
+    void Scene::SerializeScene(const STL::string& path) {
+        std::ofstream stream(path.c_str());
+        cereal::JSONOutputArchive archive(stream);
+        archive(*this);
     }
 }  // namespace Sentinel
