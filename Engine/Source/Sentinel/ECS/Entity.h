@@ -43,3 +43,13 @@ namespace std {
         Sentinel::Size_t operator()(const flecs::entity& entity) const { return (Sentinel::UInt64)entity; }
     };
 }  // namespace std
+
+namespace eastl {
+    template<typename T>
+    struct hash;
+
+    template<>
+    struct hash<flecs::entity> {
+        Sentinel::Size_t operator()(const flecs::entity& entity) const { return (Sentinel::UInt64)entity; }
+    };
+}  // namespace eastl

@@ -9,25 +9,12 @@
 namespace Scribe {
     namespace Panel {
         void SceneHierarchyPanel::DisplayScenePanel() {
-            ImGui::Begin("Scene Hierarchy");
-            if (m_LoadedScene == nullptr) {
-                ImGui::End();
-                return;
-            }
+            if (m_LoadedScene == nullptr) return;
+            ImGui::Begin(m_LoadedScene->GetName());
 
             flecs::world* scene = m_LoadedScene->GetNativeScene();
 
-            /*ecs_iter_t it;
-            auto q = scene->query<Sentinel::TransformComponent>();
-
-            ecs_iter_poly(scene->c_ptr(), scene->c_ptr(), &it, NULL);
-            while (ecs_iter_next(&it)) {
-                for (int i = 0; i < it.count; i++) {
-                    flecs::entity e(scene->c_ptr(), it.entities[i]);
-                    bool opened = ImGui::TreeNodeEx((void*)(Sentinel::UInt64)e, flags, e.name().c_str());
-                }
-            }*/
-
+            scene->component<Sentinel::TransformComponent>();
             scene->each<Sentinel::TransformComponent>([&](flecs::entity e, Sentinel::TransformComponent& transform) {
                 if (!m_LoadedScene->registry[e]->HasParent()) { DisplayNode(m_LoadedScene->registry[e]); }
             });

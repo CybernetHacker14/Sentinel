@@ -12,9 +12,12 @@ namespace Sentinel {
         operator UInt64() { return m_UUID; }
         operator const UInt64() const { return m_UUID; }
 
-        UInt64& GetNative() { return m_UUID; }
+        inline STL::string ToString() const { return STL::to_string(m_UUID); }
 
-        STL::string ToString() const { return STL::to_string(m_UUID); }
+        inline UUID& FromString(const char* data) {
+            m_UUID = strtoull(data, nullptr, 10);
+            return *this;
+        };
 
     private:
         UInt64 m_UUID;
@@ -30,3 +33,13 @@ namespace std {
         Sentinel::Size_t operator()(const Sentinel::UUID& uuid) const { return (Sentinel::UInt64)uuid; }
     };
 }  // namespace std
+
+namespace eastl {
+    template<typename T>
+    struct hash;
+
+    template<>
+    struct hash<Sentinel::UUID> {
+        Sentinel::Size_t operator()(const Sentinel::UUID& uuid) const { return (Sentinel::UInt64)uuid; }
+    };
+}  // namespace eastl
