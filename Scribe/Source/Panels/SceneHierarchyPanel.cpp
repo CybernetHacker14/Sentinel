@@ -10,7 +10,10 @@ namespace Scribe {
     namespace Panel {
         void SceneHierarchyPanel::DisplayScenePanel() {
             if (m_LoadedScene == nullptr) return;
-            ImGui::Begin(m_LoadedScene->GetName());
+
+            char buf[128];
+            sprintf_s(buf, 128, "%s###SceneTitle", m_LoadedScene->GetName());
+            ImGui::Begin(buf);
 
             flecs::world* scene = m_LoadedScene->GetNativeScene();
 
