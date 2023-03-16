@@ -29,6 +29,12 @@ namespace Scribe {
         }
 
         void ScribeRenderer::OnAttach() {
+            const Sentinel::ContextInfo& info = Sentinel::ContextAPI::GetContextInfo(m_Context);
+            ST_ENGINE_INFO("Vendor   : {0}", info.Vendor.c_str());
+            ST_ENGINE_INFO("Renderer : {0}", info.Renderer.c_str());
+            ST_ENGINE_INFO("API      : {0}", info.API.c_str());
+            ST_ENGINE_INFO("Version  : {0}", info.Version.c_str());
+
             m_SwapchainRT = Sentinel::RenderTexture2DAPI::CreateRenderTexture2DData(m_RTAlloc, m_Context, m_Swapchain);
 
             m_SwapchainDRT = Sentinel::DepthTexture2DAPI::CreateDepthTexture2DData(

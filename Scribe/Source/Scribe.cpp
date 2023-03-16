@@ -5,8 +5,13 @@
 #include "Renderer/ScribeRenderer.h"
 #include "Renderer/ScribeImGuiBase.h"
 
+#include "Panels/SceneHierarchyPanel.h"
+
 #include <Sentinel/Application/EntryPoint.h>
 #include <Sentinel/GUI/ImGui/ImGuiLayer.h>
+
+#include <Sentinel/ECS/Scene.h>
+#include <Sentinel/ECS/SceneManager.h>
 
 // For launching the application with Nvidia card if available by default
 extern "C" {
@@ -21,8 +26,8 @@ namespace Scribe {
 
         Sentinel::WindowProperties props;
         props.Title = "Scribe";
-        props.Width = 1280;
-        props.Height = 720;
+        props.Width = 1920;
+        props.Height = 1080;
         props.Mode = Sentinel::WindowMode::BORDERLESSMAXIMIZED;
         props.FramebufferTransparency = false;
 
@@ -37,10 +42,35 @@ namespace Scribe {
         m_BaseRenderer->OnAttach();
         m_ImGuiLayer->OnAttach();
         m_ImGuiBase->OnAttach();
+
+        m_TestScene = new Sentinel::Scene();
+        if (Sentinel::Filesystem::DoesFileExist("C:/Test.scene")) {
+            m_TestScene->DeserializeScene("C:/Test.scene");
+        } else {
+            m_TestScene->SetName("New Scene");
+        }
+        ST_INFO("{0}", m_TestScene->GetUUID().ToString().c_str());
+        /*m_Entity1 = m_TestScene->CreateEntity("Entity 1");
+        m_Entity2 = m_TestScene->CreateEntity("Entity 2");
+        m_Entity3 = m_TestScene->CreateEntity("Entity 3");
+        m_Entity4 = m_TestScene->CreateEntity("Entity 4");
+        m_Entity5 = m_TestScene->CreateEntity("Entity 5");
+        m_Entity6 = m_TestScene->CreateEntity("Entity 6");
+        m_Entity7 = m_TestScene->CreateEntity("Entity 7");
+
+        m_Entity2->SetParent(m_Entity1);
+        m_Entity3->SetParent(m_Entity2);
+        m_Entity4->SetParent(m_Entity1);
+        m_Entity6->SetParent(m_Entity5);
+        m_Entity7->SetParent(m_Entity5);*/
+
+        m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
+        m_TestScene->SerializeScene("C:/Test.scene");
     }
 
     Scribe::~Scribe() {
         UnsubscribeFromEvent(Sentinel::EventType::WindowClose, m_CloseIndex);
+        delete m_TestScene;
         delete m_Window;
     }
 

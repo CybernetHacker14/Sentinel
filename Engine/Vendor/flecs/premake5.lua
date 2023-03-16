@@ -10,3 +10,14 @@ project "flecs"
         "module/flecs.h",
         "module/flecs.c"
     }
+
+    filter "system:windows"
+        staticruntime "On"
+
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "on"

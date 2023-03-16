@@ -26,7 +26,8 @@ project "Sentinel"
         "_CRT_SECURE_NO_WARNINGS",
         "GLFW_INCLUDE_NONE",
         "_DISABLE_VECTOR_ANNOTATION",
-        "_DISABLE_STRING_ANNOTATION"
+        "_DISABLE_STRING_ANNOTATION",
+        "FLECS_STATIC"
     }
 
     includedirs
@@ -54,7 +55,8 @@ project "Sentinel"
 		"d3dcompiler.lib",
 		"dxguid.lib",
 		"dwmapi.lib",
-		"imgui"
+		"imgui",
+        "flecs"
     }
 		
     filter "system:windows"

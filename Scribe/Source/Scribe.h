@@ -4,13 +4,19 @@
 
 namespace Sentinel {
     class ImGuiLayer;
-}
+    struct Scene;
+    struct Entity;
+}  // namespace Sentinel
 
 namespace Scribe {
     namespace Rendering {
         class ScribeRenderer;
         class ScribeImGuiBase;
     }  // namespace Rendering
+
+    namespace Panel {
+        class SceneHierarchyPanel;
+    }
 }  // namespace Scribe
 
 namespace Scribe {
@@ -34,6 +40,16 @@ namespace Scribe {
         Sentinel::ImGuiLayer* m_ImGuiLayer;
         Rendering::ScribeRenderer* m_BaseRenderer;
         Rendering::ScribeImGuiBase* m_ImGuiBase;
+
+    private:
+        Sentinel::Scene* m_TestScene;
+        Sentinel::Entity* m_Entity1;
+        Sentinel::Entity* m_Entity2;
+        Sentinel::Entity* m_Entity3;
+        Sentinel::Entity* m_Entity4;
+        Sentinel::Entity* m_Entity5;
+        Sentinel::Entity* m_Entity6;
+        Sentinel::Entity* m_Entity7;
     };
 }  // namespace Scribe
 

@@ -33,7 +33,8 @@ project "Scribe"
         "%{IncludeExternalDir.GLFW}",
         "%{IncludeExternalDir.spdlog}",
 		"%{IncludeExternalDir.cereal}",
-        "%{IncludeExternalDir.imgui}"
+        "%{IncludeExternalDir.imgui}",
+        "%{IncludeExternalDir.flecs}"
     }
 
     links
