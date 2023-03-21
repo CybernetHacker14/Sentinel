@@ -8,6 +8,7 @@
 
 #include <flecs.h>
 #include <cereal/archives/json.hpp>
+#include <cereal/archives/binary.hpp>
 
 namespace Sentinel {
     struct Scene {
@@ -22,7 +23,7 @@ namespace Sentinel {
         Entity* CreateEntity(const STL::string& name = "New Entity");
         void DeleteEntity(Entity* entity);
 
-        void SerializeScene(const STL::string& path);
+        std::stringstream SerializeScene(const STL::string& path);
         void DeserializeScene(const STL::string& path);
 
     public:

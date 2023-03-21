@@ -1,6 +1,8 @@
 #include "stpch.h"
 #include "Sentinel/ECS/Scene.h"
 
+#include <cereal/types/string.hpp>
+
 namespace Sentinel {
     Scene::Scene() {
         m_Allocator.AllocateMemoryBlock(255);
@@ -43,16 +45,18 @@ namespace Sentinel {
         m_Allocator.Delete(entity);
     }
 
-    void Scene::SerializeScene(const STL::string& path) {
-        std::ofstream stream(path.c_str());
+    std::stringstream Scene::SerializeScene(const STL::string& path) {
+        // std::ofstream stream(path.c_str(), std::ios::binary);
+        std::stringstream stream;
         cereal::JSONOutputArchive archive(stream);
         archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
+        return stream;
     }
 
     void Scene::DeserializeScene(const STL::string& path) {
-        std::ifstream stream(path.c_str(), std::ifstream::in);
-        cereal::JSONInputArchive archive(stream);
-        archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
+        /*std::ifstream stream(path.c_str(), std::ios::in | std::ios::binary);
+        cereal::BinaryInputArchive archive(stream);
+        archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));*/
     }
 
     template<class Archive>

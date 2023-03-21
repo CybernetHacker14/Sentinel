@@ -44,13 +44,13 @@ namespace Scribe {
         m_ImGuiBase->OnAttach();
 
         m_TestScene = new Sentinel::Scene();
-        if (Sentinel::Filesystem::DoesFileExist("C:/Test.scene")) {
-            m_TestScene->DeserializeScene("C:/Test.scene");
+        if (Sentinel::Filesystem::DoesFileExist("Test.scene")) {
+            m_TestScene->DeserializeScene("Test.scene");
         } else {
-            m_TestScene->SetName("New Scene");
+            m_TestScene->SetName("Untitled_Scene_001");
         }
         ST_INFO("{0}", m_TestScene->GetUUID().ToString().c_str());
-        /*m_Entity1 = m_TestScene->CreateEntity("Entity 1");
+        m_Entity1 = m_TestScene->CreateEntity("Entity 1");
         m_Entity2 = m_TestScene->CreateEntity("Entity 2");
         m_Entity3 = m_TestScene->CreateEntity("Entity 3");
         m_Entity4 = m_TestScene->CreateEntity("Entity 4");
@@ -62,10 +62,17 @@ namespace Scribe {
         m_Entity3->SetParent(m_Entity2);
         m_Entity4->SetParent(m_Entity1);
         m_Entity6->SetParent(m_Entity5);
-        m_Entity7->SetParent(m_Entity5);*/
+        m_Entity7->SetParent(m_Entity5);
 
         m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
-        m_TestScene->SerializeScene("C:/Test.scene");
+        std::stringstream& stream = m_TestScene->SerializeScene("Test.scene");
+        stream.seekg(0, std::ios::end);
+        Sentinel::UInt32 size = stream.tellg();
+        stream.seekg(0, std::ios::end);
+
+        Sentinel::Filesystem::CreateZipFile("Test.pak", "Test.scene", stream.str().c_str(), size);
+
+        // Sentinel::Filesystem::WriteToFileAtPath("C:\\Users\\Ujjwal\\Desktop\\Test.pak", (Sentinel::UInt8*)m_Entity1);
     }
 
     Scribe::~Scribe() {
@@ -96,4 +103,5 @@ namespace Scribe {
         Sentinel::WindowCloseEvent e = *(event.Cast<Sentinel::WindowCloseEvent>());
         m_Running = false;
     }
+
 }  // namespace Scribe

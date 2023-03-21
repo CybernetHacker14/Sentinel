@@ -2,7 +2,7 @@
 
 // Preprocessor directive defined here, because then it needs to be
 // entered in all premake and cmake scripts for the definition to get evaluated
-#define USE_EASTL 1
+#define USE_EASTL 0
 
 // Includes don't have or need alternate implementations can be put here
 #include <initializer_list>
@@ -136,25 +136,61 @@ namespace Sentinel {
         template<typename T1, typename T2>
         using pair = eastl::pair<T1, T2>;
 
-        inline string to_string(int value) { return eastl::to_string(value); }
-        inline string to_string(long value) { return eastl::to_string(value); }
-        inline string to_string(long long value) { return eastl::to_string(value); }
-        inline string to_string(unsigned value) { return eastl::to_string(value); }
-        inline string to_string(unsigned long value) { return eastl::to_string(value); }
-        inline string to_string(unsigned long long value) { return eastl::to_string(value); }
-        inline string to_string(float value) { return eastl::to_string(value); }
-        inline string to_string(double value) { return eastl::to_string(value); }
-        inline string to_string(long double value) { return eastl::to_string(value); }
+        inline string to_string(int value) {
+            return eastl::to_string(value);
+        }
+        inline string to_string(long value) {
+            return eastl::to_string(value);
+        }
+        inline string to_string(long long value) {
+            return eastl::to_string(value);
+        }
+        inline string to_string(unsigned value) {
+            return eastl::to_string(value);
+        }
+        inline string to_string(unsigned long value) {
+            return eastl::to_string(value);
+        }
+        inline string to_string(unsigned long long value) {
+            return eastl::to_string(value);
+        }
+        inline string to_string(float value) {
+            return eastl::to_string(value);
+        }
+        inline string to_string(double value) {
+            return eastl::to_string(value);
+        }
+        inline string to_string(long double value) {
+            return eastl::to_string(value);
+        }
 
-        inline wstring to_wstring(int value) { return eastl::to_wstring(value); }
-        inline wstring to_wstring(long value) { return eastl::to_wstring(value); }
-        inline wstring to_wstring(long long value) { return eastl::to_wstring(value); }
-        inline wstring to_wstring(unsigned value) { return eastl::to_wstring(value); }
-        inline wstring to_wstring(unsigned long value) { return eastl::to_wstring(value); }
-        inline wstring to_wstring(unsigned long long value) { return eastl::to_wstring(value); }
-        inline wstring to_wstring(float value) { return eastl::to_wstring(value); }
-        inline wstring to_wstring(double value) { return eastl::to_wstring(value); }
-        inline wstring to_wstring(long double value) { return eastl::to_wstring(value); }
+        inline wstring to_wstring(int value) {
+            return eastl::to_wstring(value);
+        }
+        inline wstring to_wstring(long value) {
+            return eastl::to_wstring(value);
+        }
+        inline wstring to_wstring(long long value) {
+            return eastl::to_wstring(value);
+        }
+        inline wstring to_wstring(unsigned value) {
+            return eastl::to_wstring(value);
+        }
+        inline wstring to_wstring(unsigned long value) {
+            return eastl::to_wstring(value);
+        }
+        inline wstring to_wstring(unsigned long long value) {
+            return eastl::to_wstring(value);
+        }
+        inline wstring to_wstring(float value) {
+            return eastl::to_wstring(value);
+        }
+        inline wstring to_wstring(double value) {
+            return eastl::to_wstring(value);
+        }
+        inline wstring to_wstring(long double value) {
+            return eastl::to_wstring(value);
+        }
 
         template<typename T, typename U>
         using is_same = eastl::is_same<T, U>;
@@ -263,25 +299,61 @@ namespace Sentinel {
         template<typename T1, typename T2>
         using pair = std::pair<T1, T2>;
 
-        inline string to_string(int value) { return std::to_string(value); }
-        inline string to_string(long value) { return std::to_string(value); }
-        inline string to_string(long long value) { return std::to_string(value); }
-        inline string to_string(unsigned value) { return std::to_string(value); }
-        inline string to_string(unsigned long value) { return std::to_string(value); }
-        inline string to_string(unsigned long long value) { return std::to_string(value); }
-        inline string to_string(float value) { return std::to_string(value); }
-        inline string to_string(double value) { return std::to_string(value); }
-        inline string to_string(long double value) { return std::to_string(value); }
+        inline string to_string(int value) {
+            return std::to_string(value);
+        }
+        inline string to_string(long value) {
+            return std::to_string(value);
+        }
+        inline string to_string(long long value) {
+            return std::to_string(value);
+        }
+        inline string to_string(unsigned value) {
+            return std::to_string(value);
+        }
+        inline string to_string(unsigned long value) {
+            return std::to_string(value);
+        }
+        inline string to_string(unsigned long long value) {
+            return std::to_string(value);
+        }
+        inline string to_string(float value) {
+            return std::to_string(value);
+        }
+        inline string to_string(double value) {
+            return std::to_string(value);
+        }
+        inline string to_string(long double value) {
+            return std::to_string(value);
+        }
 
-        inline wstring to_wstring(int value) { return std::to_wstring(value); }
-        inline wstring to_wstring(long value) { return std::to_wstring(value); }
-        inline wstring to_wstring(long long value) { return std::to_wstring(value); }
-        inline wstring to_wstring(unsigned value) { return std::to_wstring(value); }
-        inline wstring to_wstring(unsigned long value) { return std::to_wstring(value); }
-        inline wstring to_wstring(unsigned long long value) { return std::to_wstring(value); }
-        inline wstring to_wstring(float value) { return std::to_wstring(value); }
-        inline wstring to_wstring(double value) { return std::to_wstring(value); }
-        inline wstring to_wstring(long double value) { return std::to_wstring(value); }
+        inline wstring to_wstring(int value) {
+            return std::to_wstring(value);
+        }
+        inline wstring to_wstring(long value) {
+            return std::to_wstring(value);
+        }
+        inline wstring to_wstring(long long value) {
+            return std::to_wstring(value);
+        }
+        inline wstring to_wstring(unsigned value) {
+            return std::to_wstring(value);
+        }
+        inline wstring to_wstring(unsigned long value) {
+            return std::to_wstring(value);
+        }
+        inline wstring to_wstring(unsigned long long value) {
+            return std::to_wstring(value);
+        }
+        inline wstring to_wstring(float value) {
+            return std::to_wstring(value);
+        }
+        inline wstring to_wstring(double value) {
+            return std::to_wstring(value);
+        }
+        inline wstring to_wstring(long double value) {
+            return std::to_wstring(value);
+        }
 
         template<typename T, typename U>
         using is_same = std::is_same<T, U>;
