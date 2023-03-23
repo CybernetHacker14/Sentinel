@@ -23,8 +23,11 @@ namespace Sentinel {
         Entity* CreateEntity(const STL::string& name = "New Entity");
         void DeleteEntity(Entity* entity);
 
-        std::stringstream SerializeScene(const STL::string& path);
-        void DeserializeScene(const STL::string& path);
+        void SerializeToFile(const STL::string& path);
+        void DeserializeFromFile(const STL::string& path);
+
+        std::stringstream SerializeToStream(const STL::string& path);
+        void DeserializeFromStream(std::stringstream& stream);
 
     public:
         inline const UUID& GetUUID() { return m_UUID; }

@@ -45,18 +45,29 @@ namespace Sentinel {
         m_Allocator.Delete(entity);
     }
 
-    std::stringstream Scene::SerializeScene(const STL::string& path) {
-        // std::ofstream stream(path.c_str(), std::ios::binary);
-        std::stringstream stream;
+    void Scene::SerializeToFile(const STL::string& path) {
+        std::ofstream stream(path.c_str(), std::ios::binary);
+        cereal::BinaryOutputArchive archive(stream);
+        archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
+    }
+
+    void Scene::DeserializeFromFile(const STL::string& path) {
+        std::ifstream stream(path.c_str(), std::ifstream::in | std::ios::binary);
+        cereal::BinaryInputArchive archive(stream);
+        archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
+    }
+
+    std::stringstream Scene::SerializeToStream(const STL::string& path) {
+        std::stringstream stream(std::ios::out | std::ios::in);
         cereal::JSONOutputArchive archive(stream);
         archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
         return stream;
     }
 
-    void Scene::DeserializeScene(const STL::string& path) {
-        /*std::ifstream stream(path.c_str(), std::ios::in | std::ios::binary);
-        cereal::BinaryInputArchive archive(stream);
-        archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));*/
+    // Maybe try passing STL::string here
+    void Scene::DeserializeFromStream(std::stringstream& stream) {
+        cereal::JSONInputArchive archive(stream);
+        archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
     }
 
     template<class Archive>

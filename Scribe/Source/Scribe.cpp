@@ -45,10 +45,18 @@ namespace Scribe {
 
         m_TestScene = new Sentinel::Scene();
         if (Sentinel::Filesystem::DoesFileExist("Test.scene")) {
-            m_TestScene->DeserializeScene("Test.scene");
+            m_TestScene->DeserializeFromFile("Test.scene");
         } else {
             m_TestScene->SetName("Untitled_Scene_001");
         }
+
+        char buffer[117];
+         Sentinel::Filesystem::ReadFromZipFile("Test.pak", "Scenes/Test.scene", buffer, 117);
+         std::string string(buffer);
+         std::stringstream stream(string);
+
+         m_TestScene->DeserializeFromStream(stream);
+
         ST_INFO("{0}", m_TestScene->GetUUID().ToString().c_str());
         m_Entity1 = m_TestScene->CreateEntity("Entity 1");
         m_Entity2 = m_TestScene->CreateEntity("Entity 2");
@@ -65,14 +73,14 @@ namespace Scribe {
         m_Entity7->SetParent(m_Entity5);
 
         m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
-        std::stringstream& stream = m_TestScene->SerializeScene("Test.scene");
-        stream.seekg(0, std::ios::end);
-        Sentinel::UInt32 size = stream.tellg();
-        stream.seekg(0, std::ios::end);
+        // m_TestScene->SerializeToFile("Test.scene");
 
-        Sentinel::Filesystem::CreateZipFile("Test.pak", "Test.scene", stream.str().c_str(), size);
+        /*std::stringstream stream = m_TestScene->SerializeToStream("Scenes/Test.scene");
+        stream.seekg(0, std::ios::end);
+        Sentinel::UInt32 length = stream.tellg();
+        stream.seekg(0, std::ios::beg);
 
-        // Sentinel::Filesystem::WriteToFileAtPath("C:\\Users\\Ujjwal\\Desktop\\Test.pak", (Sentinel::UInt8*)m_Entity1);
+        Sentinel::Filesystem::CreateZipFile("Test.pak", "Scenes/Test.scene", stream.str().c_str(), length);*/
     }
 
     Scribe::~Scribe() {
