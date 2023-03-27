@@ -14,8 +14,6 @@
 #include <mz.h>
 #include <mz_compat.h>
 
-#define Z_DEFAULT_COMPRESSION MZ_COMPRESS_METHOD_DEFLATE
-
 namespace Sentinel {
     // Internal
     static const STL::wstring s_AllFilesMask(L"\\*");
@@ -450,7 +448,7 @@ namespace Sentinel {
     }
 
     void Filesystem::ReadFromZipFile(
-        const STL::string& zipFilePath, const STL::string& inzipDataDestination, void* buffer , UInt32 length) {
+        const STL::string& zipFilePath, const STL::string& inzipDataDestination, void* buffer, UInt32 length) {
         unzFile zf = unzOpen(zipFilePath.c_str());
 
         if (zf == NULL) ST_ASSERT(false, "Error opening zip file");
@@ -468,7 +466,7 @@ namespace Sentinel {
                         std::string path(filename);
 
                         if (path == inzipDataDestination) {
-                            int readBytes = unzReadCurrentFile(zf, buffer, length);
+                            int readBytes = unzReadCurrentFile(zf, buffer, fileInfo.uncompressed_size);
                         }
 
                         free(filename);

@@ -26,7 +26,7 @@ namespace Sentinel {
         void SerializeToFile(const STL::string& path);
         void DeserializeFromFile(const STL::string& path);
 
-        std::stringstream SerializeToStream(const STL::string& path);
+        std::stringstream SerializeToStream();
         void DeserializeFromStream(std::stringstream& stream);
 
     public:

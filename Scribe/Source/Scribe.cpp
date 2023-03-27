@@ -13,6 +13,8 @@
 #include <Sentinel/ECS/Scene.h>
 #include <Sentinel/ECS/SceneManager.h>
 
+#include <Sentinel/Archive/ZipFileOperations.h>
+
 // For launching the application with Nvidia card if available by default
 extern "C" {
 __declspec(dllexport) uint32_t NvOptimusEnablement = 0x00000001;
@@ -44,18 +46,21 @@ namespace Scribe {
         m_ImGuiBase->OnAttach();
 
         m_TestScene = new Sentinel::Scene();
-        if (Sentinel::Filesystem::DoesFileExist("Test.scene")) {
-            m_TestScene->DeserializeFromFile("Test.scene");
+        if (Sentinel::Filesystem::DoesFileExist("Test.pak")) {
+            char* buffer;
+            if (Sentinel::ZipFileOperations::ReadFromZipFile("Test.pak", "Scenes/Test.scene", (void**)&buffer)) {
+                std::stringstream stream(std::ios::in | std::ios::out);
+                for (int i = 0; i < 118; i++) stream << buffer[i];
+                free(buffer);
+                m_TestScene->DeserializeFromStream(stream);
+
+            } else {
+                m_TestScene->SetName("Untitled_Scene_001");
+            }
+            // m_TestScene->DeserializeFromFile("Test.scene");
         } else {
             m_TestScene->SetName("Untitled_Scene_001");
         }
-
-        char buffer[117];
-         Sentinel::Filesystem::ReadFromZipFile("Test.pak", "Scenes/Test.scene", buffer, 117);
-         std::string string(buffer);
-         std::stringstream stream(string);
-
-         m_TestScene->DeserializeFromStream(stream);
 
         ST_INFO("{0}", m_TestScene->GetUUID().ToString().c_str());
         m_Entity1 = m_TestScene->CreateEntity("Entity 1");
@@ -75,7 +80,11 @@ namespace Scribe {
         m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
         // m_TestScene->SerializeToFile("Test.scene");
 
-        /*std::stringstream stream = m_TestScene->SerializeToStream("Scenes/Test.scene");
+        m_TestScene->SetName("Untitled_Scene_001");
+        Sentinel::ZipFileOperations::WriteToZipFile("Test.pak", "Scenes/Test2.scene", m_TestScene->SerializeToStream());
+
+        /*m_TestScene->SetName("Untitled_World_001");
+        std::stringstream stream = m_TestScene->SerializeToStream("Scenes/Test.scene");
         stream.seekg(0, std::ios::end);
         Sentinel::UInt32 length = stream.tellg();
         stream.seekg(0, std::ios::beg);
