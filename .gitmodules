@@ -26,6 +26,6 @@
 [submodule "Engine/Vendor/flecs/module"]
 	path = Engine/Vendor/flecs/module
 	url = https://github.com/SanderMertens/flecs.git
-[submodule "Engine/Vendor/minizip/module"]
-	path = Engine/Vendor/minizip/module
-	url = https://github.com/zlib-ng/minizip-ng.git
+[submodule "Engine/Vendor/zlib/module"]
+	path = Engine/Vendor/zlib/module
+	url = https://github.com/madler/zlib.git
