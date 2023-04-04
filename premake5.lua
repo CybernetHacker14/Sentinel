@@ -37,6 +37,7 @@ group "Dependencies"
     include "Engine/Vendor/cereal"
     include "Engine/Vendor/imgui"
     include "Engine/Vendor/flecs"
+    include "Engine/Vendor/zlib"
     include "Engine/Vendor/minizip"
 group ""
 

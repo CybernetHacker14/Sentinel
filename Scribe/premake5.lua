@@ -34,7 +34,7 @@ project "Scribe"
         "%{IncludeExternalDir.spdlog}",
 		"%{IncludeExternalDir.cereal}",
         "%{IncludeExternalDir.imgui}",
-        "%{IncludeExternalDir.flecs}"
+        "%{IncludeExternalDir.flecs}",
     }
 
     links

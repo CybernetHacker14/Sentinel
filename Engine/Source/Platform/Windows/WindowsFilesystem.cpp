@@ -11,9 +11,6 @@
 #include <Shlwapi.h>
 #include <PathCch.h>
 
-#include <mz.h>
-#include <mz_compat.h>
-
 namespace Sentinel {
     // Internal
     static const STL::wstring s_AllFilesMask(L"\\*");
@@ -420,63 +417,5 @@ namespace Sentinel {
 
         return CopyFileW(
             WindowsTextUtils::TranscodeUTF8toUTF16(GetAbsolutePath(currentPath)).c_str(), newFileName.c_str(), true);
-    }
-
-    Int32 Filesystem::CreateZipFile(
-        const STL::string& zipDestination, const STL::string& inzipDataDestination, const char* data, UInt32 length) {
-        zipFile zf = zipOpen(zipDestination.c_str(), APPEND_STATUS_CREATE);
-        if (zf == NULL) return false;
-
-        zip_fileinfo zfi = {0};
-        if (MZ_OK == zipOpenNewFileInZip(
-                         zf,
-                         inzipDataDestination.c_str(),
-                         &zfi,
-                         NULL,
-                         0,
-                         NULL,
-                         0,
-                         "",
-                         MZ_COMPRESS_METHOD_STORE,  // - This parameter here, fucking POS
-                         MZ_COMPRESS_LEVEL_BEST)) {
-            zipWriteInFileInZip(zf, length == 0 ? "" : data, length);
-            zipCloseFileInZip(zf);
-
-        };  // Compression level (9=max)
-
-        if (zipClose(zf, NULL)) return true;
-    }
-
-    void Filesystem::ReadFromZipFile(
-        const STL::string& zipFilePath, const STL::string& inzipDataDestination, void* buffer, UInt32 length) {
-        unzFile zf = unzOpen(zipFilePath.c_str());
-
-        if (zf == NULL) ST_ASSERT(false, "Error opening zip file");
-
-        if (unzGoToFirstFile(zf) == MZ_OK) {
-            do {
-                if (unzOpenCurrentFile(zf) == UNZ_OK) {
-                    unz_file_info fileInfo;
-                    memset(&fileInfo, 0, sizeof(unz_file_info));
-
-                    if (unzGetCurrentFileInfo(zf, &fileInfo, NULL, 0, NULL, 0, NULL, 0) == UNZ_OK) {
-                        char* filename = (char*)malloc(fileInfo.size_filename + 1);
-                        unzGetCurrentFileInfo(zf, &fileInfo, filename, fileInfo.size_filename + 1, NULL, 0, NULL, 0);
-                        filename[fileInfo.size_filename] = '\0';
-                        std::string path(filename);
-
-                        if (path == inzipDataDestination) {
-                            int readBytes = unzReadCurrentFile(zf, buffer, fileInfo.uncompressed_size);
-                        }
-
-                        free(filename);
-                    }
-
-                    unzCloseCurrentFile(zf);
-                }
-            } while (unzGoToNextFile(zf) == UNZ_OK);
-        }
-
-        unzClose(zf);
     }
 }  // namespace Sentinel

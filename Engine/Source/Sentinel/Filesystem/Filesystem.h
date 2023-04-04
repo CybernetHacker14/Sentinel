@@ -60,8 +60,5 @@ namespace Sentinel {
             const STL::string& inzipDataDestination,
             const char* data,
             UInt32 length);
-
-        static void ReadFromZipFile(
-            const STL::string& zipFilePath, const STL::string& inzipDataDestination, void* buffer, UInt32 length);
     };
 }  // namespace Sentinel

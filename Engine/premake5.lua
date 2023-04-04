@@ -43,6 +43,7 @@ project "Sentinel"
 		"%{IncludeExternalDir.cereal}",
 		"%{IncludeExternalDir.imgui}",
         "%{IncludeExternalDir.flecs}",
+        "%{IncludeExternalDir.zlib}",
         "%{IncludeExternalDir.minizip}"
     }
 
@@ -56,8 +57,10 @@ project "Sentinel"
 		"d3dcompiler.lib",
 		"dxguid.lib",
 		"dwmapi.lib",
+        "bcrypt.lib",
 		"imgui",
         "flecs",
+        "zlib",
         "minizip"
     }
 		
