@@ -43,7 +43,6 @@ project "Sentinel"
 		"%{IncludeExternalDir.cereal}",
 		"%{IncludeExternalDir.imgui}",
         "%{IncludeExternalDir.flecs}",
-        "%{IncludeExternalDir.zlib}",
         "%{IncludeExternalDir.minizip}"
     }
 
@@ -60,7 +59,6 @@ project "Sentinel"
         "bcrypt.lib",
 		"imgui",
         "flecs",
-        "zlib",
         "minizip"
     }
 		

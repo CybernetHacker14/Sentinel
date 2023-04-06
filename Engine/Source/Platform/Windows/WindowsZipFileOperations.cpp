@@ -3,20 +3,14 @@
 #include "Sentinel/Archive/ZipFileOperations.h"
 #include "Sentinel/Filesystem/Filesystem.h"
 
-// #include <mz_crypt.h>
-// #include <mz_strm.h>
-// #include <mz_strm_os.h>
-// #include <mz_zip.h>
-// #include <mz_zip_rw.h>
-// #include <mz_compat.h>
-// #include <mz_strm_mem.h>
-
-#include <contrib/minizip/zip.h>
-#include <contrib/minizip/unzip.h>
+#include <mz_strm.h>
+#include <mz_zip.h>
+#include <mz_zip_rw.h>
+#include <mz_compat.h>
 
 namespace Sentinel {
     Bool ZipFileOperations::DoesFileExistInZip(const STL::string& zipPath, const STL::string& inZipLocation) {
-        unzFile zf = unzOpen(zipPath.c_str());
+        unzFile zf = unzOpen64(zipPath.c_str());
 
         if (zf == NULL) { return false; }
 
@@ -49,7 +43,7 @@ namespace Sentinel {
 
     Bool ZipFileOperations::ReadFromZipFile(
         const STL::string& zipPath, const STL::string& inZipLocation, void** ptrToBuffer) {
-        unzFile zf = unzOpen(zipPath.c_str());
+        unzFile zf = unzOpen64(zipPath.c_str());
 
         if (zf == NULL) {
             ST_ASSERT(false, "Error opening zip file");
@@ -88,7 +82,7 @@ namespace Sentinel {
 
     Bool ZipFileOperations::WriteFileToZipFile(
         const STL::string& zipPath, const STL::string& inZipLocation, const STL::string& filepath) {
-        std::fstream file(filepath.c_str(), std::ios::binary | std::ios::in);
+        std::fstream file(filepath.c_str(), std::ios::in);
 
         if (!file.is_open()) return false;
 
@@ -99,6 +93,11 @@ namespace Sentinel {
             file.seekg(0, std::ios::beg);
 
             STL::vector<char> buffer(size);
+            if (size == 0 || !file.read(&buffer[0], size)) {
+                file.close();
+                return ret;
+            }
+
             ret = WriteBufferToZipFile(zipPath, inZipLocation, &buffer[0], size);
             file.close();
         }
@@ -121,23 +120,27 @@ namespace Sentinel {
         zipFile file = zipOpen64(
             zipPath.c_str(), !Filesystem::DoesFileExist(zipPath) ? APPEND_STATUS_CREATE : APPEND_STATUS_ADDINZIP);
 
-        int ret = zipOpenNewFileInZip64(
+        zip_fileinfo zfi = {0};
+        int ret = zipOpenNewFileInZip_64(
             file,
             inZipLocation.c_str(),
-            NULL,
-            NULL,
-            0,
+            &zfi,
             NULL,
             0,
             NULL,
-            Z_DEFLATED,
-            Z_BEST_COMPRESSION,
+            0,
+            "",
+            MZ_COMPRESS_METHOD_STORE,
+            MZ_COMPRESS_LEVEL_BEST,
             (length > 0xffffffff) ? 1 : 0);
 
-        if (ret != ZIP_OK) return false;
+        if (ret != MZ_OK) return false;
 
         ret = zipWriteInFileInZip(file, data, length);
-        zipCloseFileInZipRaw64(file, 0, 0);
-        return ret == ZIP_OK;
+        ret = zipCloseFileInZip(file);
+
+        ret = zipClose_64(file, NULL);
+
+        return ret == MZ_OK;
     }
 }  // namespace Sentinel

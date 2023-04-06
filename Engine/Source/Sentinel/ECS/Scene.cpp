@@ -47,8 +47,10 @@ namespace Sentinel {
 
     void Scene::SerializeToFile(const STL::string& path) {
         std::ofstream stream(path.c_str(), std::ios::binary);
-        cereal::JSONOutputArchive archive(stream);
-        archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
+        {
+            cereal::JSONOutputArchive archive(stream);
+            archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
+        }
     }
 
     void Scene::DeserializeFromFile(const STL::string& path) {
