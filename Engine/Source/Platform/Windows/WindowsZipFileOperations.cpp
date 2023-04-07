@@ -42,7 +42,7 @@ namespace Sentinel {
     }
 
     Bool ZipFileOperations::ReadFromZipFile(
-        const STL::string& zipPath, const STL::string& inZipLocation, void** ptrToBuffer) {
+        const STL::string& zipPath, const STL::string& inZipLocation, void** ptrToBuffer, UInt32& dataLength) {
         unzFile zf = unzOpen64(zipPath.c_str());
 
         if (zf == NULL) {
@@ -65,6 +65,7 @@ namespace Sentinel {
                         if (path == inZipLocation) {
                             *ptrToBuffer = new char[fileInfo.uncompressed_size];
                             unzReadCurrentFile(zf, *ptrToBuffer, fileInfo.uncompressed_size);
+                            dataLength = fileInfo.uncompressed_size;
                             free(filename);
                             return true;
                         }

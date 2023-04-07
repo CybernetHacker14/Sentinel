@@ -7,7 +7,8 @@ namespace Sentinel {
     public:
         static Bool DoesFileExistInZip(const STL::string& zipPath, const STL::string& inZipLocation);
 
-        static Bool ReadFromZipFile(const STL::string& zipPath, const STL::string& inZipLocation, void** ptrToBuffer);
+        static Bool ReadFromZipFile(
+            const STL::string& zipPath, const STL::string& inZipLocation, void** ptrToBuffer, UInt32& dataLength);
 
         static Bool WriteFileToZipFile(
             const STL::string& zipPath, const STL::string& inZipLocation, const STL::string& filepath);

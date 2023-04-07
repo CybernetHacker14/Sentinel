@@ -47,10 +47,11 @@ namespace Scribe {
 
         m_TestScene = new Sentinel::Scene();
         if (Sentinel::Filesystem::DoesFileExist("Test.pak")) {
+            Sentinel::UInt32 length;
             char* buffer;
-            if (Sentinel::ZipFileOperations::ReadFromZipFile("Test.pak", "Scenes/Test.scene", (void**)&buffer)) {
+            if (Sentinel::ZipFileOperations::ReadFromZipFile("Test.pak", "Scenes/Test.scene", (void**)&buffer, length)) {
                 std::stringstream stream(std::ios::in | std::ios::out);
-                for (int i = 0; i < 118; i++) stream << buffer[i];
+                for (int i = 0; i < length; i++) stream << buffer[i];
                 free(buffer);
                 m_TestScene->DeserializeFromStream(stream);
 

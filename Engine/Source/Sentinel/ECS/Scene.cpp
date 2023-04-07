@@ -48,14 +48,15 @@ namespace Sentinel {
     void Scene::SerializeToFile(const STL::string& path) {
         std::ofstream stream(path.c_str(), std::ios::binary);
         {
-            cereal::JSONOutputArchive archive(stream);
+            cereal::BinaryOutputArchive archive(stream);
             archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
         }
     }
 
+    // TODO : Maybe oughta look for some resource loader functionality of some sorts
     void Scene::DeserializeFromFile(const STL::string& path) {
         std::ifstream stream(path.c_str(), std::ifstream::in | std::ios::binary);
-        cereal::JSONInputArchive archive(stream);
+        cereal::BinaryInputArchive archive(stream);
         archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
     }
 
