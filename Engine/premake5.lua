@@ -42,7 +42,8 @@ project "Sentinel"
 		"%{IncludeExternalDir.stb_image}",
 		"%{IncludeExternalDir.cereal}",
 		"%{IncludeExternalDir.imgui}",
-        "%{IncludeExternalDir.flecs}"
+        "%{IncludeExternalDir.flecs}",
+        "%{IncludeExternalDir.minizip}"
     }
 
     links
@@ -55,8 +56,10 @@ project "Sentinel"
 		"d3dcompiler.lib",
 		"dxguid.lib",
 		"dwmapi.lib",
+        "bcrypt.lib",
 		"imgui",
-        "flecs"
+        "flecs",
+        "minizip"
     }
 		
     filter "system:windows"

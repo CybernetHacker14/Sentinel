@@ -1,6 +1,8 @@
 #include "stpch.h"
 #include "Sentinel/ECS/Scene.h"
 
+#include <cereal/types/string.hpp>
+
 namespace Sentinel {
     Scene::Scene() {
         m_Allocator.AllocateMemoryBlock(255);
@@ -43,15 +45,35 @@ namespace Sentinel {
         m_Allocator.Delete(entity);
     }
 
-    void Scene::SerializeScene(const STL::string& path) {
-        std::ofstream stream(path.c_str());
-        cereal::JSONOutputArchive archive(stream);
+    void Scene::SerializeToFile(const STL::string& path) {
+        std::ofstream stream(path.c_str(), std::ios::binary);
+        {
+            cereal::BinaryOutputArchive archive(stream);
+            archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
+        }
+    }
+
+    // TODO : Maybe oughta look for some resource loader functionality of some sorts
+    void Scene::DeserializeFromFile(const STL::string& path) {
+        std::ifstream stream(path.c_str(), std::ifstream::in | std::ios::binary);
+        cereal::BinaryInputArchive archive(stream);
         archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
     }
 
-    void Scene::DeserializeScene(const STL::string& path) {
-        std::ifstream stream(path.c_str(), std::ifstream::in);
-        cereal::JSONInputArchive archive(stream);
+    std::stringstream Scene::SerializeToStream() {
+        std::stringstream stream(std::ios::out | std::ios::in);
+        {
+            // https://github.com/USCiLab/cereal/issues/101
+
+            cereal::BinaryOutputArchive archive(stream);
+            archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
+        }
+        return stream;
+    }
+
+    // Maybe try passing STL::string here
+    void Scene::DeserializeFromStream(std::stringstream& stream) {
+        cereal::BinaryInputArchive archive(stream);
         archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
     }
 

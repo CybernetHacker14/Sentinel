@@ -6,11 +6,7 @@
 
 #include <imgui.h>
 
-#include "Icons/Title/iconbw64.inl"
-#include "Icons/Title/close_dark20.inl"
-#include "Icons/Title/minimize_dark20.inl"
-#include "Icons/Title/maximize_dark20.inl"
-#include "Icons/Title/restore_down_dark20.inl"
+#include "Icons/Title/SpriteSheet.inl"
 
 namespace Scribe {
     namespace Rendering {
@@ -30,9 +26,15 @@ namespace Scribe {
 
         void ScribeImGuiBase::OnAttach() {
             Sentinel::Texture2DDataImportSettings settings;
-            settings.TextureFilepath = "Assets/Icons/Title/TitlebarSpritesheet.png";
 
-            m_SpriteSheetTex = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexMemAllocator, m_Context, settings);
+            m_SpriteSheetTex = Sentinel::Texture2DAPI::CreateTexture2DData(
+                m_TexMemAllocator,
+                m_Context,
+                settings,
+                SpriteSheet12864Texels,
+                SpriteSheetWidth128,
+                SpriteSheetHeight64,
+                SpriteSheetBPP4);
         }
 
         void ScribeImGuiBase::OnDetach() {

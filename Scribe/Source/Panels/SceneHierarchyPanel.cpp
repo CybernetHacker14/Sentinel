@@ -12,7 +12,7 @@ namespace Scribe {
             if (m_LoadedScene == nullptr) return;
 
             char buf[128];
-            sprintf_s(buf, 128, "%s###SceneTitle", m_LoadedScene->GetName());
+            sprintf_s(buf, 128, "%s###HierarchyPanel", m_LoadedScene->GetName());
             ImGui::Begin(buf);
 
             flecs::world* scene = m_LoadedScene->GetNativeScene();

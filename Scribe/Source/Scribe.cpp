@@ -13,6 +13,8 @@
 #include <Sentinel/ECS/Scene.h>
 #include <Sentinel/ECS/SceneManager.h>
 
+#include <Sentinel/Archive/ZipFileOperations.h>
+
 // For launching the application with Nvidia card if available by default
 extern "C" {
 __declspec(dllexport) uint32_t NvOptimusEnablement = 0x00000001;
@@ -44,13 +46,25 @@ namespace Scribe {
         m_ImGuiBase->OnAttach();
 
         m_TestScene = new Sentinel::Scene();
-        if (Sentinel::Filesystem::DoesFileExist("C:/Test.scene")) {
-            m_TestScene->DeserializeScene("C:/Test.scene");
+        if (Sentinel::Filesystem::DoesFileExist("Test.pak")) {
+            Sentinel::UInt32 length;
+            char* buffer;
+            if (Sentinel::ZipFileOperations::ReadFromZipFile("Test.pak", "Scenes/Test.scene", (void**)&buffer, length)) {
+                std::stringstream stream(std::ios::in | std::ios::out);
+                for (int i = 0; i < length; i++) stream << buffer[i];
+                free(buffer);
+                m_TestScene->DeserializeFromStream(stream);
+
+            } else {
+                m_TestScene->SetName("Untitled_Scene_001");
+            }
+            // m_TestScene->DeserializeFromFile("Test.scene");
         } else {
-            m_TestScene->SetName("New Scene");
+            m_TestScene->SetName("Untitled_Scene_001");
         }
+
         ST_INFO("{0}", m_TestScene->GetUUID().ToString().c_str());
-        /*m_Entity1 = m_TestScene->CreateEntity("Entity 1");
+        m_Entity1 = m_TestScene->CreateEntity("Entity 1");
         m_Entity2 = m_TestScene->CreateEntity("Entity 2");
         m_Entity3 = m_TestScene->CreateEntity("Entity 3");
         m_Entity4 = m_TestScene->CreateEntity("Entity 4");
@@ -62,10 +76,21 @@ namespace Scribe {
         m_Entity3->SetParent(m_Entity2);
         m_Entity4->SetParent(m_Entity1);
         m_Entity6->SetParent(m_Entity5);
-        m_Entity7->SetParent(m_Entity5);*/
+        m_Entity7->SetParent(m_Entity5);
 
         m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
-        m_TestScene->SerializeScene("C:/Test.scene");
+        m_TestScene->SerializeToFile("Test.scene");
+
+        //m_TestScene->SetName("Untitled_World_001");
+        Sentinel::ZipFileOperations::WriteFileToZipFile("Test.pak", "Scenes/Test.scene", "Test.scene"); // TODO: Pass FileType, whether binary or non-binary
+
+        /*m_TestScene->SetName("Untitled_World_001");
+        std::stringstream stream = m_TestScene->SerializeToStream("Scenes/Test.scene");
+        stream.seekg(0, std::ios::end);
+        Sentinel::UInt32 length = stream.tellg();
+        stream.seekg(0, std::ios::beg);
+
+        Sentinel::Filesystem::CreateZipFile("Test.pak", "Scenes/Test.scene", stream.str().c_str(), length);*/
     }
 
     Scribe::~Scribe() {
@@ -96,4 +121,5 @@ namespace Scribe {
         Sentinel::WindowCloseEvent e = *(event.Cast<Sentinel::WindowCloseEvent>());
         m_Running = false;
     }
+
 }  // namespace Scribe
