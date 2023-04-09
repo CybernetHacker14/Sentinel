@@ -7,78 +7,53 @@
 #include <mz_zip.h>
 #include <mz_zip_rw.h>
 #include <mz_compat.h>
+#include <mz_strm_mem.h>
+#include <mz_strm_buf.h>
+
+#define HAVE_PKCRYPT
 
 namespace Sentinel {
+
+    static constexpr const char* s_ZipPassword = "password";
+    static constexpr const UInt16 s_ZipCompressionLevel = MZ_COMPRESS_LEVEL_BEST;
+    static constexpr const UInt16 s_ZipCompressionMethod = MZ_COMPRESS_METHOD_STORE;
+    // If issue occurs check with Compression Method = MZ_COMPRESS_METHOD_STORE
+
     Bool ZipFileOperations::DoesFileExistInZip(const STL::string& zipPath, const STL::string& inZipLocation) {
-        unzFile zf = unzOpen64(zipPath.c_str());
+        void* handle = NULL;
+        Int32 err = MZ_OK, out = MZ_OK;
 
-        if (zf == NULL) { return false; }
+        mz_zip_reader_create(&handle);
+        mz_zip_reader_set_password(handle, s_ZipPassword);
 
-        if (unzGoToFirstFile(zf) == UNZ_OK) {
-            do {
-                if (unzOpenCurrentFile(zf) == UNZ_OK) {
-                    unz_file_info fileInfo = {0};
+        err = mz_zip_reader_open_file(handle, zipPath.c_str());
+        out = mz_zip_reader_locate_entry(handle, inZipLocation.c_str(), 0);
+        err = mz_zip_reader_close(handle);
 
-                    if (unzGetCurrentFileInfo(zf, &fileInfo, NULL, 0, NULL, 0, NULL, 0) == UNZ_OK) {
-                        char* filename = (char*)malloc(fileInfo.size_filename + 1);
-                        unzGetCurrentFileInfo(zf, &fileInfo, filename, fileInfo.size_filename + 1, NULL, 0, NULL, 0);
-                        filename[fileInfo.size_filename] = '\0';
-                        STL::string path(filename);
-
-                        if (path == inZipLocation) {
-                            free(filename);
-                            return true;
-                        }
-
-                        free(filename);
-                    }
-
-                    unzCloseCurrentFile(zf);
-                }
-            } while (unzGoToNextFile(zf) == UNZ_OK);
-        }
-
-        return false;
+        return out == MZ_OK && err == MZ_OK;
     }
 
     Bool ZipFileOperations::ReadFromZipFile(
         const STL::string& zipPath, const STL::string& inZipLocation, void** ptrToBuffer, UInt32& dataLength) {
-        unzFile zf = unzOpen64(zipPath.c_str());
+        void* handle = NULL;
+        Int32 err = MZ_OK;
 
-        if (zf == NULL) {
-            ST_ASSERT(false, "Error opening zip file");
-            return false;
+        mz_zip_reader_create(&handle);
+        mz_zip_reader_set_password(handle, s_ZipPassword);
+
+        err = mz_zip_reader_open_file(handle, zipPath.c_str());
+
+        if (mz_zip_reader_locate_entry(handle, inZipLocation.c_str(), 0) == MZ_OK) {
+            Int32 length = mz_zip_reader_entry_save_buffer_length(handle);
+            *ptrToBuffer = new char[length];
+            err = mz_zip_reader_entry_open(handle);
+            err = mz_zip_reader_entry_read(handle, *ptrToBuffer, length);
+            err = mz_zip_reader_entry_close(handle);
+            dataLength = length;
         }
 
-        if (unzGoToFirstFile(zf) == UNZ_OK) {
-            do {
-                if (unzOpenCurrentFile(zf) == UNZ_OK) {
-                    unz_file_info64 fileInfo;
-                    memset(&fileInfo, 0, sizeof(unz_file_info64));
-
-                    if (unzGetCurrentFileInfo64(zf, &fileInfo, NULL, 0, NULL, 0, NULL, 0) == UNZ_OK) {
-                        char* filename = (char*)malloc(fileInfo.size_filename + 1);
-                        unzGetCurrentFileInfo64(zf, &fileInfo, filename, fileInfo.size_filename + 1, NULL, 0, NULL, 0);
-                        filename[fileInfo.size_filename] = '\0';
-                        STL::string path(filename);
-
-                        if (path == inZipLocation) {
-                            *ptrToBuffer = new char[fileInfo.uncompressed_size];
-                            unzReadCurrentFile(zf, *ptrToBuffer, fileInfo.uncompressed_size);
-                            dataLength = fileInfo.uncompressed_size;
-                            free(filename);
-                            return true;
-                        }
-
-                        free(filename);
-                    }
-
-                    unzCloseCurrentFile(zf);
-                }
-            } while (unzGoToNextFile(zf) == UNZ_OK);
-        }
-
-        return false;
+        err = mz_zip_reader_close(handle);
+        return err == MZ_OK;
     }
 
     Bool ZipFileOperations::WriteFileToZipFile(
@@ -118,30 +93,32 @@ namespace Sentinel {
         const STL::string& zipPath, const STL::string& inZipLocation, char* data, UInt32 length) {
         if (data == NULL || length == 0) return false;
 
-        zipFile file = zipOpen64(
-            zipPath.c_str(), !Filesystem::DoesFileExist(zipPath) ? APPEND_STATUS_CREATE : APPEND_STATUS_ADDINZIP);
+        void* handle = NULL;
+        Int32 err = MZ_OK;
 
-        zip_fileinfo zfi = {0};
-        int ret = zipOpenNewFileInZip_64(
-            file,
-            inZipLocation.c_str(),
-            &zfi,
-            NULL,
-            0,
-            NULL,
-            0,
-            "",
-            MZ_COMPRESS_METHOD_STORE,
-            MZ_COMPRESS_LEVEL_BEST,
-            (length > 0xffffffff) ? 1 : 0);
+        mz_zip_file file_info = {0};
 
-        if (ret != MZ_OK) return false;
+        file_info.filename = inZipLocation.c_str();
+        file_info.compression_method = s_ZipCompressionMethod;
+        file_info.flag = MZ_ZIP_FLAG_UTF8 | MZ_ZIP_FLAG_ENCRYPTED;
+        file_info.modified_date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        file_info.zip64 = 1;
+        file_info.pk_verify = 1;
 
-        ret = zipWriteInFileInZip(file, data, length);
-        ret = zipCloseFileInZip(file);
+        mz_zip_writer_create(&handle);
+        mz_zip_writer_set_password(handle, s_ZipPassword);
+        mz_zip_writer_set_compress_method(handle, s_ZipCompressionMethod);
+        mz_zip_writer_set_compress_level(handle, s_ZipCompressionLevel);
 
-        ret = zipClose_64(file, NULL);
+        err = mz_zip_writer_open_file(handle, zipPath.c_str(), 0, 1);
 
-        return ret == MZ_OK;
+        err = mz_zip_writer_entry_open(handle, &file_info);
+        err = mz_zip_writer_entry_write(handle, data, length);
+        err = mz_zip_writer_entry_close(handle);
+
+        err = mz_zip_writer_close(handle);
+
+        mz_zip_writer_delete(&handle);
+        return err == MZ_OK;
     }
 }  // namespace Sentinel

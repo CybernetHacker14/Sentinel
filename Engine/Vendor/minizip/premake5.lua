@@ -42,6 +42,11 @@ project "minizip"
     {
         "module"
     }
+
+    defines
+    {
+        "HAVE_PKCRYPT"
+    }
 	
 	filter "system:windows"
         systemversion "latest"

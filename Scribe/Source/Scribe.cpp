@@ -49,10 +49,11 @@ namespace Scribe {
         if (Sentinel::Filesystem::DoesFileExist("Test.pak")) {
             Sentinel::UInt32 length;
             char* buffer;
-            if (Sentinel::ZipFileOperations::ReadFromZipFile("Test.pak", "Scenes/Test.scene", (void**)&buffer, length)) {
+            if (Sentinel::ZipFileOperations::ReadFromZipFile(
+                    "Test.pak", "Scenes/Test.scene", (void**)&buffer, length)) {
                 std::stringstream stream(std::ios::in | std::ios::out);
                 for (int i = 0; i < length; i++) stream << buffer[i];
-                free(buffer);
+                delete buffer;
                 m_TestScene->DeserializeFromStream(stream);
 
             } else {
@@ -79,10 +80,12 @@ namespace Scribe {
         m_Entity7->SetParent(m_Entity5);
 
         m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
-        m_TestScene->SerializeToFile("Test.scene");
+        // m_TestScene->SerializeToFile("Test.scene");
 
-        //m_TestScene->SetName("Untitled_World_001");
-        Sentinel::ZipFileOperations::WriteFileToZipFile("Test.pak", "Scenes/Test.scene", "Test.scene"); // TODO: Pass FileType, whether binary or non-binary
+        // m_TestScene->SetName("Untitled_World_001");
+        // // TODO: Pass FileType, whether binary or non-binary
+        /*Sentinel::ZipFileOperations::WriteBufferToZipFile(
+            "Test.pak", "Scenes/Test.scene", m_TestScene->SerializeToStream());*/
 
         /*m_TestScene->SetName("Untitled_World_001");
         std::stringstream stream = m_TestScene->SerializeToStream("Scenes/Test.scene");
