@@ -56,7 +56,7 @@ namespace Sentinel {
         return err == MZ_OK;
     }
 
-    Bool ZipFileOperations::WriteFileToZipFile(
+    Bool ZipFileOperations::WriteTextFileToZipFile(
         const STL::string& zipPath, const STL::string& inZipLocation, const STL::string& filepath) {
         std::fstream file(filepath.c_str(), std::ios::in);
 
@@ -90,7 +90,7 @@ namespace Sentinel {
     }
 
     Bool ZipFileOperations::WriteBufferToZipFile(
-        const STL::string& zipPath, const STL::string& inZipLocation, char* data, UInt32 length) {
+        const STL::string& zipPath, const STL::string& inZipLocation, char* data, UInt64 length) {
         if (data == NULL || length == 0) return false;
 
         void* handle = NULL;

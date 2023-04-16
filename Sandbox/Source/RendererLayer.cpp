@@ -1,8 +1,11 @@
 #include "RendererLayer.h"
 
 #include <Sentinel/Graphics/Camera/Camera.h>
+#include <Sentinel/Filesystem/Filesystem.h>
 
 #include <glm/glm.hpp>
+
+#include <../Vendor/stb_image/stb_image.h>
 
 namespace Sandbox {
     namespace Rendering {
@@ -110,12 +113,19 @@ namespace Sandbox {
 
             Sentinel::Texture2DDataImportSettings settings;
 
-            if (!renderdocBuild)
+            /*if (!renderdocBuild)
                 settings.TextureFilepath = "../Engine/Resources/Images/Icon/512.png";
             else
                 settings.TextureFilepath = "512.png";
 
-            m_Texture = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexAlloc, m_Context, settings);
+            m_Texture = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexAlloc, m_Context, settings);*/
+
+            const auto size = 2000 * 2000 * 4;
+            Sentinel::UInt8* data = new Sentinel::UInt8[size];
+            Sentinel::Filesystem::ReadFileAtPath("../Scribe/Test.img", data, size);
+
+            m_Texture =
+                Sentinel::Texture2DAPI::CreateTexture2DData(m_TexAlloc, m_Context, settings, data, 2000, 2000, 4);
 
             m_RenderTexture =
                 Sentinel::RenderTexture2DAPI::CreateRenderTexture2DData(m_RTAlloc, m_Context, m_Swapchain);

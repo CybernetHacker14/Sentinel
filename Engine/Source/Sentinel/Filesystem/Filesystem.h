@@ -43,7 +43,7 @@ namespace Sentinel {
 
         static STL::string ReadTextFileAtPath(const STL::string& filepath);
 
-        static Bool WriteToFileAtPath(const STL::string& filepath, UInt8* buffer);
+        static Bool WriteToFileAtPath(const STL::string& filepath, UInt8* buffer, UInt64 length);
 
         static Bool WriteToTextFileAtPath(const STL::string& filepath, const STL::string& text);
 

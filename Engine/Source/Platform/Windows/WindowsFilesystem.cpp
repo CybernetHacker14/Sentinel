@@ -323,13 +323,13 @@ namespace Sentinel {
         return success ? result : STL::string();
     }
 
-    Bool Filesystem::WriteToFileAtPath(const STL::string& filepath, UInt8* buffer) {
+    Bool Filesystem::WriteToFileAtPath(const STL::string& filepath, UInt8* buffer, UInt64 length) {
         const HANDLE file = CreateFileW(
             WindowsTextUtils::TranscodeUTF8toUTF16(filepath).c_str(),
-            GENERIC_WRITE,
+            GENERIC_WRITE | OPEN_EXISTING,
+            0,
             NULL,
-            NULL,
-            CREATE_NEW | OPEN_EXISTING,
+            CREATE_NEW,
             FILE_ATTRIBUTE_NORMAL,
             NULL);
 
@@ -340,13 +340,13 @@ namespace Sentinel {
 
         const Int64 size = GetFileSizeInternal(file);
         DWORD written;
-        const Bool result = WriteFile(file, buffer, sizeof(*buffer), &written, nullptr) != 0;
+        const Bool result = WriteFile(file, buffer, length, &written, nullptr) != 0;
         CloseHandle(file);
         return result;
     }
 
     Bool Filesystem::WriteToTextFileAtPath(const STL::string& filepath, const STL::string& text) {
-        return WriteToFileAtPath(filepath, (UInt8*)&text[0]);
+        return WriteToFileAtPath(filepath, (UInt8*)&text[0] , text.size());
     }
 
     Bool Filesystem::OpenAtPath(const STL::string& path) {

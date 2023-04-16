@@ -15,6 +15,8 @@
 
 #include <Sentinel/Archive/ZipFileOperations.h>
 
+#include "../Vendor/stb_image/stb_image.h"
+
 // For launching the application with Nvidia card if available by default
 extern "C" {
 __declspec(dllexport) uint32_t NvOptimusEnablement = 0x00000001;
@@ -87,13 +89,10 @@ namespace Scribe {
         /*Sentinel::ZipFileOperations::WriteBufferToZipFile(
             "Test.pak", "Scenes/Test.scene", m_TestScene->SerializeToStream());*/
 
-        /*m_TestScene->SetName("Untitled_World_001");
-        std::stringstream stream = m_TestScene->SerializeToStream("Scenes/Test.scene");
-        stream.seekg(0, std::ios::end);
-        Sentinel::UInt32 length = stream.tellg();
-        stream.seekg(0, std::ios::beg);
+        int width, height, bpp;
+        auto data = stbi_load("Assets/Icons/grid.png", &width, &height, &bpp, 4);
 
-        Sentinel::Filesystem::CreateZipFile("Test.pak", "Scenes/Test.scene", stream.str().c_str(), length);*/
+        Sentinel::Filesystem::WriteToFileAtPath("Test.img", &data[0], width * height * bpp);
     }
 
     Scribe::~Scribe() {

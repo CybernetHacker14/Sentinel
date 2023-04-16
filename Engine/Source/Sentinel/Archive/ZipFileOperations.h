@@ -10,13 +10,13 @@ namespace Sentinel {
         static Bool ReadFromZipFile(
             const STL::string& zipPath, const STL::string& inZipLocation, void** ptrToBuffer, UInt32& dataLength);
 
-        static Bool WriteFileToZipFile(
+        static Bool WriteTextFileToZipFile(
             const STL::string& zipPath, const STL::string& inZipLocation, const STL::string& filepath);
 
         static Bool WriteBufferToZipFile(
             const STL::string& zipPath, const STL::string& inZipLocation, std::stringstream stream);
 
         static Bool WriteBufferToZipFile(
-            const STL::string& zipPath, const STL::string& inZipLocation, char* data, UInt32 length);
+            const STL::string& zipPath, const STL::string& inZipLocation, char* data, UInt64 length);
     };
 }  // namespace Sentinel
