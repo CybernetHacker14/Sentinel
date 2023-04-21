@@ -5,8 +5,6 @@
 
 #include <glm/glm.hpp>
 
-#include <../Vendor/stb_image/stb_image.h>
-
 namespace Sandbox {
     namespace Rendering {
 
@@ -30,6 +28,8 @@ namespace Sandbox {
 
             m_RTAlloc.AllocateMemoryBlock(1);
             m_DTAlloc.AllocateMemoryBlock(1);
+
+            m_ImageLoader.AllocateMemoryBlock(1);
 
             GLFWwindow* glfwWindow = m_Window->GetNativeWindow<GLFWwindow>();
             m_Context = Sentinel::ContextAPI::CreateImmediateContext(m_CtxAlloc, glfwWindow);
@@ -55,6 +55,8 @@ namespace Sandbox {
             m_SCAlloc.DeleteAll();
             m_CtxAlloc.DeleteAll();
 
+            m_ImageLoader.DeleteAll();
+
             m_VBufferAlloc.DeallocateMemoryBlock();
             m_IBufferAlloc.DeallocateMemoryBlock();
             m_LayoutAlloc.DeallocateMemoryBlock();
@@ -70,7 +72,7 @@ namespace Sandbox {
             m_SCAlloc.DeallocateMemoryBlock();
             m_CtxAlloc.DeallocateMemoryBlock();
 
-            delete (m_Context);
+            m_ImageLoader.DeallocateMemoryBlock();
         }
 
         void RendererLayer::OnAttach() {
@@ -120,12 +122,17 @@ namespace Sandbox {
 
             m_Texture = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexAlloc, m_Context, settings);*/
 
-            const auto size = 2000 * 2000 * 4;
-            Sentinel::UInt8* data = new Sentinel::UInt8[size];
-            Sentinel::Filesystem::ReadFileAtPath("../Scribe/Test.img", data, size);
+            Sentinel::ImageResource* resource;
+            Sentinel::ImageResourceLoader::LoadFromFile("../Scribe/Grid2.sibf", &resource);
 
-            m_Texture =
-                Sentinel::Texture2DAPI::CreateTexture2DData(m_TexAlloc, m_Context, settings, data, 2000, 2000, 4);
+            m_Texture = Sentinel::Texture2DAPI::CreateTexture2DData(
+                m_TexAlloc,
+                m_Context,
+                settings,
+                resource->Pixels,
+                resource->Width,
+                resource->Height,
+                resource->Channels);
 
             m_RenderTexture =
                 Sentinel::RenderTexture2DAPI::CreateRenderTexture2DData(m_RTAlloc, m_Context, m_Swapchain);

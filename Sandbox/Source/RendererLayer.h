@@ -18,6 +18,8 @@
 #include <Sentinel/Graphics/Texture/RenderTexture2DAPI.h>
 #include <Sentinel/Graphics/Texture/DepthTexture2DAPI.h>
 
+#include <Sentinel/Resources/ImageResourceLoader.h>
+
 namespace Sentinel {
     class Camera;
 
@@ -61,6 +63,8 @@ namespace Sandbox {
 
             Sentinel::PoolAllocator<Sentinel::RenderTexture2DData> m_RTAlloc;
             Sentinel::PoolAllocator<Sentinel::DepthTexture2DData> m_DTAlloc;
+
+            Sentinel::PoolAllocator<Sentinel::ImageResourceLoader> m_ImageLoader;
 
             Sentinel::SharedRef<Sentinel::Camera> m_Camera;
 

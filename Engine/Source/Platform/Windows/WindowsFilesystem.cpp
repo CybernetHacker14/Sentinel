@@ -329,7 +329,7 @@ namespace Sentinel {
             GENERIC_WRITE | OPEN_EXISTING,
             0,
             NULL,
-            CREATE_NEW,
+            DoesFileExist(filepath) ? OPEN_EXISTING : CREATE_NEW,
             FILE_ATTRIBUTE_NORMAL,
             NULL);
 
@@ -346,7 +346,7 @@ namespace Sentinel {
     }
 
     Bool Filesystem::WriteToTextFileAtPath(const STL::string& filepath, const STL::string& text) {
-        return WriteToFileAtPath(filepath, (UInt8*)&text[0] , text.size());
+        return WriteToFileAtPath(filepath, (UInt8*)&text[0], text.size());
     }
 
     Bool Filesystem::OpenAtPath(const STL::string& path) {

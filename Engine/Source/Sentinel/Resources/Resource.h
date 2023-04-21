@@ -22,27 +22,4 @@ namespace Sentinel {
         void* Data;
     };
 
-    struct ImageResource {
-        UInt8 Channels;
-        UInt16 Width;
-        UInt16 Height;
-        UInt8* Pixels;
-
-        template<class Archive>
-        void save(Archive& archive) const {
-            archive(cereal::make_nvp("Channels", Channels);
-            archive(cereal::make_nvp("Width", Width);
-            archive(cereal::make_nvp("Height", Height);
-            archive(cereal::binary_data(Pixels, sizeof(UInt8) * Width * Height * Channels));
-        }
-
-        template<class Archive>
-        void load(Archive& archive) {
-            archive(cereal::make_nvp("Channels", Channels);
-            archive(cereal::make_nvp("Width", Width);
-            archive(cereal::make_nvp("Height", Height);
-            archive(cereal::binary_data(Pixels, sizeof(UInt8) * Width * Height * Channels));
-        }
-    };
-
 }  // namespace Sentinel

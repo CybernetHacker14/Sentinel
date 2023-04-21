@@ -14,6 +14,7 @@
 #include <Sentinel/ECS/SceneManager.h>
 
 #include <Sentinel/Archive/ZipFileOperations.h>
+#include <Sentinel/Resources/ImageResourceLoader.h>
 
 #include "../Vendor/stb_image/stb_image.h"
 
@@ -90,9 +91,18 @@ namespace Scribe {
             "Test.pak", "Scenes/Test.scene", m_TestScene->SerializeToStream());*/
 
         int width, height, bpp;
-        auto data = stbi_load("Assets/Icons/grid.png", &width, &height, &bpp, 4);
+        auto data = stbi_load("Assets/Icons/Grid2.jpg", &width, &height, &bpp, 4);
 
-        Sentinel::Filesystem::WriteToFileAtPath("Test.img", &data[0], width * height * bpp);
+        // Sentinel::Filesystem::WriteToFileAtPath("Test.img", (Sentinel::UInt8*)&bpp, sizeof(int));
+        Sentinel::ImageResource* resource = new Sentinel::ImageResource();
+        resource->Channels = bpp;
+        resource->Width = width;
+        resource->Height = height;
+        resource->Pixels = data;
+
+        Sentinel::ImageResourceLoader::SaveToFile("Grid2.sibf", resource);
+
+        delete resource;
     }
 
     Scribe::~Scribe() {
