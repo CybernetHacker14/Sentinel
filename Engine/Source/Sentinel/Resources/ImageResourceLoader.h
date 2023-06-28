@@ -7,6 +7,9 @@
 namespace Sentinel {
     struct ImageResource {
     public:
+        inline ~ImageResource() { delete[] Pixels; }
+
+    public:
         UInt8* Pixels;
         UInt16 Width, Height;
         UInt8 Channels;

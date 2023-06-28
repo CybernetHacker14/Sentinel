@@ -207,6 +207,7 @@ namespace Sentinel {
         ContextAPI::GetDevice(data->Context)->CreateTexture2D(&textureDescription, nullptr, &(data->m_Texture2D));
 
         UInt32 rowPitch = data->m_Width * 4 * (data->m_HDR ? sizeof(float) : sizeof(unsigned char));
+
         ContextAPI::GetNativeContext(data->Context)
             ->UpdateSubresource(data->m_Texture2D, 0, nullptr, data->m_TexturePixels, rowPitch, 0);
 

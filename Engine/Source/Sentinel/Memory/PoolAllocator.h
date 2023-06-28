@@ -53,7 +53,7 @@ namespace Sentinel {
 
             m_CurrentAllocations++;
 
-            return static_cast<T*>(new (address) T(STL::forward<Args>(args)...));
+            return (new (address) T(STL::forward<Args>(args)...));
         }
 
         template<typename... Args>
@@ -117,5 +117,14 @@ namespace Sentinel {
 
         UInt32 m_CurrentAllocations = 0;
         UInt32 m_MaxAllowedAllocations = 0;
+
+        UInt32 m_0_31_AllocationBitMask = 0;
+        UInt32 m_32_63_AllocationBitMask = 0;
+        UInt32 m_64_95_AllocationBitMask = 0;
+        UInt32 m_96_127_AllocationBitMask = 0;
+        UInt32 m_128_159_AllocationBitMask = 0;
+        UInt32 m_160_191_AllocationBitMask = 0;
+        UInt32 m_192_223_AllocationBitMask = 0;
+        UInt32 m_224_255_AllocationBitMask = 0;
     };
 }  // namespace Sentinel

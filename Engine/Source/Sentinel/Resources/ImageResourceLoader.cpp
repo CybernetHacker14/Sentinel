@@ -14,10 +14,10 @@ namespace Sentinel {
         UInt64 length = pixelDataLength + pixelDataOffset;  // Length of buffer
 
         UInt8* bytes = (UInt8*)Malloc(length);
-        memcpy(bytes, &(inResource->Channels), sizeof(UInt8));
-        memcpy(bytes + sizeof(UInt8), &(inResource->Width), sizeof(UInt16));
-        memcpy(bytes + heightOffset, &(inResource->Height), sizeof(UInt16));
-        memcpy(bytes + pixelDataOffset, inResource->Pixels, pixelDataLength);
+        memmove(bytes, &(inResource->Channels), sizeof(UInt8));
+        memmove(bytes + sizeof(UInt8), &(inResource->Width), sizeof(UInt16));
+        memmove(bytes + heightOffset, &(inResource->Height), sizeof(UInt16));
+        memmove(bytes + pixelDataOffset, inResource->Pixels, pixelDataLength);
 
         Filesystem::WriteToFileAtPath(path, (UInt8*)bytes, length);
         Free(bytes);
@@ -29,6 +29,7 @@ namespace Sentinel {
     }
 
     void ImageResourceLoader::LoadFromFile(const STL::string& path, ImageResource** outResource) {
+        UInt32 size = Filesystem::GetFileSize(path);
         UInt8* buffer = Filesystem::ReadFileAtPath(path);
 
         *outResource = new ImageResource();

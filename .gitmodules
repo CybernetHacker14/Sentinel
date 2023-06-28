@@ -2,10 +2,6 @@
 	path = Engine/Vendor/GLFW/module
 	url = https://github.com/CybernetHacker14/glfw.git
 	branch = win32-borderless
-[submodule "Engine/Vendor/spdlog/module"]
-	path = Engine/Vendor/spdlog/module
-	url = https://github.com/gabime/spdlog.git
-	branch = v1.x
 [submodule "Engine/Vendor/glm/module"]
 	path = Engine/Vendor/glm/module
 	url = https://github.com/g-truc/glm.git

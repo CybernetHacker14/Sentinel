@@ -113,8 +113,6 @@ namespace Sandbox {
 
             Sentinel::VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
 
-            Sentinel::Texture2DDataImportSettings settings;
-
             /*if (!renderdocBuild)
                 settings.TextureFilepath = "../Engine/Resources/Images/Icon/512.png";
             else
@@ -123,8 +121,9 @@ namespace Sandbox {
             m_Texture = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexAlloc, m_Context, settings);*/
 
             Sentinel::ImageResource* resource;
-            Sentinel::ImageResourceLoader::LoadFromFile("../Scribe/Grid2.sibf", &resource);
+            Sentinel::ImageResourceLoader::LoadFromFile("../Scribe/Grid.sibf", &resource);
 
+            Sentinel::Texture2DDataImportSettings settings;
             m_Texture = Sentinel::Texture2DAPI::CreateTexture2DData(
                 m_TexAlloc,
                 m_Context,

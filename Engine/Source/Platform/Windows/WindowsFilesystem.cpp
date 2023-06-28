@@ -418,4 +418,9 @@ namespace Sentinel {
         return CopyFileW(
             WindowsTextUtils::TranscodeUTF8toUTF16(GetAbsolutePath(currentPath)).c_str(), newFileName.c_str(), true);
     }
+
+    Int64 Filesystem::GetFileSize(const STL::string& filepath) {
+        const HANDLE file = OpenFileForReading(filepath);
+        return GetFileSizeInternal(file);
+    }
 }  // namespace Sentinel

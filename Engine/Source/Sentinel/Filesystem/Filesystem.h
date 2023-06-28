@@ -55,10 +55,6 @@ namespace Sentinel {
 
         static Bool CopyToPath(const STL::string& currentPath, const STL::string& newPath);
 
-        static Int32 CreateZipFile(
-            const STL::string& zipDestination,
-            const STL::string& inzipDataDestination,
-            const char* data,
-            UInt32 length);
+        static Int64 GetFileSize(const STL::string& filepath);
     };
 }  // namespace Sentinel
