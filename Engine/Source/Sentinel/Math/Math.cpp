@@ -14,7 +14,7 @@ namespace Sentinel {
         return (c1 + x2 * (c2 + x2 * (c3 + c4 * x2)));
     }
 
-    Float Math::FastInverseSquareRoot(Float number) {
+    constexpr Float Math::FastInverseSquareRoot(Float number) {
         // Courtesy of John Carmack, Cleve Moler, Gregory Walsh, Terje Mathison,
         // Gary Tarolli, William Kahan , K. C. Ng and the unsung hero/es behind this
         // Chris Lomont, for finding the constant 0x5f375a86, which is slightly more accurate than the original,
@@ -53,7 +53,9 @@ namespace Sentinel {
         return CosInternal(TWO_PI - radians);
     }
 
-    Float Math::FastSin(Float radians) { return FastCos(PI_HALF - radians); }
+    Float Math::FastSin(Float radians) {
+        return FastCos(PI_HALF - radians);
+    }
 
     glm::vec3 Math::FastNormalize(const glm::vec3& vector) {
         return vector * FastInverseSquareRoot(SIMDMath::SSEDotProduct(vector, vector));

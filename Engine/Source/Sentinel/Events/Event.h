@@ -28,11 +28,11 @@ namespace Sentinel {
     // Enum for depicting the category of event
     enum class EventCategory : UInt8 {
         None = 0,
-        Application = BIT(0),
-        Input = BIT(1),
-        Keyboard = BIT(2),
-        Mouse = BIT(3),
-        MouseButton = BIT(4)
+        Application = ST_BIT(0),
+        Input = ST_BIT(1),
+        Keyboard = ST_BIT(2),
+        Mouse = ST_BIT(3),
+        MouseButton = ST_BIT(4)
     };
 
     // Bitwise operations for enum EventCategory

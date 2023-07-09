@@ -6,7 +6,7 @@
 
 namespace Sentinel
 {
-	namespace WindowsTextUtils
+	namespace WindowsStringUtils
 	{
 		static STL::wstring TranscodeUTF8toUTF16(const char* s, Size_t nBytes) {
 			STL::wstring buf(nBytes, L'x');
@@ -20,7 +20,7 @@ namespace Sentinel
 		}
 
 		static STL::wstring TranscodeUTF8toUTF16(const STL::string& s) {
-			return WindowsTextUtils::TranscodeUTF8toUTF16(s.c_str(), s.size());
+			return TranscodeUTF8toUTF16(s.c_str(), s.size());
 		}
 
 		static STL::string TranscodeUTF16toUTF8(const wchar_t* s, Size_t nChars) {
@@ -35,7 +35,7 @@ namespace Sentinel
 		}
 
 		static STL::string TranscodeUTF16toUTF8(const STL::wstring& s) {
-			return WindowsTextUtils::TranscodeUTF16toUTF8(s.c_str(), s.size());
+			return TranscodeUTF16toUTF8(s.c_str(), s.size());
 		}
 	}
 }

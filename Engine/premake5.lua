@@ -12,8 +12,11 @@ project "Sentinel"
 
 	files
 	{
-		"Source/**.h",
-        "Source/**.cpp",
+        "Source/Sentinel.h",
+        "Source/stpch.h",
+        "Source/stpch.cpp",
+		"Source/Sentinel/**.h",
+        "Source/Sentinel/**.cpp",
 		"Resources/**.inl",
         "Vendor/glm/module/glm/**.hpp",
         "Vendor/glm/module/glm/**.inl",
@@ -69,6 +72,11 @@ project "Sentinel"
 		{
 			"{COPYDIR} \"%{ShaderFilesDir.Engine}\" \"%{cfg.targetdir}\""
 		}
+
+        files {
+            "Source/Platform/Windows/**.cpp",
+            "Source/Platform/Windows/**.h"
+        }
 
     filter { "options:gfxapi=DX11" }
         defines "ST_RENDERER_DX11"

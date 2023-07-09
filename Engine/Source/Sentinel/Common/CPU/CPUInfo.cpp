@@ -32,6 +32,7 @@
         __asm mov c, ecx \
         __asm mov d, edx}
 #elif defined(_MSC_VER) && defined(_M_X64)
+    #include <intrin.h>
     #define cpuid(func, a, b, c, d) \
         {                           \
             int CPUInfo[4];         \
@@ -53,8 +54,8 @@
 #endif
 
 namespace Sentinel {
-    const char* CPUInfo::GetCPUType() {
-        static char type[13];
+    CChar* CPUInfo::GetCPUType() {
+        static Char type[13];
 
         if (!type[0]) {
             UInt32 i = 0;
@@ -64,29 +65,29 @@ namespace Sentinel {
                 UInt32 a, b, c, d;
                 cpuid(0x00000000, a, b, c, d);
                 (void)a;
-                type[i++] = (char)(b & 0xff);
+                type[i++] = (Char)(b & 0xff);
                 b >>= 8;
-                type[i++] = (char)(b & 0xff);
+                type[i++] = (Char)(b & 0xff);
                 b >>= 8;
-                type[i++] = (char)(b & 0xff);
+                type[i++] = (Char)(b & 0xff);
                 b >>= 8;
-                type[i++] = (char)(b & 0xff);
+                type[i++] = (Char)(b & 0xff);
 
-                type[i++] = (char)(d & 0xff);
+                type[i++] = (Char)(d & 0xff);
                 d >>= 8;
-                type[i++] = (char)(d & 0xff);
+                type[i++] = (Char)(d & 0xff);
                 d >>= 8;
-                type[i++] = (char)(d & 0xff);
+                type[i++] = (Char)(d & 0xff);
                 d >>= 8;
-                type[i++] = (char)(d & 0xff);
+                type[i++] = (Char)(d & 0xff);
 
-                type[i++] = (char)(c & 0xff);
+                type[i++] = (Char)(c & 0xff);
                 c >>= 8;
-                type[i++] = (char)(c & 0xff);
+                type[i++] = (Char)(c & 0xff);
                 c >>= 8;
-                type[i++] = (char)(c & 0xff);
+                type[i++] = (Char)(c & 0xff);
                 c >>= 8;
-                type[i++] = (char)(c & 0xff);
+                type[i++] = (Char)(c & 0xff);
             }
 
             if (!type[0]) { strcpy_s(type, sizeof(type), "Unknown"); }
@@ -96,7 +97,7 @@ namespace Sentinel {
     }
 
     UInt32 CPUInfo::GetL1CacheLineSize() {
-        const char* type = GetCPUType();
+        CChar* type = GetCPUType();
         int a, b, c, d;
         (void)a;
         (void)b;
@@ -202,11 +203,11 @@ namespace Sentinel {
                         a = (int)_xgetbv(0);
 #elif (defined(_MSC_VER) && defined(_M_IX86)) || defined(__WATCOMC__)
                         __asm
-                        {
+                            {
 							xor ecx, ecx
 							_asm _emit 0x0f _asm _emit 0x01 _asm _emit 0xd0
 							mov a, eax
-                        }
+                            }
 #endif
                         OSSavesYMM = ((a & 6) == 6) ? true : false;
                     }

@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Sentinel/Common/Core/DataTypes.h"
-#include "Sentinel/Common/Core/PlatformDetection.h"
 
 namespace Sentinel {
-    class CPUInfo {
+    class CPUInfo final {
     public:
-        static const char* GetCPUType();
+        static CChar* GetCPUType();
         static UInt32 GetL1CacheLineSize();
 
     private:
@@ -17,5 +16,8 @@ namespace Sentinel {
         inline static UInt32 CPUIDFeatures[4];
         inline static UInt32 CPUIDMaxFunction = 0;
         inline static Bool OSSavesYMM = false;
+
+    private:
+        inline CPUInfo() {}
     };
 }  // namespace Sentinel
