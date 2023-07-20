@@ -1,30 +1,27 @@
 #include "stpch.h"
 #include "Sentinel/Logging/Log.h"
 
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/basic_file_sink.h>
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 
-namespace Sentinel
-{
-	std::shared_ptr<TerminalLogger> Log::s_EngineLogger;
-	std::shared_ptr<TerminalLogger> Log::s_ClientLogger;
+namespace Sentinel {
+    template<typename... Args>
+    inline void Log::PrintTrace(CChar* format, Args&&... args) {
+        printf_s(ANSI_COLOR_GREEN format ANSI_COLOR_RESET, args...);
+    }
 
-	void Log::Init() {
-		std::vector<spdlog::sink_ptr> logSinks;
-		logSinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-		logSinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("Sentinel.log", true));
+    template<typename... Args>
+    inline void Log::PrintInfo(CChar* format, Args&&... args) {
+    }
 
-		logSinks[0]->set_pattern("%^[%T] %n: %v%$");
-		logSinks[1]->set_pattern("[%T] [%l] %n: %v");
+    template<typename... Args>
+    inline void Log::PrintWarn(CChar* format, Args&&... args) {
+    }
 
-		s_EngineLogger = std::make_shared<TerminalLogger>("SENTINEL", std::begin(logSinks), std::end(logSinks));
-		spdlog::register_logger(s_EngineLogger);
-		s_EngineLogger->set_level(spdlog::level::trace);
-		s_EngineLogger->flush_on(spdlog::level::trace);
+    template<typename... Args>
+    inline void Log::PrintError(CChar* format, Args&&... args) {
+    }
 
-		s_ClientLogger = std::make_shared<TerminalLogger>("APP", std::begin(logSinks), std::end(logSinks));
-		spdlog::register_logger(s_ClientLogger);
-		s_ClientLogger->set_level(spdlog::level::trace);
-		s_ClientLogger->flush_on(spdlog::level::trace);
-	}
-}
+}  // namespace Sentinel

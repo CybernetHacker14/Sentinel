@@ -1,6 +1,7 @@
 #include "stpch.h"
-#include "Platform/GLFW/GLFWWindow.h"
+#include "Platform/Windows/GLFW/GLFWWindow.h"
 
+#include "Sentinel/Common/Core/Assert.h"
 #include "Sentinel/Events/Categories/WindowEvent.h"
 #include "Sentinel/Events/Categories/MouseEvent.h"
 #include "Sentinel/Events/Categories/KeyEvent.h"
@@ -12,17 +13,10 @@
 namespace Sentinel {
     static UInt8 s_GLFWWindowCount = 0;
 
-    static void GLFWErrorCallback(int error, const char* description) {
-        ST_ENGINE_ERROR("GLFW Error ({0}): {1}", error, description);
-    }
+    static void GLFWErrorCallback(int error, const char* description) {ST_BREAKPOINT_ASSERT(false, description)}
 
-    GLFWWindow::GLFWWindow(const WindowProperties& props) : Window(props) {
-        m_InitFunction = ST_BIND_FN(Init);
-        m_OnUpdateFunction = ST_BIND_FN(OnUpdate);
-        m_SetVSyncFunction = ST_BIND_FN(SetVSync);
-        m_GetNativeWindowFunction = ST_BIND_FN(GetNativeWindow);
-        m_ShutdownFunction = ST_BIND_FN(Shutdown);
-
+    GLFWWindow::GLFWWindow(const WindowProperties& props)
+        : Window(props) {
         Init();
     }
 
@@ -35,16 +29,13 @@ namespace Sentinel {
         m_Data.Width = m_Properties.Width;
         m_Data.Height = m_Properties.Height;
 
-        ST_ENGINE_INFO(
-            "Creating window {0} : {1}, {2}", m_Properties.Title.c_str(), m_Properties.Width, m_Properties.Height);
-
         if (s_GLFWWindowCount == 0) {
             int successs = glfwInit();
             ST_ENGINE_ASSERT(successs, "Could not initialize GLFW!");
             glfwSetErrorCallback(GLFWErrorCallback);
         }
 
-        glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, m_Properties.FramebufferTransparency ? 1 : 0);
+        glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, m_Properties.Transparent ? 1 : 0);
         glfwWindowHint(GLFW_DECORATED, m_Properties.Mode == WindowMode::BORDERLESS);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 

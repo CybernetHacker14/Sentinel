@@ -2,9 +2,9 @@
 
 #include "Sentinel/Common/Core/DataTypes.h"
 #include "Sentinel/Common/Core/CompilerDetection.h"
+#include "Sentinel/Common/Strings/MemFunctions.h"
 
 #include <stdlib.h>
-#include <cstring>
 
 #if INTPTR_MAX == 0x7FFFFFFFFFFFFFFFLL
     #define PTR_SIZE 8
@@ -31,7 +31,7 @@ namespace Sentinel {
 #ifdef ST_COMPILER_MSVC
         Size_t sz = count * size;
         void* ptr = Malloc(sz);
-        memset(ptr, 0, sz);
+        MemFunctions::Memset(ptr, 0, sz);
 #else
         void* ptr = calloc(count, size);
 #endif  // ST_COMPILER_MSVC

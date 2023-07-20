@@ -23,7 +23,7 @@
     #elif defined(__GNUC__) && \
         (defined(__GXX_EXPERIMENTAL_CXX0X__) || (defined(__cplusplus) && (__cplusplus >= 201103L)))
     // static_assert is defined by the compiler.
-    #elif defined(__EDG_VERSION__) && (__EDG_VERSION__ >= 401) && defined(EA_COMPILER_CPP11_ENABLED)
+    #elif defined(__EDG_VERSION__) && (__EDG_VERSION__ >= 401)
     // static_assert is defined by the compiler.
     #elif !defined(__cplusplus) && defined(__GLIBC__) && defined(__USE_ISOC11)
     // static_assert is defined by the compiler.

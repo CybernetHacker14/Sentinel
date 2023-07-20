@@ -1,12 +1,17 @@
 #include "stpch.h"
 #include "Sentinel/Application/Application.h"
 
+#include "Sentinel/Common/CPU/CPUInfo.h"
+#include "Sentinel/Common/Strings/MemFunctions.h"
+
 namespace Sentinel {
     Application* Application::s_Instance = nullptr;
 
     Application::Application(const STL::string& name) {
         ST_ENGINE_ASSERT(!s_Instance, "Application instance already exist!");
         s_Instance = this;
+        CPUInfo::Init();
+        MemFunctions::Init();
     }
 
     const UInt32 Application::SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback) {

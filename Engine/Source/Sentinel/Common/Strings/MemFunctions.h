@@ -3,13 +3,13 @@
 #include "Sentinel/Common/Core/DataTypes.h"
 
 namespace Sentinel {
-    class CPUInfo final {
+    class MemFunctions final {
     public:
-        static CChar* GetCPUType();
-        static UInt8 GetL1CacheLineSize();
+        static void Memcpy(void* dest, const void* src, Size_t n);
+        static void Memset(void* dest, Int32 val, Size_t n);
 
     private:
-        inline CPUInfo() = default;
+        inline MemFunctions() = default;
 
     private:
         static void Init();

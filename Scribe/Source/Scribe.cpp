@@ -34,7 +34,7 @@ namespace Scribe {
         props.Width = 1920;
         props.Height = 1080;
         props.Mode = Sentinel::WindowMode::BORDERLESSMAXIMIZED;
-        props.FramebufferTransparency = false;
+        props.Transparent = false;
 
         m_Window = new Window::ScribeWindow(props);
         m_Window->SetEventCallback(ST_BIND_FN(RaiseEvent));

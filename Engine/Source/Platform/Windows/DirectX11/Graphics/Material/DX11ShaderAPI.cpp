@@ -4,21 +4,23 @@
     #include "Sentinel/Graphics/Material/ShaderAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
+
+    #include <unordered_map>
 
 namespace Sentinel {
 
     namespace Utils {
-        static STL::unordered_map<STL::string, Sentinel::ShaderType> s_ShaderStringTypeMap = {
+        static std::unordered_map<std::string, Sentinel::ShaderType> s_ShaderStringTypeMap = {
             {"vertex", ShaderType::VERTEX}, {"pixel", ShaderType::PIXEL}, {"compute", ShaderType::COMPUTE}};
 
-        static STL::unordered_map<Sentinel::ShaderType, const STL::string> s_ShaderTypeStringMap = {
+        static std::unordered_map<Sentinel::ShaderType, const std::string> s_ShaderTypeStringMap = {
             {ShaderType::VERTEX, "vertex"}, {ShaderType::PIXEL, "pixel"}, {ShaderType::COMPUTE, "compute"}};
 
-        static STL::unordered_map<Sentinel::ShaderType, const char*> s_ShaderTypeProfileMap = {
+        static std::unordered_map<Sentinel::ShaderType, const char*> s_ShaderTypeProfileMap = {
             {ShaderType::VERTEX, "vs_5_0"}, {ShaderType::PIXEL, "ps_5_0"}, {ShaderType::COMPUTE, "cs_5_0"}};
 
-        static STL::unordered_map<Sentinel::ShaderType, const char*> s_ShaderTypeEntryPointMap = {
+        static std::unordered_map<Sentinel::ShaderType, const char*> s_ShaderTypeEntryPointMap = {
             {ShaderType::VERTEX, "VShader"}, {ShaderType::PIXEL, "PShader"}, {ShaderType::COMPUTE, "CShader"}};
 
     }  // namespace Utils
@@ -108,18 +110,18 @@ namespace Sentinel {
         }
     }
 
-    void ShaderAPI::PreprocessSource(const STL::string& source, ShaderSource* sources) {
-        STL::unordered_map<ShaderType, STL::string> shaderSources;
+    void ShaderAPI::PreprocessSource(const std::string& source, ShaderSource* sources) {
+        std::unordered_map<ShaderType, std::string> shaderSources;
 
         const char* typeToken = "#type";
         Size_t typeTokenLength = strlen(typeToken);
         Size_t pos = source.find(typeToken, 0);  // Start of shader type declaration file;
 
-        while (pos != STL::string::npos) {
+        while (pos != std::string::npos) {
             Size_t eol = source.find_first_of("\r\n", pos);  // End of shader type declaration line
-            ST_ENGINE_ASSERT(eol != STL::string::npos, "Syntax error");
+            ST_ENGINE_ASSERT(eol != std::string::npos, "Syntax error");
             Size_t begin = pos + typeTokenLength + 1;  // Start of shader type name (after "#type" keyword)
-            const STL::string& type = source.substr(begin, eol - begin);
+            const std::string& type = source.substr(begin, eol - begin);
             ST_ENGINE_ASSERT((Int32)Utils::s_ShaderStringTypeMap.at(type), "Invalid shader type specified");
 
             Size_t nextLinePos =

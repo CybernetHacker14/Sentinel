@@ -64,7 +64,7 @@ namespace Scribe {
                 glfwSetErrorCallback(GLFWErrorCallback);
             }
 
-            glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, m_Properties.FramebufferTransparency ? 1 : 0);
+            glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, m_Properties.Transparent ? 1 : 0);
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 

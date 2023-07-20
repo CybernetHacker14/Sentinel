@@ -44,7 +44,7 @@ namespace Sandbox {
         props.Width = 1280;
         props.Height = 720;
         props.Mode = Sentinel::WindowMode::WINDOWED;
-        props.FramebufferTransparency = false;
+        props.Transparent = false;
 
         m_Window = new Sentinel::GLFWWindow(props);
         m_Window->SetEventCallback(ST_BIND_FN(RaiseEvent));
