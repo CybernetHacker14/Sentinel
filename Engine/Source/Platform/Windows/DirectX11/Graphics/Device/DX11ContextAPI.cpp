@@ -4,13 +4,13 @@
 
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
     #include <GLFW/glfw3.h>
 
 namespace Sentinel {
 
-    static STL::unordered_map<UInt32, STL::string> s_VendorCodeMap = {
+    static STL::unordered_map<UInt32, String> s_VendorCodeMap = {
         {0x10DE, "NVIDIA Corporation"}, {0x1002, "AMD Inc."}, {0x8086, "Intel"}, {0x1414, "Microsoft"}};
 
     ContextData* Sentinel::ContextAPI::CreateImmediateContext(
@@ -80,10 +80,10 @@ namespace Sentinel {
             dataObject->m_ContextInfo.Renderer = videoCardDescription;
             dataObject->m_ContextInfo.API = "DirectX 11";
 
-            major = STL::to_string(HIWORD(driverVersion.HighPart));
-            minor = STL::to_string(LOWORD(driverVersion.HighPart));
-            release = STL::to_string(HIWORD(driverVersion.LowPart));
-            build = STL::to_string(LOWORD(driverVersion.LowPart));
+            major = std::to_string(HIWORD(driverVersion.HighPart));
+            minor = std::to_string(LOWORD(driverVersion.HighPart));
+            release = std::to_string(HIWORD(driverVersion.LowPart));
+            build = std::to_string(LOWORD(driverVersion.LowPart));
 
             version = major + "." + minor + "." + release + "." + build;
 

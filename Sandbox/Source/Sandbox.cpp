@@ -3,7 +3,7 @@
 #include <Sentinel/Application/EntryPoint.h>
 #include <Sentinel/Graphics/Camera/Camera.h>
 
-#include <Platform/GLFW/GLFWWindow.h>
+#include <Platform/Windows/GLFW/GLFWWindow.h>
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>

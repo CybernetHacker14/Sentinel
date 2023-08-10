@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/Malloc.h"
+#include "Sentinel/Common/Core/Malloc.h"
 
 namespace Sentinel {
     template<typename T>

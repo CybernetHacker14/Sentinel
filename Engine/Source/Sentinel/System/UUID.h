@@ -33,13 +33,3 @@ namespace std {
         Sentinel::Size_t operator()(const Sentinel::UUID& uuid) const { return (Sentinel::UInt64)uuid; }
     };
 }  // namespace std
-
-namespace eastl {
-    template<typename T>
-    struct hash;
-
-    template<>
-    struct hash<Sentinel::UUID> {
-        Sentinel::Size_t operator()(const Sentinel::UUID& uuid) const { return (Sentinel::UInt64)uuid; }
-    };
-}  // namespace eastl

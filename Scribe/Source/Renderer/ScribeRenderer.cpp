@@ -19,7 +19,7 @@ namespace Scribe {
             m_RTAlloc.AllocateMemoryBlock(1);
             m_DTAlloc.AllocateMemoryBlock(1);
 
-            GLFWwindow* glfwWindow = m_Window->GetNativeWindow<GLFWwindow>();
+            GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(m_Window->GetNative());
             m_Context = Sentinel::ContextAPI::CreateImmediateContext(m_CtxAlloc, glfwWindow);
             m_Swapchain = Sentinel::SwapchainAPI::CreateSwapchain(m_SCAlloc, m_Context, glfwWindow);
         }

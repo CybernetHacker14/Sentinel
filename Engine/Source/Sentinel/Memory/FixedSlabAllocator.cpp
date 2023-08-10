@@ -4,7 +4,7 @@
 #include "Sentinel/Common/Core/CompilerDetection.h"
 #include "Sentinel/Common/Core/Macros.h"
 #include "Sentinel/Common/Core/Assert.h"
-#include "Sentinel/Memory/Malloc.h"
+#include "Sentinel/Common/Core/Malloc.h"
 
 #ifdef ST_COMPILER_MSVC
     #include <intrin0.inl.h>

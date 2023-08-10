@@ -11,32 +11,46 @@
     #define ST_FUNC_SIG "ST_FUNC_SIG unknown!"
 #endif  // defined(ST_COMPILER_MSVC)
 
-#if defined(_MSC_VER)
-    // DISABLE CERTAIN WARNINGS (taken from Spartan Engine)
-    // 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
-    // https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-1-c4251?view=msvc-170
-    #pragma warning(disable : 4251)
+#if (defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+    #define ST_LITTLE_ENDIAN
+#elif (defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+    #define ST_BIG_ENDIAN
+#elif defined(ST_PLATFORM_WINDOWS)
+    #define ST_LITTLE_ENDIAN
+#else
+    #error "Endian detection needs to be set up for your compiler"
+#endif  // (defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
 
-    // non - DLL-interface class 'class_1' used as base for DLL-interface class 'class_2'
-    // https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-2-c4275?view=msvc-170
-    #pragma warning(disable : 4275)
+#define ST_POWERS_OF_10(factor)                                                                                     \
+    factor * 10, (factor)*100, (factor)*1000, (factor)*10000, (factor)*100000, (factor)*1000000, (factor)*10000000, \
+        (factor)*100000000, (factor)*1000000000
 
-    // no definition for inline function 'function'
-    // https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-1-c4506?view=msvc-170
-    #pragma warning(disable : 4506)
+// ====== Taken from fmt library ======//
 
-    // 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead.
-    // https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-3-c4996?view=msvc-170
-    #pragma warning(disable : 4996)
+#ifdef ST_COMPILER_MSVC
+namespace Sentinel {
+    inline Int32 clz(UInt32 x) {
+        ULong r = 0;
+        _BitScanReverse(&r, x);
+        return 31 ^ static_cast<Int32>(r);
+    }
 
-    // Caller failing to hold lock <lock> before calling function <func>
-    // https://docs.microsoft.com/en-us/cpp/code-quality/c26110?view=msvc-170
-    #pragma warning(disable : 26110)
-#endif  // defined(_MSC_VER)
+    inline Int32 clzll(UInt64 x) {
+        ULong r = 0;
+        _BitScanReverse64(&r, x);
+        return 63 ^ static_cast<Int32>(r);
+    }
+}  // namespace Sentinel
 
-#ifdef ST_PLATFORM_WINDOWS
-    #ifndef NOMINMAX
-        // https://github.com/skypjack/entt/wiki/Frequently-Asked-Questions#warning-c4003-the-min-the-max-and-the-macro
-        #define NOMINMAX
-    #endif  // !NOMINMAX
-#endif      // ST_PLATFORM_WINDOWS
+    #define ST_BUILTIN_CLZ(n)   Sentinel::clz(n)
+    #define ST_BUILTIN_CLZLL(n) Sentinel::clzll(n)
+
+#elif ST_COMPILER_GCC
+    #define ST_BUILTIN_CLZ(n)   __builtin_clz(n)
+    #define ST_BUILTIN_CLZLL(n) __builtin_clzll(n)
+#else
+    #define ST_BUILTIN_CLZ(n)   0
+    #define ST_BUILTIN_CLZLL(n) 0
+#endif  // ST_COMPILER_MSVC
+
+// ====== \Taken from fmt library =====//

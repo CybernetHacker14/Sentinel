@@ -34,32 +34,27 @@ namespace Sentinel {
     // 2. Maybe a custom window class developed specifically for the attached application
     // 3. A definite custom window class developed for the editor
 
-    // Let's give the CRTP thing a try again (Jesus not that path again)
+    namespace WindowPFn {
+        void (*OnUpdateFn)();
+        void (*SetVSyncFn)(Bool enabled);
+        void (*ShutdownFn)();
+        void* (*GetNativeFn)();
+    }  // namespace WindowPFn
 
-    template<typename Derived_Window>
     class Window {
     public:
-        inline Window(const Sentinel::WindowProperties& props) { m_WindowObject = Derived_Window(props); }
-
         virtual ~Window() = default;
 
-        inline void Init() const { m_WindowObject.Init(); }
-        inline void OnUpdate() const { m_WindowObject.OnUpdate(); }
-        inline void SetVSync(Bool enabled) const { m_WindowObject.SetVSync(enabled); }
-        inline void Shutdown() const { m_WindowObject.Shutdown(); }
-
-        Derived_Window& GetNativeWindowVPtr() const { return m_WindowObject; }
-
-        inline const UInt16 GetWidth() const { return m_Data.Width; }
-        inline const UInt16 GetHeight() const { return m_Data.Height; }
-
-        inline const Bool IsVSync() const { return m_Data.VSync; };
+        inline void OnUpdate() const { WindowPFn::OnUpdateFn(); }
+        inline void SetVSync(Bool enabled) const { WindowPFn::SetVSyncFn(enabled); }
+        inline void Shutdown() const { WindowPFn::ShutdownFn(); }
+        inline void* GetNative() const { return WindowPFn::GetNativeFn(); }
 
     protected:
         inline Window(const WindowProperties& props) : m_Properties(props) {}
 
     protected:
-        // Basically using glfwSetWindowUserPointer we are setting a pointer to m_Data (line 148)
+        // Basically using glfwSetWindowUserPointer we are setting a pointer to m_Data (line 171)
         // In the glfwSetXXXXCallback functions, we are retrieving the pointer to m_Data, then
         // setting the value of the EventCallbackFn.
         // In earlier days, when I was just learning C++, had no idea how this worked.
@@ -67,12 +62,11 @@ namespace Sentinel {
 
         struct WindowData {
             SmallString Title;
-            UInt16 Width, Height;
-            Bool VSync;
+            UInt16 Width = 900, Height = 900;
+            Bool VSync = true;
         };
 
         WindowData m_Data;
         WindowProperties m_Properties;
-        Derived_Window m_WindowObject;
     };
 }  // namespace Sentinel

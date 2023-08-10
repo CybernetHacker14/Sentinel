@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
+#include "Sentinel/Common/Core/DataTypes.h"
+#include "Sentinel/Common/Strings/String.h"
 
 #ifdef ST_RENDERER_DX11
 struct ID3D11VertexShader;
@@ -16,7 +17,7 @@ namespace Sentinel {
     struct ContextData;
 
     struct ShaderSource {
-        STL::string source;
+        String source;
         ShaderType type;
     };
 
@@ -32,8 +33,8 @@ namespace Sentinel {
         ContextData* Context;
 
     private:
-        STL::string m_ShaderName;
-        STL::string m_Filepath;
+        String m_ShaderName;
+        String m_Filepath;
         ShaderSource m_Sources[4];
 
 #ifdef ST_RENDERER_DX11

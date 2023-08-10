@@ -28,8 +28,8 @@ namespace Sentinel {
     ShaderData* Sentinel::ShaderAPI::CreateShaderData(
         PoolAllocator<ShaderData>& allocator,
         ContextData* context,
-        const STL::string& filepath,
-        const STL::string& name) {
+        const String& filepath,
+        const String& name) {
         ShaderData* shaderObject = allocator.New();  // Remove the <T> from New calls in other classes
         shaderObject->m_Filepath = filepath;
         shaderObject->m_ShaderName = name;

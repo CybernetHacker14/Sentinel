@@ -1,61 +1,50 @@
 #include "stpch.h"
 #include "Sentinel/Events/Event.h"
 
-#include "Sentinel/Events/Categories/ApplicationEvent.h"
-#include "Sentinel/Events/Categories/KeyEvent.h"
-#include "Sentinel/Events/Categories/MouseEvent.h"
-#include "Sentinel/Events/Categories/WindowEvent.h"
+#include "Sentinel/Common/Core/Macros.h"
 
-namespace Sentinel
-{
-	EventCategory operator|(EventCategory lhs, EventCategory rhs) {
-		return static_cast<EventCategory>(
-			static_cast<STL::underlying_type_t<EventCategory>>(lhs) |
-			static_cast<STL::underlying_type_t<EventCategory>>(rhs)
-			);
-	}
+#define MAX_LISTENERS_PER_TYPE 8
 
-	EventCategory operator&(EventCategory lhs, EventCategory rhs) {
-		return static_cast<EventCategory>(
-			static_cast<STL::underlying_type_t<EventCategory>>(lhs) &
-			static_cast<STL::underlying_type_t<EventCategory>>(rhs)
-			);
-	}
+namespace Sentinel {
+    namespace EventUtils {
+        struct EventListener {
+            EventsAPI::Callback Callback;
+            void* Listener = nullptr;
+        };
 
-	EventCategory operator^(EventCategory lhs, EventCategory rhs) {
-		return static_cast<EventCategory>(
-			static_cast<STL::underlying_type_t<EventCategory>>(lhs) ^
-			static_cast<STL::underlying_type_t<EventCategory>>(rhs)
-			);
-	}
+        // This structure isn't aligned
+        struct EventListenerList {
+            EventListener EventListeners[MAX_LISTENERS_PER_TYPE];
+        };
 
-	EventCategory operator~(EventCategory category) {
-		return static_cast<EventCategory>(
-			~static_cast<STL::underlying_type_t<EventCategory>>(category)
-			);
-	}
+        EventListenerList s_ListenerList[12];
+    }  // namespace EventUtils
 
-	EventCategory& operator|=(EventCategory& lhs, EventCategory rhs) {
-		lhs = static_cast<EventCategory>(
-			static_cast<STL::underlying_type_t<EventCategory>>(lhs) |
-			static_cast<STL::underlying_type_t<EventCategory>>(rhs)
-			);
-		return lhs;
-	}
+    Int16 EventsAPI::RegisterEvent(EventType type, void* listener, Callback callback) {
+        for (UInt8 i = 0; i < MAX_LISTENERS_PER_TYPE; i++) {
+            if (EventUtils::s_ListenerList[(UInt8)type].EventListeners[i].Listener == nullptr) {
+                EventUtils::s_ListenerList[(UInt8)type].EventListeners[i].Listener = listener;
+                EventUtils::s_ListenerList[(UInt8)type].EventListeners[i].Callback = ST_MOV(callback);
+                return i;
+            }
+        }
 
-	EventCategory& operator&=(EventCategory& lhs, EventCategory rhs) {
-		lhs = static_cast<EventCategory>(
-			static_cast<STL::underlying_type_t<EventCategory>>(lhs) &
-			static_cast<STL::underlying_type_t<EventCategory>>(rhs)
-			);
-		return lhs;
-	}
+        return -1;
+    }
 
-	EventCategory& operator^=(EventCategory& lhs, EventCategory rhs) {
-		lhs = static_cast<EventCategory>(
-			static_cast<STL::underlying_type_t<EventCategory>>(lhs) ^
-			static_cast<STL::underlying_type_t<EventCategory>>(rhs)
-			);
-		return lhs;
-	}
-}
+    void EventsAPI::UnregisterEvent(EventType type, Int16 entry) {
+        EventUtils::s_ListenerList[(UInt8)type].EventListeners[entry].Listener = nullptr;
+    }
+
+    Bool EventsAPI::FireEvent(EventType type, EventData data) {
+        for (UInt8 i = 0; i < MAX_LISTENERS_PER_TYPE; i++) {
+            if (EventUtils::s_ListenerList[(UInt8)type].EventListeners[i].Listener == nullptr) continue;
+
+            if (EventUtils::s_ListenerList[(UInt8)type].EventListeners[i].Callback(
+                    type, data, EventUtils::s_ListenerList[(UInt8)type].EventListeners[i].Listener))
+                return true;
+        }
+
+        return false;
+    }
+}  // namespace Sentinel

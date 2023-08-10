@@ -2,6 +2,10 @@
 
 #include "Sentinel/Common/Core/DataTypes.h"
 
+// Didn't make it compiler-based, because we are using a union and
+// with 15, both the heap and sso size becomes same
+#define SHORT_STRING_SIZE 15
+
 namespace Sentinel {
     struct String {
     public:
@@ -12,19 +16,70 @@ namespace Sentinel {
         String(CChar* data);
         String(const String& other);
 
-        String(String&& other);
+        String(String&& other) noexcept;
 
         ~String();
 
         String& operator=(const String& other);
-        String& operator=(String&& other);
+        String& operator=(String&& other) noexcept;
 
-        Char& operator[](UInt8 index);
-        CChar& operator[](UInt8 index) const;
+        Char& operator[](UInt32 index);
+        CChar& operator[](UInt32 index) const;
+
+        Char* C_Str();
+        CChar* C_Str() const;
+
+        UInt32 Length() const;
+
+        UInt64 Hash() const;
+
+        // This means you are explicitly overriding SSO
+        void SetHeapCapacity(UInt32 capacity);
 
     private:
-        Char* Data;
-        UInt32 Size;
+        String& Set(CChar* data, UInt32 size, UInt32 start = 0);
+
+    private:
+        struct SSOLayout {
+            Char Data[SHORT_STRING_SIZE] = {0};
+            UInt8 Size = 0;
+        };
+
+        struct HeapLayout {
+            Char* Data = nullptr;
+            UInt32 Capacity = 0, Size = 0;
+        };
+
+        struct Layout {
+            union Representation {
+                constexpr Representation() : sso {} {};
+
+                HeapLayout heap;
+                SSOLayout sso;
+            };
+
+            Layout() { Data.sso.Size = 0; }
+
+            Representation Data;
+        };
+
+        Layout m_Data;
+        UInt32 m_RemainingSize = 0;
+        Bool m_SSO = true;
+        Bool m_Empty = true;
+        // We can store a refcount of how many string views are
+        // referencing this string
+        UInt16 m_StringViewRefCount = 0;
     };
 
 }  // namespace Sentinel
+
+namespace std {
+    template<typename T>
+    struct hash;
+
+    template<>
+    struct hash<Sentinel::String> {
+        Sentinel::Size_t operator()(const Sentinel::String& string) const { return string.Hash(); }
+    };
+}  // namespace std

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Graphics/Material/ShaderData.h"
+#include "Sentinel/Memory/PoolAllocator.h"
 
 namespace Sentinel {
     class ShaderAPI {
@@ -10,8 +9,8 @@ namespace Sentinel {
         static ShaderData* CreateShaderData(
             PoolAllocator<ShaderData>& allocator,
             ContextData* context,
-            const STL::string& filepath,
-            const STL::string& name);
+            const String& filepath,
+            const String& name);
 
         static void Bind(ShaderData* dataObject);
 

@@ -8,7 +8,7 @@ namespace Scribe {
     namespace Window {
         void BlockTitleBarDrag(Sentinel::Bool value);
 
-        class ScribeWindow final: public Sentinel::Window {
+        class ScribeWindow final: public Sentinel::Window<ScribeWindow> {
         public:
             ScribeWindow(const Sentinel::WindowProperties& props);
 

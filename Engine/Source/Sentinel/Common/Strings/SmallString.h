@@ -25,6 +25,8 @@ namespace Sentinel {
         Char& operator[](UInt8 index);
         CChar& operator[](UInt8 index) const;
 
+        inline CChar* C_Str() const { return &m_Data[0]; }
+
     private:
         Char m_Data[SHORT_STRING_SIZE] = {0};
         UInt8 m_Size = 0;
