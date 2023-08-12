@@ -2,7 +2,7 @@
 #include "Sentinel/Filesystem/Filesystem.h"
 #include "Sentinel/Utilities/StringUtils.h"
 
-#include "Platform/Windows/WindowsTextUtils.h"
+#include "Platform/Windows/Utils/WindowsStringUtils.h"
 
 #include <Windows.h>
 #include <wtypes.h>
@@ -21,7 +21,7 @@ namespace Sentinel {
     void CALLBACK FileIOCompletionInfo(DWORD dwErrorCode, DWORD dwNoOfBytesTransferred, LPOVERLAPPED lpOverlapped) {
     }
 
-    static HANDLE OpenFileForReading(const STL::string& path) {
+    static HANDLE OpenFileForReading(const String& path) {
         return CreateFileW(
             WindowsTextUtils::TranscodeUTF8toUTF16(path).c_str(),
             GENERIC_READ,

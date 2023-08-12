@@ -38,6 +38,14 @@ namespace Sentinel {
         return ptr;
     }
 
+    inline void* Realloc(void* ptr, Size_t size) {
+#ifdef ST_COMPILER_MSVC
+        return _aligned_realloc(ptr, size, MIN_ALLOC_ALIGNMENT);
+#else
+        return realloc(ptr, size);
+#endif  // ST_COMPILER_MSVC
+    }
+
     inline void Free(void* ptr) {
 #ifdef ST_COMPILER_MSVC
         _aligned_free(ptr);

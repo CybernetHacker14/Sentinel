@@ -23,18 +23,18 @@ namespace Sentinel {
         String& operator=(const String& other);
         String& operator=(String&& other) noexcept;
 
-        Char& operator[](UInt32 index);
-        CChar& operator[](UInt32 index) const;
+        inline Char& operator[](UInt32 index);
+        inline CChar& operator[](UInt32 index) const;
 
-        Char* C_Str();
-        CChar* C_Str() const;
+        inline Char* C_Str();
+        inline CChar* C_Str() const;
 
-        UInt32 Length() const;
+        inline UInt32 Length() const;
 
         UInt64 Hash() const;
 
         // This means you are explicitly overriding SSO
-        void SetHeapCapacity(UInt32 capacity);
+        inline void SetHeapCapacity(UInt32 capacity);
 
     private:
         String& Set(CChar* data, UInt32 size, UInt32 start = 0);

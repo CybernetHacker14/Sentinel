@@ -1,7 +1,8 @@
 #include "stpch.h"
 
 #include "Sentinel/Archive/ZipFileOperations.h"
-#include "Sentinel/Filesystem/Filesystem.h"
+#include "Sentinel/Common/Core/Malloc.h"
+#include "Sentinel/Common/Strings/MemFunctions.h"
 
 #include <mz_strm.h>
 #include <mz_zip.h>
@@ -19,31 +20,31 @@ namespace Sentinel {
     static constexpr const UInt16 s_ZipCompressionMethod = MZ_COMPRESS_METHOD_STORE;
     // If issue occurs check with Compression Method = MZ_COMPRESS_METHOD_STORE
 
-    Bool ZipFileOperations::DoesFileExistInZip(const STL::string& zipPath, const STL::string& inZipLocation) {
+    Bool ZipFileOperations::DoesFileExistInZip(const String& zipPath, const String& inZipLocation) {
         void* handle = NULL;
         Int32 err = MZ_OK, out = MZ_OK;
 
         mz_zip_reader_create(&handle);
         mz_zip_reader_set_password(handle, s_ZipPassword);
 
-        err = mz_zip_reader_open_file(handle, zipPath.c_str());
-        out = mz_zip_reader_locate_entry(handle, inZipLocation.c_str(), 0);
+        err = mz_zip_reader_open_file(handle, zipPath.C_Str());
+        out = mz_zip_reader_locate_entry(handle, inZipLocation.C_Str(), 0);
         err = mz_zip_reader_close(handle);
 
         return out == MZ_OK && err == MZ_OK;
     }
 
     Bool ZipFileOperations::ReadFromZipFile(
-        const STL::string& zipPath, const STL::string& inZipLocation, void** ptrToBuffer, UInt32& dataLength) {
+        const String& zipPath, const String& inZipLocation, void** ptrToBuffer, UInt32& dataLength) {
         void* handle = NULL;
         Int32 err = MZ_OK;
 
         mz_zip_reader_create(&handle);
         mz_zip_reader_set_password(handle, s_ZipPassword);
 
-        err = mz_zip_reader_open_file(handle, zipPath.c_str());
+        err = mz_zip_reader_open_file(handle, zipPath.C_Str());
 
-        if (mz_zip_reader_locate_entry(handle, inZipLocation.c_str(), 0) == MZ_OK) {
+        if (mz_zip_reader_locate_entry(handle, inZipLocation.C_Str(), 0) == MZ_OK) {
             Int32 length = mz_zip_reader_entry_save_buffer_length(handle);
             *ptrToBuffer = new char[length];
             err = mz_zip_reader_entry_open(handle);
@@ -57,8 +58,8 @@ namespace Sentinel {
     }
 
     Bool ZipFileOperations::WriteTextFileToZipFile(
-        const STL::string& zipPath, const STL::string& inZipLocation, const STL::string& filepath) {
-        std::fstream file(filepath.c_str(), std::ios::in);
+        const String& zipPath, const String& inZipLocation, const String& filepath) {
+        std::fstream file(filepath.C_Str(), std::ios::in);
 
         if (!file.is_open()) return false;
 
@@ -68,20 +69,21 @@ namespace Sentinel {
             Long size = file.tellg();
             file.seekg(0, std::ios::beg);
 
-            STL::vector<char> buffer(size);
-            if (size == 0 || !file.read(&buffer[0], size)) {
+            Char* buffer = (Char*)Malloc(size);
+            if (size == 0 || !file.read(buffer, size)) {
                 file.close();
                 return ret;
             }
 
-            ret = WriteBufferToZipFile(zipPath, inZipLocation, &buffer[0], size);
+            ret = WriteBufferToZipFile(zipPath, inZipLocation, buffer, size);
             file.close();
+            Free(buffer);
         }
         return ret;
     }
 
     Bool ZipFileOperations::WriteBufferToZipFile(
-        const STL::string& zipPath, const STL::string& inZipLocation, std::stringstream stream) {
+        const String& zipPath, const String& inZipLocation, std::stringstream stream) {
         stream.seekg(0, std::ios::end);
         Sentinel::UInt32 length = stream.tellg();
         stream.seekg(0, std::ios::beg);
@@ -90,7 +92,7 @@ namespace Sentinel {
     }
 
     Bool ZipFileOperations::WriteBufferToZipFile(
-        const STL::string& zipPath, const STL::string& inZipLocation, char* data, UInt64 length) {
+        const String& zipPath, const String& inZipLocation, char* data, UInt64 length) {
         if (data == NULL || length == 0) return false;
 
         void* handle = NULL;
@@ -98,7 +100,7 @@ namespace Sentinel {
 
         mz_zip_file file_info = {0};
 
-        file_info.filename = inZipLocation.c_str();
+        file_info.filename = inZipLocation.C_Str();
         file_info.compression_method = s_ZipCompressionMethod;
         file_info.flag = MZ_ZIP_FLAG_UTF8 | MZ_ZIP_FLAG_ENCRYPTED;
         file_info.modified_date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -110,7 +112,7 @@ namespace Sentinel {
         mz_zip_writer_set_compress_method(handle, s_ZipCompressionMethod);
         mz_zip_writer_set_compress_level(handle, s_ZipCompressionLevel);
 
-        err = mz_zip_writer_open_file(handle, zipPath.c_str(), 0, 1);
+        err = mz_zip_writer_open_file(handle, zipPath.C_Str(), 0, 1);
 
         err = mz_zip_writer_entry_open(handle, &file_info);
         err = mz_zip_writer_entry_write(handle, data, length);

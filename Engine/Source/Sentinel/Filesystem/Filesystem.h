@@ -1,60 +1,60 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
+#include "Sentinel/Common/Strings/String.h"
 
 namespace Sentinel {
     // Filesystem I/O functions.
     // WARNING: Avoid too much usage, and mostly aimed for editor functionality
     class Filesystem {
     public:
-        static STL::string GetAbsolutePath(const STL::string& path);
+        static String GetAbsolutePath(const String& path);
 
-        static Bool DoesPathExist(const STL::string& path);
+        static Bool DoesPathExist(const String& path);
 
-        static Bool IsFile(const STL::string& filepath);
+        static Bool IsFile(const String& filepath);
 
-        static Bool IsFolder(const STL::string& folderpath);
+        static Bool IsFolder(const String& folderpath);
 
-        static Bool DoesFileExist(const STL::string& filepath);
+        static Bool DoesFileExist(const String& filepath);
 
-        static Bool DoesFolderExist(const STL::string& folderpath);
+        static Bool DoesFolderExist(const String& folderpath);
 
-        static void CreateFolder(const STL::string& folderpath);
+        static void CreateFolder(const String& folderpath);
 
-        static Bool IsFolderEmpty(const STL::string& folderpath);
+        static Bool IsFolderEmpty(const String& folderpath);
 
-        static Bool HasSubFolders(const STL::string& folderpath);
+        static Bool HasSubFolders(const String& folderpath);
 
-        static STL::vector<STL::string> GetImmediateSubfolders(const STL::string& folderpath);
+        static STL::vector<String> GetImmediateSubfolders(const String& folderpath);
 
-        static STL::vector<STL::string> GetAllSubfolders(const STL::string& folderpath);
+        static STL::vector<String> GetAllSubfolders(const String& folderpath);
 
-        static Bool HasExtensionInPath(const STL::string& path);
+        static Bool HasExtensionInPath(const String& path);
 
-        static STL::string GetFilenameWithoutExtension(const STL::string& filepath);
+        static String GetFilenameWithoutExtension(const String& filepath);
 
-        static STL::string GetFilenameWithExtension(const STL::string& filepath);
+        static String GetFilenameWithExtension(const String& filepath);
 
-        static STL::string GetFilenameExtension(const STL::string& filepath);
+        static String GetFilenameExtension(const String& filepath);
 
-        static UInt8* ReadFileAtPath(const STL::string& filepath);
+        static UInt8* ReadFileAtPath(const String& filepath);
 
-        static Bool ReadFileAtPath(const STL::string& filepath, void* buffer, Int64 size = -1);
+        static Bool ReadFileAtPath(const String& filepath, void* buffer, Int64 size = -1);
 
-        static STL::string ReadTextFileAtPath(const STL::string& filepath);
+        static String ReadTextFileAtPath(const String& filepath);
 
-        static Bool WriteToFileAtPath(const STL::string& filepath, UInt8* buffer, UInt64 length);
+        static Bool WriteToFileAtPath(const String& filepath, UInt8* buffer, UInt64 length);
 
-        static Bool WriteToTextFileAtPath(const STL::string& filepath, const STL::string& text);
+        static Bool WriteToTextFileAtPath(const String& filepath, const String& text);
 
-        static Bool OpenAtPath(const STL::string& path);
+        static Bool OpenAtPath(const String& path);
 
-        static Bool DeleteAtPath(const STL::string& path);
+        static Bool DeleteAtPath(const String& path);
 
-        static Bool MoveToPath(const STL::string& currentPath, const STL::string& newPath);
+        static Bool MoveToPath(const String& currentPath, const String& newPath);
 
-        static Bool CopyToPath(const STL::string& currentPath, const STL::string& newPath);
+        static Bool CopyToPath(const String& currentPath, const String& newPath);
 
-        static Int64 GetFileSize(const STL::string& filepath);
+        static Int64 GetFileSize(const String& filepath);
     };
 }  // namespace Sentinel

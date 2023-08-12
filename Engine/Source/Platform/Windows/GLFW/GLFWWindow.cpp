@@ -31,7 +31,7 @@ namespace Sentinel {
         static void* GetNative() {
             return s_NativeWindow;
         }
-    }  // namespace WindowUtils
+    }  // namespace WindowPFn
 
     static void GLFWErrorCallback(int error, const char* description) {
         ST_TERMINAL_ERROR("GLFW Error:%i - %s", error, description);
@@ -160,13 +160,12 @@ namespace Sentinel {
                 // data.EventCallback(STL::move(event));
             });
 
-        glfwSetCursorPosCallback(
-            Sentinel::WindowPFn::s_NativeWindow, [](GLFWwindow* window, Double xPos, Double yPos) {
-                WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+        glfwSetCursorPosCallback(Sentinel::WindowPFn::s_NativeWindow, [](GLFWwindow* window, Double xPos, Double yPos) {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                // UniqueRef<Event> event(new MouseMovedEvent(xPos, yPos));
-                // data.EventCallback(STL::move(event));
-            });
+            // UniqueRef<Event> event(new MouseMovedEvent(xPos, yPos));
+            // data.EventCallback(STL::move(event));
+        });
 
         glfwSetWindowUserPointer(Sentinel::WindowPFn::s_NativeWindow, &m_Data);
     }
