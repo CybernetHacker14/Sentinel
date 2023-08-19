@@ -6,12 +6,22 @@ namespace Sentinel {
     template<typename T>
     class Vector {
     public:
+        static constexpr UInt8 GROW_FACTOR = 2;
+
+    public:
         Vector() = default;
         Vector(const Vector& other);
         Vector(Vector&& other) noexcept;
 
         Vector& operator=(const Vector& other);
         Vector& operator=(Vector&& other) noexcept;
+
+        ~Vector();
+
+        T& operator[](UInt32 pos);
+        const T& operator[](UInt32 pos) const;
+
+        void Clear() noexcept;
 
         UInt32 Size() const noexcept { return m_Size; }
         UInt32 Capacity() const noexcept { return m_Capacity; }
@@ -25,6 +35,14 @@ namespace Sentinel {
 
         inline T* End() noexcept { return m_Data + m_Size; }
         inline const T* End() const noexcept { return m_Data + m_Size; }
+
+        void Push_Back(const T& value);
+        void Push_Back(T&& value);
+
+        template<class... Args>
+        void Emplace_Back(Args&&... args);
+
+        void Pop_Back();
 
     private:
         void Reserve(UInt32 count);

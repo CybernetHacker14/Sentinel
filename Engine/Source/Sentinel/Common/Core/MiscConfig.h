@@ -24,6 +24,10 @@
     // Caller failing to hold lock <lock> before calling function <func>
     // https://docs.microsoft.com/en-us/cpp/code-quality/c26110?view=msvc-170
     #pragma warning(disable : 26110)
+
+    // 'conversion' conversion from 'type1' to 'type2', possible loss of data
+    // https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-levels-3-and-4-c4244?view=msvc-170
+    #pragma warning(disable : 4244)
 #endif  // defined(_MSC_VER)
 
 #ifdef ST_PLATFORM_WINDOWS

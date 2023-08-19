@@ -3,31 +3,31 @@
 #include "Sentinel/Common/Core/DataTypes.h"
 
 // Didn't make it compiler-based, because we are using a union and
-// with 15, both the heap and sso size becomes same
+// with 7, both the heap and sso size becomes same
 #define SHORT_STRING_SIZE 15
 
 namespace Sentinel {
-    struct String {
+    struct WString {
     public:
         static constexpr UInt32 npos = static_cast<UInt32>(-1);
 
     public:
-        String();
-        String(CChar* data);
-        String(const String& other);
+        WString();
+        WString(CWChar* data);
+        WString(const WString& other);
 
-        String(String&& other) noexcept;
+        WString(WString&& other) noexcept;
 
-        ~String();
+        ~WString();
 
-        String& operator=(const String& other);
-        String& operator=(String&& other) noexcept;
+        WString& operator=(const WString& other);
+        WString& operator=(WString&& other) noexcept;
 
-        inline Char& operator[](UInt32 index);
-        inline CChar& operator[](UInt32 index) const;
+        inline WChar& operator[](UInt32 index);
+        inline CWChar& operator[](UInt32 index) const;
 
-        inline Char* Data();
-        inline CChar* C_Str() const;
+        inline WChar* Data();
+        inline CWChar* C_Str() const;
 
         inline UInt32 Length() const;
 
@@ -39,17 +39,17 @@ namespace Sentinel {
         inline Bool Empty() const;
 
     private:
-        String& Set(CChar* data, UInt32 size, UInt32 start = 0);
+        WString& Set(CWChar* data, UInt32 size, UInt32 start = 0);
         UInt32 GetSize() const;
 
     private:
         struct SSOLayout {
-            Char Data[SHORT_STRING_SIZE] = {0};
-            UInt8 Size = 0;
+            WChar Data[SHORT_STRING_SIZE] = {0};
+            UInt16 Size = 0;
         };
 
         struct HeapLayout {
-            Char* Data = nullptr;
+            WChar* Data = nullptr;
             UInt32 Capacity = 0, Size = 0;
         };
 
@@ -74,15 +74,4 @@ namespace Sentinel {
         // referencing this string
         UInt16 m_StringViewRefCount = 0;
     };
-
 }  // namespace Sentinel
-
-namespace std {
-    template<typename T>
-    struct hash;
-
-    template<>
-    struct hash<Sentinel::String> {
-        Sentinel::Size_t operator()(const Sentinel::String& string) const { return string.Hash(); }
-    };
-}  // namespace std

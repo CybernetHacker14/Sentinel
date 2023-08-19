@@ -11,6 +11,8 @@
 #include <mz_strm_mem.h>
 #include <mz_strm_buf.h>
 
+#include <chrono>
+
 #define HAVE_PKCRYPT
 
 namespace Sentinel {

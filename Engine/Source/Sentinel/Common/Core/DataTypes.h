@@ -26,4 +26,7 @@ namespace Sentinel {
     typedef const char CChar;
     typedef unsigned char UChar;
     typedef unsigned const char UCChar;
+
+    typedef wchar_t WChar;
+    typedef const wchar_t CWChar;
 }  // namespace Sentinel

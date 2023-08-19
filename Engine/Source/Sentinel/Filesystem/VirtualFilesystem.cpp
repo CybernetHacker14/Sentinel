@@ -1,6 +1,5 @@
 #include "stpch.h"
 #include "Sentinel/Filesystem/VirtualFilesystem.h"
-#include "Sentinel/Utilities/StringUtils.h"
 
 namespace Sentinel {
     void VirtualFilesystem::Mount(const STL::string& virtualPath, const STL::string& physicalPath) {
@@ -18,7 +17,7 @@ namespace Sentinel {
         }
 
         // Break the path by '/' and get the list of directories of the path to search
-        STL::vector<STL::string> directories = StringUtils::SplitString(virtualPath, "/");
+        STL::vector<STL::string> directories/* = StringUtils::SplitString(virtualPath, "/")*/;
         const STL::string& virtualDirectory = directories.front();
 
         // If it is the last directory it's the path itself

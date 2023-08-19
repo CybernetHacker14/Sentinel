@@ -1,23 +1,23 @@
 #include "stpch.h"
-#include "Sentinel/Common/Strings/String.h"
+#include "Sentinel/Common/Strings/WString.h"
 #include "Sentinel/Common/Strings/MemFunctions.h"
 #include "Sentinel/Common/Core/Malloc.h"
 #include "Sentinel/Common/Core/Assert.h"
 
 namespace Sentinel {
-    String::String() {
-        Set("", 0);
+    WString::WString() {
+        Set(L"", 0);
     }
 
-    String::String(CChar* data) {
-        Set(data, static_cast<UInt32>(strlen(data)));
+    WString::WString(CWChar* data) {
+        Set(data, static_cast<UInt32>(wcslen(data)));
     }
 
-    String::String(const String& other) {
+    WString::WString(const WString& other) {
         Set(other.C_Str(), other.Length());
     }
 
-    String::String(String&& other) noexcept {
+    WString::WString(WString&& other) noexcept {
         // Resorting to default copy operation
         // For SSO, the entire char stack will be copied
         // For heap, the pointer to the char stack will be copied,
@@ -38,20 +38,20 @@ namespace Sentinel {
         other.m_SSO = 0;
     }
 
-    String::~String() {
+    WString::~WString() {
         if (!m_SSO) {
             Free(m_Data.Data.heap.Data);
             m_Data.Data.heap.Data = nullptr;
         }
     }
 
-    String& String::operator=(const String& other) {
+    WString& WString::operator=(const WString& other) {
         if (this != &other) Set(other.C_Str(), other.Length());
 
         return *this;
     }
 
-    String& String::operator=(String&& other) noexcept {
+    WString& WString::operator=(WString&& other) noexcept {
         if (this != &other) {
             m_Data = other.m_Data;
             m_RemainingSize = other.m_RemainingSize;
@@ -72,27 +72,27 @@ namespace Sentinel {
         return *this;
     }
 
-    inline Char& String::operator[](UInt32 index) {
+    inline WChar& WString::operator[](UInt32 index) {
         return m_SSO ? m_Data.Data.sso.Data[index] : m_Data.Data.heap.Data[index];
     }
 
-    inline CChar& String::operator[](UInt32 index) const {
+    inline CWChar& WString::operator[](UInt32 index) const {
         return m_SSO ? m_Data.Data.sso.Data[index] : m_Data.Data.heap.Data[index];
     }
 
-    inline Char* String::Data() {
+    inline WChar* WString::Data() {
         return m_SSO ? &(m_Data.Data.sso.Data[0]) : m_Data.Data.heap.Data;
     }
 
-    inline CChar* String::C_Str() const {
+    inline CWChar* WString::C_Str() const {
         return m_SSO ? &(m_Data.Data.sso.Data[0]) : m_Data.Data.heap.Data;
     }
 
-    inline UInt32 String::Length() const {
+    inline UInt32 WString::Length() const {
         return m_SSO ? m_Data.Data.sso.Size : m_Data.Data.heap.Size;
     }
 
-    UInt64 String::Hash() const {
+    UInt64 WString::Hash() const {
         UInt64 hash = 2166136261UL;
         UInt32 size = m_SSO ? m_Data.Data.sso.Size : m_Data.Data.heap.Size;
         UChar* p = (UChar*)C_Str();
@@ -102,16 +102,15 @@ namespace Sentinel {
         return hash;
     }
 
-    inline void String::SetHeapCapacity(UInt32 capacity) {
+    inline void WString::SetHeapCapacity(UInt32 capacity) {
         m_Data.Data.heap.Capacity = capacity;
     }
 
-    inline Bool String::Empty() const {
+    inline Bool WString::Empty() const {
         return m_Empty;
     }
 
-    // Somewhat inspired by a combination of eastl::string and HighLo-Engine String class
-    String& String::Set(CChar* data, UInt32 size, UInt32 start) {
+    WString& WString::Set(CWChar* data, UInt32 size, UInt32 start) {
         ST_BREAKPOINT_ASSERT(data || start <= size, "Bad parameters")
 
         UInt32 newSize = size - start;
@@ -130,7 +129,7 @@ namespace Sentinel {
 
         } else {
             m_Data.Data.heap.Size = newSize;
-            m_Data.Data.heap.Data = (Char*)Malloc(newSize + 1);
+            m_Data.Data.heap.Data = (WChar*)Malloc(newSize + 1);
             m_Data.Data.heap.Data[newSize] = '\0';
 
             MemFunctions::Memcpy(m_Data.Data.heap.Data, data + start, newSize);
@@ -143,7 +142,7 @@ namespace Sentinel {
         return *this;
     }
 
-    UInt32 String::GetSize() const {
+    UInt32 WString::GetSize() const {
         return m_SSO ? m_Data.Data.sso.Size : m_Data.Data.heap.Size;
     }
 }  // namespace Sentinel

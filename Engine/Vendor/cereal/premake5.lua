@@ -18,13 +18,13 @@ project "cereal"
 	
 	filter "system:windows"
         systemversion "latest"
-        cppdialect "C++17"
+        cppdialect "C++11"
         staticruntime "On"
 
     filter "system:linux"
         pic "On"
         systemversion "latest"
-        cppdialect "C++17"
+        cppdialect "C++11"
         staticruntime "On"
 
     filter "configurations:Debug"

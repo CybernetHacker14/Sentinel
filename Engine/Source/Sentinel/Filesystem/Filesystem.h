@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Sentinel/Common/Strings/String.h"
+#include "Sentinel/Common/Strings/StringView.h"
+#include "Sentinel/Common/Containers/Vector.h"
 
 namespace Sentinel {
     // Filesystem I/O functions.
@@ -25,9 +26,9 @@ namespace Sentinel {
 
         static Bool HasSubFolders(const String& folderpath);
 
-        static STL::vector<String> GetImmediateSubfolders(const String& folderpath);
+        static Vector<String> GetImmediateSubfolders(const String& folderpath);
 
-        static STL::vector<String> GetAllSubfolders(const String& folderpath);
+        static Vector<String> GetAllSubfolders(const String& folderpath);
 
         static Bool HasExtensionInPath(const String& path);
 
