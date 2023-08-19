@@ -50,6 +50,10 @@ namespace Sentinel {
     }
 
     template<typename T>
+    Vector<T>::Vector(const std::initializer_list<T>& list) : m_Data(list) {
+    }
+
+    template<typename T>
     Vector<T>& Vector<T>::operator=(const Vector& other) {
         m_Size = other.m_Size;
         m_Capacity = other.m_Capacity;

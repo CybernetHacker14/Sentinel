@@ -4,210 +4,209 @@
 #include "Sentinel/Application/Application.h"
 
 #include <GLFW/glfw3.h>
+#include <unordered_map>
 
-namespace Sentinel
-{
-	static STL::unordered_map<KeyCode, Bool> s_KeyStateMap(0);
-	static STL::unordered_map<MouseCode, Bool> s_MouseButtonStateMap(0);
+namespace Sentinel {
+    namespace GLFWInputUtils {
+        static std::unordered_map<KeyCode, Bool> s_KeyStateMap(0);
+        static std::unordered_map<MouseCode, Bool> s_MouseStateMap(0);
 
-	const static STL::vector<KeyCode> s_AllKeys =
-	{
-		Key::Space,
-		Key::Apostrophe,
-		Key::Comma,
-		Key::Minus,
-		Key::Period,
-		Key::Slash,
-		Key::D0,
-		Key::D1,
-		Key::D2,
-		Key::D3,
-		Key::D4,
-		Key::D5,
-		Key::D6,
-		Key::D7,
-		Key::D8,
-		Key::D9,
-		Key::Semicolon,
-		Key::Equal,
-		Key::A,
-		Key::B,
-		Key::C,
-		Key::D,
-		Key::E,
-		Key::F,
-		Key::G,
-		Key::H,
-		Key::I,
-		Key::J,
-		Key::K,
-		Key::L,
-		Key::M,
-		Key::N,
-		Key::O,
-		Key::P,
-		Key::Q,
-		Key::R,
-		Key::S,
-		Key::T,
-		Key::U,
-		Key::V,
-		Key::W,
-		Key::X,
-		Key::Y,
-		Key::Z,
-		Key::LeftBracket,
-		Key::Backslash,
-		Key::RightBracket,
-		Key::GraveAccent,
-		Key::World1,
-		Key::World2,
-		Key::Escape,
-		Key::Enter,
-		Key::Tab,
-		Key::Backspace,
-		Key::Insert,
-		Key::Delete,
-		Key::Right,
-		Key::Left,
-		Key::Down,
-		Key::Up,
-		Key::PageUp,
-		Key::PageDown,
-		Key::Home,
-		Key::End,
-		Key::CapsLock,
-		Key::ScrollLock,
-		Key::NumLock,
-		Key::PrintScreen,
-		Key::Pause,
-		Key::F1,
-		Key::F2,
-		Key::F3,
-		Key::F4,
-		Key::F5,
-		Key::F6,
-		Key::F7,
-		Key::F8,
-		Key::F9,
-		Key::F10,
-		Key::F11,
-		Key::F12,
-		Key::F13,
-		Key::F14,
-		Key::F15,
-		Key::F16,
-		Key::F17,
-		Key::F18,
-		Key::F19,
-		Key::F20,
-		Key::F21,
-		Key::F22,
-		Key::F23,
-		Key::F24,
-		Key::F25,
-		Key::KP0,
-		Key::KP1,
-		Key::KP2,
-		Key::KP3,
-		Key::KP4,
-		Key::KP5,
-		Key::KP6,
-		Key::KP7,
-		Key::KP8,
-		Key::KP9,
-		Key::KPDecimal,
-		Key::KPDivide,
-		Key::KPMultiply,
-		Key::KPSubtract,
-		Key::KPAdd,
-		Key::KPEnter,
-		Key::KPEqual,
-		Key::LeftShift,
-		Key::LeftControl,
-		Key::LeftAlt,
-		Key::LeftSuper,
-		Key::RightShift,
-		Key::RightControl,
-		Key::RightAlt,
-		Key::RightSuper,
-		Key::Menu
-	};
+        const static KeyCode s_AllKeys[120] = {
+            KeyCode::Space,
+            KeyCode::Apostrophe,
+            KeyCode::Comma,
+            KeyCode::Minus,
+            KeyCode::Period,
+            KeyCode::Slash,
+            KeyCode::D0,
+            KeyCode::D1,
+            KeyCode::D2,
+            KeyCode::D3,
+            KeyCode::D4,
+            KeyCode::D5,
+            KeyCode::D6,
+            KeyCode::D7,
+            KeyCode::D8,
+            KeyCode::D9,
+            KeyCode::Semicolon,
+            KeyCode::Equal,
+            KeyCode::A,
+            KeyCode::B,
+            KeyCode::C,
+            KeyCode::D,
+            KeyCode::E,
+            KeyCode::F,
+            KeyCode::G,
+            KeyCode::H,
+            KeyCode::I,
+            KeyCode::J,
+            KeyCode::K,
+            KeyCode::L,
+            KeyCode::M,
+            KeyCode::N,
+            KeyCode::O,
+            KeyCode::P,
+            KeyCode::Q,
+            KeyCode::R,
+            KeyCode::S,
+            KeyCode::T,
+            KeyCode::U,
+            KeyCode::V,
+            KeyCode::W,
+            KeyCode::X,
+            KeyCode::Y,
+            KeyCode::Z,
+            KeyCode::LeftBracket,
+            KeyCode::Backslash,
+            KeyCode::RightBracket,
+            KeyCode::GraveAccent,
+            KeyCode::World1,
+            KeyCode::World2,
+            KeyCode::Escape,
+            KeyCode::Enter,
+            KeyCode::Tab,
+            KeyCode::Backspace,
+            KeyCode::Insert,
+            KeyCode::Delete,
+            KeyCode::Right,
+            KeyCode::Left,
+            KeyCode::Down,
+            KeyCode::Up,
+            KeyCode::PageUp,
+            KeyCode::PageDown,
+            KeyCode::Home,
+            KeyCode::End,
+            KeyCode::CapsLock,
+            KeyCode::ScrollLock,
+            KeyCode::NumLock,
+            KeyCode::PrintScreen,
+            KeyCode::Pause,
+            KeyCode::F1,
+            KeyCode::F2,
+            KeyCode::F3,
+            KeyCode::F4,
+            KeyCode::F5,
+            KeyCode::F6,
+            KeyCode::F7,
+            KeyCode::F8,
+            KeyCode::F9,
+            KeyCode::F10,
+            KeyCode::F11,
+            KeyCode::F12,
+            KeyCode::F13,
+            KeyCode::F14,
+            KeyCode::F15,
+            KeyCode::F16,
+            KeyCode::F17,
+            KeyCode::F18,
+            KeyCode::F19,
+            KeyCode::F20,
+            KeyCode::F21,
+            KeyCode::F22,
+            KeyCode::F23,
+            KeyCode::F24,
+            KeyCode::F25,
+            KeyCode::KP0,
+            KeyCode::KP1,
+            KeyCode::KP2,
+            KeyCode::KP3,
+            KeyCode::KP4,
+            KeyCode::KP5,
+            KeyCode::KP6,
+            KeyCode::KP7,
+            KeyCode::KP8,
+            KeyCode::KP9,
+            KeyCode::KPDecimal,
+            KeyCode::KPDivide,
+            KeyCode::KPMultiply,
+            KeyCode::KPSubtract,
+            KeyCode::KPAdd,
+            KeyCode::KPEnter,
+            KeyCode::KPEqual,
+            KeyCode::LeftShift,
+            KeyCode::LeftControl,
+            KeyCode::LeftAlt,
+            KeyCode::LeftSuper,
+            KeyCode::RightShift,
+            KeyCode::RightControl,
+            KeyCode::RightAlt,
+            KeyCode::RightSuper,
+            KeyCode::Menu};
 
-	const static STL::vector<MouseCode> s_AllMouseButtons =
-	{
-		Mouse::Button0,
-		Mouse::Button1,
-		Mouse::Button2,
-		Mouse::Button3,
-		Mouse::Button4,
-		Mouse::Button5,
-		Mouse::Button6,
-		Mouse::Button7
-	};
+        const static MouseCode s_AllMouseButtons[8] = {
+            MouseCode::Button0,
+            MouseCode::Button1,
+            MouseCode::Button2,
+            MouseCode::Button3,
+            MouseCode::Button4,
+            MouseCode::Button5,
+            MouseCode::Button6,
+            MouseCode::Button7};
 
-	Bool Input::IsKeyPressed(const KeyCode keycode) {
-		GLFWwindow* window = Application::Get().GetWindow().GetNativeWindow<GLFWwindow>();
-		auto state = glfwGetKey(window, static_cast<Int32>(keycode));
-		return state == GLFW_PRESS || state == GLFW_REPEAT;
-	}
+        static Bool GetKey(KeyCode keycode) {
+            GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNative());
+            return glfwGetKey(window, static_cast<Int32>(keycode)) == GLFW_PRESS;
+        }
 
-	Bool Input::IsKeyDown(const KeyCode keycode) {
-		return GetKey(keycode) && !s_KeyStateMap[keycode];
-	}
+        static Bool GetMouseButton(MouseCode mousecode) {
+            return glfwGetMouseButton(
+                       static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNative()),
+                       static_cast<Int32>(mousecode)) == GLFW_PRESS;
+        }
 
-	Bool Input::IsKeyUp(const KeyCode keycode) {
-		return !GetKey(keycode) && s_KeyStateMap[keycode];
-	}
+    }  // namespace GLFWInputUtils
 
-	Bool Input::IsMouseButtonPressed(const MouseCode button) {
-		GLFWwindow* window = Application::Get().GetWindow().GetNativeWindow<GLFWwindow>();
-		auto state = glfwGetMouseButton(window, static_cast<Int32>(button));
-		return state == GLFW_PRESS;
-	}
+    Bool Input::IsKeyPressed(const KeyCode keycode) {
+        GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNative());
+        Int32 state = glfwGetKey(window, static_cast<Int32>(keycode));
+        return state == GLFW_PRESS || state == GLFW_REPEAT;
+    }
 
-	Bool Input::IsMouseButtonDown(const MouseCode button) {
-		return GetMouseButton(button) && !s_MouseButtonStateMap[button];
-	}
+    Bool Input::IsKeyDown(const KeyCode keycode) {
+        return GLFWInputUtils::GetKey(keycode) && !GLFWInputUtils::s_KeyStateMap[keycode];
+    }
 
-	Bool Input::IsMouseButtonUp(const MouseCode button) {
-		return !GetMouseButton(button) && s_MouseButtonStateMap[button];
-	}
+    Bool Input::IsKeyUp(const KeyCode keycode) {
+        return !GLFWInputUtils::GetKey(keycode) && GLFWInputUtils::s_KeyStateMap[keycode];
+    }
 
-	glm::vec2 Input::GetMousePosition() {
-		GLFWwindow* window = Application::Get().GetWindow().GetNativeWindow<GLFWwindow>();
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		return { (Float)xpos,(Float)ypos };
-	}
+    Bool Input::IsMouseButtonPressed(const MouseCode button) {
+        GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNative());
+        Int32 state = glfwGetMouseButton(window, static_cast<Int32>(button));
+        return state == GLFW_PRESS;
+    }
 
-	Float Input::GetMouseX() {
-		return GetMousePosition().x;
-	}
+    Bool Input::IsMouseButtonDown(const MouseCode button) {
+        return GLFWInputUtils::GetMouseButton(button) && !GLFWInputUtils::s_MouseStateMap[button];
+    }
 
-	Float Input::GetMouseY() {
-		return GetMousePosition().y;
-	}
+    Bool Input::IsMouseButtonUp(const MouseCode button) {
+        return !GLFWInputUtils::GetMouseButton(button) && GLFWInputUtils::s_MouseStateMap[button];
+    }
 
-	Bool Input::GetKey(const KeyCode keycode) {
-		return glfwGetKey(Application::Get().GetWindow().GetNativeWindow<GLFWwindow>(),
-			static_cast<Int32>(keycode)) == GLFW_PRESS;
-	}
+    glm::vec2 Input::GetMousePosition() {
+        GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNative());
+        Double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        return {(Float)xpos, (Float)ypos};
+    }
 
-	Bool Input::GetMouseButton(const MouseCode mousecode) {
-		return glfwGetMouseButton(Application::Get().GetWindow().GetNativeWindow<GLFWwindow>(),
-			static_cast<Int32>(mousecode)) == GLFW_PRESS;
-	}
+    Float Input::GetMouseX() {
+        return GetMousePosition().x;
+    }
 
-	void Input::OnUpdate() {
-		for (KeyCode key : s_AllKeys)
-		{
-			s_KeyStateMap[key] = GetKey(key);
-		}
+    Float Input::GetMouseY() {
+        return GetMousePosition().y;
+    }
 
-		for (MouseCode mouseButton : s_AllMouseButtons)
-		{
-			s_MouseButtonStateMap[mouseButton] = GetMouseButton(mouseButton);
-		}
-	}
-}
+    // This polling should preferably run on a separate thread
+    void Input::OnUpdate() {
+        for (KeyCode key: GLFWInputUtils::s_AllKeys) {
+            GLFWInputUtils::s_KeyStateMap[key] = GLFWInputUtils::GetKey(key);
+        }
+
+        for (MouseCode mouseButton: GLFWInputUtils::s_AllMouseButtons) {
+            GLFWInputUtils::s_MouseStateMap[mouseButton] = GLFWInputUtils::GetMouseButton(mouseButton);
+        }
+    }
+}  // namespace Sentinel

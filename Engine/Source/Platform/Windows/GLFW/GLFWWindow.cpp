@@ -51,7 +51,6 @@ namespace Sentinel {
     }
 
     void GLFWWindow::Init() {
-        m_Data.Title = m_Properties.Title;
         m_Data.Width = m_Properties.Width;
         m_Data.Height = m_Properties.Height;
 
@@ -69,12 +68,12 @@ namespace Sentinel {
             Sentinel::WindowPFn::s_NativeWindow = glfwCreateWindow(
                 (Int32)m_Properties.Width,
                 (Int32)m_Properties.Height,
-                m_Data.Title.C_Str(),
+                m_Properties.Title.C_Str(),
                 glfwGetPrimaryMonitor(),
                 nullptr);
         } else {
             Sentinel::WindowPFn::s_NativeWindow = glfwCreateWindow(
-                (Int32)m_Properties.Width, (Int32)m_Properties.Height, m_Data.Title.C_Str(), nullptr, nullptr);
+                (Int32)m_Properties.Width, (Int32)m_Properties.Height, m_Properties.Title.C_Str(), nullptr, nullptr);
             if (m_Properties.Mode == WindowMode::WINDOWEDMAXIMIZED ||
                 m_Properties.Mode == WindowMode::BORDERLESSMAXIMIZED) {
                 glfwMaximizeWindow(Sentinel::WindowPFn::s_NativeWindow);

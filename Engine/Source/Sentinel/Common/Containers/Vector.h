@@ -13,6 +13,8 @@ namespace Sentinel {
         Vector(const Vector& other);
         Vector(Vector&& other) noexcept;
 
+        Vector(const std::initializer_list<T>& list);
+
         Vector& operator=(const Vector& other);
         Vector& operator=(Vector&& other) noexcept;
 

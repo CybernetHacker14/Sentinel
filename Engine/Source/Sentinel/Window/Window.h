@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Sentinel/Common/Core/DataTypes.h"
-#include "Sentinel/Common/Strings/SmallString.h"
+#include "Sentinel/Common/Strings/StringView.h"
 
 namespace Sentinel {
     enum class WindowMode : UInt8 {
@@ -13,14 +13,14 @@ namespace Sentinel {
     };
 
     struct WindowProperties {
-        SmallString Title;
+        StringView Title;
         UInt16 Width;
         UInt16 Height;
         WindowMode Mode;
         Bool Transparent;
 
         WindowProperties(
-            const SmallString& title = "Sentinel",
+            CChar* title = "Sentinel",
             UInt16 width = 900,
             UInt16 height = 900,
             WindowMode mode = WindowMode::WINDOWED,
@@ -61,7 +61,6 @@ namespace Sentinel {
         // Now I need to sort this properly, because shit's getting undebuggable
 
         struct WindowData {
-            SmallString Title;
             UInt16 Width = 900, Height = 900;
             Bool VSync = true;
         };
