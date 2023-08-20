@@ -2,6 +2,7 @@
 
 #include "Sentinel/Common/Core/DataTypes.h"
 #include "Sentinel/Common/Templates/Function.h"
+#include "Sentinel/Common/Strings/StringView.h"
 #include "Sentinel/Window/Window.h"
 
 int main(int argc, char** argv);
@@ -9,7 +10,7 @@ int main(int argc, char** argv);
 namespace Sentinel {
     class Application {
     public:
-        Application(const SmallString& name = "Application");
+        Application(CChar* name = "Application");
         virtual ~Application() = default;
 
         static Application& Get() { return *s_Instance; }
@@ -21,6 +22,7 @@ namespace Sentinel {
 
     protected:
         Window* m_Window;
+        StringView m_Title;
 
     protected:
         Function<void()> m_RunFunction;

@@ -35,6 +35,7 @@ project "Scribe"
 		"%{IncludeExternalDir.cereal}",
         "%{IncludeExternalDir.imgui}",
         "%{IncludeExternalDir.flecs}",
+		"%{IncludeExternalDir.tsl_sparsemap}"
     }
 
     links

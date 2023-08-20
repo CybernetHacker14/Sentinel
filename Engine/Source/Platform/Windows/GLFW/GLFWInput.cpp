@@ -4,12 +4,12 @@
 #include "Sentinel/Application/Application.h"
 
 #include <GLFW/glfw3.h>
-#include <unordered_map>
+#include <sparse_map.h>
 
 namespace Sentinel {
     namespace GLFWInputUtils {
-        static std::unordered_map<KeyCode, Bool> s_KeyStateMap(0);
-        static std::unordered_map<MouseCode, Bool> s_MouseStateMap(0);
+        static tsl::sparse_map<KeyCode, Bool> s_KeyStateMap(0);
+        static tsl::sparse_map<MouseCode, Bool> s_MouseStateMap(0);
 
         const static KeyCode s_AllKeys[120] = {
             KeyCode::Space,
@@ -205,8 +205,8 @@ namespace Sentinel {
             GLFWInputUtils::s_KeyStateMap[key] = GLFWInputUtils::GetKey(key);
         }
 
-        for (MouseCode mouseButton: GLFWInputUtils::s_AllMouseButtons) {
-            GLFWInputUtils::s_MouseStateMap[mouseButton] = GLFWInputUtils::GetMouseButton(mouseButton);
+        for (MouseCode button: GLFWInputUtils::s_AllMouseButtons) {
+            GLFWInputUtils::s_MouseStateMap[button] = GLFWInputUtils::GetMouseButton(button);
         }
     }
 }  // namespace Sentinel

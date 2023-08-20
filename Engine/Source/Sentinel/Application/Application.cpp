@@ -9,7 +9,7 @@
 namespace Sentinel {
     Application* Application::s_Instance = nullptr;
 
-    Application::Application(const SmallString& name) {
+    Application::Application(CChar* name) : m_Title(name) {
         ST_BREAKPOINT_ASSERT(!s_Instance, "Application instance already exist!");
 
         s_Instance = this;

@@ -36,8 +36,6 @@ project "Sentinel"
     includedirs
     {
         "Source",
-		"%{IncludeExternalDir.EASTL}",
-		"%{IncludeExternalDir.EABase}",
         "%{IncludeExternalDir.GLFW}",
         "%{IncludeExternalDir.Glad}",
         "%{IncludeExternalDir.glm}",
@@ -46,13 +44,13 @@ project "Sentinel"
 		"%{IncludeExternalDir.cereal}",
 		"%{IncludeExternalDir.imgui}",
         "%{IncludeExternalDir.flecs}",
-        "%{IncludeExternalDir.minizip}"
+        "%{IncludeExternalDir.minizip}",
+		"%{IncludeExternalDir.tsl_sparsemap}"
     }
 
     links
     {
         "GLFW",
-        "EASTL",
 		"opengl32.lib",
         "d3d11.lib",
 		"shlwapi.lib",
