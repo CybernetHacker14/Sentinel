@@ -6,13 +6,13 @@
     #include "Sentinel/Graphics/Device/ContextAPI.h"
     #include "Sentinel/Graphics/Device/SwapchainAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel {
     static const UInt32 s_MaxSize = 8192;  // 8K
 
     DepthTexture2DData* Sentinel::DepthTexture2DAPI::CreateDepthTexture2DData(
-        PoolAllocator<DepthTexture2DData>& allocator,
+        FixedSlabAllocator<DepthTexture2DData>& allocator,
         ContextData* context,
         const UInt16 width,
         const UInt16 height,
@@ -23,7 +23,7 @@ namespace Sentinel {
         texObject->m_Format = format;
         texObject->m_Width = width;
         texObject->m_Height = height;
-        texObject->m_BindType = ShaderType::NONE;
+        texObject->m_BindType = ShaderType::PIXEL;
         texObject->m_SwapchainTarget = attachToSwapchain;
         Create(texObject);
         return texObject;

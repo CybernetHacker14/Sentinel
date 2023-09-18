@@ -4,11 +4,11 @@
     #include "Sentinel/Graphics/Buffer/VertexbufferAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel {
     VertexbufferData* VertexbufferAPI::CreateVertexbufferData(
-        PoolAllocator<VertexbufferData>& allocator, ContextData* context, UInt32 size) {
+        FixedSlabAllocator<VertexbufferData>& allocator, ContextData* context, UInt32 size) {
         VertexbufferData* bufferObject = allocator.New();
         bufferObject->Context = context;
         Create(bufferObject, size);
@@ -16,7 +16,7 @@ namespace Sentinel {
     }
 
     VertexbufferData* VertexbufferAPI::CreateVertexbufferData(
-        PoolAllocator<VertexbufferData>& allocator, ContextData* context, void* vertices, UInt32 size) {
+        FixedSlabAllocator<VertexbufferData>& allocator, ContextData* context, void* vertices, UInt32 size) {
         VertexbufferData* bufferObject = allocator.New();
         bufferObject->m_Vertices = vertices;
         bufferObject->Context = context;

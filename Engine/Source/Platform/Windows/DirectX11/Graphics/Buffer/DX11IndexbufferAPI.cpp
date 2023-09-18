@@ -4,11 +4,11 @@
     #include "Sentinel/Graphics/Buffer/IndexbufferAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel {
     IndexbufferData* Sentinel::IndexbufferAPI::CreateIndexbufferData(
-        PoolAllocator<IndexbufferData>& allocator, ContextData* context, void* indices, UInt32 count) {
+        FixedSlabAllocator<IndexbufferData>& allocator, ContextData* context, void* indices, UInt32 count) {
         IndexbufferData* bufferObject = allocator.New();
         bufferObject->Context = context;
         Create(bufferObject, indices, count);

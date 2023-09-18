@@ -6,15 +6,18 @@
     #include "Sentinel/Graphics/Device/ContextAPI.h"
     #include "Sentinel/Graphics/Device/SwapchainAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
+
+    #include "Sentinel/Common/Templates/Function.h"
 
     #include <glm/glm.hpp>
+    #include <sparse_map.h>
 
 namespace Sentinel {
     static const UInt32 s_MaxSize = 8192;  // 8K
 
     RenderTexture2DData* RenderTexture2DAPI::CreateRenderTexture2DData(
-        PoolAllocator<RenderTexture2DData>& allocator,
+        FixedSlabAllocator<RenderTexture2DData>& allocator,
         ContextData* context,
         const UInt16 width,
         const UInt16 height,
@@ -24,18 +27,18 @@ namespace Sentinel {
         texObject->m_Format = format;
         texObject->m_Width = width;
         texObject->m_Height = height;
-        texObject->m_BindType = ShaderType::NONE;
+        texObject->m_BindType = ShaderType::PIXEL;
         texObject->m_SwapchainTarget = false;
         Create(texObject);
         return texObject;
     }
 
     RenderTexture2DData* RenderTexture2DAPI::CreateRenderTexture2DData(
-        PoolAllocator<RenderTexture2DData>& allocator, ContextData* context, SwapchainData* swapchain) {
+        FixedSlabAllocator<RenderTexture2DData>& allocator, ContextData* context, SwapchainData* swapchain) {
         RenderTexture2DData* texObject = allocator.New();
         texObject->Context = context;
         texObject->m_Format = ColorFormat::RGBA32F;
-        texObject->m_BindType = ShaderType::NONE;
+        texObject->m_BindType = ShaderType::PIXEL;
         texObject->m_SwapchainTarget = true;
         texObject->TargetSwapchain = swapchain;
         Create(texObject, swapchain);
@@ -47,7 +50,7 @@ namespace Sentinel {
 
         if (!dataObject->m_NativeRTV) { return; }
 
-        if (dataObject->m_BindType != ShaderType::NONE)
+        if (dataObject->m_BindType != ShaderType::PIXEL)
             dxContext->ClearRenderTargetView(dataObject->m_NativeRTV, (Float*)&clearColor);
     }
 
@@ -72,44 +75,22 @@ namespace Sentinel {
         ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
 
         switch (shaderType) {
-            case ShaderType::VERTEX:
-                dxContext->VSSetShaderResources(slot, 1, &(dataObject->m_NativeSRV));
-                dataObject->m_BindSlot = slot;
-                dataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::PIXEL:
-                dxContext->PSSetShaderResources(slot, 1, &(dataObject->m_NativeSRV));
-                dataObject->m_BindSlot = slot;
-                dataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::COMPUTE:
-                dxContext->CSSetShaderResources(slot, 1, &(dataObject->m_NativeSRV));
-                dataObject->m_BindSlot = slot;
-                dataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid shader type"); break;
+            case ShaderType::VERTEX: dxContext->VSSetShaderResources(slot, 1, &(dataObject->m_NativeSRV)); break;
+            case ShaderType::PIXEL: dxContext->PSSetShaderResources(slot, 1, &(dataObject->m_NativeSRV)); break;
+            case ShaderType::COMPUTE: dxContext->CSSetShaderResources(slot, 1, &(dataObject->m_NativeSRV)); break;
         }
+        dataObject->m_BindSlot = slot;
+        dataObject->m_BindType = shaderType;
     }
 
     void RenderTexture2DAPI::Unbind(RenderTexture2DData* dataObject) {
         ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
         ID3D11ShaderResourceView* nullSRV = {nullptr};
 
-        if (dataObject->m_BindType == ShaderType::NONE) return;
-
         switch (dataObject->m_BindType) {
-            case ShaderType::VERTEX:
-                dxContext->VSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
-                dataObject->m_BindType = ShaderType::NONE;
-                break;
-            case ShaderType::PIXEL:
-                dxContext->PSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
-                dataObject->m_BindType = ShaderType::NONE;
-                break;
-            case ShaderType::COMPUTE:
-                dxContext->CSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
-                dataObject->m_BindType = ShaderType::NONE;
-                break;
+            case ShaderType::VERTEX: dxContext->VSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV); break;
+            case ShaderType::PIXEL: dxContext->PSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV); break;
+            case ShaderType::COMPUTE: dxContext->CSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV); break;
         }
     }
 

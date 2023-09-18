@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Buffer/VertexbufferData.h"
 
 namespace Sentinel {
@@ -10,9 +9,9 @@ namespace Sentinel {
     class VertexbufferAPI {
     public:
         static VertexbufferData* CreateVertexbufferData(
-            PoolAllocator<VertexbufferData>& allocator, ContextData* context, UInt32 size);
+            FixedSlabAllocator<VertexbufferData>& allocator, ContextData* context, UInt32 size);
         static VertexbufferData* CreateVertexbufferData(
-            PoolAllocator<VertexbufferData>& allocator, ContextData* context, void* vertices, UInt32 size);
+            FixedSlabAllocator<VertexbufferData>& allocator, ContextData* context, void* vertices, UInt32 size);
 
         static void Bind(VertexbufferData* dataObject, UInt32 stride);
 

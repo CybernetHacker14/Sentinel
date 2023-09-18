@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Device/ContextData.h"
 
 struct GLFWwindow;
@@ -9,9 +8,10 @@ struct GLFWwindow;
 namespace Sentinel {
     class ContextAPI {
     public:
-        static ContextData* CreateImmediateContext(PoolAllocator<ContextData>& allocator, GLFWwindow* windowHandle);
+        static ContextData* CreateImmediateContext(
+            FixedSlabAllocator<ContextData>& allocator, GLFWwindow* windowHandle);
 
-        static ContextData* CreateDeferredContext(PoolAllocator<ContextData>& allocator, GLFWwindow* windowHandle);
+        static ContextData* CreateDeferredContext(FixedSlabAllocator<ContextData>& allocator, GLFWwindow* windowHandle);
 
         static void Draw(ContextData* dataObject);
 

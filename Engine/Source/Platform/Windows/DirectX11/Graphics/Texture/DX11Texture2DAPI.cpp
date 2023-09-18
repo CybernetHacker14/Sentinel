@@ -5,28 +5,31 @@
     #include "Sentinel/Graphics/Texture/Texture2DAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
     #include <stb_image.h>
+    #include <sparse_map.h>
 
 namespace Sentinel {
-    STL::unordered_map<TextureWrapMode, D3D11_TEXTURE_ADDRESS_MODE> s_WrapModeDescTable = {
+    tsl::sparse_map<TextureWrapMode, D3D11_TEXTURE_ADDRESS_MODE> s_WrapModeDescTable = {
         {TextureWrapMode::REPEAT, D3D11_TEXTURE_ADDRESS_WRAP},
         {TextureWrapMode::CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP},
         {TextureWrapMode::MIRROR, D3D11_TEXTURE_ADDRESS_MIRROR}};
 
     Texture2DData* Sentinel::Texture2DAPI::CreateTexture2DData(
-        PoolAllocator<Texture2DData>& allocator, ContextData* context, const Texture2DDataImportSettings& settings) {
+        FixedSlabAllocator<Texture2DData>& allocator,
+        ContextData* context,
+        const Texture2DDataImportSettings& settings) {
         Texture2DData* texObject = allocator.New();
         texObject->Context = context;
         texObject->m_Settings = settings;
-        texObject->m_BindType = ShaderType::NONE;
+        texObject->m_BindType = ShaderType::PIXEL;
         Load(texObject);
         return texObject;
     }
 
     Texture2DData* Texture2DAPI::CreateTexture2DData(
-        PoolAllocator<Texture2DData>& allocator,
+        FixedSlabAllocator<Texture2DData>& allocator,
         ContextData* context,
         const Texture2DDataImportSettings& settings,
         UInt8* pixelData,
@@ -37,7 +40,7 @@ namespace Sentinel {
         texObject->m_TexturePixels = pixelData;
         texObject->Context = context;
         texObject->m_Settings = settings;
-        texObject->m_BindType = ShaderType::NONE;
+        texObject->m_BindType = ShaderType::PIXEL;
         Load(texObject, width, height, channels);
         return texObject;
     }
@@ -57,7 +60,6 @@ namespace Sentinel {
                 context->CSSetShaderResources(slot, 1, &(dataObject->m_ResourceView));
                 context->CSSetSamplers(slot, 1, &(dataObject->m_SamplerState));
                 break;
-            case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid Shader type"); break;
         }
     }
 
@@ -79,7 +81,6 @@ namespace Sentinel {
                 context->CSSetShaderResources(slot, 1, &(dataObject->m_ResourceView));
                 context->CSSetSamplers(slot, 1, &(dataObject->m_SamplerState));
                 break;
-            case ShaderType::NONE: ST_ENGINE_ASSERT(false, "Invalid Shader type"); break;
         }
     }
 
@@ -120,11 +121,11 @@ namespace Sentinel {
         // Set Format
         int width, height, channels;
 
-        const char* path = data->m_Settings.TextureFilepath.c_str();
-        data->m_HDR = stbi_is_hdr(path) ? true : false;
-        data->m_TexturePixels = static_cast<void*>(stbi_load(path, &width, &height, &channels, 4));
+        data->m_HDR = stbi_is_hdr(data->m_Settings.TextureFilepath) ? true : false;
+        data->m_TexturePixels =
+            static_cast<void*>(stbi_load(data->m_Settings.TextureFilepath, &width, &height, &channels, 4));
         if (data->m_TexturePixels == nullptr) {
-            ST_ENGINE_ERROR("Failed to load image at path : {0}", path);
+            ST_TERMINAL_ERROR("Failed to load image at path : %s", data->m_Settings.TextureFilepath);
             return;
         }
 

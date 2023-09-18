@@ -4,11 +4,11 @@
     #include "Sentinel/Graphics/Buffer/ConstantbufferAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel {
     ConstantbufferData* Sentinel::ConstantbufferAPI::CreateConstantbufferData(
-        PoolAllocator<ConstantbufferData>& allocator,
+        FixedSlabAllocator<ConstantbufferData>& allocator,
         ContextData* context,
         UInt32 size,
         UInt32 bindSlot,

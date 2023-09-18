@@ -1,27 +1,36 @@
 #include "stpch.h"
 
 #ifdef ST_RENDERER_DX11
-
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
     #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Sentinel/Common/Strings/StringView.h"
 
     #include <GLFW/glfw3.h>
+    #include <sparse_map.h>
 
 namespace Sentinel {
 
-    static STL::unordered_map<UInt32, String> s_VendorCodeMap = {
-        {0x10DE, "NVIDIA Corporation"}, {0x1002, "AMD Inc."}, {0x8086, "Intel"}, {0x1414, "Microsoft"}};
+    namespace DX11ContextAPIUtils {
+        static tsl::sparse_map<UInt32, CChar*> s_VendorCodeMap = {
+            {0x10DE, "NVIDIA Corporation"}, {0x1002, "AMD Inc."}, {0x8086, "Intel"}, {0x1414, "Microsoft"}};
+
+        static CChar* ToString(Char* buffer, Int32 value) {
+            sprintf_s(buffer, 12, "%d", value);
+            return buffer;
+        }
+    }  // namespace DX11ContextAPIUtils
 
     ContextData* Sentinel::ContextAPI::CreateImmediateContext(
-        PoolAllocator<ContextData>& allocator, GLFWwindow* windowHandle) {
+        FixedSlabAllocator<ContextData>& allocator, GLFWwindow* windowHandle) {
         ContextData* context = new ContextData();
         context->m_ContextType = ContextType::IMMEDIATE;
         Create(context, windowHandle);
         return context;
     }
 
-    ContextData* ContextAPI::CreateDeferredContext(PoolAllocator<ContextData>& allocator, GLFWwindow* windowHandle) {
+    ContextData* ContextAPI::CreateDeferredContext(
+        FixedSlabAllocator<ContextData>& allocator, GLFWwindow* windowHandle) {
         return nullptr;
     }
 
@@ -63,7 +72,7 @@ namespace Sentinel {
             dataObject->m_Adapter->GetParent(__uuidof(IDXGIFactory), (LPVOID*)&(dataObject->m_Factory));
 
             char videoCardDescription[128];
-            STL::string vendor, major, minor, release, build, version;
+            String major, minor, release, build, version;
             LARGE_INTEGER driverVersion;
 
             DXGI_ADAPTER_DESC adapterDescription;
@@ -72,22 +81,21 @@ namespace Sentinel {
             dataObject->m_Adapter->GetDesc(&adapterDescription);
             wcstombs_s(NULL, videoCardDescription, 128, adapterDescription.Description, 128);
 
-            vendor = s_VendorCodeMap[adapterDescription.VendorId];
-
             dataObject->m_Adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice), &driverVersion);
 
-            dataObject->m_ContextInfo.Vendor = vendor;
+            dataObject->m_ContextInfo.Vendor = DX11ContextAPIUtils::s_VendorCodeMap[adapterDescription.VendorId];
             dataObject->m_ContextInfo.Renderer = videoCardDescription;
             dataObject->m_ContextInfo.API = "DirectX 11";
 
-            major = std::to_string(HIWORD(driverVersion.HighPart));
-            minor = std::to_string(LOWORD(driverVersion.HighPart));
-            release = std::to_string(HIWORD(driverVersion.LowPart));
-            build = std::to_string(LOWORD(driverVersion.LowPart));
+            Char buffer[12] {};
+            major = DX11ContextAPIUtils::ToString(buffer, HIWORD(driverVersion.HighPart));
+            minor = DX11ContextAPIUtils::ToString(buffer, LOWORD(driverVersion.HighPart));
+            release = DX11ContextAPIUtils::ToString(buffer, HIWORD(driverVersion.LowPart));
+            build = DX11ContextAPIUtils::ToString(buffer, LOWORD(driverVersion.LowPart));
 
             version = major + "." + minor + "." + release + "." + build;
 
-            dataObject->m_ContextInfo.Version = version;
+            dataObject->m_ContextInfo.Version = version.C_Str();
 
             glfwMakeContextCurrent(windowHandle);
 

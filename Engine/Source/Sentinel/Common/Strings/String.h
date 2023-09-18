@@ -38,6 +38,16 @@ namespace Sentinel {
 
         inline Bool Empty() const;
 
+        String& Append(CChar letter);
+        String& Append(const String& other);
+
+        inline friend String& operator+(String string, CChar letter);
+        inline friend String& operator+(String string, const String& other);
+        inline friend String& operator+(String string, CChar* other);
+
+        inline String& operator+=(CChar letter);
+        inline String& operator+=(const String& other);
+
     private:
         String& Set(CChar* data, UInt32 size, UInt32 start = 0);
         UInt32 GetSize() const;

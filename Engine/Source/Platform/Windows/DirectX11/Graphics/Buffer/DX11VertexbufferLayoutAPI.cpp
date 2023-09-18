@@ -7,8 +7,13 @@
 
     #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
+    #include "Sentinel/Common/Containers/Vector.h"
+    #include "Sentinel/Common/Core/Assert.h"
+
+    #include <sparse_map.h>
+
 namespace Sentinel {
-    static STL::unordered_map<DXGI_FORMAT, UInt32> s_ShaderDataTypeSizeMap = {
+    static tsl::sparse_map<DXGI_FORMAT, UInt32> s_ShaderDataTypeSizeMap = {
         {DXGI_FORMAT_R32_FLOAT, 4},
         {DXGI_FORMAT_R32_UINT, 4},
         {DXGI_FORMAT_R32_SINT, 4},
@@ -40,7 +45,7 @@ namespace Sentinel {
                 binary->GetBufferSize(),
                 IID_ID3D11ShaderReflection,
                 (void**)&vertexShaderReflection))) {
-            ST_ENGINE_ASSERT(false, "Cannot reflect DirectX11 Vertex Shader!")
+            ST_BREAKPOINT_ASSERT(false, "Cannot reflect DirectX11 Vertex Shader!")
         }
 
         D3D11_SHADER_DESC shaderDescription;
@@ -48,7 +53,7 @@ namespace Sentinel {
 
         dataObject->m_Stride = 0;
 
-        STL::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDescriptions;
+        Vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDescriptions;
         for (UInt32 i = 0; i < shaderDescription.InputParameters; i++) {
             D3D11_SIGNATURE_PARAMETER_DESC paramDescription;
             vertexShaderReflection->GetInputParameterDesc(i, &paramDescription);
@@ -91,7 +96,7 @@ namespace Sentinel {
                     elementDescription.Format = DXGI_FORMAT_R32G32B32A32_SINT;
             }
 
-            inputLayoutDescriptions.emplace_back(elementDescription);
+            inputLayoutDescriptions.Emplace_Back(elementDescription);
 
             dataObject->m_Stride += s_ShaderDataTypeSizeMap.at(elementDescription.Format);
         }
@@ -99,7 +104,7 @@ namespace Sentinel {
         ContextAPI::GetDevice(dataObject->Context)
             ->CreateInputLayout(
                 &inputLayoutDescriptions[0],
-                static_cast<UInt32>(inputLayoutDescriptions.size()),
+                static_cast<UInt32>(inputLayoutDescriptions.Size()),
                 binary->GetBufferPointer(),
                 binary->GetBufferSize(),
                 &(dataObject->m_Layout));

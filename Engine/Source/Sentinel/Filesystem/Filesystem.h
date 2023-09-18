@@ -6,56 +6,63 @@
 namespace Sentinel {
     // Filesystem I/O functions.
     // WARNING: Avoid too much usage, and mostly aimed for editor functionality
+
+    struct Path {
+    public:
+        Path(CChar* path);
+
+        Path(const Path& other) = default;
+        Path& operator=(const Path& other) = default;
+
+        Path(Path&& other) = default;
+        Path& operator=(Path&& other) = default;
+
+        inline CChar* GetAbsolutePath() const { return m_AbsolutePath; }
+
+        inline Bool Exists() const { return m_Properties & (ST_BIT(0)); }
+        inline Bool IsFile() const { return m_Properties & (ST_BIT(1)); }
+        inline Bool IsFolder() const { return m_Properties & (ST_BIT(2)); }
+        inline Bool IsReadOnly() const { return m_Properties & (ST_BIT(3)); }
+        inline Bool IsHidden() const { return m_Properties & (ST_BIT(4)); }
+        inline Bool IsHTMLFile() const { return m_Properties & (ST_BIT(6)); }
+        inline Bool IsFileURL() const { return m_Properties & (ST_BIT(7)); }
+        inline Bool HasExtension() const { return m_Properties & (ST_BIT(8)); }
+        inline Bool DoesFileExist() const { return m_Properties & (ST_BIT(9)); }
+        inline Bool DoesFolderExist() const { return m_Properties & (ST_BIT(10)); }
+        inline Bool IsFileEmpty() const { return m_Properties & (ST_BIT(11)); }
+        inline Bool IsFolderEmpty() const { return m_Properties & (ST_BIT(12)); }
+
+        CChar* GetFilenameWithExtension() const;
+        CChar* GetFilenameWithoutExtension() const;
+        CChar* GetExtension() const;
+
+    private:
+        Path() = default;
+
+    private:
+        CChar* m_AbsolutePath;
+
+        // DO NOT DELETE
+        // 0 - exists, 1 - file, 2 - folder, 3 - readonly, 4 - hidden, 5 - url, 6 - html
+        // 7 - file url, 8 - extension, 9 - file exists, 10 - folder exists, 11 - file empty
+        // 12 - folder empty
+
+        UInt64 m_Properties = 0;
+    };
+
     class Filesystem {
     public:
-        static String GetAbsolutePath(const String& path);
-
-        static Bool DoesPathExist(const String& path);
-
-        static Bool IsFile(const String& filepath);
-
-        static Bool IsFolder(const String& folderpath);
-
-        static Bool DoesFileExist(const String& filepath);
-
-        static Bool DoesFolderExist(const String& folderpath);
-
-        static void CreateFolder(const String& folderpath);
-
-        static Bool IsFolderEmpty(const String& folderpath);
-
-        static Bool HasSubFolders(const String& folderpath);
-
-        static Vector<String> GetImmediateSubfolders(const String& folderpath);
-
-        static Vector<String> GetAllSubfolders(const String& folderpath);
-
-        static Bool HasExtensionInPath(const String& path);
-
-        static String GetFilenameWithoutExtension(const String& filepath);
-
-        static String GetFilenameWithExtension(const String& filepath);
-
-        static String GetFilenameExtension(const String& filepath);
-
-        static UInt8* ReadFileAtPath(const String& filepath);
-
-        static Bool ReadFileAtPath(const String& filepath, void* buffer, Int64 size = -1);
-
-        static String ReadTextFileAtPath(const String& filepath);
-
-        static Bool WriteToFileAtPath(const String& filepath, UInt8* buffer, UInt64 length);
-
-        static Bool WriteToTextFileAtPath(const String& filepath, const String& text);
-
-        static Bool OpenAtPath(const String& path);
-
-        static Bool DeleteAtPath(const String& path);
-
-        static Bool MoveToPath(const String& currentPath, const String& newPath);
-
-        static Bool CopyToPath(const String& currentPath, const String& newPath);
-
-        static Int64 GetFileSize(const String& filepath);
+        static void CreateFolder(const Path& folderpath);
+        static Bool HasSubfolders(const Path& folderpath);
+        static Vector<Path> GetImmediateSubfolders(const Path& folderpath);
+        static const Int64 GetFileSize(const Path& filepath);
+        static Bool ReadFileAtPath(const Path& filepath, void* buffer, Int64& outSize);
+        static Bool ReadTextFileAtPath(const Path& filepath, Char* buffer, Int64& outSize);
+        static Bool WriteToFileAtPath(const Path& filepath, UInt8* buffer, UInt64 length);
+        static Bool WriteToTextFileAtPath(const Path& filepath, const StringView& text);
+        static Bool OpenAtPath(const Path& path);
+        static Bool DeleteAtPath(const Path& path);
+        static Bool MoveToPath(const Path& currentpath, const Path& newpath);
+        static Bool CopyToPath(const Path& currentpath, const Path& newpath);
     };
 }  // namespace Sentinel

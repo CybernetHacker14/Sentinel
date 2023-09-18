@@ -110,6 +110,37 @@ namespace Sentinel {
         return m_Empty;
     }
 
+    String& String::Append(CChar letter) {
+        UInt32 size = Length() + 1;
+        Char* data = (Char*)Malloc(size + 1);
+        data[Length()] = letter;
+        data[Length() + 1] = '\0';
+
+        if (Data()) MemFunctions::Memcpy(data, Data(), Length());
+
+        return Set(data, size);
+    }
+
+    String& String::Append(const String& other) {
+        UInt32 size = Length() + other.Length();
+        Char* data = (Char*)Malloc(size + 1);
+        data[size] = '\0';
+
+        if (Data()) MemFunctions::Memcpy(data, Data(), Length());
+
+        MemFunctions::Memcpy((Char*)(data + Length()), other.C_Str(), other.Length());
+
+        return Set(data, size);
+    }
+
+    inline String& String::operator+=(CChar letter) {
+        return Append(letter);
+    }
+
+    inline String& String::operator+=(const String& other) {
+        return Append(other);
+    }
+
     // Somewhat inspired by a combination of eastl::string and HighLo-Engine String class
     String& String::Set(CChar* data, UInt32 size, UInt32 start) {
         ST_BREAKPOINT_ASSERT(data || start <= size, "Bad parameters")
@@ -145,5 +176,17 @@ namespace Sentinel {
 
     UInt32 String::GetSize() const {
         return m_SSO ? m_Data.Data.sso.Size : m_Data.Data.heap.Size;
+    }
+
+    String& operator+(String string, CChar letter) {
+        return string.Append(letter);
+    }
+
+    String& operator+(String string, const String& other) {
+        return string.Append(other);
+    }
+
+    String& operator+(String string, CChar* other) {
+        return string.Append(other);
     }
 }  // namespace Sentinel

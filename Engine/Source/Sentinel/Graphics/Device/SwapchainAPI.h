@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Device/SwapchainData.h"
 
 struct GLFWwindow;
@@ -10,7 +9,7 @@ namespace Sentinel {
     class SwapchainAPI {
     public:
         static SwapchainData* CreateSwapchain(
-            PoolAllocator<SwapchainData>& allocator, ContextData* context, GLFWwindow* windowHandle);
+            FixedSlabAllocator<SwapchainData>& allocator, ContextData* context, GLFWwindow* windowHandle);
 
         static void SwapBuffers(SwapchainData* dataObject);
 

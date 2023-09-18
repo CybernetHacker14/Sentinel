@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
+#include "Sentinel/Common/Core/DataTypes.h"
 
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/binary.hpp>

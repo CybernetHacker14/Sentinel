@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
+#include "Sentinel/Common/Core/DataTypes.h"
 
 #if ST_RENDERER_DX11
     #include <d3d11.h>

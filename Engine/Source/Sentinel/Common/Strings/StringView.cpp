@@ -50,4 +50,8 @@ namespace Sentinel {
     inline CChar* StringView::C_Str() const {
         return m_Data;
     }
+
+    inline UInt32 StringView::Size() const {
+        return m_Size;
+    }
 }  // namespace Sentinel

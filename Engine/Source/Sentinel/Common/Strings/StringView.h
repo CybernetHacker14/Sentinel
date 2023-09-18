@@ -19,6 +19,7 @@ namespace Sentinel {
 
         inline Bool Empty() const;
         inline CChar* C_Str() const;
+        inline UInt32 Size() const;
 
     private:
         Char* m_Data = nullptr;

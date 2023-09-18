@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/System/UUID.h"
+#include "Sentinel/Common/Core/DataTypes.h"
 
 #include <flecs.h>
 
@@ -10,20 +9,22 @@ namespace Sentinel {
 
     struct Entity {
     public:
-        Entity(Scene* scene);
+        Entity(flecs::entity* native, Scene* scene);
+
+        CChar* GetName() const;
+        void SetName(CChar* name);
 
         void SetParent(Entity* entity);
-        Entity* GetParent();
+        Entity GetParent();
         Bool HasParent();
         Bool HasChildren();
+        Int32 GetChildrenCount();
 
         inline flecs::entity* GetNative() { return m_Native; }
         inline Scene* GetScene() { return m_Scene; }
 
     private:
         Entity() = default;
-
-        void SetEntity(flecs::entity* native);
 
     private:
         flecs::entity* m_Native = nullptr;
@@ -43,13 +44,3 @@ namespace std {
         Sentinel::Size_t operator()(const flecs::entity& entity) const { return (Sentinel::UInt64)entity; }
     };
 }  // namespace std
-
-namespace eastl {
-    template<typename T>
-    struct hash;
-
-    template<>
-    struct hash<flecs::entity> {
-        Sentinel::Size_t operator()(const flecs::entity& entity) const { return (Sentinel::UInt64)entity; }
-    };
-}  // namespace eastl

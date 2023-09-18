@@ -7,7 +7,7 @@
     #include "Sentinel/Graphics/Texture/RenderTexture2DAPI.h"
     #include "Sentinel/Graphics/Texture/DepthTexture2DAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
     #define GLFW_EXPOSE_NATIVE_WIN32
     #include <GLFW/glfw3.h>
@@ -15,7 +15,7 @@
 
 namespace Sentinel {
     SwapchainData* Sentinel::SwapchainAPI::CreateSwapchain(
-        PoolAllocator<SwapchainData>& allocator, ContextData* context, GLFWwindow* windowHandle) {
+        FixedSlabAllocator<SwapchainData>& allocator, ContextData* context, GLFWwindow* windowHandle) {
         SwapchainData* swapchain = allocator.New();
         swapchain->Context = context;
         Init(swapchain, windowHandle);

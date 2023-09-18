@@ -6,39 +6,100 @@
 
     #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
-    #include <unordered_map>
+    #include "Sentinel/Common/Core/Assert.h"
+    #include "Sentinel/Common/Core/Malloc.h"
+    #include "Sentinel/Filesystem/Filesystem.h"
+
+    #include <sparse_map.h>
 
 namespace Sentinel {
-
-    namespace Utils {
-        static std::unordered_map<std::string, Sentinel::ShaderType> s_ShaderStringTypeMap = {
+    namespace DX11ShaderAPIUtils {
+        static tsl::sparse_map<CChar*, Sentinel::ShaderType> s_ShaderStringTypeMap = {
             {"vertex", ShaderType::VERTEX}, {"pixel", ShaderType::PIXEL}, {"compute", ShaderType::COMPUTE}};
 
-        static std::unordered_map<Sentinel::ShaderType, const std::string> s_ShaderTypeStringMap = {
-            {ShaderType::VERTEX, "vertex"}, {ShaderType::PIXEL, "pixel"}, {ShaderType::COMPUTE, "compute"}};
+        static CChar* s_ShaderTypeString[3] = {"vertex", "pixel", "compute"};
+        static CChar* s_ShaderTypeProfile[3] = {"vs_5_0", "ps_5_0", "cs_5_0"};
+        static CChar* s_ShaderTypeEntryPoint[3] = {"VShader", "PShader", "CShader"};
 
-        static std::unordered_map<Sentinel::ShaderType, const char*> s_ShaderTypeProfileMap = {
-            {ShaderType::VERTEX, "vs_5_0"}, {ShaderType::PIXEL, "ps_5_0"}, {ShaderType::COMPUTE, "cs_5_0"}};
+        static void PreprocessSource(CChar* source, CChar** sources) {
+            std::string sourceString(source);
 
-        static std::unordered_map<Sentinel::ShaderType, const char*> s_ShaderTypeEntryPointMap = {
-            {ShaderType::VERTEX, "VShader"}, {ShaderType::PIXEL, "PShader"}, {ShaderType::COMPUTE, "CShader"}};
+            CChar* typeToken = "#type";
+            Size_t typeTokenLength = strlen(typeToken);
+            Size_t pos = sourceString.find(typeToken, 0);  // Start of shader type declaration file;
 
-    }  // namespace Utils
+            while (pos != std::string::npos) {
+                Size_t eol = sourceString.find_first_of("\r\n", pos);  // End of shader type declaration line
+                ST_BREAKPOINT_ASSERT(eol != std::string::npos, "Syntax error");
+                Size_t begin = pos + typeTokenLength + 1;  // Start of shader type name (after "#type" keyword)
+                const std::string& type = sourceString.substr(begin, eol - begin);
+
+                Size_t nextLinePos = sourceString.find_first_not_of(
+                    "\r\n", eol);  // Start of shader code after shader type declaration line
+                ST_BREAKPOINT_ASSERT(nextLinePos != std::string::npos, "Syntax error");
+                pos = sourceString.find(typeToken, nextLinePos);  // Start of next shader type declaration line
+
+                sources[(UInt8)s_ShaderStringTypeMap.at(type.c_str())] =
+                    ((pos == std::string::npos) ? sourceString.substr(nextLinePos)
+                                                : sourceString.substr(nextLinePos, pos - nextLinePos))
+                        .c_str();
+            }
+        }
+
+        // TODO : Maybe rethink about this, whether the count
+        static void CompileFromSource(CChar** sources, ID3DBlob** binaries) {
+            HRESULT result;
+            ID3DBlob* errorMessages;
+
+            UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+
+    #ifdef ST_DEBUG
+            flags |= D3DCOMPILE_DEBUG;
+    #endif  // ST_DEBUG
+
+            for (UInt32 i = (UInt32)ShaderType::VERTEX; i <= (UInt32)ShaderType::COMPUTE; i++) {
+                if (!sources[i]) continue;
+
+                Size_t shaderSourceSize = strlen(sources[i]);
+                if (shaderSourceSize == 0) continue;
+
+                CChar* ep = s_ShaderTypeEntryPoint[i];
+                CChar* profile = s_ShaderTypeProfile[i];
+
+                result = D3DCompile(
+                    sources[i],
+                    shaderSourceSize,
+                    nullptr,
+                    nullptr,
+                    D3D_COMPILE_STANDARD_FILE_INCLUDE,
+                    ep,
+                    profile,
+                    flags,
+                    0,
+                    &binaries[i],
+                    &errorMessages);
+            }
+
+    #if ST_DEBUG
+            if (FAILED(result)) {
+                Char* error = (Char*)errorMessages->GetBufferPointer();
+                error[strnlen_s(error, 128) - 1] = '\0';
+
+                ST_TERMINAL_ERROR("%s", error);
+                errorMessages->Release();
+            }
+    #endif
+
+            if (errorMessages) errorMessages->Release();
+        }
+    }  // namespace DX11ShaderAPIUtils
 
     ShaderData* Sentinel::ShaderAPI::CreateShaderData(
-        PoolAllocator<ShaderData>& allocator,
-        ContextData* context,
-        const String& filepath,
-        const String& name) {
+        FixedSlabAllocator<ShaderData>& allocator, ContextData* context, CChar* filepath, CChar* name) {
         ShaderData* shaderObject = allocator.New();  // Remove the <T> from New calls in other classes
         shaderObject->m_Filepath = filepath;
         shaderObject->m_ShaderName = name;
         shaderObject->Context = context;
-
-        shaderObject->m_Sources[0].type = shaderObject->m_Binaries[0].type = ShaderType::NONE;
-        shaderObject->m_Sources[1].type = shaderObject->m_Binaries[1].type = ShaderType::VERTEX;
-        shaderObject->m_Sources[2].type = shaderObject->m_Binaries[2].type = ShaderType::PIXEL;
-        shaderObject->m_Sources[3].type = shaderObject->m_Binaries[3].type = ShaderType::COMPUTE;
 
         Unbind(shaderObject);
         Load(shaderObject);
@@ -76,9 +137,9 @@ namespace Sentinel {
         }
 
         for (auto& binary: dataObject->m_Binaries) {
-            if (binary.binary) {
-                binary.binary->Release();
-                binary.binary = NULL;
+            if (binary) {
+                binary->Release();
+                binary = NULL;
             }
         }
 
@@ -88,9 +149,9 @@ namespace Sentinel {
 
     void ShaderAPI::Unbind(ShaderData* dataObject) {
         for (auto& binary: dataObject->m_Binaries) {
-            if (binary.binary != NULL) {
-                binary.binary->Release();
-                binary.binary = nullptr;
+            if (binary != NULL) {
+                binary->Release();
+                binary = nullptr;
             }
         }
 
@@ -110,116 +171,46 @@ namespace Sentinel {
         }
     }
 
-    void ShaderAPI::PreprocessSource(const std::string& source, ShaderSource* sources) {
-        std::unordered_map<ShaderType, std::string> shaderSources;
-
-        const char* typeToken = "#type";
-        Size_t typeTokenLength = strlen(typeToken);
-        Size_t pos = source.find(typeToken, 0);  // Start of shader type declaration file;
-
-        while (pos != std::string::npos) {
-            Size_t eol = source.find_first_of("\r\n", pos);  // End of shader type declaration line
-            ST_ENGINE_ASSERT(eol != std::string::npos, "Syntax error");
-            Size_t begin = pos + typeTokenLength + 1;  // Start of shader type name (after "#type" keyword)
-            const std::string& type = source.substr(begin, eol - begin);
-            ST_ENGINE_ASSERT((Int32)Utils::s_ShaderStringTypeMap.at(type), "Invalid shader type specified");
-
-            Size_t nextLinePos =
-                source.find_first_not_of("\r\n", eol);  // Start of shader code after shader type declaration line
-            ST_ENGINE_ASSERT(nextLinePos != STL::string::npos, "Syntax error");
-            pos = source.find(typeToken, nextLinePos);  // Start of next shader type declaration line
-
-            sources[(UInt8)(Utils::s_ShaderStringTypeMap.at(type))].source =
-                (pos == STL::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
-        }
-    }
-
-    void ShaderAPI::CompileFromSource(ShaderData* dataObject) {
-        HRESULT result;
-        ID3DBlob* errorMessages;
-
-        UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-    #ifdef ST_DEBUG
-        flags |= D3DCOMPILE_DEBUG;
-    #endif  // ST_DEBUG
-
-        for (auto& tuple: dataObject->m_Sources) {
-            if (tuple.type == ShaderType::NONE || tuple.source.empty()) continue;
-
-            const STL::string& shader = tuple.source;
-
-            const char* ep = Utils::s_ShaderTypeEntryPointMap[tuple.type];
-            const char* profile = Utils::s_ShaderTypeProfileMap[tuple.type];
-
-            ID3DBlob* blob;
-            result = D3DCompile(
-                shader.c_str(),
-                shader.size(),
-                nullptr,
-                nullptr,
-                D3D_COMPILE_STANDARD_FILE_INCLUDE,
-                ep,
-                profile,
-                flags,
-                0,
-                &blob,
-                &errorMessages);
-
-            dataObject->m_Binaries[(UInt8)tuple.type].binary = blob;
-
-    #if ST_DEBUG
-            if (FAILED(result)) {
-                char* error = (char*)errorMessages->GetBufferPointer();
-                error[strnlen_s(error, 128) - 1] = '\0';
-
-                ST_ENGINE_ERROR("{0}", error);
-                errorMessages->Release();
-                ST_ENGINE_ERROR(
-                    "{0}::{1} Shader Compilation error",
-                    dataObject->m_ShaderName.c_str(),
-                    Utils::s_ShaderTypeStringMap.at(tuple.type).c_str());
-                ST_ENGINE_ASSERT(false, "");
-            }
-    #endif
-
-            if (errorMessages) errorMessages->Release();
-        }
-    }
-
     void ShaderAPI::Load(ShaderData* dataObject) {
-        STL::string& source = Filesystem::ReadTextFileAtPath(dataObject->m_Filepath);
+        const Path filePath(dataObject->m_Filepath);
+        Int64 shaderSourceSize = Filesystem::GetFileSize(filePath);
 
-        if (source.empty()) {
-            ST_ENGINE_ASSERT("Shader source at path {0} is empty", dataObject->m_Filepath.c_str());
+        if (shaderSourceSize == 0) {
+            ST_TERMINAL_ERROR("Shader source at path : %s is empty", dataObject->m_Filepath);
             return;
         }
 
-        PreprocessSource(source, dataObject->m_Sources);
-        CompileFromSource(dataObject);
+        Char* buffer = (Char*)Malloc(sizeof(Char) * shaderSourceSize);
+        if (!Filesystem::ReadTextFileAtPath(dataObject->m_Filepath, buffer, shaderSourceSize)) {
+            ST_TERMINAL_ERROR("Error reading shader file at path : %s", dataObject->m_Filepath);
+            return;
+        }
+
+        DX11ShaderAPIUtils::PreprocessSource(buffer, dataObject->m_Sources);
+        DX11ShaderAPIUtils::CompileFromSource(dataObject->m_Sources, dataObject->m_Binaries);
 
         ID3D11Device* device = ContextAPI::GetDevice(dataObject->Context);
 
-        if (dataObject->m_Binaries[(UInt8)ShaderType::VERTEX].binary) {
+        if (dataObject->m_Binaries[(UInt8)ShaderType::VERTEX]) {
             device->CreateVertexShader(
-                dataObject->m_Binaries[(UInt8)ShaderType::VERTEX].binary->GetBufferPointer(),
-                dataObject->m_Binaries[(UInt8)ShaderType::VERTEX].binary->GetBufferSize(),
+                dataObject->m_Binaries[(UInt8)ShaderType::VERTEX]->GetBufferPointer(),
+                dataObject->m_Binaries[(UInt8)ShaderType::VERTEX]->GetBufferSize(),
                 nullptr,
                 &(dataObject->m_NativeVS));
         }
 
-        if (dataObject->m_Binaries[(UInt8)ShaderType::PIXEL].binary) {
+        if (dataObject->m_Binaries[(UInt8)ShaderType::PIXEL]) {
             device->CreatePixelShader(
-                dataObject->m_Binaries[(UInt8)ShaderType::PIXEL].binary->GetBufferPointer(),
-                dataObject->m_Binaries[(UInt8)ShaderType::PIXEL].binary->GetBufferSize(),
+                dataObject->m_Binaries[(UInt8)ShaderType::PIXEL]->GetBufferPointer(),
+                dataObject->m_Binaries[(UInt8)ShaderType::PIXEL]->GetBufferSize(),
                 nullptr,
                 &(dataObject->m_NativePS));
         }
 
-        if (dataObject->m_Binaries[(UInt8)ShaderType::COMPUTE].binary) {
+        if (dataObject->m_Binaries[(UInt8)ShaderType::COMPUTE]) {
             device->CreateComputeShader(
-                dataObject->m_Binaries[(UInt8)ShaderType::COMPUTE].binary->GetBufferPointer(),
-                dataObject->m_Binaries[(UInt8)ShaderType::COMPUTE].binary->GetBufferSize(),
+                dataObject->m_Binaries[(UInt8)ShaderType::COMPUTE]->GetBufferPointer(),
+                dataObject->m_Binaries[(UInt8)ShaderType::COMPUTE]->GetBufferSize(),
                 nullptr,
                 &dataObject->m_NativeCS);
         }

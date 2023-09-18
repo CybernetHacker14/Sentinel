@@ -25,6 +25,7 @@
     factor * 10, (factor)*100, (factor)*1000, (factor)*10000, (factor)*100000, (factor)*1000000, (factor)*10000000, \
         (factor)*100000000, (factor)*1000000000
 
+/*
 // ====== Taken from fmt library ======//
 
 #ifdef ST_COMPILER_MSVC
@@ -54,3 +55,4 @@ namespace Sentinel {
 #endif  // ST_COMPILER_MSVC
 
 // ====== \Taken from fmt library =====//
+*/

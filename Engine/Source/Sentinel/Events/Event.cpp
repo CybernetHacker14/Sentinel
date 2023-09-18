@@ -17,7 +17,7 @@ namespace Sentinel {
             EventListener EventListeners[MAX_LISTENERS_PER_TYPE];
         };
 
-        EventListenerList s_ListenerList[12];
+        EventListenerList s_ListenerList[13];
     }  // namespace EventUtils
 
     Int16 EventsAPI::RegisterEvent(EventType type, void* listener, Callback callback) {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
 #include "Sentinel/Graphics/Material/ShaderData.h"
 
 #if ST_RENDERER_DX11
@@ -24,14 +23,14 @@ namespace Sentinel {
         UInt16 m_Width, m_Height;
         UInt8 m_BindSlot;
         DepthFormat m_Format = DepthFormat::NONE;
-        ShaderType m_BindType = ShaderType::NONE;
+        ShaderType m_BindType = ShaderType::PIXEL;
         Bool m_SwapchainTarget = false;
 
     private:
 #if ST_RENDERER_DX11
-        ID3D11Texture2D* m_NativeTex;
-        ID3D11DepthStencilView* m_NativeDSV;
-        ID3D11ShaderResourceView* m_NativeSRV;
+        ID3D11Texture2D* m_NativeTex = NULL;
+        ID3D11DepthStencilView* m_NativeDSV = NULL;
+        ID3D11ShaderResourceView* m_NativeSRV = NULL;
 #endif  // ST_RENDERER_DX11
 
         friend class DepthTexture2DAPI;

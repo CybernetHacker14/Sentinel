@@ -11,11 +11,12 @@ namespace Sentinel {
         WindowFocus,
         WindowLostFocus,
         WindowMoved,
-        KeyPressed,
         KeyReleased,
+        KeyPressed,
+        KeyRepeat,
         KeyTyped,
-        MouseButtonPressed,
         MouseButtonReleased,
+        MouseButtonPressed,
         MouseMoved,
         MouseScrolled
     };

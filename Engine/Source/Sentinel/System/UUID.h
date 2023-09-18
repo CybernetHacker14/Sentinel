@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
+#include "Sentinel/Common/Core/DataTypes.h"
 
 namespace Sentinel {
     class UUID {
@@ -12,9 +12,14 @@ namespace Sentinel {
         operator UInt64() { return m_UUID; }
         operator const UInt64() const { return m_UUID; }
 
-        inline STL::string ToString() const { return STL::to_string(m_UUID); }
+        // There's a faster way implemented in fmt library, but it's tedious to implement
+        // Requires checking for builtin clz and ctz intrinsics
+        inline CChar* ToString(Char* buffer) const {
+            sprintf_s(buffer, 21, "%llu", m_UUID);
+            return buffer;
+        }
 
-        inline UUID& FromString(const char* data) {
+        inline UUID& FromString(CChar* data) {
             m_UUID = strtoull(data, nullptr, 10);
             return *this;
         };

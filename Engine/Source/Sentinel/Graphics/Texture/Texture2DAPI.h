@@ -1,17 +1,18 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Texture/Texture2DData.h"
 
 namespace Sentinel {
     class Texture2DAPI {
     public:
         static Texture2DData* CreateTexture2DData(
-            PoolAllocator<Texture2DData>& allocator, ContextData* context, const Texture2DDataImportSettings& settings);
+            FixedSlabAllocator<Texture2DData>& allocator,
+            ContextData* context,
+            const Texture2DDataImportSettings& settings);
 
         static Texture2DData* CreateTexture2DData(
-            PoolAllocator<Texture2DData>& allocator,
+            FixedSlabAllocator<Texture2DData>& allocator,
             ContextData* context,
             const Texture2DDataImportSettings& settings,
             UInt8* pixelData,

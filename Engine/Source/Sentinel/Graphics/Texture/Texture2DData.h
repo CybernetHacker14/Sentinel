@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
 #include "Sentinel/Graphics/Material/ShaderData.h"
 
 #ifdef ST_RENDERER_DX11
@@ -10,11 +9,11 @@ struct ID3D11ShaderResourceView;
 #endif  // ST_RENDERER_DX11
 
 namespace Sentinel {
-    enum class TextureWrapMode : UInt8 { REPEAT = 0, CLAMP = 1, MIRROR = 2 };
+    enum class TextureWrapMode : UInt8 { REPEAT = 0, CLAMP = 1, MIRROR = 2, MIRROR_ONCE = 3 };
     struct ContextData;
 
     struct Texture2DDataImportSettings {
-        STL::string TextureFilepath;
+        CChar* TextureFilepath;
 
         TextureWrapMode WrapMode = TextureWrapMode::CLAMP;
 
@@ -32,7 +31,7 @@ namespace Sentinel {
         void* m_TexturePixels = nullptr;
         UInt16 m_Width = 0, m_Height = 0;
         UInt8 m_BindSlot;
-        ShaderType m_BindType = ShaderType::NONE;
+        ShaderType m_BindType = ShaderType::PIXEL;
         Bool m_Loaded = false, m_HDR = false;
 
     private:

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Sentinel/Common/Core/DataTypes.h"
-#include "Sentinel/Common/Strings/String.h"
 
 #ifdef ST_RENDERER_DX11
 struct ID3D11Device;
@@ -19,10 +18,10 @@ namespace Sentinel {
     enum ContextType : Bool { IMMEDIATE = 0, DEFFERED = 1 };
 
     struct ContextInfo {
-        String Vendor;
-        String Renderer;
-        String API;
-        String Version;
+        CChar* Vendor;
+        CChar* Renderer;
+        CChar* API;
+        CChar* Version;
     };
 
     struct ContextData {

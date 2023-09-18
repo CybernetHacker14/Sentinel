@@ -3,6 +3,7 @@
 #include "Sentinel/Common/Core/Debug.h"
 
 #ifdef ST_DEBUG
+    #include "Sentinel/Common/Core/Definitions.h"
     #include "Sentinel/Common/Core/DataTypes.h"
     #include "Sentinel/Common/Core/Macros.h"
 

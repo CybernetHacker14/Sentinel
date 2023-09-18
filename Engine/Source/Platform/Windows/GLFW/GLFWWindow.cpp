@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Platform/Windows/GLFW/GLFWWindow.h"
 
+#include "Sentinel/Events/Event.h"
 #include "Sentinel/Common/Core/Assert.h"
 #include "Sentinel/Logging/Log.h"
 
@@ -89,15 +90,16 @@ namespace Sentinel {
                 data.Width = width;
                 data.Height = height;
 
-                // UniqueRef<Event> event(new WindowResizeEvent(width, height));
-                // data.EventCallback(STL::move(event));
+                EventData eventData;
+                eventData.UInt16[0] = width;
+                eventData.UInt16[1] = height;
+                EventsAPI::FireEvent(EventType::WindowResize, eventData);
             });
 
         glfwSetWindowCloseCallback(Sentinel::WindowPFn::s_NativeWindow, [](GLFWwindow* window) {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-            // UniqueRef<Event> event(new WindowCloseEvent());
-            // data.EventCallback(STL::move(event));
+            EventsAPI::FireEvent(EventType::WindowClose, EventData());
         });
 
         glfwSetKeyCallback(
@@ -105,65 +107,45 @@ namespace Sentinel {
             [](GLFWwindow* window, Int32 key, Int32 scancode, Int32 action, Int32 mods) {
                 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                switch (action) {
-                    case GLFW_PRESS: {
-                        // UniqueRef<Event> event(new KeyPressedEvent(key, 0));
-                        // data.EventCallback(STL::move(event));
-                        break;
-                    }
-
-                    case GLFW_RELEASE: {
-                        // UniqueRef<Event> event(new KeyReleasedEvent(key));
-                        // data.EventCallback(STL::move(event));
-                        break;
-                    }
-
-                    case GLFW_REPEAT: {
-                        // UniqueRef<Event> event(new KeyPressedEvent(key, 1));
-                        // data.EventCallback(STL::move(event));
-                        break;
-                    }
-                }
+                EventData eventData;
+                eventData.UInt16[0] = key;
+                EventsAPI::FireEvent((EventType)(5 + action), eventData);
             });
 
         glfwSetCharCallback(Sentinel::WindowPFn::s_NativeWindow, [](GLFWwindow* window, UInt32 keycode) {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-            // UniqueRef<Event> event(new KeyTypedEvent(keycode));
-            // data.EventCallback(STL::move(event));
+            EventData eventData;
+            eventData.UInt16[0] = keycode;
+            EventsAPI::FireEvent(EventType::KeyTyped, eventData);
         });
 
         glfwSetMouseButtonCallback(
             Sentinel::WindowPFn::s_NativeWindow, [](GLFWwindow* window, Int32 button, Int32 action, Int32 mods) {
                 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                switch (action) {
-                    case GLFW_PRESS: {
-                        // UniqueRef<Event> event(new MouseButtonPressedEvent(button));
-                        // data.EventCallback(STL::move(event));
-                        break;
-                    }
-                    case GLFW_RELEASE: {
-                        // UniqueRef<Event> event(new MouseButtonReleasedEvent(button));
-                        // data.EventCallback(STL::move(event));
-                        break;
-                    }
-                }
+                EventData eventData;
+                eventData.UInt8[0] = button;
+                EventsAPI::FireEvent((EventType)(9 + action), eventData);
             });
 
         glfwSetScrollCallback(
             Sentinel::WindowPFn::s_NativeWindow, [](GLFWwindow* window, Double xOffset, Double yOffset) {
                 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                // UniqueRef<Event> event(new MouseScrolledEvent(xOffset, yOffset));
-                // data.EventCallback(STL::move(event));
+                EventData eventData;
+                eventData.Float[0] = xOffset;
+                eventData.Float[1] = yOffset;
+                EventsAPI::FireEvent(EventType::MouseScrolled, eventData);
             });
 
         glfwSetCursorPosCallback(Sentinel::WindowPFn::s_NativeWindow, [](GLFWwindow* window, Double xPos, Double yPos) {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-            // UniqueRef<Event> event(new MouseMovedEvent(xPos, yPos));
-            // data.EventCallback(STL::move(event));
+            EventData eventData;
+            eventData.Float[0] = xPos;
+            eventData.Float[1] = yPos;
+            EventsAPI::FireEvent(EventType::MouseMoved, eventData);
         });
 
         glfwSetWindowUserPointer(Sentinel::WindowPFn::s_NativeWindow, &m_Data);

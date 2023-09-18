@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
 #include "Sentinel/Memory/PoolAllocator.h"
 #include "Sentinel/Graphics/Buffer/VertexbufferLayoutData.h"
 

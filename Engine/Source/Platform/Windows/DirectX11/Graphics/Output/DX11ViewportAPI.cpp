@@ -5,11 +5,11 @@
     #include "Sentinel/Graphics/Output/ViewportAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
 namespace Sentinel {
     ViewportData* Sentinel::ViewportAPI::CreateViewportData(
-        PoolAllocator<ViewportData>& allocator,
+        FixedSlabAllocator<ViewportData>& allocator,
         ContextData* context,
         UInt16 x,
         UInt16 y,

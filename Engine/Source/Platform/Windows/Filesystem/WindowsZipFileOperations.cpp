@@ -22,31 +22,31 @@ namespace Sentinel {
     static constexpr const UInt16 s_ZipCompressionMethod = MZ_COMPRESS_METHOD_STORE;
     // If issue occurs check with Compression Method = MZ_COMPRESS_METHOD_STORE
 
-    Bool ZipFileOperations::DoesFileExistInZip(const String& zipPath, const String& inZipLocation) {
+    Bool ZipFileOperations::DoesFileExistInZip(CChar* zipPath, CChar* inZipLocation) {
         void* handle = NULL;
         Int32 err = MZ_OK, out = MZ_OK;
 
         mz_zip_reader_create(&handle);
         mz_zip_reader_set_password(handle, s_ZipPassword);
 
-        err = mz_zip_reader_open_file(handle, zipPath.C_Str());
-        out = mz_zip_reader_locate_entry(handle, inZipLocation.C_Str(), 0);
+        err = mz_zip_reader_open_file(handle, zipPath);
+        out = mz_zip_reader_locate_entry(handle, inZipLocation, 0);
         err = mz_zip_reader_close(handle);
 
         return out == MZ_OK && err == MZ_OK;
     }
 
     Bool ZipFileOperations::ReadFromZipFile(
-        const String& zipPath, const String& inZipLocation, void** ptrToBuffer, UInt32& dataLength) {
+        CChar* zipPath, CChar* inZipLocation, void** ptrToBuffer, UInt32& dataLength) {
         void* handle = NULL;
         Int32 err = MZ_OK;
 
         mz_zip_reader_create(&handle);
         mz_zip_reader_set_password(handle, s_ZipPassword);
 
-        err = mz_zip_reader_open_file(handle, zipPath.C_Str());
+        err = mz_zip_reader_open_file(handle, zipPath);
 
-        if (mz_zip_reader_locate_entry(handle, inZipLocation.C_Str(), 0) == MZ_OK) {
+        if (mz_zip_reader_locate_entry(handle, inZipLocation, 0) == MZ_OK) {
             Int32 length = mz_zip_reader_entry_save_buffer_length(handle);
             *ptrToBuffer = new char[length];
             err = mz_zip_reader_entry_open(handle);
@@ -59,9 +59,8 @@ namespace Sentinel {
         return err == MZ_OK;
     }
 
-    Bool ZipFileOperations::WriteTextFileToZipFile(
-        const String& zipPath, const String& inZipLocation, const String& filepath) {
-        std::fstream file(filepath.C_Str(), std::ios::in);
+    Bool ZipFileOperations::WriteTextFileToZipFile(CChar* zipPath, CChar* inZipLocation, CChar* filepath) {
+        std::fstream file(filepath, std::ios::in);
 
         if (!file.is_open()) return false;
 
@@ -84,8 +83,7 @@ namespace Sentinel {
         return ret;
     }
 
-    Bool ZipFileOperations::WriteBufferToZipFile(
-        const String& zipPath, const String& inZipLocation, std::stringstream stream) {
+    Bool ZipFileOperations::WriteBufferToZipFile(CChar* zipPath, CChar* inZipLocation, std::stringstream stream) {
         stream.seekg(0, std::ios::end);
         Sentinel::UInt32 length = stream.tellg();
         stream.seekg(0, std::ios::beg);
@@ -93,8 +91,7 @@ namespace Sentinel {
         return WriteBufferToZipFile(zipPath, inZipLocation, stream.str().data(), length);
     }
 
-    Bool ZipFileOperations::WriteBufferToZipFile(
-        const String& zipPath, const String& inZipLocation, char* data, UInt64 length) {
+    Bool ZipFileOperations::WriteBufferToZipFile(CChar* zipPath, CChar* inZipLocation, CChar* data, UInt64 length) {
         if (data == NULL || length == 0) return false;
 
         void* handle = NULL;
@@ -102,7 +99,7 @@ namespace Sentinel {
 
         mz_zip_file file_info = {0};
 
-        file_info.filename = inZipLocation.C_Str();
+        file_info.filename = inZipLocation;
         file_info.compression_method = s_ZipCompressionMethod;
         file_info.flag = MZ_ZIP_FLAG_UTF8 | MZ_ZIP_FLAG_ENCRYPTED;
         file_info.modified_date = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -114,7 +111,7 @@ namespace Sentinel {
         mz_zip_writer_set_compress_method(handle, s_ZipCompressionMethod);
         mz_zip_writer_set_compress_level(handle, s_ZipCompressionLevel);
 
-        err = mz_zip_writer_open_file(handle, zipPath.C_Str(), 0, 1);
+        err = mz_zip_writer_open_file(handle, zipPath, 0, 1);
 
         err = mz_zip_writer_entry_open(handle, &file_info);
         err = mz_zip_writer_entry_write(handle, data, length);

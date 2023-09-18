@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Output/FramebufferData.h"
 
 #include "Sentinel/Graphics/Texture/RenderTexture2DData.h"
@@ -13,9 +12,9 @@ namespace Sentinel {
     class FramebufferAPI {
     public:
         static FramebufferData* CreateFramebufferData(
-            PoolAllocator<FramebufferData>& allocator,
-            PoolAllocator<RenderTexture2DData>& rtAllocator,
-            PoolAllocator<DepthTexture2DData>& dtAllocator,
+            FixedSlabAllocator<FramebufferData>& allocator,
+            FixedSlabAllocator<RenderTexture2DData>& rtAllocator,
+            FixedSlabAllocator<DepthTexture2DData>& dtAllocator,
             ContextData* context,
             UInt16 width,
             UInt16 height);
@@ -32,7 +31,7 @@ namespace Sentinel {
 
         inline static void SetAttachments(
             FramebufferData* dataObject,
-            const STL::initializer_list<ColorFormat>& attachments,
+            const std::initializer_list<ColorFormat>& attachments,
             const DepthFormat depthFormat = DepthFormat::NONE) {
             dataObject->m_ColorFormats = attachments;
             dataObject->m_DepthFormat = depthFormat;

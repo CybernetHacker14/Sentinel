@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
 #include "Sentinel/Graphics/Material/ShaderData.h"
 
 #ifdef ST_RENDERER_DX11
@@ -22,10 +21,10 @@ namespace Sentinel {
 
     private:
         void* m_PixelData;
-        UInt32 m_Width, m_Height;
-        UInt32 m_BindSlot;
+        UInt16 m_Width, m_Height;
+        UInt8 m_BindSlot;
         ColorFormat m_Format = ColorFormat::NONE;
-        ShaderType m_BindType = ShaderType::NONE;
+        ShaderType m_BindType = ShaderType::PIXEL;
         Bool m_SwapchainTarget = false;
 
     private:

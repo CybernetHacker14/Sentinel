@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Texture/RenderTexture2DData.h"
 
 #include <glm/fwd.hpp>
@@ -10,7 +9,7 @@ namespace Sentinel {
     class RenderTexture2DAPI {
     public:
         static RenderTexture2DData* CreateRenderTexture2DData(
-            PoolAllocator<RenderTexture2DData>& allocator,
+            FixedSlabAllocator<RenderTexture2DData>& allocator,
             ContextData* context,
             const UInt16 width,
             const UInt16 height,
@@ -18,7 +17,7 @@ namespace Sentinel {
 
         // Used to create an RT which will be attached to swapchain
         static RenderTexture2DData* CreateRenderTexture2DData(
-            PoolAllocator<RenderTexture2DData>& allocator, ContextData* context, SwapchainData* swapchain);
+            FixedSlabAllocator<RenderTexture2DData>& allocator, ContextData* context, SwapchainData* swapchain);
 
         static void Clear(RenderTexture2DData* dataObject, const glm::vec4& clearColor);
 
