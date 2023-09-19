@@ -1,8 +1,37 @@
 #include "Window/ScribeWindow.h"
 
+#include <Sentinel/Logging/Log.h>
+#include <Sentinel/Common/Core/Assert.h>
+
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
+
+namespace Sentinel {
+    namespace WindowPFn {
+        static Sentinel::UInt8 s_GLFWWindowCount = 0;
+        static GLFWwindow* s_NativeWindow;
+
+        static void OnUpdate() {
+            glfwPollEvents();
+        }
+
+        static void VSync(Sentinel::Bool enabled) {
+            glfwSwapInterval(enabled);
+        }
+
+        static void Shutdown() {
+            glfwDestroyWindow(s_NativeWindow);
+            --s_GLFWWindowCount;
+
+            if (s_GLFWWindowCount == 0) { glfwTerminate(); }
+        }
+
+        static void* GetNative() {
+            return s_NativeWindow;
+        }
+    }  // namespace WindowPFn
+}  // namespace Sentinel
 
 namespace Scribe {
     namespace Window {
@@ -28,7 +57,8 @@ namespace Scribe {
         }
 
         static void GLFWErrorCallback(int error, const char* description) {
-            ST_ENGINE_ERROR("GLFW Error ({0}): {1}", error, description);
+            ST_TERMINAL_ERROR("GLFW Error:%i - %s", error, description);
+            ST_BREAKPOINT_ASSERT(false, description)
         }
 
         void BlockTitleBarDrag(Sentinel::Bool value) {
@@ -36,11 +66,10 @@ namespace Scribe {
         }
 
         ScribeWindow::ScribeWindow(const Sentinel::WindowProperties& props) : Window(props) {
-            m_InitFunction = ST_BIND_FN(Init);
-            m_OnUpdateFunction = ST_BIND_FN(OnUpdate);
-            m_SetVSyncFunction = ST_BIND_FN(SetVSync);
-            m_GetNativeWindowFunction = ST_BIND_FN(GetNativeWindow);
-            m_ShutdownFunction = ST_BIND_FN(Shutdown);
+            Sentinel::WindowPFn::OnUpdateFn = Sentinel::WindowPFn::OnUpdate;
+            Sentinel::WindowPFn::SetVSyncFn = Sentinel::WindowPFn::VSync;
+            Sentinel::WindowPFn::ShutdownFn = Sentinel::WindowPFn::Shutdown;
+            Sentinel::WindowPFn::GetNativeFn = Sentinel::WindowPFn::GetNative;
 
             SetDragLogic(DragFunction);
             Init();
@@ -51,16 +80,12 @@ namespace Scribe {
         }
 
         void ScribeWindow::Init() {
-            m_Data.Title = m_Properties.Title;
             m_Data.Width = m_Properties.Width;
             m_Data.Height = m_Properties.Height;
 
-            ST_ENGINE_INFO(
-                "Creating window {0} : {1}, {2}", m_Properties.Title.c_str(), m_Properties.Width, m_Properties.Height);
-
             if (s_GLFWWindowCount == 0) {
-                int successs = glfwInit();
-                ST_ENGINE_ASSERT(successs, "Could not initialize GLFW!");
+                int success = glfwInit();
+                ST_BREAKPOINT_ASSERT(success, "Could not initialize GLFW!");
                 glfwSetErrorCallback(GLFWErrorCallback);
             }
 
@@ -72,14 +97,14 @@ namespace Scribe {
                 m_Window = glfwCreateWindow(
                     (Sentinel::Int32)m_Properties.Width,
                     (Sentinel::Int32)m_Properties.Height,
-                    m_Data.Title.c_str(),
+                    m_Properties.Title.C_Str(),
                     glfwGetPrimaryMonitor(),
                     nullptr);
             } else {
                 m_Window = glfwCreateWindow(
                     (Sentinel::Int32)m_Properties.Width,
                     (Sentinel::Int32)m_Properties.Height,
-                    m_Data.Title.c_str(),
+                    m_Properties.Title.C_Str(),
                     nullptr,
                     nullptr);
                 if (m_Properties.Mode == Sentinel::WindowMode::WINDOWEDMAXIMIZED ||
@@ -98,15 +123,16 @@ namespace Scribe {
                 data.Width = width;
                 data.Height = height;
 
-                Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::WindowResizeEvent(width, height));
-                data.EventCallback(Sentinel::STL::move(event));
+                Sentinel::EventData eventData;
+                eventData.UInt16[0] = width;
+                eventData.UInt16[1] = height;
+                Sentinel::EventsAPI::FireEvent(Sentinel::EventType::WindowResize, eventData);
             });
 
             glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
                 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::WindowCloseEvent());
-                data.EventCallback(Sentinel::STL::move(event));
+                Sentinel::EventsAPI::FireEvent(Sentinel::EventType::WindowClose, Sentinel::EventData());
             });
 
             glfwSetKeyCallback(
@@ -118,64 +144,44 @@ namespace Scribe {
                    Sentinel::Int32 mods) {
                     WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                    switch (action) {
-                        case GLFW_PRESS: {
-                            Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::KeyPressedEvent(key, 0));
-                            data.EventCallback(Sentinel::STL::move(event));
-                            break;
-                        }
-
-                        case GLFW_RELEASE: {
-                            Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::KeyReleasedEvent(key));
-                            data.EventCallback(Sentinel::STL::move(event));
-                            break;
-                        }
-
-                        case GLFW_REPEAT: {
-                            Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::KeyPressedEvent(key, 1));
-                            data.EventCallback(Sentinel::STL::move(event));
-                            break;
-                        }
-                    }
+                    Sentinel::EventData eventData;
+                    eventData.UInt16[0] = key;
+                    Sentinel::EventsAPI::FireEvent((Sentinel::EventType)(5 + action), eventData);
                 });
 
             glfwSetCharCallback(m_Window, [](GLFWwindow* window, Sentinel::UInt32 keycode) {
                 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::KeyTypedEvent(keycode));
-                data.EventCallback(Sentinel::STL::move(event));
+                Sentinel::EventData eventData;
+                eventData.UInt16[0] = keycode;
+                Sentinel::EventsAPI::FireEvent(Sentinel::EventType::KeyTyped, eventData);
             });
 
             glfwSetMouseButtonCallback(
                 m_Window, [](GLFWwindow* window, Sentinel::Int32 button, Sentinel::Int32 action, Sentinel::Int32 mods) {
                     WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                    switch (action) {
-                        case GLFW_PRESS: {
-                            Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::MouseButtonPressedEvent(button));
-                            data.EventCallback(Sentinel::STL::move(event));
-                            break;
-                        }
-                        case GLFW_RELEASE: {
-                            Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::MouseButtonReleasedEvent(button));
-                            data.EventCallback(Sentinel::STL::move(event));
-                            break;
-                        }
-                    }
+                    Sentinel::EventData eventData;
+                    eventData.UInt8[0] = button;
+                    Sentinel::EventsAPI::FireEvent((Sentinel::EventType)(9 + action), eventData);
                 });
 
             glfwSetScrollCallback(m_Window, [](GLFWwindow* window, Sentinel::Double xOffset, Sentinel::Double yOffset) {
                 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::MouseScrolledEvent(xOffset, yOffset));
-                data.EventCallback(Sentinel::STL::move(event));
+                Sentinel::EventData eventData;
+                eventData.Float[0] = xOffset;
+                eventData.Float[1] = yOffset;
+                Sentinel::EventsAPI::FireEvent(Sentinel::EventType::MouseScrolled, eventData);
             });
 
             glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, Sentinel::Double xPos, Sentinel::Double yPos) {
                 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::MouseMovedEvent(xPos, yPos));
-                data.EventCallback(Sentinel::STL::move(event));
+                Sentinel::EventData eventData;
+                eventData.Float[0] = xPos;
+                eventData.Float[1] = yPos;
+                Sentinel::EventsAPI::FireEvent(Sentinel::EventType::MouseMoved, eventData);
             });
 
             glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -224,8 +230,7 @@ namespace Scribe {
         void ScribeWindow::InvokeShutdown() {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(m_Window);
 
-            Sentinel::UniqueRef<Sentinel::Event> event(new Sentinel::WindowCloseEvent());
-            data.EventCallback(Sentinel::STL::move(event));
+            Sentinel::EventsAPI::FireEvent(Sentinel::EventType::WindowClose, Sentinel::EventData());
         }
     }  // namespace Window
 }  // namespace Scribe

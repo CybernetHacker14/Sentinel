@@ -30,7 +30,6 @@ namespace Sentinel {
         void DeserializeFromStream(std::stringstream& stream);
 
     public:
-        inline const UInt64& GetNativeUUID();
         inline flecs::world* GetNativeScene() { return &m_Scene; }
 
     private:

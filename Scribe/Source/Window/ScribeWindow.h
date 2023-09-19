@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Sentinel.h>
+#include <Sentinel/Window/Window.h>
 
 struct GLFWwindow;
 
@@ -8,7 +9,7 @@ namespace Scribe {
     namespace Window {
         void BlockTitleBarDrag(Sentinel::Bool value);
 
-        class ScribeWindow final: public Sentinel::Window<ScribeWindow> {
+        class ScribeWindow final: public Sentinel::Window {
         public:
             ScribeWindow(const Sentinel::WindowProperties& props);
 

@@ -12,6 +12,8 @@ namespace Sentinel {
         operator UInt64() { return m_UUID; }
         operator const UInt64() const { return m_UUID; }
 
+        UInt64 ToUInt64() const { return m_UUID; } // Added for cereal
+
         // There's a faster way implemented in fmt library, but it's tedious to implement
         // Requires checking for builtin clz and ctz intrinsics
         inline CChar* ToString(Char* buffer) const {

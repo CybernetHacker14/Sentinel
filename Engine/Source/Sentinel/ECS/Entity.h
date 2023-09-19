@@ -9,6 +9,7 @@ namespace Sentinel {
 
     struct Entity {
     public:
+        Entity() = default;
         Entity(flecs::entity* native, Scene* scene);
 
         CChar* GetName() const;
@@ -22,9 +23,6 @@ namespace Sentinel {
 
         inline flecs::entity* GetNative() { return m_Native; }
         inline Scene* GetScene() { return m_Scene; }
-
-    private:
-        Entity() = default;
 
     private:
         flecs::entity* m_Native = nullptr;

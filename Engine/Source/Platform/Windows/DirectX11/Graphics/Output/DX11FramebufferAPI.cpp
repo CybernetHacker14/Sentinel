@@ -7,23 +7,23 @@
     #include "Sentinel/Graphics/Texture/RenderTexture2DAPI.h"
     #include "Sentinel/Graphics/Texture/DepthTexture2DAPI.h"
 
-    #include "Platform/DirectX11/Graphics/Core/DX11Common.h"
+    #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 
     #include <glm/glm.hpp>
 
 namespace Sentinel {
 
     FramebufferData* Sentinel::FramebufferAPI::CreateFramebufferData(
-        PoolAllocator<FramebufferData>& allocator,
-        PoolAllocator<RenderTexture2DData>& rtAllocator,
-        PoolAllocator<DepthTexture2DData>& dtAllocator,
+        FixedSlabAllocator<FramebufferData>& allocator,
+        FixedSlabAllocator<RenderTexture2DData>& rtAllocator,
+        FixedSlabAllocator<DepthTexture2DData>& dtAllocator,
         ContextData* context,
         UInt16 width,
         UInt16 height) {
         FramebufferData* framebuffer = allocator.New();
         framebuffer->Context = context;
 
-        for (UInt8 i = 0; i < framebuffer->m_ColorFormats.size(); i++) {
+        for (UInt8 i = 0; i < framebuffer->m_ColorFormats.Size(); i++) {
             framebuffer->m_RTAttachments[i] = RenderTexture2DAPI::CreateRenderTexture2DData(
                 rtAllocator,
                 framebuffer->Context,
@@ -43,12 +43,12 @@ namespace Sentinel {
 
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderViews[15];
 
-        for (UInt8 i = 0; i < dataObject->m_ColorFormats.size(); i++) {
+        for (UInt8 i = 0; i < dataObject->m_ColorFormats.Size(); i++) {
             pRenderViews[i] = RenderTexture2DAPI::GetNativeRTV(dataObject->m_RTAttachments[i]);
         }
 
         nativeContext->OMSetRenderTargets(
-            dataObject->m_ColorFormats.size(),
+            dataObject->m_ColorFormats.Size(),
             pRenderViews[0].GetAddressOf(),
             dataObject->m_DepthFormat == DepthFormat::NONE
                 ? NULL
@@ -63,7 +63,7 @@ namespace Sentinel {
     void FramebufferAPI::Clear(FramebufferData* dataObject, const glm::vec4& clearColor) {
         ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
 
-        for (UInt16 i = 0; i < dataObject->m_ColorFormats.size(); i++) {
+        for (UInt16 i = 0; i < dataObject->m_ColorFormats.Size(); i++) {
             if (!dataObject->m_RTAttachments[i]) continue;
 
             dxContext->ClearRenderTargetView(

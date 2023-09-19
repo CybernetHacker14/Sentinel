@@ -2,8 +2,6 @@
 
 #include "Sentinel/Common/Strings/String.h"
 
-#include <string>
-
 namespace Sentinel {
     struct StringView {
     public:

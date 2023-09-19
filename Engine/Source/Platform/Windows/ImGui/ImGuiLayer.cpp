@@ -4,22 +4,18 @@
 
     #include "Sentinel/GUI/ImGui/ImGuiLayer.h"
     #include "Sentinel/Application/Application.h"
-
-    #include "Sentinel/Events/Categories/WindowEvent.h"
-    #include "Sentinel/Graphics/Common/Backend.h"
+    #include "Sentinel/Window/Window.h"
 
     #include "Sentinel/Graphics/Device/ContextAPI.h"
 
     #include <imgui.h>
     #include <backends/imgui_impl_glfw.h>
-
     #include <GLFW/glfw3.h>
-
     #include <backends/imgui_impl_dx11.h>
 
 namespace Sentinel {
     ImGuiLayer::ImGuiLayer(ContextData* context) : m_Context(context) {
-        Application::Get().SubscribeToEvent(EventType::WindowResize, ST_BIND_FN(OnResize));
+        m_OnResizeCallbackIndex = EventsAPI::RegisterEvent(EventType::WindowResize, this, ST_BIND_FN(OnResize));
     }
 
     ImGuiLayer::~ImGuiLayer() {
@@ -53,26 +49,18 @@ namespace Sentinel {
         SetDarkThemeColors();
 
         Application& app = Application::Get();
-        GLFWwindow* window = app.GetWindow().GetNativeWindow<GLFWwindow>();
+        GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow()->GetNative());
         ImGui_ImplGlfw_InitForOther(window, true);
 
         // Setup Platform/Renderer Bindings
 
-        switch (Backend::GetAPI()) {
-            case Backend::API::DirectX11: {
-                auto device = ContextAPI::GetDevice(m_Context);
-                auto nativeContext = ContextAPI::GetNativeContext(m_Context);
-                ImGui_ImplDX11_Init(device, nativeContext);
-                break;
-            }
-            case Backend::API::None: ST_ENGINE_ASSERT(false, "API::None currently not supported"); break;
-        }
-
-        m_OnResizeCallbackIndex = Application::Get().SubscribeToEvent(EventType::WindowResize, ST_BIND_FN(OnResize));
+        auto device = ContextAPI::GetDevice(m_Context);
+        auto nativeContext = ContextAPI::GetNativeContext(m_Context);
+        ImGui_ImplDX11_Init(device, nativeContext);
     }
 
     void ImGuiLayer::OnDetach() {
-        Application::Get().UnsubscribeFromEvent(EventType::WindowResize, m_OnResizeCallbackIndex);
+        EventsAPI::UnregisterEvent(EventType::WindowResize, m_OnResizeCallbackIndex);
         ImGui_ImplDX11_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -81,7 +69,7 @@ namespace Sentinel {
     void ImGuiLayer::Begin() {
         ImGuiIO& io = ImGui::GetIO();
         Application& app = Application::Get();
-        io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+        io.DisplaySize = ImVec2((float)app.GetWindow()->GetWidth(), (float)app.GetWindow()->GetHeight());
 
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -102,11 +90,11 @@ namespace Sentinel {
         }
     }
 
-    void ImGuiLayer::OnResize(Event& event) {
-        WindowResizeEvent e = *(event.Cast<WindowResizeEvent>());
+    Bool ImGuiLayer::OnResize(EventType type, EventData data, void* object) {
         ImGuiIO& io = ImGui::GetIO();
         (void)io;
-        io.DisplaySize = ImVec2(e.GetWidth(), e.GetHeight());
+        io.DisplaySize = ImVec2(data.UInt16[0], data.UInt16[1]);
+        return true;
     }
 
     void ImGuiLayer::SetDarkThemeColors() {

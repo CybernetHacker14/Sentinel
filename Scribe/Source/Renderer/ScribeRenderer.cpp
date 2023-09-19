@@ -1,23 +1,25 @@
 #include "Renderer/ScribeRenderer.h"
 
 #include <Sentinel/Graphics/Camera/Camera.h>
+#include <Sentinel/Window/Window.h>
+#include <Sentinel/Logging/Log.h>
 
 #include <glm/glm.hpp>
 
 namespace Scribe {
     namespace Rendering {
         ScribeRenderer::ScribeRenderer(Sentinel::Window* window) : m_Window(window) {
-            m_ResizeIndex = Sentinel::Application::Get().SubscribeToEvent(
-                Sentinel::EventType::WindowResize, ST_BIND_FN(ScribeRenderer::OnWindowResize));
+            m_ResizeIndex = Sentinel::EventsAPI::RegisterEvent(
+                Sentinel::EventType::WindowResize, this, ST_BIND_FN(ScribeRenderer::OnWindowResize));
 
-            m_CtxAlloc.AllocateMemoryBlock(1);
-            m_SCAlloc.AllocateMemoryBlock(1);
-            m_VPortAlloc.AllocateMemoryBlock(1);
+            m_CtxAlloc.Allocate(1);
+            m_SCAlloc.Allocate(1);
+            m_VPortAlloc.Allocate(1);
 
-            m_ShaderAlloc.AllocateMemoryBlock(1);
+            m_ShaderAlloc.Allocate(1);
 
-            m_RTAlloc.AllocateMemoryBlock(1);
-            m_DTAlloc.AllocateMemoryBlock(1);
+            m_RTAlloc.Allocate(1);
+            m_DTAlloc.Allocate(1);
 
             GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(m_Window->GetNative());
             m_Context = Sentinel::ContextAPI::CreateImmediateContext(m_CtxAlloc, glfwWindow);
@@ -25,15 +27,15 @@ namespace Scribe {
         }
 
         ScribeRenderer::~ScribeRenderer() {
-            Sentinel::Application::Get().UnsubscribeFromEvent(Sentinel::EventType::WindowResize, m_ResizeIndex);
+            Sentinel::EventsAPI::UnregisterEvent(Sentinel::EventType::WindowResize, m_ResizeIndex);
         }
 
         void ScribeRenderer::OnAttach() {
             const Sentinel::ContextInfo& info = Sentinel::ContextAPI::GetContextInfo(m_Context);
-            ST_ENGINE_INFO("Vendor   : {0}", info.Vendor.c_str());
-            ST_ENGINE_INFO("Renderer : {0}", info.Renderer.c_str());
-            ST_ENGINE_INFO("API      : {0}", info.API.c_str());
-            ST_ENGINE_INFO("Version  : {0}", info.Version.c_str());
+            ST_TERMINAL_INFO("Vendor   : %s", info.Vendor);
+            ST_TERMINAL_INFO("Renderer : %s", info.Renderer);
+            ST_TERMINAL_INFO("API      : %s", info.API);
+            ST_TERMINAL_INFO("Version  : %s", info.Version);
 
             m_SwapchainRT = Sentinel::RenderTexture2DAPI::CreateRenderTexture2DData(m_RTAlloc, m_Context, m_Swapchain);
 
@@ -85,14 +87,14 @@ namespace Scribe {
             m_SCAlloc.DeleteAll();
             m_CtxAlloc.DeleteAll();
 
-            m_ShaderAlloc.DeallocateMemoryBlock();
+            m_ShaderAlloc.Deallocate();
 
-            m_RTAlloc.DeallocateMemoryBlock();
-            m_DTAlloc.DeallocateMemoryBlock();
+            m_RTAlloc.Deallocate();
+            m_DTAlloc.Deallocate();
 
-            m_VPortAlloc.DeallocateMemoryBlock();
-            m_SCAlloc.DeallocateMemoryBlock();
-            m_CtxAlloc.DeallocateMemoryBlock();
+            m_VPortAlloc.Deallocate();
+            m_SCAlloc.Deallocate();
+            m_CtxAlloc.Deallocate();
         }
 
         void ScribeRenderer::OnUpdate() {
@@ -109,9 +111,10 @@ namespace Scribe {
             Sentinel::SwapchainAPI::Unbind(m_Swapchain);
         }
 
-        void ScribeRenderer::OnWindowResize(Sentinel::Event& event) {
-            Sentinel::WindowResizeEvent e = *(event.Cast<Sentinel::WindowResizeEvent>());
-            Resize(e.GetWidth(), e.GetHeight());
+        Sentinel::Bool ScribeRenderer::OnWindowResize(
+            Sentinel::EventType type, Sentinel::EventData data, void* listener) {
+            Resize(data.UInt16[0], data.UInt16[1]);
+            return true;
         }
 
         void ScribeRenderer::Resize(Sentinel::UInt16 width, Sentinel::UInt16 height) {

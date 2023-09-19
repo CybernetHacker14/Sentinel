@@ -28,7 +28,7 @@ namespace Sentinel {
         {DXGI_FORMAT_R32G32B32A32_SINT, 16}};
 
     VertexbufferLayoutData* VertexbufferLayoutAPI::CreateVertexbufferLayoutData(
-        PoolAllocator<VertexbufferLayoutData>& allocator, ContextData* context) {
+        FixedSlabAllocator<VertexbufferLayoutData>& allocator, ContextData* context) {
         VertexbufferLayoutData* layoutObject = allocator.New();
         layoutObject->Context = context;
         return layoutObject;

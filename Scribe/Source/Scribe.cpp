@@ -11,8 +11,8 @@
 #include <Sentinel/GUI/ImGui/ImGuiLayer.h>
 
 #include <Sentinel/ECS/Scene.h>
-#include <Sentinel/ECS/SceneManager.h>
 
+#include <Sentinel/Filesystem/Filesystem.h>
 #include <Sentinel/Archive/ZipFileOperations.h>
 #include <Sentinel/Resources/ImageResourceLoader.h>
 
@@ -26,7 +26,8 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 namespace Scribe {
     Scribe::Scribe() {
-        m_CloseIndex = SubscribeToEvent(Sentinel::EventType::WindowClose, ST_BIND_FN(OnWindowClose));
+        m_CloseIndex =
+            Sentinel::EventsAPI::RegisterEvent(Sentinel::EventType::WindowClose, this, ST_BIND_FN(OnWindowClose));
         m_RunFunction = ST_BIND_FN(Run);
 
         Sentinel::WindowProperties props;
@@ -37,7 +38,6 @@ namespace Scribe {
         props.Transparent = false;
 
         m_Window = new Window::ScribeWindow(props);
-        m_Window->SetEventCallback(ST_BIND_FN(RaiseEvent));
 
         m_BaseRenderer = new Rendering::ScribeRenderer(m_Window);
         m_ImGuiLayer = new Sentinel::ImGuiLayer(m_BaseRenderer->GetRenderingContext());
@@ -49,7 +49,8 @@ namespace Scribe {
         m_ImGuiBase->OnAttach();
 
         m_TestScene = new Sentinel::Scene();
-        if (Sentinel::Filesystem::DoesFileExist("Test.pak")) {
+        Sentinel::Path archivePath("Test.pak");
+        if (archivePath.DoesFileExist()) {
             Sentinel::UInt32 length;
             char* buffer;
             if (Sentinel::ZipFileOperations::ReadFromZipFile(
@@ -67,7 +68,6 @@ namespace Scribe {
             m_TestScene->SetName("Untitled_Scene_001");
         }
 
-        ST_INFO("{0}", m_TestScene->GetUUID().ToString().c_str());
         m_Entity1 = m_TestScene->CreateEntity("Entity 1");
         m_Entity2 = m_TestScene->CreateEntity("Entity 2");
         m_Entity3 = m_TestScene->CreateEntity("Entity 3");
@@ -76,11 +76,11 @@ namespace Scribe {
         m_Entity6 = m_TestScene->CreateEntity("Entity 6");
         m_Entity7 = m_TestScene->CreateEntity("Entity 7");
 
-        m_Entity2->SetParent(m_Entity1);
-        m_Entity3->SetParent(m_Entity2);
-        m_Entity4->SetParent(m_Entity1);
-        m_Entity6->SetParent(m_Entity5);
-        m_Entity7->SetParent(m_Entity5);
+        m_Entity2.SetParent(&m_Entity1);
+        m_Entity3.SetParent(&m_Entity2);
+        m_Entity4.SetParent(&m_Entity1);
+        m_Entity6.SetParent(&m_Entity5);
+        m_Entity7.SetParent(&m_Entity5);
 
         m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
         // m_TestScene->SerializeToFile("Test.scene");
@@ -106,7 +106,7 @@ namespace Scribe {
     }
 
     Scribe::~Scribe() {
-        UnsubscribeFromEvent(Sentinel::EventType::WindowClose, m_CloseIndex);
+        Sentinel::EventsAPI::UnregisterEvent(Sentinel::EventType::WindowClose, m_CloseIndex);
         delete m_TestScene;
         delete m_Window;
     }
@@ -129,9 +129,9 @@ namespace Scribe {
         m_Window->Shutdown();
     }
 
-    void Scribe::OnWindowClose(Sentinel::Event& event) {
-        Sentinel::WindowCloseEvent e = *(event.Cast<Sentinel::WindowCloseEvent>());
+    Sentinel::Bool Scribe::OnWindowClose(Sentinel::EventType type, Sentinel::EventData data, void* listener) {
         m_Running = false;
+        return true;
     }
 
 }  // namespace Scribe

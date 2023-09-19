@@ -32,9 +32,8 @@ namespace Sentinel {
     void DepthTexture2DAPI::Clear(DepthTexture2DData* dataObject) {
         ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
 
-        if (dataObject->m_BindType != ShaderType::NONE) {
+        if (dataObject->m_NativeDSV)
             dxContext->ClearDepthStencilView(dataObject->m_NativeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-        }
     }
 
     void DepthTexture2DAPI::Clean(DepthTexture2DData* dataObject) {
@@ -58,46 +57,23 @@ namespace Sentinel {
         ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
         ID3D11ShaderResourceView* srv = dataObject->m_NativeSRV;
 
-        if (shaderType == ShaderType::NONE) return;
-
         switch (shaderType) {
-            case ShaderType::VERTEX:
-                dxContext->VSSetShaderResources(slot, 1, &srv);
-                dataObject->m_BindSlot = slot;
-                dataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::PIXEL:
-                dxContext->PSSetShaderResources(slot, 1, &srv);
-                dataObject->m_BindSlot = slot;
-                dataObject->m_BindType = shaderType;
-                break;
-            case ShaderType::COMPUTE:
-                dxContext->CSSetShaderResources(slot, 1, &srv);
-                dataObject->m_BindSlot = slot;
-                dataObject->m_BindType = shaderType;
-                break;
+            case ShaderType::VERTEX: dxContext->VSSetShaderResources(slot, 1, &srv); break;
+            case ShaderType::PIXEL: dxContext->PSSetShaderResources(slot, 1, &srv); break;
+            case ShaderType::COMPUTE: dxContext->CSSetShaderResources(slot, 1, &srv); break;
         }
+        dataObject->m_BindSlot = slot;
+        dataObject->m_BindType = shaderType;
     }
 
     void DepthTexture2DAPI::Unbind(DepthTexture2DData* dataObject) {
         ID3D11DeviceContext* dxContext = ContextAPI::GetNativeContext(dataObject->Context);
         ID3D11ShaderResourceView* nullSRV = {nullptr};
 
-        if (dataObject->m_BindType == ShaderType::NONE) return;
-
         switch (dataObject->m_BindType) {
-            case ShaderType::VERTEX:
-                dxContext->VSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
-                dataObject->m_BindType = ShaderType::NONE;
-                break;
-            case ShaderType::PIXEL:
-                dxContext->PSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
-                dataObject->m_BindType = ShaderType::NONE;
-                break;
-            case ShaderType::COMPUTE:
-                dxContext->CSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV);
-                dataObject->m_BindType = ShaderType::NONE;
-                break;
+            case ShaderType::VERTEX: dxContext->VSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV); break;
+            case ShaderType::PIXEL: dxContext->PSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV); break;
+            case ShaderType::COMPUTE: dxContext->CSSetShaderResources(dataObject->m_BindSlot, 1, &nullSRV); break;
         }
     }
 

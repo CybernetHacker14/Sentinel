@@ -2,6 +2,8 @@
 
 #include <Sentinel.h>
 
+#include <Sentinel/ECS/Entity.h>
+
 namespace Sentinel {
     class ImGuiLayer;
     struct Scene;
@@ -29,10 +31,10 @@ namespace Scribe {
         void Run();
 
     private:
-        void OnWindowClose(Sentinel::Event& event);
+        Sentinel::Bool OnWindowClose(Sentinel::EventType type, Sentinel::EventData data, void* listener);
 
     private:
-        Sentinel::UInt32 m_CloseIndex = 0;
+        Sentinel::UInt16 m_CloseIndex = 0;
 
         Sentinel::Bool m_Running = true;
         Sentinel::Bool m_Minimized = false;
@@ -43,13 +45,13 @@ namespace Scribe {
 
     private:
         Sentinel::Scene* m_TestScene;
-        Sentinel::Entity* m_Entity1;
-        Sentinel::Entity* m_Entity2;
-        Sentinel::Entity* m_Entity3;
-        Sentinel::Entity* m_Entity4;
-        Sentinel::Entity* m_Entity5;
-        Sentinel::Entity* m_Entity6;
-        Sentinel::Entity* m_Entity7;
+        Sentinel::Entity m_Entity1;
+        Sentinel::Entity m_Entity2;
+        Sentinel::Entity m_Entity3;
+        Sentinel::Entity m_Entity4;
+        Sentinel::Entity m_Entity5;
+        Sentinel::Entity m_Entity6;
+        Sentinel::Entity m_Entity7;
     };
 }  // namespace Scribe
 

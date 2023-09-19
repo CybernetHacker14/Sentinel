@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Sentinel.h>
-#include <Sentinel/Memory/PoolAllocator.h>
+#include <Sentinel/Memory/FixedSlabAllocator.h>
 
 #include <Sentinel/Graphics/Device/ContextAPI.h>
 #include <Sentinel/Graphics/Device/SwapchainAPI.h>
@@ -20,7 +20,8 @@
 
 namespace Sentinel {
     class Camera;
-}
+    class Window;
+}  // namespace Sentinel
 
 namespace Scribe {
     namespace Rendering {
@@ -37,18 +38,18 @@ namespace Scribe {
             void OnRender();
             void OnPostRender();
 
-            void OnWindowResize(Sentinel::Event& event);
+            Sentinel::Bool OnWindowResize(Sentinel::EventType type, Sentinel::EventData data, void* listener);
             void Resize(Sentinel::UInt16 width, Sentinel::UInt16 height);
 
         private:
-            Sentinel::PoolAllocator<Sentinel::ContextData> m_CtxAlloc;
-            Sentinel::PoolAllocator<Sentinel::SwapchainData> m_SCAlloc;
-            Sentinel::PoolAllocator<Sentinel::ViewportData> m_VPortAlloc;
+            Sentinel::FixedSlabAllocator<Sentinel::ContextData> m_CtxAlloc;
+            Sentinel::FixedSlabAllocator<Sentinel::SwapchainData> m_SCAlloc;
+            Sentinel::FixedSlabAllocator<Sentinel::ViewportData> m_VPortAlloc;
 
-            Sentinel::PoolAllocator<Sentinel::RenderTexture2DData> m_RTAlloc;
-            Sentinel::PoolAllocator<Sentinel::DepthTexture2DData> m_DTAlloc;
+            Sentinel::FixedSlabAllocator<Sentinel::RenderTexture2DData> m_RTAlloc;
+            Sentinel::FixedSlabAllocator<Sentinel::DepthTexture2DData> m_DTAlloc;
 
-            Sentinel::PoolAllocator<Sentinel::ShaderData> m_ShaderAlloc;
+            Sentinel::FixedSlabAllocator<Sentinel::ShaderData> m_ShaderAlloc;
 
             Sentinel::Window* m_Window;
 
@@ -62,7 +63,7 @@ namespace Scribe {
             Sentinel::DepthTexture2DData* m_SwapchainDRT;
 
         private:
-            Sentinel::UInt32 m_ResizeIndex = 0;
+            Sentinel::UInt16 m_ResizeIndex = 0;
 
             glm::mat4 m_ViewProj = glm::mat4(1.0f);
         };

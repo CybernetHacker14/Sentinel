@@ -14,14 +14,14 @@ namespace Scribe {
 
         ScribeImGuiBase::ScribeImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window)
             : m_Context(context), m_Window(window) {
-            m_TexMemAllocator.AllocateMemoryBlock(1);
+            m_TexMemAllocator.Allocate(1);
             m_SceneHierarchyPanel = new Panel::SceneHierarchyPanel();
         }
 
         ScribeImGuiBase::~ScribeImGuiBase() {
             delete m_SceneHierarchyPanel;
             m_TexMemAllocator.DeleteAll();
-            m_TexMemAllocator.DeallocateMemoryBlock();
+            m_TexMemAllocator.Deallocate();
         }
 
         void ScribeImGuiBase::OnAttach() {

@@ -3,11 +3,12 @@
 #include "Sentinel/Common/Core/DataTypes.h"
 #include "Sentinel/Common/Templates/Function.h"
 #include "Sentinel/Common/Strings/StringView.h"
-#include "Sentinel/Window/Window.h"
 
 int main(int argc, char** argv);
 
 namespace Sentinel {
+    class Window;
+
     class Application {
     public:
         Application(CChar* name = "Application");
@@ -15,7 +16,7 @@ namespace Sentinel {
 
         static Application& Get() { return *s_Instance; }
 
-        inline Window& GetWindow() { return *m_Window; }
+        inline Window* GetWindow() { return m_Window; }
 
     protected:
         void Run();

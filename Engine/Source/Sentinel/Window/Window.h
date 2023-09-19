@@ -34,12 +34,15 @@ namespace Sentinel {
     // 2. Maybe a custom window class developed specifically for the attached application
     // 3. A definite custom window class developed for the editor
 
+#ifndef WINDOW_PFN
+    #define WINDOW_PFN
     namespace WindowPFn {
         void (*OnUpdateFn)();
         void (*SetVSyncFn)(Bool enabled);
         void (*ShutdownFn)();
         void* (*GetNativeFn)();
-    }  // namespace WindowPFn
+    }   // namespace WindowPFn
+#endif  // !WINDOW_PFN
 
     class Window {
     public:
@@ -49,6 +52,9 @@ namespace Sentinel {
         inline void SetVSync(Bool enabled) const { WindowPFn::SetVSyncFn(enabled); }
         inline void Shutdown() const { WindowPFn::ShutdownFn(); }
         inline void* GetNative() const { return WindowPFn::GetNativeFn(); }
+
+        inline const UInt16 GetWidth() const { return m_Data.Width; }
+        inline const UInt16 GetHeight() const { return m_Data.Height; }
 
     protected:
         inline Window(const WindowProperties& props) : m_Properties(props) {}

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
 #include "Sentinel/Resources/Resource.h"
-#include "Sentinel/Filesystem/Filesystem.h"
 
 namespace Sentinel {
     struct ImageResource {
@@ -17,14 +15,12 @@ namespace Sentinel {
 
     class ImageResourceLoader {
     public:
-        static void SaveToFile(const STL::string& path, ImageResource* inResource);
+        static void SaveToFile(CChar* path, ImageResource* inResource);
 
-        static Bool SaveToArchive(
-            const STL::string& zipFilepath, const STL::string& inZipLocation, ImageResource* inResource);
+        static Bool SaveToArchive(CChar* zipFilepath, CChar* inZipLocation, ImageResource* inResource);
 
-        static void LoadFromFile(const STL::string& path, ImageResource** outResource);
+        static void LoadFromFile(CChar* path, ImageResource** outResource);
 
-        static Bool LoadFromArchive(
-            const STL::string& zipFilepath, const STL::string& inZipLocation, ImageResource** outResource);
+        static Bool LoadFromArchive(CChar* zipFilepath, CChar* inZipLocation, ImageResource** outResource);
     };
 }  // namespace Sentinel

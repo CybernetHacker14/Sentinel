@@ -7,6 +7,8 @@
     #include "Sentinel/Common/Core/DataTypes.h"
     #include "Sentinel/Common/Core/Macros.h"
 
+    #include <time.h>
+
     #define ANSI_COLOR_WHITE  "\x1b[97m"
     #define ANSI_COLOR_RED    "\x1b[31m"
     #define ANSI_COLOR_GREEN  "\x1b[32m"

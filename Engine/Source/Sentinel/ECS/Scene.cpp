@@ -71,7 +71,7 @@ namespace Sentinel {
 
     template<class Archive>
     inline void Sentinel::Scene::save(Archive& archive) const {
-        archive(cereal::make_nvp(SCENE_UUID_KEY, (UUID)m_UUID));
+        archive(cereal::make_nvp(SCENE_UUID_KEY, m_UUID.ToUInt64()));
         archive(cereal::make_nvp(SCENE_NAME_KEY, std::string(GetName())));
     }
 

@@ -1,12 +1,15 @@
 #pragma once
 
-#define IM_VEC2_CLASS_EXTRA                                  \
-    constexpr ImVec2(const glm::vec2& f) : x(f.x), y(f.y) {} \
-    operator glm::vec2() const { return glm::vec2(x, y); }
+#define IM_VEC2_CLASS_EXTRA                                 \
+    constexpr ImVec2(const glm::vec2& f) : x(f.x), y(f.y) { \
+    }                                                       \
+    operator glm::vec2() const {                            \
+        return glm::vec2(x, y);                             \
+    }
 
 #include <Sentinel.h>
 
-#include <Sentinel/Memory/PoolAllocator.h>
+#include <Sentinel/Memory/FixedSlabAllocator.h>
 
 namespace Sentinel {
     struct Texture2DData;
@@ -41,7 +44,7 @@ namespace Scribe {
             void RenderImGuiTitleBar();
 
         private:
-            Sentinel::PoolAllocator<Sentinel::Texture2DData> m_TexMemAllocator;
+            Sentinel::FixedSlabAllocator<Sentinel::Texture2DData> m_TexMemAllocator;
 
             Sentinel::ContextData* m_Context = nullptr;
             Window::ScribeWindow* m_Window = nullptr;

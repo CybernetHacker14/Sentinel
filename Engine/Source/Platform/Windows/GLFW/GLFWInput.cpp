@@ -144,20 +144,20 @@ namespace Sentinel {
             MouseCode::Button7};
 
         static Bool GetKey(KeyCode keycode) {
-            GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNative());
+            GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow()->GetNative());
             return glfwGetKey(window, static_cast<Int32>(keycode)) == GLFW_PRESS;
         }
 
         static Bool GetMouseButton(MouseCode mousecode) {
             return glfwGetMouseButton(
-                       static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNative()),
+                       static_cast<GLFWwindow*>(Application::Get().GetWindow()->GetNative()),
                        static_cast<Int32>(mousecode)) == GLFW_PRESS;
         }
 
     }  // namespace GLFWInputUtils
 
     Bool Input::IsKeyPressed(const KeyCode keycode) {
-        GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNative());
+        GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow()->GetNative());
         Int32 state = glfwGetKey(window, static_cast<Int32>(keycode));
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
@@ -171,7 +171,7 @@ namespace Sentinel {
     }
 
     Bool Input::IsMouseButtonPressed(const MouseCode button) {
-        GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNative());
+        GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow()->GetNative());
         Int32 state = glfwGetMouseButton(window, static_cast<Int32>(button));
         return state == GLFW_PRESS;
     }
@@ -185,7 +185,7 @@ namespace Sentinel {
     }
 
     glm::vec2 Input::GetMousePosition() {
-        GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNative());
+        GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow()->GetNative());
         Double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         return {(Float)xpos, (Float)ypos};
