@@ -18,10 +18,10 @@ namespace Sentinel {
     enum ContextType : Bool { IMMEDIATE = 0, DEFFERED = 1 };
 
     struct ContextInfo {
-        CChar* Vendor;
-        CChar* Renderer;
-        CChar* API;
-        CChar* Version;
+        Char* Vendor;
+        Char* Renderer;
+        Char* API;
+        Char* Version;
     };
 
     struct ContextData {

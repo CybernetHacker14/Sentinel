@@ -130,7 +130,8 @@ namespace Scribe {
     }
 
     Sentinel::Bool Scribe::OnWindowClose(Sentinel::EventType type, Sentinel::EventData data, void* listener) {
-        m_Running = false;
+        Scribe* app = (Scribe*)listener;
+        app->m_Running = false;
         return true;
     }
 

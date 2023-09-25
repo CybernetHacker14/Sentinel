@@ -22,18 +22,18 @@ namespace Sentinel {
     }
 
     Entity Scene::CreateEntity(CChar* name) {
-        Entity entity = {&(m_Scene.entity(name)), this};
-        entity.GetNative()->add<TransformComponent>();
+        Entity entity = {m_Scene.entity(name), this};
+        entity.GetNative().add<TransformComponent>();
         return entity;
     }
 
     void Scene::DeleteEntity(Entity* entity) {
-        flecs::entity* e = entity->GetNative();
-        e->destruct();
+        flecs::entity e = entity->GetNative();
+        e.destruct();
     }
 
     Entity Scene::FindEntityWithName(CChar* name) {
-        Entity entity = {&(m_Scene.lookup(name)), this};
+        Entity entity = {m_Scene.lookup(name), this};
         return entity;
     }
 

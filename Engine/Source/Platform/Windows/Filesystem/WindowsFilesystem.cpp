@@ -35,7 +35,7 @@ namespace Sentinel {
         }
 
         static HANDLE OpenFileForReading(const CChar* path) {
-            return CreateFileA(
+            HANDLE value = CreateFileA(
                 path,
                 GENERIC_READ,
                 FILE_SHARE_READ,
@@ -43,6 +43,7 @@ namespace Sentinel {
                 OPEN_EXISTING,
                 FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
                 NULL);
+            return value;
         }
 
         static Int64 GetFileSizeInternal(const HANDLE file) {
@@ -113,10 +114,9 @@ namespace Sentinel {
     }  // namespace WindowsFilesystemUtils
 
     Path::Path(CChar* path) {
-        Char buffer[MAX_PATH + 1];
-        DWORD length = GetFullPathNameA(path, MAX_PATH, buffer, 0);
-        buffer[length] = '\0';
-        m_AbsolutePath = buffer;
+        m_AbsolutePath = (Char*)Malloc(MAX_PATH + 1);
+        DWORD length = GetFullPathNameA(path, MAX_PATH, m_AbsolutePath, 0);
+        m_AbsolutePath[length] = '\0';
 
         DWORD attributes = GetFileAttributesA(m_AbsolutePath);
         LPCSTR extension = PathFindExtensionA(m_AbsolutePath);
@@ -222,7 +222,15 @@ namespace Sentinel {
     }
 
     const Int64 Filesystem::GetFileSize(const Path& filepath) {
-        const HANDLE file = WindowsFilesystemUtils::OpenFileForReading(filepath.GetAbsolutePath());
+        Path path = filepath;
+        const HANDLE file = CreateFileA(
+            filepath.GetAbsolutePath(),
+            GENERIC_READ,
+            FILE_SHARE_READ,
+            nullptr,
+            OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
+            NULL);
         if (file == INVALID_HANDLE_VALUE) return -1;
         return WindowsFilesystemUtils::GetFileSizeInternal(file);
     }
@@ -267,8 +275,8 @@ namespace Sentinel {
         return result;
     }
 
-    Bool Filesystem::WriteToTextFileAtPath(const Path& filepath, const StringView& text) {
-        return WriteToFileAtPath(filepath, (UInt8*)text.C_Str(), text.Size());  // Need to test the second parameter
+    Bool Filesystem::WriteToTextFileAtPath(const Path& filepath, CChar* text) {
+        return WriteToFileAtPath(filepath, (UInt8*)text, strlen(text));  // Need to test the second parameter
     }
 
     Bool Filesystem::OpenAtPath(const Path& path) {

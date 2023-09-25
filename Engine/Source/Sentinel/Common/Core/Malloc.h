@@ -1,4 +1,5 @@
-#include "stpch.h"
+#pragma once
+
 #include "Sentinel/Common/Core/CompilerDetection.h"
 #include "Sentinel/Common/Strings/MemFunctions.h"
 
@@ -15,7 +16,7 @@
 #define ALIGN_TO(size, alignment) (((size) + (alignment)-1) & ~((alignment)-1))
 
 namespace Sentinel {
-    static void* Malloc(Size_t size) {
+    inline void* Malloc(Size_t size) {
 #ifdef ST_COMPILER_MSVC
         return _aligned_malloc(size, MIN_ALLOC_ALIGNMENT);
 #else
@@ -23,7 +24,7 @@ namespace Sentinel {
 #endif  // ST_COMPILER_MSVC
     }
 
-    static void* Calloc(Size_t count, Size_t size) {
+    inline void* Calloc(Size_t count, Size_t size) {
 #ifdef ST_COMPILER_MSVC
         Size_t sz = count * size;
         void* ptr = Malloc(sz);
@@ -34,7 +35,7 @@ namespace Sentinel {
         return ptr;
     }
 
-    static void* Realloc(void* ptr, Size_t size) {
+    inline void* Realloc(void* ptr, Size_t size) {
 #ifdef ST_COMPILER_MSVC
         return _aligned_realloc(ptr, size, MIN_ALLOC_ALIGNMENT);
 #else
@@ -42,7 +43,7 @@ namespace Sentinel {
 #endif  // ST_COMPILER_MSVC
     }
 
-    static void Free(void* ptr) {
+    inline void Free(void* ptr) {
 #ifdef ST_COMPILER_MSVC
         _aligned_free(ptr);
 #else

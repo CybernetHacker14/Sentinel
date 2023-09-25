@@ -2,6 +2,7 @@
 
 #include "Sentinel/Common/Core/DataTypes.h"
 #include "Sentinel/Common/Strings/StringView.h"
+#include "Sentinel/Common/Templates/Function.h"
 
 namespace Sentinel {
     enum class WindowMode : UInt8 {
@@ -34,24 +35,14 @@ namespace Sentinel {
     // 2. Maybe a custom window class developed specifically for the attached application
     // 3. A definite custom window class developed for the editor
 
-#ifndef WINDOW_PFN
-    #define WINDOW_PFN
-    namespace WindowPFn {
-        void (*OnUpdateFn)();
-        void (*SetVSyncFn)(Bool enabled);
-        void (*ShutdownFn)();
-        void* (*GetNativeFn)();
-    }   // namespace WindowPFn
-#endif  // !WINDOW_PFN
-
     class Window {
     public:
         virtual ~Window() = default;
 
-        inline void OnUpdate() const { WindowPFn::OnUpdateFn(); }
-        inline void SetVSync(Bool enabled) const { WindowPFn::SetVSyncFn(enabled); }
-        inline void Shutdown() const { WindowPFn::ShutdownFn(); }
-        inline void* GetNative() const { return WindowPFn::GetNativeFn(); }
+        inline void OnUpdate() const { m_UpdateFn(); }
+        inline void SetVSync(Bool enabled) const { m_SetVSyncFn(enabled); }
+        inline void Shutdown() const { m_ShutdownFn; }
+        inline void* GetNative() const { return m_GetNativeFn(); }
 
         inline const UInt16 GetWidth() const { return m_Data.Width; }
         inline const UInt16 GetHeight() const { return m_Data.Height; }
@@ -65,6 +56,11 @@ namespace Sentinel {
         // setting the value of the EventCallbackFn.
         // In earlier days, when I was just learning C++, had no idea how this worked.
         // Now I need to sort this properly, because shit's getting undebuggable
+
+        Function<void()> m_UpdateFn;
+        Function<void(Bool)> m_SetVSyncFn;
+        Function<void()> m_ShutdownFn;
+        Function<void*()> m_GetNativeFn;
 
         struct WindowData {
             UInt16 Width = 900, Height = 900;

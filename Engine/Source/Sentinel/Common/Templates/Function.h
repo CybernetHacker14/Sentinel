@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Sentinel/Common/Core/Assert.h"
 #include <type_traits>
 
 // https://gist.github.com/twoscomplement/030818a6c38c5a983482dc3a385a3ab8

@@ -14,14 +14,14 @@
 
 namespace Sentinel {
     namespace DX11ShaderAPIUtils {
-        static tsl::sparse_map<CChar*, Sentinel::ShaderType> s_ShaderStringTypeMap = {
+        static tsl::sparse_map<std::string, Sentinel::ShaderType> s_ShaderStringTypeMap = {
             {"vertex", ShaderType::VERTEX}, {"pixel", ShaderType::PIXEL}, {"compute", ShaderType::COMPUTE}};
 
         static CChar* s_ShaderTypeString[3] = {"vertex", "pixel", "compute"};
         static CChar* s_ShaderTypeProfile[3] = {"vs_5_0", "ps_5_0", "cs_5_0"};
         static CChar* s_ShaderTypeEntryPoint[3] = {"VShader", "PShader", "CShader"};
 
-        static void PreprocessSource(CChar* source, CChar** sources) {
+        static void PreprocessSource(CChar* source, Char** sources) {
             std::string sourceString(source);
 
             CChar* typeToken = "#type";
@@ -39,15 +39,25 @@ namespace Sentinel {
                 ST_BREAKPOINT_ASSERT(nextLinePos != std::string::npos, "Syntax error");
                 pos = sourceString.find(typeToken, nextLinePos);  // Start of next shader type declaration line
 
-                sources[(UInt8)s_ShaderStringTypeMap.at(type.c_str())] =
+                std::string subShaderSource =
+                    ((pos == std::string::npos) ? sourceString.substr(nextLinePos)
+                                                : sourceString.substr(nextLinePos, pos - nextLinePos));
+
+                // TODO : Data is not being copied properly
+                sources[(UInt8)s_ShaderStringTypeMap[type]] = (Char*)Malloc(subShaderSource.size() + 1);
+                sources[(UInt8)s_ShaderStringTypeMap[type]][subShaderSource.size()] = '\0';
+                MemFunctions::Memcpy(
+                    sources[(UInt8)s_ShaderStringTypeMap[type]], subShaderSource.c_str(), subShaderSource.size());
+
+                /*sources[(UInt8)s_ShaderStringTypeMap[type]] =
                     ((pos == std::string::npos) ? sourceString.substr(nextLinePos)
                                                 : sourceString.substr(nextLinePos, pos - nextLinePos))
-                        .c_str();
+                        .data();*/
             }
         }
 
         // TODO : Maybe rethink about this, whether the count
-        static void CompileFromSource(CChar** sources, ID3DBlob** binaries) {
+        static void CompileFromSource(Char** sources, ID3DBlob** binaries) {
             HRESULT result;
             ID3DBlob* errorMessages;
 
@@ -172,7 +182,7 @@ namespace Sentinel {
     }
 
     void ShaderAPI::Load(ShaderData* dataObject) {
-        const Path filePath(dataObject->m_Filepath);
+        Path filePath(dataObject->m_Filepath);
         Int64 shaderSourceSize = Filesystem::GetFileSize(filePath);
 
         if (shaderSourceSize == 0) {
@@ -180,7 +190,8 @@ namespace Sentinel {
             return;
         }
 
-        Char* buffer = (Char*)Malloc(sizeof(Char) * shaderSourceSize);
+        Char* buffer = (Char*)Malloc(shaderSourceSize + 1);
+        buffer[shaderSourceSize] = '\0';
         if (!Filesystem::ReadTextFileAtPath(dataObject->m_Filepath, buffer, shaderSourceSize)) {
             ST_TERMINAL_ERROR("Error reading shader file at path : %s", dataObject->m_Filepath);
             return;

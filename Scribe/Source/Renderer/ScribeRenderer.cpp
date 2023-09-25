@@ -113,7 +113,8 @@ namespace Scribe {
 
         Sentinel::Bool ScribeRenderer::OnWindowResize(
             Sentinel::EventType type, Sentinel::EventData data, void* listener) {
-            Resize(data.UInt16[0], data.UInt16[1]);
+            ScribeRenderer* renderer = (ScribeRenderer*)listener;
+            renderer->Resize(data.UInt16[0], data.UInt16[1]);
             return true;
         }
 

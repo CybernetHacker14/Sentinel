@@ -41,12 +41,12 @@ namespace Sentinel {
         String& Append(CChar letter);
         String& Append(const String& other);
 
-        inline friend String& operator+(String string, CChar letter);
-        inline friend String& operator+(String string, const String& other);
-        inline friend String& operator+(String string, CChar* other);
+        inline friend String& operator+(String string, CChar letter) { return string.Append(letter); }
+        inline friend String& operator+(String string, const String& other) { return string.Append(other); }
+        inline friend String& operator+(String string, CChar* other) { return string.Append(other); }
 
-        inline String& operator+=(CChar letter);
-        inline String& operator+=(const String& other);
+        inline String& String::operator+=(CChar letter) { return Append(letter); }
+        inline String& String::operator+=(const String& other) { return Append(other); }
 
     private:
         String& Set(CChar* data, UInt32 size, UInt32 start = 0);

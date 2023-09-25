@@ -47,10 +47,10 @@ namespace Sandbox {
         props.Transparent = false;
 
         m_Window = new Sentinel::GLFWWindow(props);
-        m_Window->SetEventCallback(ST_BIND_FN(RaiseEvent));
-        static_cast<Sentinel::GLFWWindow*>(m_Window)->SetDragLogic(&DragFunction);
+        Sentinel::GLFWWindow* window = static_cast<Sentinel::GLFWWindow*>(m_Window);
+        window->SetDragLogic(&DragFunction);
 
-        handle = glfwGetWin32Window(m_Window->GetNativeWindow<GLFWwindow>());
+        handle = glfwGetWin32Window(static_cast<GLFWwindow*>(window->GetNative()));
 
         //====================================DO NOT DELETE========================================//
 
@@ -65,14 +65,14 @@ namespace Sandbox {
             if (!m_Minimized) {
                 m_RenderLayer->OnUpdate();
                 m_RenderLayer->OnRender();
-                //m_ImGuiLayer->Begin();
-                //m_ImGuiLayer->End();
+                // m_ImGuiLayer->Begin();
+                // m_ImGuiLayer->End();
                 m_RenderLayer->OnPostRender();
             }
             m_Window->OnUpdate();
             Sentinel::Input::OnUpdate();
         }
-        //m_ImGuiLayer->OnDetach();
+        // m_ImGuiLayer->OnDetach();
         m_RenderLayer->OnDetach();
         m_Window->Shutdown();
     }

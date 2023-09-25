@@ -40,10 +40,10 @@ namespace Sentinel {
     }
 
     GLFWWindow::GLFWWindow(const WindowProperties& props) : Window(props) {
-        WindowPFn::OnUpdateFn = Sentinel::WindowPFn::OnUpdate;
-        WindowPFn::SetVSyncFn = Sentinel::WindowPFn::VSync;
-        WindowPFn::ShutdownFn = Sentinel::WindowPFn::Shutdown;
-        WindowPFn::GetNativeFn = Sentinel::WindowPFn::GetNative;
+        m_UpdateFn = Sentinel::WindowPFn::OnUpdate;
+        m_SetVSyncFn = Sentinel::WindowPFn::VSync;
+        m_ShutdownFn = Sentinel::WindowPFn::Shutdown;
+        m_GetNativeFn = Sentinel::WindowPFn::GetNative;
         Init();
     }
 
@@ -149,5 +149,6 @@ namespace Sentinel {
         });
 
         glfwSetWindowUserPointer(Sentinel::WindowPFn::s_NativeWindow, &m_Data);
+        //glfwMakeContextCurrent(Sentinel::WindowPFn::s_NativeWindow);
     }
 }  // namespace Sentinel

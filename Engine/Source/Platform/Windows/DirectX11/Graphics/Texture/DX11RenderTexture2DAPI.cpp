@@ -50,7 +50,7 @@ namespace Sentinel {
 
         if (!dataObject->m_NativeRTV) { return; }
 
-        if (dataObject->m_BindType != ShaderType::PIXEL)
+        //if (dataObject->m_BindType != ShaderType::PIXEL)
             dxContext->ClearRenderTargetView(dataObject->m_NativeRTV, (Float*)&clearColor);
     }
 

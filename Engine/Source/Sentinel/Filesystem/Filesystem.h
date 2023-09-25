@@ -40,7 +40,7 @@ namespace Sentinel {
         Path() = default;
 
     private:
-        CChar* m_AbsolutePath;
+        Char* m_AbsolutePath;
 
         // DO NOT DELETE
         // 0 - exists, 1 - file, 2 - folder, 3 - readonly, 4 - hidden, 5 - url, 6 - html
@@ -59,7 +59,7 @@ namespace Sentinel {
         static Bool ReadFileAtPath(const Path& filepath, void* buffer, Int64& outSize);
         static Bool ReadTextFileAtPath(const Path& filepath, Char* buffer, Int64& outSize);
         static Bool WriteToFileAtPath(const Path& filepath, UInt8* buffer, UInt64 length);
-        static Bool WriteToTextFileAtPath(const Path& filepath, const StringView& text);
+        static Bool WriteToTextFileAtPath(const Path& filepath, CChar* text);
         static Bool OpenAtPath(const Path& path);
         static Bool DeleteAtPath(const Path& path);
         static Bool MoveToPath(const Path& currentpath, const Path& newpath);

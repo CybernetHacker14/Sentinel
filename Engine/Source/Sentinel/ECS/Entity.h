@@ -10,9 +10,9 @@ namespace Sentinel {
     struct Entity {
     public:
         Entity() = default;
-        Entity(flecs::entity* native, Scene* scene);
+        Entity(flecs::entity native, Scene* scene);
 
-        CChar* GetName() const;
+        CChar* GetName();
         void SetName(CChar* name);
 
         void SetParent(Entity* entity);
@@ -21,11 +21,11 @@ namespace Sentinel {
         Bool HasChildren();
         Int32 GetChildrenCount();
 
-        inline flecs::entity* GetNative() { return m_Native; }
+        inline flecs::entity GetNative() { return m_Native; }
         inline Scene* GetScene() { return m_Scene; }
 
     private:
-        flecs::entity* m_Native = nullptr;
+        flecs::entity m_Native;
         Scene* m_Scene = nullptr;
 
     private:

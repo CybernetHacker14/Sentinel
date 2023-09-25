@@ -16,7 +16,7 @@ namespace Sentinel {
         StringView& operator=(StringView&& other) noexcept;
 
         inline Bool Empty() const;
-        inline CChar* C_Str() const;
+        inline CChar* C_Str() const { return m_Data; }
         inline UInt32 Size() const;
 
     private:

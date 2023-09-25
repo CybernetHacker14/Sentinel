@@ -16,7 +16,7 @@
     #define ANSI_COLOR_RESET  "\x1b[0m"
 
 namespace LogUtils {
-    tm& GetSystemCurrentTime() {
+    inline tm& GetSystemCurrentTime() {
         time_t t = time(NULL);
         return *localtime(&t);
     }

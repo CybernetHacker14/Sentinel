@@ -22,7 +22,7 @@ namespace Sentinel {
     private:
         CChar* m_ShaderName;
         CChar* m_Filepath;
-        CChar* m_Sources[3];
+        Char* m_Sources[3];
 
 #ifdef ST_RENDERER_DX11
         ID3DBlob* m_Binaries[3];
