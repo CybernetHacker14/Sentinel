@@ -25,13 +25,10 @@ namespace Scribe {
 
             ImGui::End();
 
-            if (m_MarkedForDelete != nullptr) {
-                m_LoadedScene->DeleteEntity(m_MarkedForDelete);
-                m_MarkedForDelete = nullptr;
-            }
+            if (m_MarkedForDelete.GetNative().is_valid()) { m_LoadedScene->DeleteEntity(m_MarkedForDelete); }
         }
 
-        void SceneHierarchyPanel::DisplayNode(Sentinel::Entity& entity) {
+        void SceneHierarchyPanel::DisplayNode(Sentinel::Entity entity) {
             ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
             flags |= entity.HasChildren() ? ImGuiTreeNodeFlags_OpenOnArrow : ImGuiTreeNodeFlags_Leaf;
 
@@ -40,7 +37,7 @@ namespace Scribe {
             // if (!opened && ImGui::IsItemClicked(0)) m_SelectedEntity = entity;
 
             if (ImGui::BeginPopupContextItem()) {
-                if (ImGui::MenuItem("Delete Entity")) { m_MarkedForDelete = &entity; }
+                if (ImGui::MenuItem("Delete Entity")) { m_MarkedForDelete = entity; }
                 ImGui::EndPopup();
             }
 

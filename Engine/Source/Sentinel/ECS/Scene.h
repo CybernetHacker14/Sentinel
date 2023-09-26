@@ -19,7 +19,7 @@ namespace Sentinel {
         CChar* GetName() const;
 
         Entity CreateEntity(CChar* name = "New Entity");
-        void DeleteEntity(Entity* entity);
+        void DeleteEntity(Entity entity);
 
         Entity FindEntityWithName(CChar* name);
 

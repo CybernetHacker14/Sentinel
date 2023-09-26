@@ -27,9 +27,8 @@ namespace Sentinel {
         return entity;
     }
 
-    void Scene::DeleteEntity(Entity* entity) {
-        flecs::entity e = entity->GetNative();
-        e.destruct();
+    void Scene::DeleteEntity(Entity entity) {
+        entity.GetNative().destruct();
     }
 
     Entity Scene::FindEntityWithName(CChar* name) {
