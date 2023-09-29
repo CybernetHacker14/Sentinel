@@ -34,7 +34,7 @@ namespace Sentinel {
         ID3D11DeviceContext* nativeContext = ContextAPI::GetNativeContext(dataObject->Context);
 
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRV[1];
-        pRV[0] = RenderTexture2DAPI::GetNativeRTV(dataObject->backbuffer);
+        if (dataObject->backbuffer) { pRV[0] = RenderTexture2DAPI::GetNativeRTV(dataObject->backbuffer); }
         ID3D11DepthStencilView* pDV;
         if (dataObject->depthBuffer) { pDV = DepthTexture2DAPI::GetNativeDSV(dataObject->depthBuffer); }
 
@@ -59,7 +59,7 @@ namespace Sentinel {
 
     void SwapchainAPI::UnsetBuffers(SwapchainData* dataObject) {
         RenderTexture2DAPI::SetSwapchainTarget(dataObject->backbuffer, false);
-        DepthTexture2DAPI::SetSwapchainTarget(dataObject->depthBuffer, false);
+        if (dataObject->depthBuffer) DepthTexture2DAPI::SetSwapchainTarget(dataObject->depthBuffer, false);
         dataObject->backbuffer = nullptr;
         dataObject->depthBuffer = nullptr;
     }

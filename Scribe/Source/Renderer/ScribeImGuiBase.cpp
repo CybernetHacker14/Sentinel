@@ -1,6 +1,7 @@
 #include "Renderer/ScribeImGuiBase.h"
 #include "Window/ScribeWindow.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/RenderInfoPanel.h"
 
 #include <Sentinel/Graphics/Texture/Texture2DAPI.h>
 
@@ -16,10 +17,13 @@ namespace Scribe {
             : m_Context(context), m_Window(window) {
             m_TexMemAllocator.Allocate(1);
             m_SceneHierarchyPanel = new Panel::SceneHierarchyPanel();
+            m_RenderInfoPanel = new Panel::RenderInfoPanel();
+            m_RenderInfoPanel->SetRenderingContext(context);
         }
 
         ScribeImGuiBase::~ScribeImGuiBase() {
             delete m_SceneHierarchyPanel;
+            delete m_RenderInfoPanel;
             m_TexMemAllocator.DeleteAll();
             m_TexMemAllocator.Deallocate();
         }
@@ -92,10 +96,8 @@ namespace Scribe {
 
             ImGuiViewport* viewport = ImGui::GetMainViewport();
             // ImGui::SetNextWindowPos({viewport->WorkPos.x, viewport->WorkPos.y + 64});
-            ImGui::Begin("Test Window");
-            ImGui::End();
-
             m_SceneHierarchyPanel->DisplayScenePanel();
+            m_RenderInfoPanel->DisplayInfoPanel();
 
             ImGui::End();
         }

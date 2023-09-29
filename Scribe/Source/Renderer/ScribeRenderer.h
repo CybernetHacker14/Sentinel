@@ -5,21 +5,10 @@
 
 #include <Sentinel/Graphics/Device/ContextAPI.h>
 #include <Sentinel/Graphics/Device/SwapchainAPI.h>
-#include <Sentinel/Graphics/Output/ViewportAPI.h>
-
-#include <Sentinel/Graphics/Buffer/VertexbufferAPI.h>
-#include <Sentinel/Graphics/Buffer/IndexbufferAPI.h>
-#include <Sentinel/Graphics/Buffer/VertexbufferLayoutAPI.h>
-#include <Sentinel/Graphics/Buffer/ConstantbufferAPI.h>
-
-#include <Sentinel/Graphics/Material/ShaderAPI.h>
-#include <Sentinel/Graphics/Texture/Texture2DAPI.h>
 
 #include <Sentinel/Graphics/Texture/RenderTexture2DAPI.h>
-#include <Sentinel/Graphics/Texture/DepthTexture2DAPI.h>
 
 namespace Sentinel {
-    class Camera;
     class Window;
 }  // namespace Sentinel
 
@@ -44,23 +33,15 @@ namespace Scribe {
         private:
             Sentinel::FixedSlabAllocator<Sentinel::ContextData> m_CtxAlloc;
             Sentinel::FixedSlabAllocator<Sentinel::SwapchainData> m_SCAlloc;
-            Sentinel::FixedSlabAllocator<Sentinel::ViewportData> m_VPortAlloc;
 
             Sentinel::FixedSlabAllocator<Sentinel::RenderTexture2DData> m_RTAlloc;
-            Sentinel::FixedSlabAllocator<Sentinel::DepthTexture2DData> m_DTAlloc;
-
-            Sentinel::FixedSlabAllocator<Sentinel::ShaderData> m_ShaderAlloc;
 
             Sentinel::Window* m_Window;
 
             Sentinel::ContextData* m_Context;
             Sentinel::SwapchainData* m_Swapchain;
-            Sentinel::ViewportData* m_Viewport;
-
-            Sentinel::ShaderData* m_Shader;
 
             Sentinel::RenderTexture2DData* m_SwapchainRT;
-            Sentinel::DepthTexture2DData* m_SwapchainDRT;
 
         private:
             Sentinel::UInt16 m_ResizeIndex = 0;

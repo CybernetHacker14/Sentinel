@@ -39,7 +39,7 @@ namespace Sentinel {
     void Scene::SerializeToFile(CChar* path) {
         std::ofstream stream(path, std::ios::binary);
         {
-            cereal::BinaryOutputArchive archive(stream);
+            cereal::JSONOutputArchive archive(stream);
             archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
         }
     }
@@ -47,7 +47,7 @@ namespace Sentinel {
     // TODO : Maybe oughta look for some resource loader functionality of some sorts
     void Scene::DeserializeFromFile(CChar* path) {
         std::ifstream stream(path, std::ifstream::in | std::ios::binary);
-        cereal::BinaryInputArchive archive(stream);
+        cereal::JSONInputArchive archive(stream);
         archive(cereal::make_nvp("Sentinel_Scene_File_1_0", *this));
     }
 
@@ -72,15 +72,20 @@ namespace Sentinel {
     inline void Sentinel::Scene::save(Archive& archive) const {
         archive(cereal::make_nvp(SCENE_UUID_KEY, m_UUID.ToUInt64()));
         archive(cereal::make_nvp(SCENE_NAME_KEY, std::string(GetName())));
+        flecs::string data = const_cast<Sentinel::Scene*>(this)->m_Scene.to_json();
+        archive(cereal::make_nvp(SCENE_TREE_KEY, std::string(data.c_str())));
     }
 
     template<class Archive>
     void Sentinel::Scene::load(Archive& archive) {
         UInt64 uuid;
         std::string name;
+        std::string tree;
         archive(cereal::make_nvp(SCENE_UUID_KEY, uuid));
         archive(cereal::make_nvp(SCENE_NAME_KEY, name));
+        archive(cereal::make_nvp(SCENE_TREE_KEY, tree));
         m_UUID = UUID(uuid);
         SetName(name.c_str());
+        m_Scene.from_json(tree.c_str());
     }
 }  // namespace Sentinel

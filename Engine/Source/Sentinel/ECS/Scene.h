@@ -46,6 +46,7 @@ namespace Sentinel {
     private:
         static constexpr CChar* SCENE_UUID_KEY = "UUID";
         static constexpr CChar* SCENE_NAME_KEY = "Name";
+        static constexpr CChar* SCENE_TREE_KEY = "Tree";
 
     private:
         friend class cereal::access;

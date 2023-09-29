@@ -48,7 +48,7 @@ namespace Scribe {
         m_ImGuiLayer->OnAttach();
         m_ImGuiBase->OnAttach();
 
-        m_TestScene = new Sentinel::Scene();
+        /*
         Sentinel::Path archivePath("Test.pak");
         if (archivePath.DoesFileExist()) {
             Sentinel::UInt32 length;
@@ -67,47 +67,35 @@ namespace Scribe {
         } else {
             m_TestScene->SetName("Untitled_Scene_001");
         }
+        */
 
-        m_Entity1 = m_TestScene->CreateEntity("Entity 1");
-        m_Entity2 = m_TestScene->CreateEntity("Entity 2");
-        m_Entity3 = m_TestScene->CreateEntity("Entity 3");
-        m_Entity4 = m_TestScene->CreateEntity("Entity 4");
-        m_Entity5 = m_TestScene->CreateEntity("Entity 5");
-        m_Entity6 = m_TestScene->CreateEntity("Entity 6");
-        m_Entity7 = m_TestScene->CreateEntity("Entity 7");
-
-        m_Entity2.SetParent(&m_Entity1);
-        m_Entity3.SetParent(&m_Entity2);
-        m_Entity4.SetParent(&m_Entity1);
-        m_Entity6.SetParent(&m_Entity5);
-        m_Entity7.SetParent(&m_Entity5);
-
-        m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
-        // m_TestScene->SerializeToFile("Test.scene");
+        // m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
 
         // m_TestScene->SetName("Untitled_World_001");
         // // TODO: Pass FileType, whether binary or non-binary
         /*Sentinel::ZipFileOperations::WriteBufferToZipFile(
             "Test.pak", "Scenes/Test.scene", m_TestScene->SerializeToStream());*/
 
-        int width, height, bpp;
-        auto data = stbi_load("Assets/Icons/grid.png", &width, &height, &bpp, 4);
+        // int width, height, bpp;
+        // auto data = stbi_load("Assets/Icons/grid.png", &width, &height, &bpp, 4);
 
-        // Sentinel::Filesystem::WriteToFileAtPath("Test.img", (Sentinel::UInt8*)&bpp, sizeof(int));
-        Sentinel::ImageResource* resource = new Sentinel::ImageResource();
-        resource->Channels = bpp;
-        resource->Width = width;
-        resource->Height = height;
-        resource->Pixels = data;
+        //// Sentinel::Filesystem::WriteToFileAtPath("Test.img", (Sentinel::UInt8*)&bpp, sizeof(int));
+        // Sentinel::ImageResource* resource = new Sentinel::ImageResource();
+        // resource->Channels = bpp;
+        // resource->Width = width;
+        // resource->Height = height;
+        // resource->Pixels = data;
 
-        Sentinel::ImageResourceLoader::SaveToFile("Grid.sibf", resource);
+        // Sentinel::ImageResourceLoader::SaveToFile("Grid.sibf", resource);
 
-        delete resource;
+        // delete resource;
     }
 
     Scribe::~Scribe() {
         Sentinel::EventsAPI::UnregisterEvent(Sentinel::EventType::WindowClose, m_CloseIndex);
-        delete m_TestScene;
+        delete m_ImGuiBase;
+        delete m_ImGuiLayer;
+        delete m_BaseRenderer;
         delete m_Window;
     }
 

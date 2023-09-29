@@ -23,7 +23,8 @@ namespace Scribe {
 
     namespace Panel {
         class SceneHierarchyPanel;
-    }
+        class RenderInfoPanel;
+    }  // namespace Panel
 
     namespace Rendering {
         class ScribeImGuiBase final {
@@ -52,6 +53,7 @@ namespace Scribe {
             Sentinel::Texture2DData* m_SpriteSheetTex = nullptr;
 
             Panel::SceneHierarchyPanel* m_SceneHierarchyPanel = nullptr;
+            Panel::RenderInfoPanel* m_RenderInfoPanel = nullptr;
 
         private:
             const float m_TitleBarHeight = 64.0f;
