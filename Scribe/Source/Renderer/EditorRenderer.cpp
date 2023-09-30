@@ -1,4 +1,4 @@
-#include "Renderer/ScribeRenderer.h"
+#include "Renderer/EditorRenderer.h"
 
 #include <Sentinel/Window/Window.h>
 
@@ -6,9 +6,9 @@
 
 namespace Scribe {
     namespace Rendering {
-        ScribeRenderer::ScribeRenderer(Sentinel::Window* window) : m_Window(window) {
+        EditorRenderer::EditorRenderer(Sentinel::Window* window) : m_Window(window) {
             m_ResizeIndex = Sentinel::EventsAPI::RegisterEvent(
-                Sentinel::EventType::WindowResize, this, ST_BIND_FN(ScribeRenderer::OnWindowResize));
+                Sentinel::EventType::WindowResize, this, ST_BIND_FN(EditorRenderer::OnWindowResize));
 
             m_CtxAlloc.Allocate(1);
             m_SCAlloc.Allocate(1);
@@ -16,15 +16,15 @@ namespace Scribe {
             m_RTAlloc.Allocate(1);
 
             GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(m_Window->GetNative());
-            m_Context = Sentinel::ContextAPI::CreateImmediateContext(m_CtxAlloc, glfwWindow);
+            m_Context = Sentinel::ContextAPI::CreateImmediateContext(m_CtxAlloc, nullptr);
             m_Swapchain = Sentinel::SwapchainAPI::CreateSwapchain(m_SCAlloc, m_Context, glfwWindow);
         }
 
-        ScribeRenderer::~ScribeRenderer() {
+        EditorRenderer::~EditorRenderer() {
             Sentinel::EventsAPI::UnregisterEvent(Sentinel::EventType::WindowResize, m_ResizeIndex);
         }
 
-        void ScribeRenderer::OnAttach() {
+        void EditorRenderer::OnAttach() {
             m_SwapchainRT = Sentinel::RenderTexture2DAPI::CreateRenderTexture2DData(m_RTAlloc, m_Context, m_Swapchain);
 
             Sentinel::RenderTexture2DAPI::Bind(m_SwapchainRT, 1, Sentinel::ShaderType::PIXEL);
@@ -33,7 +33,7 @@ namespace Scribe {
             Resize(m_Window->GetWidth(), m_Window->GetHeight());
         }
 
-        void ScribeRenderer::OnDetach() {
+        void EditorRenderer::OnDetach() {
             Sentinel::SwapchainAPI::Unbind(m_Swapchain);
             Sentinel::SwapchainAPI::UnsetBuffers(m_Swapchain);
             Sentinel::RenderTexture2DAPI::Unbind(m_SwapchainRT);
@@ -54,27 +54,27 @@ namespace Scribe {
             m_CtxAlloc.Deallocate();
         }
 
-        void ScribeRenderer::OnUpdate() {
+        void EditorRenderer::OnUpdate() {
         }
 
-        void ScribeRenderer::OnRender() {
+        void EditorRenderer::OnRender() {
             Sentinel::SwapchainAPI::Bind(m_Swapchain);
             Sentinel::SwapchainAPI::SwapBuffers(m_Swapchain);
-            Sentinel::RenderTexture2DAPI::Clear(m_SwapchainRT, {0.1f, 0.5f, 0.1f, 1.0f});
+            // Sentinel::RenderTexture2DAPI::Clear(m_SwapchainRT, {0.1f, 0.5f, 0.1f, 1.0f});
         }
 
-        void ScribeRenderer::OnPostRender() {
+        void EditorRenderer::OnPostRender() {
             Sentinel::SwapchainAPI::Unbind(m_Swapchain);
         }
 
-        Sentinel::Bool ScribeRenderer::OnWindowResize(
+        Sentinel::Bool EditorRenderer::OnWindowResize(
             Sentinel::EventType type, Sentinel::EventData data, void* listener) {
-            ScribeRenderer* renderer = (ScribeRenderer*)listener;
+            EditorRenderer* renderer = (EditorRenderer*)listener;
             renderer->Resize(data.UInt16[0], data.UInt16[1]);
             return true;
         }
 
-        void ScribeRenderer::Resize(Sentinel::UInt16 width, Sentinel::UInt16 height) {
+        void EditorRenderer::Resize(Sentinel::UInt16 width, Sentinel::UInt16 height) {
             Sentinel::RenderTexture2DAPI::Unbind(m_SwapchainRT);
             Sentinel::RenderTexture2DAPI::Clean(m_SwapchainRT);
             Sentinel::SwapchainAPI::Resize(m_Swapchain, width, height);

@@ -27,10 +27,10 @@ namespace Scribe {
     }  // namespace Panel
 
     namespace Rendering {
-        class ScribeImGuiBase final {
+        class ImGuiBase final {
         public:
-            ScribeImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window);
-            ~ScribeImGuiBase();
+            ImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window);
+            ~ImGuiBase();
 
             void OnAttach();
             void OnDetach();

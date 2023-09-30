@@ -2,10 +2,8 @@
 
 #include "Window/ScribeWindow.h"
 
-#include "Renderer/ScribeRenderer.h"
-#include "Renderer/ScribeImGuiBase.h"
-
-#include "Panels/SceneHierarchyPanel.h"
+#include "Renderer/EditorRenderer.h"
+#include "Renderer/ImGuiBase.h"
 
 #include <Sentinel/Application/EntryPoint.h>
 #include <Sentinel/GUI/ImGui/ImGuiLayer.h>
@@ -39,9 +37,9 @@ namespace Scribe {
 
         m_Window = new Window::ScribeWindow(props);
 
-        m_BaseRenderer = new Rendering::ScribeRenderer(m_Window);
+        m_BaseRenderer = new Rendering::EditorRenderer(m_Window);
         m_ImGuiLayer = new Sentinel::ImGuiLayer(m_BaseRenderer->GetRenderingContext());
-        m_ImGuiBase = new Rendering::ScribeImGuiBase(
+        m_ImGuiBase = new Rendering::ImGuiBase(
             m_BaseRenderer->GetRenderingContext(), static_cast<Window::ScribeWindow*>(m_Window));
 
         m_BaseRenderer->OnAttach();

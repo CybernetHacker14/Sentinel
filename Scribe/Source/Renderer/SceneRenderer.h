@@ -5,21 +5,20 @@
 
 #include <Sentinel/Graphics/Device/ContextAPI.h>
 #include <Sentinel/Graphics/Device/SwapchainAPI.h>
+#include <Sentinel/Graphics/Output/ViewportAPI.h>
 
 #include <Sentinel/Graphics/Texture/RenderTexture2DAPI.h>
+#include <Sentinel/Graphics/Texture/DepthTexture2DAPI.h>
 
 namespace Sentinel {
-    class Window;
-}  // namespace Sentinel
+    class Wwindow;
+}
 
 namespace Scribe {
     namespace Rendering {
-        class ScribeRenderer final {
+        class SceneRenderer final {
         public:
-            ScribeRenderer(Sentinel::Window* window);
-            ~ScribeRenderer();
-
-            inline Sentinel::ContextData* GetRenderingContext() { return m_Context; }
+            SceneRenderer(Sentinel::Window* window);
 
             void OnAttach();
             void OnDetach();
@@ -27,26 +26,22 @@ namespace Scribe {
             void OnRender();
             void OnPostRender();
 
-            Sentinel::Bool OnWindowResize(Sentinel::EventType type, Sentinel::EventData data, void* listener);
-            void Resize(Sentinel::UInt16 width, Sentinel::UInt16 height);
-
         private:
-            Sentinel::FixedSlabAllocator<Sentinel::ContextData> m_CtxAlloc;
-            Sentinel::FixedSlabAllocator<Sentinel::SwapchainData> m_SCAlloc;
-
-            Sentinel::FixedSlabAllocator<Sentinel::RenderTexture2DData> m_RTAlloc;
-
             Sentinel::Window* m_Window;
 
-            Sentinel::ContextData* m_Context;
-            Sentinel::SwapchainData* m_Swapchain;
+            Sentinel::FixedSlabAllocator<Sentinel::ContextData> m_CtxAlloc;
+            Sentinel::FixedSlabAllocator<Sentinel::SwapchainData> m_SCAlloc;
+            Sentinel::FixedSlabAllocator<Sentinel::ViewportData> m_VPortAlloc;
 
-            Sentinel::RenderTexture2DData* m_SwapchainRT;
+            Sentinel::FixedSlabAllocator<Sentinel::RenderTexture2DData> m_RTAlloc;
+            Sentinel::FixedSlabAllocator<Sentinel::DepthTexture2DData> m_DTAlloc;
 
-        private:
-            Sentinel::UInt16 m_ResizeIndex = 0;
+            Sentinel::ContextData* m_Context = nullptr;
+            Sentinel::SwapchainData* m_Swapchain = nullptr;
+            Sentinel::ViewportData* m_Viewport = nullptr;
 
-            glm::mat4 m_ViewProj = glm::mat4(1.0f);
+            Sentinel::RenderTexture2DData* m_RenderTexture = nullptr;
+            Sentinel::DepthTexture2DData* m_DepthTexture = nullptr;
         };
     }  // namespace Rendering
 }  // namespace Scribe

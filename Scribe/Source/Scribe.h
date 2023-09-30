@@ -12,13 +12,10 @@ namespace Sentinel {
 
 namespace Scribe {
     namespace Rendering {
-        class ScribeRenderer;
-        class ScribeImGuiBase;
+        class EditorRenderer;
+        class ImGuiBase;
     }  // namespace Rendering
 
-    namespace Panel {
-        class SceneHierarchyPanel;
-    }
 }  // namespace Scribe
 
 namespace Scribe {
@@ -40,8 +37,8 @@ namespace Scribe {
         Sentinel::Bool m_Minimized = false;
 
         Sentinel::ImGuiLayer* m_ImGuiLayer;
-        Rendering::ScribeRenderer* m_BaseRenderer;
-        Rendering::ScribeImGuiBase* m_ImGuiBase;
+        Rendering::EditorRenderer* m_BaseRenderer;
+        Rendering::ImGuiBase* m_ImGuiBase;
     };
 }  // namespace Scribe
 

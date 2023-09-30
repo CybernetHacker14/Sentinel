@@ -8,7 +8,10 @@
 namespace Scribe {
     namespace Panel {
         void RenderInfoPanel::DisplayInfoPanel() {
-            ImGui::Begin("Statistics");
+            if (m_Context == nullptr) return;
+
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
+            ImGui::Begin("Statistics", (Sentinel::Bool*)0, window_flags);
             const Sentinel::ContextInfo& info = Sentinel::ContextAPI::GetContextInfo(m_Context);
             ImGui::Text("Vendor   : %s", info.Vendor);
             ImGui::Text("Renderer : %s", info.Renderer);

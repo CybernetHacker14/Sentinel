@@ -1,4 +1,4 @@
-#include "Renderer/ScribeImGuiBase.h"
+#include "Renderer/ImGuiBase.h"
 #include "Window/ScribeWindow.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/RenderInfoPanel.h"
@@ -13,7 +13,7 @@ namespace Scribe {
     namespace Rendering {
         static Sentinel::Bool genericWindowOpen = false;
 
-        ScribeImGuiBase::ScribeImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window)
+        ImGuiBase::ImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window)
             : m_Context(context), m_Window(window) {
             m_TexMemAllocator.Allocate(1);
             m_SceneHierarchyPanel = new Panel::SceneHierarchyPanel();
@@ -21,14 +21,14 @@ namespace Scribe {
             m_RenderInfoPanel->SetRenderingContext(context);
         }
 
-        ScribeImGuiBase::~ScribeImGuiBase() {
+        ImGuiBase::~ImGuiBase() {
             delete m_SceneHierarchyPanel;
             delete m_RenderInfoPanel;
             m_TexMemAllocator.DeleteAll();
             m_TexMemAllocator.Deallocate();
         }
 
-        void ScribeImGuiBase::OnAttach() {
+        void ImGuiBase::OnAttach() {
             Sentinel::Texture2DDataImportSettings settings;
 
             m_SpriteSheetTex = Sentinel::Texture2DAPI::CreateTexture2DData(
@@ -41,16 +41,16 @@ namespace Scribe {
                 SpriteSheetBPP4);
         }
 
-        void ScribeImGuiBase::OnDetach() {
+        void ImGuiBase::OnDetach() {
         }
 
-        void ScribeImGuiBase::OnUpdate() {
+        void ImGuiBase::OnUpdate() {
         }
 
-        void ScribeImGuiBase::OnRender() {
+        void ImGuiBase::OnRender() {
         }
 
-        void ScribeImGuiBase::OnImGuiRender() {
+        void ImGuiBase::OnImGuiRender() {
             RenderImGuiTitleBar();
 
             static bool dockspaceOpen = true;
@@ -102,10 +102,10 @@ namespace Scribe {
             ImGui::End();
         }
 
-        void ScribeImGuiBase::OnPostRender() {
+        void ImGuiBase::OnPostRender() {
         }
 
-        void ScribeImGuiBase::RenderImGuiTitleBar() {
+        void ImGuiBase::RenderImGuiTitleBar() {
             ImGuiWindowFlags flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoMove |
                                      ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize;
 
