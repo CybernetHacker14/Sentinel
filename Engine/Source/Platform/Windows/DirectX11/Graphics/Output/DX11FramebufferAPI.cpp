@@ -14,28 +14,30 @@
 namespace Sentinel {
 
     FramebufferData* Sentinel::FramebufferAPI::CreateFramebufferData(
-        FixedSlabAllocator<FramebufferData>& allocator,
-        FixedSlabAllocator<RenderTexture2DData>& rtAllocator,
-        FixedSlabAllocator<DepthTexture2DData>& dtAllocator,
-        ContextData* context,
-        UInt16 width,
-        UInt16 height) {
+        FixedSlabAllocator<FramebufferData>& allocator, ContextData* context, UInt16 width, UInt16 height) {
         FramebufferData* framebuffer = allocator.New();
         framebuffer->Context = context;
-
-        for (UInt8 i = 0; i < framebuffer->m_ColorFormats.Size(); i++) {
-            framebuffer->m_RTAttachments[i] = RenderTexture2DAPI::CreateRenderTexture2DData(
-                rtAllocator,
-                framebuffer->Context,
-                framebuffer->m_Width,
-                framebuffer->m_Height,
-                framebuffer->m_ColorFormats[i]);
-        }
-
-        framebuffer->m_DTAttachment = DepthTexture2DAPI::CreateDepthTexture2DData(
-            dtAllocator, framebuffer->Context, framebuffer->m_Width, framebuffer->m_Height, framebuffer->m_DepthFormat);
+        framebuffer->m_Width = width;
+        framebuffer->m_Height = height;
 
         return framebuffer;
+    }
+
+    void FramebufferAPI::CreateAttachments(
+        FramebufferData* dataObject,
+        FixedSlabAllocator<RenderTexture2DData>& rtAllocator,
+        FixedSlabAllocator<DepthTexture2DData>& dtAllocator) {
+        for (UInt8 i = 0; i < dataObject->m_ColorFormats.Size(); i++) {
+            dataObject->m_RTAttachments[i] = RenderTexture2DAPI::CreateRenderTexture2DData(
+                rtAllocator,
+                dataObject->Context,
+                dataObject->m_Width,
+                dataObject->m_Height,
+                dataObject->m_ColorFormats[i]);
+        }
+
+        dataObject->m_DTAttachment = DepthTexture2DAPI::CreateDepthTexture2DData(
+            dtAllocator, dataObject->Context, dataObject->m_Width, dataObject->m_Height, dataObject->m_DepthFormat);
     }
 
     void FramebufferAPI::Bind(FramebufferData* dataObject) {
@@ -70,7 +72,7 @@ namespace Sentinel {
                 RenderTexture2DAPI::GetNativeRTV(dataObject->m_RTAttachments[i]), (Float*)&(clearColor));
         }
 
-        if (dataObject->m_DTAttachment) {
+        if (dataObject->m_DepthFormat != DepthFormat::NONE) {
             dxContext->ClearDepthStencilView(
                 DepthTexture2DAPI::GetNativeDSV(dataObject->m_DTAttachment),
                 D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,

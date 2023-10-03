@@ -84,7 +84,7 @@ namespace Sandbox {
             Sentinel::DepthTexture2DData* m_DepthTexture;
 
         private:
-            Sentinel::UInt32 m_ResizeIndex = 0;
+            Sentinel::UInt16 m_ResizeIndex = 0;
 
             glm::mat4 m_ViewProj = glm::mat4(1.0f);
         };

@@ -16,8 +16,4 @@ namespace Sentinel {
         CPUInfo::Init();
         MemFunctions::Init();
     }
-
-    void Application::Run() {
-        m_RunFunction();
-    }
 }  // namespace Sentinel

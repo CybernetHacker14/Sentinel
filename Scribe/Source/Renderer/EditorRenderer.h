@@ -3,10 +3,10 @@
 #include <Sentinel.h>
 #include <Sentinel/Memory/FixedSlabAllocator.h>
 
-#include <Sentinel/Graphics/Device/ContextAPI.h>
-#include <Sentinel/Graphics/Device/SwapchainAPI.h>
+#include <Sentinel/Graphics/Device/ContextData.h>
+#include <Sentinel/Graphics/Device/SwapchainData.h>
 
-#include <Sentinel/Graphics/Texture/RenderTexture2DAPI.h>
+#include <Sentinel/Graphics/Texture/RenderTexture2DData.h>
 
 namespace Sentinel {
     class Window;
@@ -23,7 +23,8 @@ namespace Scribe {
             EditorRenderer(Sentinel::Window* window);
             ~EditorRenderer();
 
-            inline Sentinel::ContextData* GetRenderingContext() { return m_Context; }
+            inline Sentinel::ContextData* GetContext() { return m_Context; }
+            inline Sentinel::SwapchainData* GetSwapchain() { return m_Swapchain; }
 
             void OnAttach();
             void OnDetach();

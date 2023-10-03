@@ -24,9 +24,12 @@ namespace Scribe {
     namespace Panel {
         class SceneHierarchyPanel;
         class RenderInfoPanel;
+        class ViewportPanel;
     }  // namespace Panel
 
     namespace Rendering {
+        class SceneRenderer;
+
         class ImGuiBase final {
         public:
             ImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window);
@@ -39,7 +42,7 @@ namespace Scribe {
             void OnImGuiRender();
             void OnPostRender();
 
-            inline Panel::SceneHierarchyPanel* GetSceneHierarchyPanel() { return m_SceneHierarchyPanel; }
+            void SetViewportRenderer(Rendering::SceneRenderer* renderer);
 
         private:
             void RenderImGuiTitleBar();
@@ -54,6 +57,7 @@ namespace Scribe {
 
             Panel::SceneHierarchyPanel* m_SceneHierarchyPanel = nullptr;
             Panel::RenderInfoPanel* m_RenderInfoPanel = nullptr;
+            Panel::ViewportPanel* m_ViewportPanel = nullptr;
 
         private:
             const float m_TitleBarHeight = 64.0f;

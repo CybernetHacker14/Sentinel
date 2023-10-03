@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Sentinel/Common/Core/DataTypes.h"
-#include "Sentinel/Common/Templates/Function.h"
 #include "Sentinel/Common/Strings/StringView.h"
 
 int main(int argc, char** argv);
@@ -19,14 +18,11 @@ namespace Sentinel {
         inline Window* GetWindow() { return m_Window; }
 
     protected:
-        void Run();
+        virtual void Run() = 0;
 
     protected:
         Window* m_Window;
         StringView m_Title;
-
-    protected:
-        Function<void()> m_RunFunction;
 
     private:
         static Application* s_Instance;

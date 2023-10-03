@@ -3,6 +3,8 @@
 #include "Sentinel/Common/Core/DataTypes.h"
 #include "Sentinel/Common/Core/Malloc.h"
 
+#include <initializer_list>
+
 // Reference: https://github.com/sigerror/fast-vector
 
 namespace Sentinel {
@@ -57,8 +59,8 @@ namespace Sentinel {
 
         inline Vector(const std::initializer_list<T>& list) {
             m_Data = (T*)Malloc(sizeof(T) * list.size());
-            std::is_trivial<T>::value ? MemFunctions::Memcpy(m_Data, (T*)(list.begin()), list.size())
-                                      : VectorUtils::copy_range((T*)(list.begin()), (T*)(list.end()), m_Data);
+            m_Size = list.size();
+            VectorUtils::copy_range((T*)(list.begin()), (T*)(list.end()), m_Data);
         }
 
         inline Vector& operator=(const Vector& other) {
@@ -66,7 +68,6 @@ namespace Sentinel {
             m_Capacity = other.m_Capacity;
 
             m_Data = (T*)Malloc(sizeof(T) * other.m_Capacity);
-
             std::is_trivial<T>::value ? MemFunctions::Memcpy(m_Data, other.m_Data, other.m_Size)
                                       : VectorUtils::copy_range(other.Begin(), other.End(), m_Data);
 
@@ -97,7 +98,7 @@ namespace Sentinel {
         }
 
         inline void Clear() noexcept {
-            if constexpr (!std::is_trivial<T>::value) destruct_range(Begin(), End());
+            if (!std::is_trivial<T>::value) VectorUtils::destruct_range(Begin(), End());
             m_Size = 0;
         }
 
@@ -116,7 +117,7 @@ namespace Sentinel {
 
         inline void Push_Back(const T& value) {
             if (m_Size == m_Capacity) Reserve(m_Capacity * GROW_FACTOR + 1);
-            if constexpr (std::is_trivial<T>::value)
+            if (std::is_trivial<T>::value)
                 m_Data[m_Size] = value;
             else
                 new (m_Data + m_Size) T(value);
@@ -126,7 +127,7 @@ namespace Sentinel {
 
         inline void Push_Back(T&& value) {
             if (m_Size == m_Capacity) Reserve(m_Capacity * GROW_FACTOR + 1);
-            if constexpr (std::is_trivial<T>::value)
+            if (std::is_trivial<T>::value)
                 m_Data[m_Size] = value;
             else
                 new (m_Data + m_Size) T(ST_MOV(value));
@@ -149,7 +150,7 @@ namespace Sentinel {
         inline void Pop_Back() {
             // ST_STATIC_ASSERT(m_Size > 0);  // Container is empty
 
-            if constexpr (!std::is_trivial<T>::value) m_Data[m_Size - 1].~T();
+            if (!std::is_trivial<T>::value) m_Data[m_Size - 1].~T();
 
             m_Size--;
         }
@@ -158,7 +159,7 @@ namespace Sentinel {
         inline void Reserve(UInt32 count) {
             // ST_STATIC_ASSERT(count > m_Capacity);
 
-            if constexpr (std::is_trivial<T>::value) {
+            if (std::is_trivial<T>::value) {
                 m_Data = (T*)Realloc(m_Data, sizeof(T) * count);
                 // ST_STATIC_ASSERT(m_Data != nullptr);
 

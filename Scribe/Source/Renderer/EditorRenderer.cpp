@@ -1,6 +1,9 @@
 #include "Renderer/EditorRenderer.h"
 
 #include <Sentinel/Window/Window.h>
+#include <Sentinel/Graphics/Device/ContextAPI.h>
+#include <Sentinel/Graphics/Device/SwapchainAPI.h>
+#include <Sentinel/Graphics/Texture/RenderTexture2DAPI.h>
 
 #include <glm/glm.hpp>
 
@@ -60,7 +63,7 @@ namespace Scribe {
         void EditorRenderer::OnRender() {
             Sentinel::SwapchainAPI::Bind(m_Swapchain);
             Sentinel::SwapchainAPI::SwapBuffers(m_Swapchain);
-            // Sentinel::RenderTexture2DAPI::Clear(m_SwapchainRT, {0.1f, 0.5f, 0.1f, 1.0f});
+            //  Sentinel::RenderTexture2DAPI::Clear(m_SwapchainRT, {0.1f, 0.5f, 0.1f, 1.0f});
         }
 
         void EditorRenderer::OnPostRender() {

@@ -13,6 +13,7 @@ namespace Sentinel {
 namespace Scribe {
     namespace Rendering {
         class EditorRenderer;
+        class SceneRenderer;
         class ImGuiBase;
     }  // namespace Rendering
 
@@ -25,7 +26,7 @@ namespace Scribe {
         ~Scribe();
 
     private:
-        void Run();
+        void Run() override;
 
     private:
         Sentinel::Bool OnWindowClose(Sentinel::EventType type, Sentinel::EventData data, void* listener);
@@ -38,6 +39,7 @@ namespace Scribe {
 
         Sentinel::ImGuiLayer* m_ImGuiLayer;
         Rendering::EditorRenderer* m_BaseRenderer;
+        Rendering::SceneRenderer* m_SceneRenderer;
         Rendering::ImGuiBase* m_ImGuiBase;
     };
 }  // namespace Scribe

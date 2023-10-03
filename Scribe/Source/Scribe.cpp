@@ -3,6 +3,7 @@
 #include "Window/ScribeWindow.h"
 
 #include "Renderer/EditorRenderer.h"
+#include "Renderer/SceneRenderer.h"
 #include "Renderer/ImGuiBase.h"
 
 #include <Sentinel/Application/EntryPoint.h>
@@ -26,7 +27,6 @@ namespace Scribe {
     Scribe::Scribe() {
         m_CloseIndex =
             Sentinel::EventsAPI::RegisterEvent(Sentinel::EventType::WindowClose, this, ST_BIND_FN(OnWindowClose));
-        m_RunFunction = ST_BIND_FN(Run);
 
         Sentinel::WindowProperties props;
         props.Title = "Scribe";
@@ -38,13 +38,20 @@ namespace Scribe {
         m_Window = new Window::ScribeWindow(props);
 
         m_BaseRenderer = new Rendering::EditorRenderer(m_Window);
-        m_ImGuiLayer = new Sentinel::ImGuiLayer(m_BaseRenderer->GetRenderingContext());
-        m_ImGuiBase = new Rendering::ImGuiBase(
-            m_BaseRenderer->GetRenderingContext(), static_cast<Window::ScribeWindow*>(m_Window));
+        m_ImGuiLayer = new Sentinel::ImGuiLayer(m_BaseRenderer->GetContext());
+        m_ImGuiBase =
+            new Rendering::ImGuiBase(m_BaseRenderer->GetContext(), static_cast<Window::ScribeWindow*>(m_Window));
+
+        m_SceneRenderer =
+            new Rendering::SceneRenderer(m_Window, m_BaseRenderer->GetContext(), m_BaseRenderer->GetSwapchain());
 
         m_BaseRenderer->OnAttach();
         m_ImGuiLayer->OnAttach();
         m_ImGuiBase->OnAttach();
+
+        m_SceneRenderer->OnAttach();
+
+        m_ImGuiBase->SetViewportRenderer(m_SceneRenderer);
 
         /*
         Sentinel::Path archivePath("Test.pak");
@@ -91,6 +98,7 @@ namespace Scribe {
 
     Scribe::~Scribe() {
         Sentinel::EventsAPI::UnregisterEvent(Sentinel::EventType::WindowClose, m_CloseIndex);
+        delete m_SceneRenderer;
         delete m_ImGuiBase;
         delete m_ImGuiLayer;
         delete m_BaseRenderer;
@@ -100,15 +108,20 @@ namespace Scribe {
     void Scribe::Run() {
         while (m_Running) {
             if (!m_Minimized) {
+                m_SceneRenderer->OnUpdate();
+                m_SceneRenderer->OnRender();
                 m_BaseRenderer->OnRender();
                 m_ImGuiLayer->Begin();
                 m_ImGuiBase->OnImGuiRender();
                 m_ImGuiLayer->End();
                 m_ImGuiBase->OnPostRender();
+                m_SceneRenderer->OnPostRender();
+                m_BaseRenderer->OnPostRender();
             }
             m_Window->OnUpdate();
             Sentinel::Input::OnUpdate();
         }
+        m_SceneRenderer->OnDetach();
         m_ImGuiBase->OnDetach();
         m_ImGuiLayer->OnDetach();
         m_BaseRenderer->OnDetach();
