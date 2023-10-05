@@ -1,14 +1,13 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Output/ViewportData.h"
 
 namespace Sentinel {
     class ViewportAPI {
     public:
         static ViewportData* CreateViewportData(
-            PoolAllocator<ViewportData>& allocator,
+            FixedSlabAllocator<ViewportData>& allocator,
             ContextData* context,
             UInt16 x,
             UInt16 y,

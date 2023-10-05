@@ -2,6 +2,8 @@
 
 #include <Sentinel.h>
 
+#include <Sentinel/ECS/Entity.h>
+
 namespace Sentinel {
     class ImGuiLayer;
     struct Scene;
@@ -10,13 +12,11 @@ namespace Sentinel {
 
 namespace Scribe {
     namespace Rendering {
-        class ScribeRenderer;
-        class ScribeImGuiBase;
+        class EditorRenderer;
+        class SceneRenderer;
+        class ImGuiBase;
     }  // namespace Rendering
 
-    namespace Panel {
-        class SceneHierarchyPanel;
-    }
 }  // namespace Scribe
 
 namespace Scribe {
@@ -26,30 +26,21 @@ namespace Scribe {
         ~Scribe();
 
     private:
-        void Run();
+        void Run() override;
 
     private:
-        void OnWindowClose(Sentinel::Event& event);
+        Sentinel::Bool OnWindowClose(Sentinel::EventType type, Sentinel::EventData data, void* listener);
 
     private:
-        Sentinel::UInt32 m_CloseIndex = 0;
+        Sentinel::UInt16 m_CloseIndex = 0;
 
         Sentinel::Bool m_Running = true;
         Sentinel::Bool m_Minimized = false;
 
         Sentinel::ImGuiLayer* m_ImGuiLayer;
-        Rendering::ScribeRenderer* m_BaseRenderer;
-        Rendering::ScribeImGuiBase* m_ImGuiBase;
-
-    private:
-        Sentinel::Scene* m_TestScene;
-        Sentinel::Entity* m_Entity1;
-        Sentinel::Entity* m_Entity2;
-        Sentinel::Entity* m_Entity3;
-        Sentinel::Entity* m_Entity4;
-        Sentinel::Entity* m_Entity5;
-        Sentinel::Entity* m_Entity6;
-        Sentinel::Entity* m_Entity7;
+        Rendering::EditorRenderer* m_BaseRenderer;
+        Rendering::SceneRenderer* m_SceneRenderer;
+        Rendering::ImGuiBase* m_ImGuiBase;
     };
 }  // namespace Scribe
 

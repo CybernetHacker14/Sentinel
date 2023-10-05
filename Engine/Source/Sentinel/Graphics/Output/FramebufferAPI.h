@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Output/FramebufferData.h"
 
 #include "Sentinel/Graphics/Texture/RenderTexture2DData.h"
@@ -13,12 +12,12 @@ namespace Sentinel {
     class FramebufferAPI {
     public:
         static FramebufferData* CreateFramebufferData(
-            PoolAllocator<FramebufferData>& allocator,
-            PoolAllocator<RenderTexture2DData>& rtAllocator,
-            PoolAllocator<DepthTexture2DData>& dtAllocator,
-            ContextData* context,
-            UInt16 width,
-            UInt16 height);
+            FixedSlabAllocator<FramebufferData>& allocator, ContextData* context, UInt16 width, UInt16 height);
+
+        static void CreateAttachments(
+            FramebufferData* dataObject,
+            FixedSlabAllocator<RenderTexture2DData>& rtAllocator,
+            FixedSlabAllocator<DepthTexture2DData>& dtAllocator);
 
         static void Bind(FramebufferData* dataObject);
 
@@ -32,9 +31,10 @@ namespace Sentinel {
 
         inline static void SetAttachments(
             FramebufferData* dataObject,
-            const STL::initializer_list<ColorFormat>& attachments,
+            const std::initializer_list<ColorFormat>& attachments,
             const DepthFormat depthFormat = DepthFormat::NONE) {
-            dataObject->m_ColorFormats = attachments;
+            dataObject->m_ColorFormats.Clear();
+            for (ColorFormat format: attachments) dataObject->m_ColorFormats.Push_Back(format);
             dataObject->m_DepthFormat = depthFormat;
         }
 

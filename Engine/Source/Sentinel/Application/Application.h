@@ -1,36 +1,28 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Events/EventBus.h"
-#include "Sentinel/Window/Window.h"
+#include "Sentinel/Common/Core/DataTypes.h"
+#include "Sentinel/Common/Strings/StringView.h"
 
 int main(int argc, char** argv);
 
 namespace Sentinel {
+    class Window;
+
     class Application {
     public:
-        Application(const STL::string& name = "Application");
+        Application(CChar* name = "Application");
         virtual ~Application() = default;
 
         static Application& Get() { return *s_Instance; }
 
-        inline Window& GetWindow() { return *m_Window; }
-
-    public:
-        const UInt32 SubscribeToEvent(const EventType& eventType, const EventBus::EventCallbackFn& callback);
-        void UnsubscribeFromEvent(const EventType& eventType, const UInt32& callback);
+        inline Window* GetWindow() { return m_Window; }
 
     protected:
-        void Application::RaiseEvent(UniqueRef<Event> eventData);
-
-        void Run();
+        virtual void Run() = 0;
 
     protected:
         Window* m_Window;
-        EventBus m_EventBus;
-
-    protected:
-        STL::delegate<void()> m_RunFunction;
+        StringView m_Title;
 
     private:
         static Application* s_Instance;

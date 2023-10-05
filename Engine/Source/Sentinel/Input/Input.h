@@ -1,9 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "Sentinel/Input/KeyCodes.h"
 #include "Sentinel/Input/MouseCodes.h"
+
+#include <glm/glm.hpp>
 
 namespace Sentinel {
     class Input {
@@ -21,9 +21,5 @@ namespace Sentinel {
         static Float GetMouseY();
 
         static void OnUpdate();
-
-    protected:
-        static Bool GetKey(KeyCode keycode);
-        static Bool GetMouseButton(MouseCode mousecode);
     };
 }  // namespace Sentinel

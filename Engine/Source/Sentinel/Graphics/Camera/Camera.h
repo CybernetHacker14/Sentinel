@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
+#include "Sentinel/Common/Core/DataTypes.h"
+#include "Sentinel/Common/SmartPointers/SharedRef.h"
 #include "Sentinel/Math/Math.h"
 
 #include <glm/glm.hpp>
@@ -62,7 +63,7 @@ namespace Sentinel {
         void UpdateViewMatrix();
 
     protected:
-        inline static glm::vec3 m_WorldUp = {0.0f, 1.0f, 0.0f};
+        const glm::vec3 m_WorldUp = {0.0f, 1.0f, 0.0f};
 
     protected:
         ProjectionMode m_ProjectionMode = ProjectionMode::PERSPECTIVE;

@@ -1,12 +1,10 @@
 #pragma once
 
 #include <Sentinel.h>
-
-#include <flecs.h>
+#include <Sentinel/ECS/Entity.h>
 
 namespace Sentinel {
     struct Scene;
-    struct Entity;
 }  // namespace Sentinel
 
 namespace Scribe {
@@ -18,12 +16,12 @@ namespace Scribe {
             void DisplayScenePanel();
 
         private:
-            void DisplayNode(Sentinel::Entity* entity);
+            void DisplayNode(Sentinel::Entity entity);
 
         private:
             Sentinel::Scene* m_LoadedScene = nullptr;
             Sentinel::Entity* m_SelectedEntity = nullptr;
-            Sentinel::Entity* m_MarkedForDelete = nullptr;
+            Sentinel::Entity m_MarkedForDelete;
         };
     }  // namespace Panel
 }  // namespace Scribe

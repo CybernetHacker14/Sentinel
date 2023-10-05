@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/Malloc.h"
+#include "Sentinel/Common/Core/Malloc.h"
+#include "Sentinel/Common/Containers/Vector.h"
+#include <sparse_map.h>
 
 namespace Sentinel {
     template<typename T>
@@ -53,7 +54,7 @@ namespace Sentinel {
 
             m_CurrentAllocations++;
 
-            return static_cast<T*>(new (address) T(STL::forward<Args>(args)...));
+            return (new (address) T(STL::forward<Args>(args)...));
         }
 
         template<typename... Args>
@@ -108,14 +109,23 @@ namespace Sentinel {
         void* m_BlockStartingAddress = nullptr;
 
         // The key is the supposed index of the block
-        STL::unordered_map<UInt32, T*> m_ChunkAddressMap;
+        tsl::sparse_map<UInt32, T*> m_ChunkAddressMap;
         // The key is the address of the chunk. For faster and cleaner reverse access
-        STL::unordered_map<T*, UInt32> m_IndexAddressMap;
+        tsl::sparse_map<T*, UInt32> m_IndexAddressMap;
 
-        STL::vector<UInt32> m_FreeList;
-        STL::vector<UInt32> m_AllocatedList;
+        Vector<UInt32> m_FreeList;
+        Vector<UInt32> m_AllocatedList;
 
         UInt32 m_CurrentAllocations = 0;
         UInt32 m_MaxAllowedAllocations = 0;
+
+        UInt32 m_0_31_AllocationBitMask = 0;
+        UInt32 m_32_63_AllocationBitMask = 0;
+        UInt32 m_64_95_AllocationBitMask = 0;
+        UInt32 m_96_127_AllocationBitMask = 0;
+        UInt32 m_128_159_AllocationBitMask = 0;
+        UInt32 m_160_191_AllocationBitMask = 0;
+        UInt32 m_192_223_AllocationBitMask = 0;
+        UInt32 m_224_255_AllocationBitMask = 0;
     };
 }  // namespace Sentinel

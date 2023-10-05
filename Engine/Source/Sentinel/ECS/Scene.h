@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Common/Core/DataTypes.h"
 #include "Sentinel/System/UUID.h"
 
 #include "Sentinel/ECS/Entity.h"
@@ -16,21 +15,21 @@ namespace Sentinel {
         Scene();
         ~Scene();
 
-        void SetName(const STL::string& name);
-        void SetName(const char* name);
-        const char* GetName() const;
+        void SetName(CChar* name);
+        CChar* GetName() const;
 
-        Entity* CreateEntity(const STL::string& name = "New Entity");
-        void DeleteEntity(Entity* entity);
+        Entity CreateEntity(CChar* name = "New Entity");
+        void DeleteEntity(Entity entity);
 
-        void SerializeToFile(const STL::string& path);
-        void DeserializeFromFile(const STL::string& path);
+        Entity FindEntityWithName(CChar* name);
+
+        void SerializeToFile(CChar* path);
+        void DeserializeFromFile(CChar* path);
 
         std::stringstream SerializeToStream();
         void DeserializeFromStream(std::stringstream& stream);
 
     public:
-        inline const UUID& GetUUID() { return m_UUID; }
         inline flecs::world* GetNativeScene() { return &m_Scene; }
 
     private:
@@ -40,17 +39,14 @@ namespace Sentinel {
         template<class Archive>
         void load(Archive& archive);
 
-    public:
-        STL::unordered_map<flecs::entity, Entity*> registry;
-
     private:
-        PoolAllocator<Entity> m_Allocator;
-        UUID m_UUID {};
         flecs::world m_Scene;
+        UUID m_UUID {};
 
     private:
-        static constexpr const char* SCENE_UUID_KEY = "UUID";
-        static constexpr const char* SCENE_NAME_KEY = "Name";
+        static constexpr CChar* SCENE_UUID_KEY = "UUID";
+        static constexpr CChar* SCENE_NAME_KEY = "Name";
+        static constexpr CChar* SCENE_TREE_KEY = "Tree";
 
     private:
         friend class cereal::access;

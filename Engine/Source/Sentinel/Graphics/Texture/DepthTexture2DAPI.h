@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Texture/DepthTexture2DData.h"
 
 namespace Sentinel {
@@ -10,7 +9,7 @@ namespace Sentinel {
     class DepthTexture2DAPI {
     public:
         static DepthTexture2DData* CreateDepthTexture2DData(
-            PoolAllocator<DepthTexture2DData>& allocator,
+            FixedSlabAllocator<DepthTexture2DData>& allocator,
             ContextData* context,
             const UInt16 width,
             const UInt16 height,

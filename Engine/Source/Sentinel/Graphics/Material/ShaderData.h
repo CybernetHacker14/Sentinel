@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
+#include "Sentinel/Common/Core/DataTypes.h"
 
 #ifdef ST_RENDERER_DX11
 struct ID3D11VertexShader;
@@ -12,32 +12,20 @@ typedef ID3D10Blob ID3DBlob;
 #endif  // ST_RENDERER_DX11
 
 namespace Sentinel {
-    enum class ShaderType : UInt8 { NONE = 0, VERTEX = 1, PIXEL = 2, COMPUTE = 3 };
+    enum class ShaderType : UInt8 { VERTEX = 0, PIXEL = 1, COMPUTE = 2 };
     struct ContextData;
-
-    struct ShaderSource {
-        STL::string source;
-        ShaderType type;
-    };
-
-#ifdef ST_RENDERER_DX11
-    struct ShaderBinary {
-        ID3DBlob* binary = NULL;
-        ShaderType type;
-    };
-#endif  // ST_RENDERER_DX11
 
     struct ShaderData {
     public:
         ContextData* Context;
 
     private:
-        STL::string m_ShaderName;
-        STL::string m_Filepath;
-        ShaderSource m_Sources[4];
+        CChar* m_ShaderName;
+        CChar* m_Filepath;
+        Char* m_Sources[3];
 
 #ifdef ST_RENDERER_DX11
-        ShaderBinary m_Binaries[4];
+        ID3DBlob* m_Binaries[3];
 
         ID3D11VertexShader* m_NativeVS = nullptr;
         ID3D11PixelShader* m_NativePS = nullptr;

@@ -53,7 +53,9 @@ namespace Sentinel {
         return CosInternal(TWO_PI - radians);
     }
 
-    Float Math::FastSin(Float radians) { return FastCos(PI_HALF - radians); }
+    Float Math::FastSin(Float radians) {
+        return FastCos(PI_HALF - radians);
+    }
 
     glm::vec3 Math::FastNormalize(const glm::vec3& vector) {
         return vector * FastInverseSquareRoot(SIMDMath::SSEDotProduct(vector, vector));

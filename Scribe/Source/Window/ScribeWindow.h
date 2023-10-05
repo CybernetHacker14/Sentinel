@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Sentinel.h>
+#include <Sentinel/Window/Window.h>
+#include <Sentinel/Common/Strings/StringView.h>
 
 struct GLFWwindow;
 
@@ -28,11 +30,9 @@ namespace Scribe {
             void Init();
             void OnUpdate();
             void SetVSync(Sentinel::Bool enabled);
-            void* GetNativeWindow() const { return m_Window; }
             void Shutdown();
 
         private:
-            GLFWwindow* m_Window;
             Sentinel::Bool m_IsMouseOverImGui;
         };
     }  // namespace Window

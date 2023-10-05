@@ -1,6 +1,9 @@
 #include "RendererLayer.h"
 
 #include <Sentinel/Graphics/Camera/Camera.h>
+#include <Sentinel/Filesystem/Filesystem.h>
+#include <Sentinel/Common/Containers/Vector.h>
+#include <Sentinel/Window/Window.h>
 
 #include <glm/glm.hpp>
 
@@ -10,33 +13,37 @@ namespace Sandbox {
         static Sentinel::Bool renderdocBuild = false;
 
         RendererLayer::RendererLayer(Sentinel::Window* window) : m_Window(window) {
-            m_ResizeIndex = Sentinel::Application::Get().SubscribeToEvent(
-                Sentinel::EventType::WindowResize, ST_BIND_FN(RendererLayer::OnWindowResize));
+            m_ResizeIndex = Sentinel::EventsAPI::RegisterEvent(
+                Sentinel::EventType::WindowResize, this, ST_BIND_FN(RendererLayer::OnWindowResize));
 
-            m_CtxAlloc.AllocateMemoryBlock(1);
-            m_SCAlloc.AllocateMemoryBlock(1);
-            m_VPortAlloc.AllocateMemoryBlock(1);
+            m_CtxAlloc.Allocate(1);
+            m_SCAlloc.Allocate(1);
+            m_VPortAlloc.Allocate(1);
 
-            m_VBufferAlloc.AllocateMemoryBlock(1);
-            m_IBufferAlloc.AllocateMemoryBlock(1);
-            m_LayoutAlloc.AllocateMemoryBlock(1);
-            m_CBufferAlloc.AllocateMemoryBlock(1);
+            m_VBufferAlloc.Allocate(1);
+            m_IBufferAlloc.Allocate(1);
+            m_LayoutAlloc.Allocate(1);
+            m_CBufferAlloc.Allocate(1);
 
-            m_ShaderAlloc.AllocateMemoryBlock(1);
-            m_TexAlloc.AllocateMemoryBlock(1);
+            m_ShaderAlloc.Allocate(1);
+            m_TexAlloc.Allocate(1);
 
-            m_RTAlloc.AllocateMemoryBlock(1);
-            m_DTAlloc.AllocateMemoryBlock(1);
+            m_RTAlloc.Allocate(1);
+            m_DTAlloc.Allocate(1);
 
-            GLFWwindow* glfwWindow = m_Window->GetNativeWindow<GLFWwindow>();
+            m_ImageLoader.Allocate(1);
+
+            GLFWwindow* glfwWindow = static_cast<GLFWwindow*>(m_Window->GetNative());
             m_Context = Sentinel::ContextAPI::CreateImmediateContext(m_CtxAlloc, glfwWindow);
             m_Swapchain = Sentinel::SwapchainAPI::CreateSwapchain(m_SCAlloc, m_Context, glfwWindow);
             m_CamCBuffer = Sentinel::ConstantbufferAPI::CreateConstantbufferData(
                 m_CBufferAlloc, m_Context, sizeof(glm::mat4), 0, Sentinel::CBufferUsageType::DYNAMIC);
-            m_Camera = Sentinel::CreateSharedRef<Sentinel::Camera>(m_Window->GetWidth(), m_Window->GetHeight());
+            m_Camera = new Sentinel::Camera(m_Window->GetWidth(), m_Window->GetHeight());
         }
 
         RendererLayer::~RendererLayer() {
+            delete m_Camera;
+
             m_VBufferAlloc.DeleteAll();
             m_IBufferAlloc.DeleteAll();
             m_LayoutAlloc.DeleteAll();
@@ -52,28 +59,30 @@ namespace Sandbox {
             m_SCAlloc.DeleteAll();
             m_CtxAlloc.DeleteAll();
 
-            m_VBufferAlloc.DeallocateMemoryBlock();
-            m_IBufferAlloc.DeallocateMemoryBlock();
-            m_LayoutAlloc.DeallocateMemoryBlock();
-            m_CBufferAlloc.DeallocateMemoryBlock();
+            m_ImageLoader.DeleteAll();
 
-            m_TexAlloc.DeallocateMemoryBlock();
-            m_ShaderAlloc.DeallocateMemoryBlock();
+            m_VBufferAlloc.Deallocate();
+            m_IBufferAlloc.Deallocate();
+            m_LayoutAlloc.Deallocate();
+            m_CBufferAlloc.Deallocate();
 
-            m_RTAlloc.DeallocateMemoryBlock();
-            m_DTAlloc.DeallocateMemoryBlock();
+            m_TexAlloc.Deallocate();
+            m_ShaderAlloc.Deallocate();
 
-            m_VPortAlloc.DeallocateMemoryBlock();
-            m_SCAlloc.DeallocateMemoryBlock();
-            m_CtxAlloc.DeallocateMemoryBlock();
+            m_RTAlloc.Deallocate();
+            m_DTAlloc.Deallocate();
 
-            delete (m_Context);
+            m_VPortAlloc.Deallocate();
+            m_SCAlloc.Deallocate();
+            m_CtxAlloc.Deallocate();
+
+            m_ImageLoader.Deallocate();
         }
 
         void RendererLayer::OnAttach() {
             Sentinel::ConstantbufferAPI::VSBind(m_CamCBuffer);
 
-            Sentinel::STL::vector<Sentinel::STL::pair<glm::vec4, glm::vec2>> vertices = {
+            std::vector<std::pair<glm::vec4, glm::vec2>> vertices = {
                 {{-3.0f, 3.0f, -7.0f, 1.0f}, {0.0f, 0.0f}},
                 {{-1.0f, 3.0f, -7.0f, 1.0f}, {1.0f, 0.0f}},
                 {{-1.0f, 1.0f, -7.0f, 1.0f}, {1.0f, 1.0f}},
@@ -84,15 +93,12 @@ namespace Sandbox {
                 {{3.0f, -1.0f, -5.0f, 1.0f}, {1.0f, 1.0f}},
                 {{1.0f, -1.0f, -5.0f, 1.0f}, {0.0f, 1.0f}}};
 
-            Sentinel::STL::vector<Sentinel::UInt32> indices = {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
+            std::vector<Sentinel::UInt32> indices = {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
 
             m_VLayout = Sentinel::VertexbufferLayoutAPI::CreateVertexbufferLayoutData(m_LayoutAlloc, m_Context);
 
             m_VBuffer = Sentinel::VertexbufferAPI::CreateVertexbufferData(
-                m_VBufferAlloc,
-                m_Context,
-                vertices.data(),
-                vertices.size() * sizeof(Sentinel::STL::pair<glm::vec4, glm::vec2>));
+                m_VBufferAlloc, m_Context, vertices.data(), vertices.size() * sizeof(std::pair<glm::vec4, glm::vec2>));
 
             m_IBuffer = Sentinel::IndexbufferAPI::CreateIndexbufferData(
                 m_IBufferAlloc, m_Context, indices.data(), indices.size());
@@ -108,14 +114,25 @@ namespace Sandbox {
 
             Sentinel::VertexbufferLayoutAPI::CreateLayout(m_VLayout, m_Shader);
 
-            Sentinel::Texture2DDataImportSettings settings;
-
-            if (!renderdocBuild)
+            /*if (!renderdocBuild)
                 settings.TextureFilepath = "../Engine/Resources/Images/Icon/512.png";
             else
                 settings.TextureFilepath = "512.png";
 
-            m_Texture = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexAlloc, m_Context, settings);
+            m_Texture = Sentinel::Texture2DAPI::CreateTexture2DData(m_TexAlloc, m_Context, settings);*/
+
+            Sentinel::ImageResource* resource;
+            Sentinel::ImageResourceLoader::LoadFromFile("../Scribe/Grid.sibf", &resource);
+
+            Sentinel::Texture2DDataImportSettings settings;
+            m_Texture = Sentinel::Texture2DAPI::CreateTexture2DData(
+                m_TexAlloc,
+                m_Context,
+                settings,
+                resource->Pixels,
+                resource->Width,
+                resource->Height,
+                resource->Channels);
 
             m_RenderTexture =
                 Sentinel::RenderTexture2DAPI::CreateRenderTexture2DData(m_RTAlloc, m_Context, m_Swapchain);
@@ -189,20 +206,20 @@ namespace Sandbox {
             m_SCAlloc.DeleteAll();
             m_CtxAlloc.DeleteAll();
 
-            m_VBufferAlloc.DeallocateMemoryBlock();
-            m_IBufferAlloc.DeallocateMemoryBlock();
-            m_LayoutAlloc.DeallocateMemoryBlock();
-            m_CBufferAlloc.DeallocateMemoryBlock();
+            m_VBufferAlloc.Deallocate();
+            m_IBufferAlloc.Deallocate();
+            m_LayoutAlloc.Deallocate();
+            m_CBufferAlloc.Deallocate();
 
-            m_TexAlloc.DeallocateMemoryBlock();
-            m_ShaderAlloc.DeallocateMemoryBlock();
+            m_TexAlloc.Deallocate();
+            m_ShaderAlloc.Deallocate();
 
-            m_RTAlloc.DeallocateMemoryBlock();
-            m_DTAlloc.DeallocateMemoryBlock();
+            m_RTAlloc.Deallocate();
+            m_DTAlloc.Deallocate();
 
-            m_VPortAlloc.DeallocateMemoryBlock();
-            m_SCAlloc.DeallocateMemoryBlock();
-            m_CtxAlloc.DeallocateMemoryBlock();
+            m_VPortAlloc.Deallocate();
+            m_SCAlloc.Deallocate();
+            m_CtxAlloc.Deallocate();
         }
 
         void RendererLayer::OnUpdate() {
@@ -226,14 +243,15 @@ namespace Sandbox {
             Sentinel::SwapchainAPI::Unbind(m_Swapchain);
         }
 
-        void RendererLayer::OnWindowResize(Sentinel::Event& event) {
-            Sentinel::WindowResizeEvent e = *(event.Cast<Sentinel::WindowResizeEvent>());
-            m_Camera->OnResize(e.GetWidth(), e.GetHeight());
-            Resize(e.GetWidth(), e.GetHeight());
+        Sentinel::Bool RendererLayer::OnWindowResize(
+            Sentinel::EventType type, Sentinel::EventData data, void* listener) {
+            RendererLayer* renderer = (RendererLayer*)listener;
+            renderer->m_Camera->OnResize(data.UInt16[0], data.UInt16[1]);
+            renderer->Resize(data.UInt16[0], data.UInt16[1]);
+            return true;
         }
 
         void RendererLayer::Resize(Sentinel::UInt16 width, Sentinel::UInt16 height) {
-            m_Camera->OnResize(width, height);
             Sentinel::RenderTexture2DAPI::Unbind(m_RenderTexture);
             Sentinel::DepthTexture2DAPI::Unbind(m_DepthTexture);
             Sentinel::RenderTexture2DAPI::Clean(m_RenderTexture);

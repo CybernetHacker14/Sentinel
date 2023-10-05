@@ -1,23 +1,17 @@
 #pragma once
 
-#include "Sentinel/Common/Core/PlatformDetection.h"
-
-#ifdef ST_PLATFORM_WINDOWS
-#ifndef NOMINMAX
-// See github.com/skypjack/entt/wiki/Frequently-Asked-Questions#warning-c4003-the-min-the-max-and-the-macro
-#define NOMINMAX
-#endif // !NOMINMAX
-
-#endif // ST_PLATFORM_WINDOWS
+#include "Sentinel/Common/Core/MiscConfig.h"
 
 #include <iostream>
 #include <sstream>
 #include <fstream>
 
-#include <thread>
-
-#include "Sentinel/Common/Common.h"
+#include <type_traits>
 
 #ifdef ST_PLATFORM_WINDOWS
-#include <Windows.h>
-#endif // ST_PLATFORM_WINDOWS
+    #include <Windows.h>
+#endif  // ST_PLATFORM_WINDOWS
+
+#ifdef ST_DEBUG
+    #include "Sentinel/Logging/Log.h"
+#endif  // ST_DEBUG

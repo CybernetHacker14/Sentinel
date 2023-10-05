@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Sentinel/Common/Core/DataTypes.h"
+#include "Sentinel/Events/Event.h"
+
 namespace Sentinel {
     struct ContextData;
-    class Event;
 
     class ImGuiLayer final {
     public:
@@ -14,7 +16,7 @@ namespace Sentinel {
 
         void Begin();
         void End();
-        void OnResize(Event& event);
+        Bool OnResize(EventType type, EventData data, void* object);
 
         void SetDarkThemeColors();
 
@@ -22,7 +24,7 @@ namespace Sentinel {
 
     private:
         ContextData* m_Context;
-        UInt32 m_OnResizeCallbackIndex = 0;
+        Int16 m_OnResizeCallbackIndex = 0;
         Bool m_BlockEvents = false;
     };
 }  // namespace Sentinel

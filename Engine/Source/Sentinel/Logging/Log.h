@@ -1,41 +1,44 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
+#include "Sentinel/Common/Core/Debug.h"
 
-#pragma warning(push, 0)
-#include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
-#pragma warning(pop)
+#ifdef ST_DEBUG
+    #include "Sentinel/Common/Core/Definitions.h"
+    #include "Sentinel/Common/Core/DataTypes.h"
+    #include "Sentinel/Common/Core/Macros.h"
 
-namespace Sentinel
-{
-	using TerminalLogger = spdlog::logger;
+    #include <time.h>
 
-	// Logging class used for terminal
-	class Log {
-	public:
-		static void Init();
+    #define ANSI_COLOR_WHITE  "\x1b[97m"
+    #define ANSI_COLOR_RED    "\x1b[31m"
+    #define ANSI_COLOR_GREEN  "\x1b[32m"
+    #define ANSI_COLOR_YELLOW "\x1b[33m"
+    #define ANSI_COLOR_RESET  "\x1b[0m"
 
-		static std::shared_ptr<TerminalLogger>& GetEngineLogger() { return s_EngineLogger; }
-		static std::shared_ptr<TerminalLogger>& GetClientLogger() { return s_ClientLogger; }
-	private:
-		static std::shared_ptr<TerminalLogger> s_EngineLogger;
-		static std::shared_ptr<TerminalLogger> s_ClientLogger;
-	};
-}
+namespace LogUtils {
+    inline tm& GetSystemCurrentTime() {
+        time_t t = time(NULL);
+        return *localtime(&t);
+    }
+}  // namespace LogUtils
 
-// Engine log macros
+    #define BASE_PRINT_FORMAT(color, format, ...)                            \
+        printf_s(                                                            \
+            color "[%02i:%02i:%02i] %s:%04i: " format ANSI_COLOR_RESET "\n", \
+            LogUtils::GetSystemCurrentTime().tm_hour,                        \
+            LogUtils::GetSystemCurrentTime().tm_min,                         \
+            LogUtils::GetSystemCurrentTime().tm_sec,                         \
+            ST_FUNC_SIG,                                                     \
+            __LINE__,                                                        \
+            __VA_ARGS__)
 
-#define ST_ENGINE_TRACE(...)     ::Sentinel::Log::GetEngineLogger()->trace(__VA_ARGS__)
-#define ST_ENGINE_INFO(...)      ::Sentinel::Log::GetEngineLogger()->info(__VA_ARGS__)
-#define ST_ENGINE_WARN(...)      ::Sentinel::Log::GetEngineLogger()->warn(__VA_ARGS__)
-#define ST_ENGINE_ERROR(...)     ::Sentinel::Log::GetEngineLogger()->error(__VA_ARGS__)
-#define ST_ENGINE_CRITICAL(...)  ::Sentinel::Log::GetEngineLogger()->critical(__VA_ARGS__)
-
-// Client log macros
-
-#define ST_TRACE(...)            ::Sentinel::Log::GetClientLogger()->trace(__VA_ARGS__)
-#define ST_INFO(...)             ::Sentinel::Log::GetClientLogger()->info(__VA_ARGS__)
-#define ST_WARN(...)             ::Sentinel::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define ST_ERROR(...)            ::Sentinel::Log::GetClientLogger()->error(__VA_ARGS__)
-#define ST_CRITICAL(...)         ::Sentinel::Log::GetClientLogger()->critical(__VA_ARGS__)
+    #define ST_TERMINAL_TRACE(format, ...) BASE_PRINT_FORMAT(ANSI_COLOR_WHITE, format, __VA_ARGS__)
+    #define ST_TERMINAL_INFO(format, ...)  BASE_PRINT_FORMAT(ANSI_COLOR_GREEN, format, __VA_ARGS__)
+    #define ST_TERMINAL_WARN(format, ...)  BASE_PRINT_FORMAT(ANSI_COLOR_YELLOW, format, __VA_ARGS__)
+    #define ST_TERMINAL_ERROR(format, ...) BASE_PRINT_FORMAT(ANSI_COLOR_RED, format, __VA_ARGS__)
+#else
+    #define ST_TERMINAL_TRACE(format, ...)
+    #define ST_TERMINAL_INFO(format, ...)
+    #define ST_TERMINAL_WARN(format, ...)
+    #define ST_TERMINAL_ERROR(format, ...)
+#endif  // ST_DEBUG

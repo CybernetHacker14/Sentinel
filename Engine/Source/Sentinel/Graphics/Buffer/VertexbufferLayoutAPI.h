@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Buffer/VertexbufferLayoutData.h"
 
 namespace Sentinel {
@@ -10,7 +9,7 @@ namespace Sentinel {
     class VertexbufferLayoutAPI {
     public:
         static VertexbufferLayoutData* CreateVertexbufferLayoutData(
-            PoolAllocator<VertexbufferLayoutData>& allocator, ContextData* context);
+            FixedSlabAllocator<VertexbufferLayoutData>& allocator, ContextData* context);
 
         static void CreateLayout(VertexbufferLayoutData* dataObject, ShaderData* shader);
 

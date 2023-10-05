@@ -1,7 +1,7 @@
 project "Sentinel"
     kind "StaticLib"
     language "C++"
-    cppdialect "C++17"
+    cppdialect "C++11"
     staticruntime "on"
 
     targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
@@ -12,8 +12,11 @@ project "Sentinel"
 
 	files
 	{
-		"Source/**.h",
-        "Source/**.cpp",
+        "Source/Sentinel.h",
+        "Source/stpch.h",
+        "Source/stpch.cpp",
+		"Source/Sentinel/**.h",
+        "Source/Sentinel/**.cpp",
 		"Resources/**.inl",
         "Vendor/glm/module/glm/**.hpp",
         "Vendor/glm/module/glm/**.inl",
@@ -33,8 +36,6 @@ project "Sentinel"
     includedirs
     {
         "Source",
-		"%{IncludeExternalDir.EASTL}",
-		"%{IncludeExternalDir.EABase}",
         "%{IncludeExternalDir.GLFW}",
         "%{IncludeExternalDir.Glad}",
         "%{IncludeExternalDir.glm}",
@@ -43,13 +44,13 @@ project "Sentinel"
 		"%{IncludeExternalDir.cereal}",
 		"%{IncludeExternalDir.imgui}",
         "%{IncludeExternalDir.flecs}",
-        "%{IncludeExternalDir.minizip}"
+        "%{IncludeExternalDir.minizip}",
+		"%{IncludeExternalDir.tsl_sparsemap}"
     }
 
     links
     {
         "GLFW",
-        "EASTL",
 		"opengl32.lib",
         "d3d11.lib",
 		"shlwapi.lib",
@@ -69,6 +70,11 @@ project "Sentinel"
 		{
 			"{COPYDIR} \"%{ShaderFilesDir.Engine}\" \"%{cfg.targetdir}\""
 		}
+
+        files {
+            "Source/Platform/Windows/**.cpp",
+            "Source/Platform/Windows/**.h"
+        }
 
     filter { "options:gfxapi=DX11" }
         defines "ST_RENDERER_DX11"

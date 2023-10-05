@@ -1,22 +1,18 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
+#include "Sentinel/Common/Core/DataTypes.h"
 
 namespace Sentinel {
     class ZipFileOperations {
     public:
-        static Bool DoesFileExistInZip(const STL::string& zipPath, const STL::string& inZipLocation);
+        static Bool DoesFileExistInZip(CChar* zipPath, CChar* inZipLocation);
 
-        static Bool ReadFromZipFile(
-            const STL::string& zipPath, const STL::string& inZipLocation, void** ptrToBuffer, UInt32& dataLength);
+        static Bool ReadFromZipFile(CChar* zipPath, CChar* inZipLocation, void** ptrToBuffer, UInt32& dataLength);
 
-        static Bool WriteFileToZipFile(
-            const STL::string& zipPath, const STL::string& inZipLocation, const STL::string& filepath);
+        static Bool WriteTextFileToZipFile(CChar* zipPath, CChar* inZipLocation, CChar* filepath);
 
-        static Bool WriteBufferToZipFile(
-            const STL::string& zipPath, const STL::string& inZipLocation, std::stringstream stream);
+        static Bool WriteBufferToZipFile(CChar* zipPath, CChar* inZipLocation, std::stringstream stream);
 
-        static Bool WriteBufferToZipFile(
-            const STL::string& zipPath, const STL::string& inZipLocation, char* data, UInt32 length);
+        static Bool WriteBufferToZipFile(CChar* zipPath, CChar* inZipLocation, CChar* data, UInt64 length);
     };
 }  // namespace Sentinel

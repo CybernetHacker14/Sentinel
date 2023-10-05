@@ -1,14 +1,13 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Buffer/IndexbufferData.h"
 
 namespace Sentinel {
     class IndexbufferAPI {
     public:
         static IndexbufferData* CreateIndexbufferData(
-            PoolAllocator<IndexbufferData>& allocator, ContextData* context, void* indices, UInt32 count);
+            FixedSlabAllocator<IndexbufferData>& allocator, ContextData* context, void* indices, UInt32 count);
 
         static void Bind(IndexbufferData* dataObject);
 

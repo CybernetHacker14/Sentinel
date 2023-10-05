@@ -119,7 +119,7 @@ namespace Sentinel
 	public:
 		template<typename... Args>
 		static SharedRef<T> CreateRef(Args&&... args) {
-			return SharedRef<T>(new T(STL::forward<Args>(args)...));
+			return SharedRef<T>(new T(std::forward<Args>(args)...));
 		}
 
 	private:

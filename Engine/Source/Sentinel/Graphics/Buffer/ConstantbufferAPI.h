@@ -1,14 +1,13 @@
 #pragma once
 
-#include "Sentinel/Common/Common.h"
-#include "Sentinel/Memory/PoolAllocator.h"
+#include "Sentinel/Memory/FixedSlabAllocator.h"
 #include "Sentinel/Graphics/Buffer/ConstantbufferData.h"
 
 namespace Sentinel {
     class ConstantbufferAPI {
     public:
         static ConstantbufferData* CreateConstantbufferData(
-            PoolAllocator<ConstantbufferData>& allocator,
+            FixedSlabAllocator<ConstantbufferData>& allocator,
             ContextData* context,
             UInt32 size,
             UInt32 bindSlot,
