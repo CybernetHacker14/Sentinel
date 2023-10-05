@@ -6,6 +6,7 @@
 
 #include "Renderer/SceneRenderer.h"
 
+#include <Sentinel/Graphics/Device/ContextAPI.h>
 #include <Sentinel/Graphics/Texture/Texture2DAPI.h>
 
 #include <imgui.h>
@@ -14,8 +15,6 @@
 
 namespace Scribe {
     namespace Rendering {
-        static Sentinel::Bool genericWindowOpen = false;
-
         ImGuiBase::ImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window)
             : m_Context(context), m_Window(window) {
             m_TexMemAllocator.Allocate(1);
@@ -102,7 +101,6 @@ namespace Scribe {
             ImGuiViewport* viewport = ImGui::GetMainViewport();
             // ImGui::SetNextWindowPos({viewport->WorkPos.x, viewport->WorkPos.y + 64});
             m_SceneHierarchyPanel->DisplayScenePanel();
-            m_RenderInfoPanel->DisplayInfoPanel();
             m_ViewportPanel->DisplayViewport();
 
             ImGui::End();
@@ -124,7 +122,7 @@ namespace Scribe {
             ImGui::SetNextWindowPos(viewport->WorkPos);
             ImGui::SetNextWindowSize({viewport->WorkSize.x, 64});
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-            ImGui::Begin("Title_Bar", &genericWindowOpen, flags);
+            ImGui::Begin("Title_Bar", (bool*)0, flags | ImGuiWindowFlags_NoBringToFrontOnFocus);
             ImGui::PopStyleVar();
             ImGui::Image(
                 (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex), m_IconSize, m_IconUV0, m_IconUV1);
@@ -175,6 +173,22 @@ namespace Scribe {
 
             ImGui::PopStyleColor(2);
             ImGui::PopStyleVar();
+
+            // Render device info window
+            float specHeight = ImGui::GetWindowSize().y;
+            const Sentinel::ContextInfo& info = Sentinel::ContextAPI::GetContextInfo(m_Context);
+            ImGuiStyle& style = ImGui::GetStyle();
+            float specWidth = ImGui::CalcTextSize("Device   : ").x + ImGui::CalcTextSize(info.Renderer).x +
+                              (style.WindowPadding.x * 2);
+            ImGui::SetNextWindowPos(
+                {viewport->WorkPos.x + ImGui::GetIO().DisplaySize.x - specWidth - 104, viewport->Pos.y});
+            ImGui::PushStyleColor(ImGuiCol_Border, {0.0f, 0.0f, 0.0f, 0.0f});
+            ImGui::BeginChild("Spec", {specWidth, specHeight}, true, flags);
+            ImGui::Text("Device   : %s", info.Renderer);
+            ImGui::Text("API      : %s", info.API);
+            ImGui::Text("Version  : %s", info.Version);
+            ImGui::EndChild();
+            ImGui::PopStyleColor();
 
             ImGui::End();
         }

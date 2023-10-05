@@ -43,7 +43,7 @@ namespace Sentinel {
     void FramebufferAPI::Bind(FramebufferData* dataObject) {
         ID3D11DeviceContext* nativeContext = ContextAPI::GetNativeContext(dataObject->Context);
 
-        Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderViews[15];
+        Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderViews[5];
 
         for (UInt8 i = 0; i < dataObject->m_ColorFormats.Size(); i++) {
             pRenderViews[i] = RenderTexture2DAPI::GetNativeRTV(dataObject->m_RTAttachments[i]);
@@ -83,14 +83,19 @@ namespace Sentinel {
 
     void FramebufferAPI::Resize(FramebufferData* dataObject, const UInt16 width, const UInt16 height) {
         Unbind(dataObject);
-        Clean(dataObject);
+        // Clean(dataObject);
+        RenderTexture2DData* renderTexture;
+        for (UInt8 i = 0; i < dataObject->m_ColorFormats.Size(); i++) {
+            renderTexture = GetRenderTexture(dataObject, i);
+            if (renderTexture) RenderTexture2DAPI::Resize(renderTexture, width, height);
+        }
         dataObject->m_Width = width;
         dataObject->m_Height = height;
     }
 
     void FramebufferAPI::Clean(FramebufferData* dataObject) {
         RenderTexture2DData* renderTexture;
-        for (UInt8 i = 0; i < 16; i++) {
+        for (UInt8 i = 0; i < dataObject->m_ColorFormats.Size(); i++) {
             renderTexture = GetRenderTexture(dataObject, i);
             if (renderTexture) RenderTexture2DAPI::Clean(renderTexture);
         }

@@ -15,7 +15,7 @@ namespace Sentinel {
         DepthFormat m_DepthFormat;
         RenderTexture2DData* m_RTAttachments[5];
         DepthTexture2DData* m_DTAttachment;
-        UInt32 m_Width, m_Height;
+        UInt16 m_Width, m_Height;
 
     private:
         friend class FramebufferAPI;

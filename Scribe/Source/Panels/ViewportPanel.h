@@ -16,6 +16,7 @@ namespace Scribe {
 
         private:
             Rendering::SceneRenderer* m_Renderer;
+            glm::vec2 m_ViewportSize = {0.0f, 0.0f};
         };
     }  // namespace Panel
 }  // namespace Scribe

@@ -27,8 +27,8 @@ namespace Scribe {
         SceneRenderer::SceneRenderer(
             Sentinel::Window* window, Sentinel::ContextData* context, Sentinel::SwapchainData* swapchain)
             : m_Window(window), m_Context(context), m_Swapchain(swapchain) {
-            m_ResizeIndex = Sentinel::EventsAPI::RegisterEvent(
-                Sentinel::EventType::WindowResize, this, ST_BIND_FN(SceneRenderer::OnWindowResize));
+            /*m_ResizeIndex = Sentinel::EventsAPI::RegisterEvent(
+                Sentinel::EventType::WindowResize, this, ST_BIND_FN(SceneRenderer::OnWindowResize));*/
 
             m_VPortAlloc.Allocate(1);
 
@@ -56,6 +56,14 @@ namespace Scribe {
 
         Sentinel::RenderTexture2DData* SceneRenderer::GetFinalRT() {
             return Sentinel::FramebufferAPI::GetRenderTexture(m_FBuffer, 0);
+        }
+
+        Sentinel::UInt16 SceneRenderer::GetFinalRTWidth() {
+            return Sentinel::FramebufferAPI::GetWidth(m_FBuffer);
+        }
+
+        Sentinel::UInt16 SceneRenderer::GetFinalRTHeight() {
+            return Sentinel::FramebufferAPI::GetHeight(m_FBuffer);
         }
 
         void SceneRenderer::OnAttach() {
@@ -174,19 +182,13 @@ namespace Scribe {
             Sentinel::FramebufferAPI::Unbind(m_FBuffer);
         }
 
-        Sentinel::Bool SceneRenderer::OnWindowResize(
-            Sentinel::EventType type, Sentinel::EventData data, void* listener) {
-            SceneRenderer* renderer = (SceneRenderer*)listener;
-            renderer->m_Camera->OnResize(data.UInt16[0], data.UInt16[1]);
-            renderer->Resize(data.UInt16[0], data.UInt16[1]);
-            return false;
-        }
-
         void SceneRenderer::Resize(Sentinel::UInt16 width, Sentinel::UInt16 height) {
+            m_Camera->OnResize(width, height);
             // Sentinel::SwapchainAPI::Unbind(m_Swapchain);
             // Sentinel::SwapchainAPI::Resize(m_Swapchain, width, height);
             Sentinel::ViewportAPI::Resize(m_Viewport, width, height);
             Sentinel::ViewportAPI::Bind(m_Viewport);
+            Sentinel::FramebufferAPI::Resize(m_FBuffer, width, height);
         }
     }  // namespace Rendering
 }  // namespace Scribe

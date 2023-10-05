@@ -33,6 +33,8 @@ namespace Scribe {
             ~SceneRenderer();
 
             Sentinel::RenderTexture2DData* GetFinalRT();
+            Sentinel::UInt16 GetFinalRTWidth();
+            Sentinel::UInt16 GetFinalRTHeight();
 
             void OnAttach();
             void OnDetach();
@@ -40,8 +42,6 @@ namespace Scribe {
             void OnRender();
             void OnPostRender();
 
-        private:
-            Sentinel::Bool OnWindowResize(Sentinel::EventType type, Sentinel::EventData data, void* listener);
             void Resize(Sentinel::UInt16 width, Sentinel::UInt16 height);
 
         private:
