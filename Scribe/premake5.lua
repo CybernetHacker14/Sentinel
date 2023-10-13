@@ -28,14 +28,13 @@ project "Scribe"
         "Assets",
         "%{IncludeInternalDir.Sentinel_Source}",
         "%{IncludeExternalDir.glm}",
-        "%{IncludeExternalDir.EASTL}",
-		"%{IncludeExternalDir.EABase}",
         "%{IncludeExternalDir.GLFW}",
         "%{IncludeExternalDir.spdlog}",
 		"%{IncludeExternalDir.cereal}",
         "%{IncludeExternalDir.imgui}",
         "%{IncludeExternalDir.flecs}",
-		"%{IncludeExternalDir.tsl_sparsemap}"
+		"%{IncludeExternalDir.tsl_sparsemap}",
+        "%{IncludeExternalDir.IconFonts}"
     }
 
     links

@@ -33,11 +33,10 @@ namespace Sentinel {
         // io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskbarIcons;
         // io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
-        float fontSize = 18.0f;
+        Float fontSize = 18.0f;
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
-        // ImGui::StyleColorsClassic();
 
         // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to
         ImGuiStyle& style = ImGui::GetStyle();
@@ -46,7 +45,7 @@ namespace Sentinel {
             style.Colors[ImGuiCol_WindowBg].w = 1.0f;
         }
 
-        SetDarkThemeColors();
+        SetColors();
 
         Application& app = Application::Get();
         GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow()->GetNative());
@@ -97,7 +96,7 @@ namespace Sentinel {
         return true;
     }
 
-    void ImGuiLayer::SetDarkThemeColors() {
+    void ImGuiLayer::SetColors() {
         auto& colors = ImGui::GetStyle().Colors;
         colors[ImGuiCol_WindowBg] = ImVec4 {0.1f, 0.105f, 0.11f, 1.0f};
 

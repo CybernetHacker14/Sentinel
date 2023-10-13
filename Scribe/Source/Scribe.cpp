@@ -50,50 +50,6 @@ namespace Scribe {
         m_ImGuiBase->OnAttach();
 
         m_SceneRenderer->OnAttach();
-
-        m_ImGuiBase->SetViewportRenderer(m_SceneRenderer);
-
-        /*
-        Sentinel::Path archivePath("Test.pak");
-        if (archivePath.DoesFileExist()) {
-            Sentinel::UInt32 length;
-            char* buffer;
-            if (Sentinel::ZipFileOperations::ReadFromZipFile(
-                    "Test.pak", "Scenes/Test.scene", (void**)&buffer, length)) {
-                std::stringstream stream(std::ios::in | std::ios::out);
-                for (int i = 0; i < length; i++) stream << buffer[i];
-                delete buffer;
-                m_TestScene->DeserializeFromStream(stream);
-
-            } else {
-                m_TestScene->SetName("Untitled_Scene_001");
-            }
-            // m_TestScene->DeserializeFromFile("Test.scene");
-        } else {
-            m_TestScene->SetName("Untitled_Scene_001");
-        }
-        */
-
-        // m_ImGuiBase->GetSceneHierarchyPanel()->SetScene(m_TestScene);
-
-        // m_TestScene->SetName("Untitled_World_001");
-        // // TODO: Pass FileType, whether binary or non-binary
-        /*Sentinel::ZipFileOperations::WriteBufferToZipFile(
-            "Test.pak", "Scenes/Test.scene", m_TestScene->SerializeToStream());*/
-
-        // int width, height, bpp;
-        // auto data = stbi_load("Assets/Icons/grid.png", &width, &height, &bpp, 4);
-
-        //// Sentinel::Filesystem::WriteToFileAtPath("Test.img", (Sentinel::UInt8*)&bpp, sizeof(int));
-        // Sentinel::ImageResource* resource = new Sentinel::ImageResource();
-        // resource->Channels = bpp;
-        // resource->Width = width;
-        // resource->Height = height;
-        // resource->Pixels = data;
-
-        // Sentinel::ImageResourceLoader::SaveToFile("Grid.sibf", resource);
-
-        // delete resource;
     }
 
     Scribe::~Scribe() {
@@ -111,9 +67,12 @@ namespace Scribe {
                 m_SceneRenderer->OnUpdate();
                 m_SceneRenderer->OnRender();
                 m_BaseRenderer->OnRender();
+
                 m_ImGuiLayer->Begin();
                 m_ImGuiBase->OnImGuiRender();
+                m_SceneRenderer->OnImGuiRender();
                 m_ImGuiLayer->End();
+
                 m_ImGuiBase->OnPostRender();
                 m_SceneRenderer->OnPostRender();
                 m_BaseRenderer->OnPostRender();

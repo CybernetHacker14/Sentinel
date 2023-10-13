@@ -8,7 +8,6 @@
     }
 
 #include <Sentinel.h>
-
 #include <Sentinel/Memory/FixedSlabAllocator.h>
 
 namespace Sentinel {
@@ -23,13 +22,10 @@ namespace Scribe {
 
     namespace Panel {
         class SceneHierarchyPanel;
-        class RenderInfoPanel;
-        class ViewportPanel;
+        class ContentBrowserPanel;
     }  // namespace Panel
 
     namespace Rendering {
-        class SceneRenderer;
-
         class ImGuiBase final {
         public:
             ImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window);
@@ -42,10 +38,9 @@ namespace Scribe {
             void OnImGuiRender();
             void OnPostRender();
 
-            void SetViewportRenderer(Rendering::SceneRenderer* renderer);
-
         private:
             void RenderImGuiTitleBar();
+            void RenderImGuiTitleBar_RenderInfoPanel();
 
         private:
             Sentinel::FixedSlabAllocator<Sentinel::Texture2DData> m_TexMemAllocator;
@@ -56,28 +51,11 @@ namespace Scribe {
             Sentinel::Texture2DData* m_SpriteSheetTex = nullptr;
 
             Panel::SceneHierarchyPanel* m_SceneHierarchyPanel = nullptr;
-            Panel::RenderInfoPanel* m_RenderInfoPanel = nullptr;
-            Panel::ViewportPanel* m_ViewportPanel = nullptr;
+            Panel::ContentBrowserPanel* m_ContentBrowserPanel = nullptr;
 
         private:
-            const float m_TitleBarHeight = 64.0f;
-
-            const glm::vec2& m_IconSize {m_TitleBarHeight, m_TitleBarHeight};
-            const glm::vec2& m_IconUV0 {0, 0};
-            const glm::vec2& m_IconUV1 {0.5f, 1.0f};
-
-            const glm::vec2& m_ControlBtnSize {20, 20};
-            const glm::vec2& m_MinimizeUV0 {0.75f, 0.0f};
-            const glm::vec2& m_MinimizeUV1 {1.0f, 0.5f};
-
-            const glm::vec2& m_MaximizeUV0 {0.5f, 0.0f};
-            const glm::vec2& m_MaximizeUV1 {0.75f, 0.5f};
-
-            const glm::vec2& m_RestoreUV0 {0.5f, 0.5f};
-            const glm::vec2& m_RestoreUV1 {0.75f, 1.0f};
-
-            const glm::vec2& m_CloseUV0 {0.75f, 0.5f};
-            const glm::vec2& m_CloseUV1 {1, 1};
+            Sentinel::Float m_RenderInfoPanel_IconCellSize = 0.0f;
+            Sentinel::Float m_RenderInfoPanel_LabelCellSize = 0.0f;
         };
     }  // namespace Rendering
 }  // namespace Scribe

@@ -8,7 +8,7 @@
 
 namespace Scribe {
     namespace Panel {
-        void SceneHierarchyPanel::DisplayScenePanel() {
+        void SceneHierarchyPanel::Display() {
             if (m_LoadedScene == nullptr) return;
 
             char buf[128];

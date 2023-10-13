@@ -28,7 +28,7 @@
 
 ---
 
-<h3><img style="float: left;" src="README/description.png" width="30px" height="30px" />&nbsp;&nbsp;<ins>Description:</ins></h3>
+<h3> :newspaper: <ins>Description:</ins></h3>
 
 Sentinel is a **C++14** based game engine, with **DirectX 11** currently as it's primary rendering API. Stemmed from the understandings and short comings of my previous work Ghost Engine, this engine is more focused on establishing a good architecture, proper editor-to-runtime pipeline, ease of use, and ultimately to develop the engine into something which can be used to actually make and ship small games instead of being another non-functional portfolio project/ defunct project.
 
@@ -36,7 +36,7 @@ Sentinel follows the Orthodox C++, or C-flavored C++ paradigm, where not a lot o
 
 ---
 
-<h3><img style="float: left;" src="README/features.png" width="30px" height="30px" />&nbsp;&nbsp;<ins>Features:</ins></h3>
+<h3> :spiral_notepad: <ins>Features:</ins></h3>
 
 <table>
     <tr>
@@ -98,12 +98,12 @@ Sentinel follows the Orthodox C++, or C-flavored C++ paradigm, where not a lot o
 
 ---
 
-<h3><img style="float: left;" src="README/screenshot.png" width="30px" height="30px" />&nbsp;&nbsp;<ins>Screenshots:</ins></h3>
+<h3> :film_strip: <ins>Screenshots:</ins></h3>
 <img src="README/test.svg" />
 
 ---
 
-<h3><img style="float: left;" src="README/creation.png" width="30px" height="30px" />&nbsp;&nbsp;<ins>Prerequisites:</ins></h3>
+<h3> :bookmark: <ins>Prerequisites:</ins></h3>
 
 <div class="Hardware">
     :desktop_computer:<b>Hardware</b>
@@ -137,7 +137,7 @@ Sentinel follows the Orthodox C++, or C-flavored C++ paradigm, where not a lot o
 
 ---
 
-<h3><img style="float: left;" src="README/cloning.png" width="30px" height="30px" />&nbsp;&nbsp;<ins>Cloning:</ins></h3>
+<h3> :arrow_down: <ins>Cloning:</ins></h3>
 
 <ol>
     <li>
@@ -171,7 +171,7 @@ Sentinel follows the Orthodox C++, or C-flavored C++ paradigm, where not a lot o
 
 ---
 
-<h3><img style="float: left;" src="README/creation.png" width="30px" height="30px" />&nbsp;&nbsp;<ins>Project Creation:</ins></h3>
+<h3> :heavy_plus_sign: <ins>Project Creation:</ins></h3>
 
 - **For Windows:** Execute the [`Setup.bat`](Scripts/Setup.bat) file present in the [`Scripts`](Scripts) folder and follow instructions.
 This will create a new Visual Studio solution in the outermost directory.
@@ -183,7 +183,7 @@ This will create a new Visual Studio solution in the outermost directory.
 
 ---
 
-<h3><img style="float: left;" src="README/technical.png" width="30px" height="30px" />&nbsp;&nbsp;<ins>Tech Stack:</ins></h3>
+<h3> :memo: <ins>Tech Stack:</ins></h3>
 
 <table>
     <tr>

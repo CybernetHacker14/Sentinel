@@ -20,7 +20,14 @@
 
 #include <Sentinel/Graphics/Camera/Camera.h>
 
-#include <vector>
+#include <imgui.h>
+#include <imgui_internal.h>
+
+#include <glm/glm.hpp>
+
+#include <IconsFontAwesome6.h>
+
+#include <utility>
 
 namespace Scribe {
     namespace Rendering {
@@ -175,6 +182,24 @@ namespace Scribe {
         void SceneRenderer::OnRender() {
             Sentinel::FramebufferAPI::Bind(m_FBuffer);
             Sentinel::ContextAPI::DrawIndexed(m_Context, Sentinel::IndexbufferAPI::GetCount(m_IBuffer));
+        }
+
+        void SceneRenderer::OnImGuiRender() {
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
+            ImGui::Begin(
+                ICON_FA_BORDER_NONE " Viewport",
+                (bool*)0,
+                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
+            ImVec2 size = ImGui::GetWindowSize();
+            Sentinel::UInt16 width = GetFinalRTWidth();
+            Sentinel::UInt16 height = GetFinalRTHeight();
+
+            if (size.x != width || size.y != height) { Resize(size.x, size.y); }
+
+            ImGui::Image((ImTextureID)Sentinel::RenderTexture2DAPI::GetNativeSRV(GetFinalRT()), {size.x, size.y});
+            ImGui::End();
+
+            ImGui::PopStyleVar();
         }
 
         void SceneRenderer::OnPostRender() {

@@ -12,8 +12,6 @@ project "minizip"
         "module/mz_compat.h",
         "module/mz_crypt.c",
         "module/mz_crypt.h",
-        "module/mz_crypt_win32.c",
-        "module/mz_crypt_winrt.c",
         "module/mz_os.c",
         "module/mz_os.h",
         "module/mz_os_win32.c",

@@ -9,13 +9,16 @@
 [submodule "Engine/Vendor/cereal/module"]
 	path = Engine/Vendor/cereal/module
 	url = https://github.com/USCiLab/cereal.git
-[submodule "Engine/Vendor/imgui/module"]
-	path = Engine/Vendor/imgui/module
-	url = https://github.com/ocornut/imgui.git
-	branch = docking
 [submodule "Engine/Vendor/flecs/module"]
 	path = Engine/Vendor/flecs/module
 	url = https://github.com/SanderMertens/flecs.git
 [submodule "Engine/Vendor/minizip/module"]
 	path = Engine/Vendor/minizip/module
 	url = https://github.com/zlib-ng/minizip-ng.git
+[submodule "Engine/Vendor/IconFontCppHeaders/module"]
+	path = Engine/Vendor/IconFontCppHeaders/module
+	url = https://github.com/juliettef/IconFontCppHeaders
+[submodule "Engine/Vendor/imgui/module"]
+	path = Engine/Vendor/imgui/module
+	url = https://github.com/CybernetHacker14/imgui.git
+	branch = docking
