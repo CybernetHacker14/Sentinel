@@ -13,7 +13,7 @@ namespace Scribe {
         public:
             inline void SetScene(Sentinel::Scene* scene) { m_LoadedScene = scene; }
 
-            void DisplayScenePanel();
+            void Display();
 
         private:
             void DisplayNode(Sentinel::Entity entity);

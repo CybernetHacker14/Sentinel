@@ -32,17 +32,19 @@ namespace Scribe {
             SceneRenderer(Sentinel::Window* window, Sentinel::ContextData* context, Sentinel::SwapchainData* swapchain);
             ~SceneRenderer();
 
-            Sentinel::RenderTexture2DData* GetFinalRT();
-            Sentinel::UInt16 GetFinalRTWidth();
-            Sentinel::UInt16 GetFinalRTHeight();
-
             void OnAttach();
             void OnDetach();
             void OnUpdate();
             void OnRender();
+            void OnImGuiRender();
             void OnPostRender();
 
             void Resize(Sentinel::UInt16 width, Sentinel::UInt16 height);
+
+        private:
+            Sentinel::RenderTexture2DData* GetFinalRT();
+            Sentinel::UInt16 GetFinalRTWidth();
+            Sentinel::UInt16 GetFinalRTHeight();
 
         private:
             Sentinel::Window* m_Window;

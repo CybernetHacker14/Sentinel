@@ -35,6 +35,7 @@ namespace Sentinel {
         CChar* GetFilenameWithExtension() const;
         CChar* GetFilenameWithoutExtension() const;
         CChar* GetExtension() const;
+        CChar* GetDirectoryName() const;
 
     private:
         Path() = default;

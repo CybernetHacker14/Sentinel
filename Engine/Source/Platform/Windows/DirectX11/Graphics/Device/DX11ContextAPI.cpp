@@ -13,7 +13,7 @@ namespace Sentinel {
 
     namespace DX11ContextAPIUtils {
         static tsl::sparse_map<UInt32, Char*> s_VendorCodeMap = {
-            {0x10DE, "NVIDIA Corporation"}, {0x1002, "AMD Inc."}, {0x8086, "Intel"}, {0x1414, "Microsoft"}};
+            {0x10DE, "NVIDIA Corporation"}, {0x1002, "AMD Inc."}, {0x8086, "Intel"}, {0x4D4F4351, "Qualcomm"}};
 
         static CChar* ToString(Char* buffer, Int32 value) {
             sprintf_s(buffer, 12, "%d", value);
@@ -82,6 +82,8 @@ namespace Sentinel {
 
             dataObject->m_Adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice), &driverVersion);
 
+            dataObject->m_ContextInfo.VendorID = adapterDescription.VendorId;
+            dataObject->m_ContextInfo.APIID = BackendAPI::DIRECTX11;
             dataObject->m_ContextInfo.Vendor = DX11ContextAPIUtils::s_VendorCodeMap[adapterDescription.VendorId];
             dataObject->m_ContextInfo.Renderer = (Char*)Malloc(strlen(videoCardDescription));
             dataObject->m_ContextInfo.Renderer[strlen(videoCardDescription)] = '\0';

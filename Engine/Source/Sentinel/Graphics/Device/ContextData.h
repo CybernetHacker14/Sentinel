@@ -16,8 +16,11 @@ struct ID3D11RasterizerState;
 
 namespace Sentinel {
     enum ContextType : Bool { IMMEDIATE = 0, DEFFERED = 1 };
+    enum BackendAPI : UInt32 { DIRECTX11 = 0, DIRECTX12 = 1, VULKAN = 2, OPENGLES = 3 };
 
     struct ContextInfo {
+        UInt32 VendorID;
+        BackendAPI APIID;
         Char* Vendor;
         Char* Renderer;
         Char* API;

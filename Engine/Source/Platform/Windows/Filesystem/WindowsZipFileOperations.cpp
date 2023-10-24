@@ -26,7 +26,7 @@ namespace Sentinel {
         void* handle = NULL;
         Int32 err = MZ_OK, out = MZ_OK;
 
-        mz_zip_reader_create(&handle);
+        handle = mz_zip_reader_create();
         mz_zip_reader_set_password(handle, s_ZipPassword);
 
         err = mz_zip_reader_open_file(handle, zipPath);
@@ -41,7 +41,7 @@ namespace Sentinel {
         void* handle = NULL;
         Int32 err = MZ_OK;
 
-        mz_zip_reader_create(&handle);
+        handle = mz_zip_reader_create();
         mz_zip_reader_set_password(handle, s_ZipPassword);
 
         err = mz_zip_reader_open_file(handle, zipPath);
@@ -106,7 +106,7 @@ namespace Sentinel {
         file_info.zip64 = 1;
         file_info.pk_verify = 1;
 
-        mz_zip_writer_create(&handle);
+        handle = mz_zip_writer_create();
         mz_zip_writer_set_password(handle, s_ZipPassword);
         mz_zip_writer_set_compress_method(handle, s_ZipCompressionMethod);
         mz_zip_writer_set_compress_level(handle, s_ZipCompressionLevel);

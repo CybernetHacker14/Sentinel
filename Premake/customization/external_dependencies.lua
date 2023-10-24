@@ -10,3 +10,4 @@ IncludeExternalDir["imgui"]         = "%{wks.location}/Engine/Vendor/imgui/modul
 IncludeExternalDir["flecs"]         = "%{wks.location}/Engine/Vendor/flecs/module"
 IncludeExternalDir["minizip"]       = "%{wks.location}/Engine/Vendor/minizip/module"
 IncludeExternalDir["tsl_sparsemap"] = "%{wks.location}/Engine/Vendor/tsl"
+IncludeExternalDir["IconFonts"]     = "%{wks.location}/Engine/Vendor/IconFontCppHeaders/module"

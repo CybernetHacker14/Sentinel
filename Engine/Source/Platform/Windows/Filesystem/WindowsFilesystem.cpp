@@ -157,6 +157,10 @@ namespace Sentinel {
         return value;
     }
 
+    CChar* Path::GetDirectoryName() const {
+        return nullptr;
+    }
+
     void Filesystem::CreateFolder(const Path& folderpath) {
         if (folderpath.Exists() || folderpath.HasExtension()) return;
         CreateDirectoryA(folderpath.GetAbsolutePath(), nullptr);
@@ -164,9 +168,8 @@ namespace Sentinel {
 
     Bool Filesystem::HasSubfolders(const Path& folderpath) {
         WIN32_FIND_DATAA findData;
-        String path(folderpath.GetAbsolutePath());
-        path += "\\*";
-        HANDLE handle = FindFirstFileA(path.C_Str(), &findData);
+        std::string path(folderpath.GetAbsolutePath());
+        HANDLE handle = FindFirstFileA((path + "\\*").c_str(), &findData);
 
         if (handle == INVALID_HANDLE_VALUE) {
             FindClose(handle);
@@ -174,11 +177,11 @@ namespace Sentinel {
         }
 
         do {
-            const String virtualName(findData.cFileName);
+            const std::string virtualName(findData.cFileName);
 
-            if (WindowsFilesystemUtils::IsDots(virtualName.C_Str())) continue;
+            if (WindowsFilesystemUtils::IsDots(virtualName.c_str())) continue;
 
-            if (WindowsFilesystemUtils::DoesFolderExistInternal((path + "\\" + virtualName).C_Str())) {
+            if (WindowsFilesystemUtils::DoesFolderExistInternal((path + "\\" + virtualName).c_str())) {
                 FindClose(handle);
                 return true;
             }
@@ -195,9 +198,8 @@ namespace Sentinel {
         if (!HasSubfolders(folderpath)) return subfolders;
 
         WIN32_FIND_DATAA findData;
-        String path(folderpath.GetAbsolutePath());
-        path += "\\*";
-        HANDLE handle = FindFirstFileA(path.C_Str(), &findData);
+        std::string path(folderpath.GetAbsolutePath());
+        HANDLE handle = FindFirstFileA((path + "\\*").c_str(), &findData);
 
         if (handle == INVALID_HANDLE_VALUE) {
             FindClose(handle);
@@ -205,14 +207,14 @@ namespace Sentinel {
         }
 
         do {
-            const String virtualName(findData.cFileName);
+            const std::string virtualName(findData.cFileName);
 
-            if (WindowsFilesystemUtils::IsDots(virtualName.C_Str())) continue;
+            if (WindowsFilesystemUtils::IsDots(virtualName.c_str())) continue;
 
-            const String subfolder(path + "\\" + virtualName);
+            const std::string subfolder(path + "\\" + virtualName);
 
-            if (WindowsFilesystemUtils::DoesFolderExistInternal(subfolder.C_Str()))
-                subfolders.Push_Back(subfolder.C_Str());
+            if (WindowsFilesystemUtils::DoesFolderExistInternal(subfolder.c_str()))
+                subfolders.Push_Back(subfolder.c_str());
 
         } while (FindNextFileA(handle, &findData) != 0);
 
