@@ -10,6 +10,10 @@ project "GLFW"
         "module/include/GLFW/glfw3.h",
         "module/include/GLFW/glfw3native.h",
         "module/src/glfw_config.h",
+        "module/src/internal.h",
+        "module/src/platform.h",
+        "module/src/mappings.h",
+        "module/src/platform.c",
         "module/src/context.c",
         "module/src/init.c",
         "module/src/input.c",
@@ -54,8 +58,18 @@ project "GLFW"
 
         files
         {
-			"module/src/**.c",
-			"module/src/**.h"
+			"module/src/win32_init.c",
+            "module/src/win32_module.c",
+            "module/src/win32_joystick.c",
+            "module/src/win32_monitor.c",
+            "module/src/win32_time.h",
+            "module/src/win32_time.c",
+            "module/src/win32_thread.h",
+            "module/src/win32_thread.c",
+            "module/src/win32_window.c",
+            "module/src/wgl_context.c",
+            "module/src/egl_context.c",
+            "module/src/osmesa_context.c"
         }
 
         defines
@@ -69,5 +83,5 @@ filter "configurations:Debug"
     symbols "on"
 
 filter "configurations:Release"
-       runtime "Release"
+    runtime "Release"
     optimize "on"
