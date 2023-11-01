@@ -48,7 +48,8 @@ namespace Scribe {
             Sentinel::ContextData* m_Context = nullptr;
             Window::ScribeWindow* m_Window = nullptr;
 
-            Sentinel::Texture2DData* m_SpriteSheetTex = nullptr;
+            Sentinel::Texture2DData* m_TitlebarSpriteSheetTex = nullptr;
+            Sentinel::Texture2DData* m_ContentBrowserSpriteSheetTex = nullptr;
 
             Panel::SceneHierarchyPanel* m_SceneHierarchyPanel = nullptr;
             Panel::ContentBrowserPanel* m_ContentBrowserPanel = nullptr;

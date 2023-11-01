@@ -17,6 +17,8 @@ namespace Sentinel {
         Path(Path&& other) = default;
         Path& operator=(Path&& other) = default;
 
+        Bool operator==(const Path& rhs) const noexcept;
+
         inline CChar* GetAbsolutePath() const { return m_AbsolutePath; }
 
         inline Bool Exists() const { return m_Properties & (ST_BIT(0)); }
@@ -35,7 +37,6 @@ namespace Sentinel {
         CChar* GetFilenameWithExtension() const;
         CChar* GetFilenameWithoutExtension() const;
         CChar* GetExtension() const;
-        CChar* GetDirectoryName() const;
 
     private:
         Path() = default;
@@ -56,6 +57,7 @@ namespace Sentinel {
         static void CreateFolder(const Path& folderpath);
         static Bool HasSubfolders(const Path& folderpath);
         static Vector<Path> GetImmediateSubfolders(const Path& folderpath);
+        static Vector<Path> GetImmediatePaths(const Path& folderpath);
         static const Int64 GetFileSize(const Path& filepath);
         static Bool ReadFileAtPath(const Path& filepath, void* buffer, Int64& outSize);
         static Bool ReadTextFileAtPath(const Path& filepath, Char* buffer, Int64& outSize);
@@ -65,5 +67,23 @@ namespace Sentinel {
         static Bool DeleteAtPath(const Path& path);
         static Bool MoveToPath(const Path& currentpath, const Path& newpath);
         static Bool CopyToPath(const Path& currentpath, const Path& newpath);
+
+        static Bool GetParentPath(const Path& currentPath, Char* buffer);
     };
 }  // namespace Sentinel
+
+namespace std {
+    template<typename T>
+    struct hash;
+
+    template<>
+    struct hash<Sentinel::Path> {
+        Sentinel::Size_t operator()(const Sentinel::Path& path) const {
+            Sentinel::Size_t h = 5381;
+            Sentinel::CChar* s = path.GetAbsolutePath();
+            Sentinel::UInt32 c;
+            while ((c = *s++)) h = ((h << 5) + h) + c;
+            return h;
+        }
+    };
+}  // namespace std

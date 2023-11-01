@@ -1,6 +1,7 @@
 #include "stpch.h"
 #include "Sentinel/Filesystem/Filesystem.h"
 #include "Sentinel/Common/Core/Assert.h"
+#include "Sentinel/Common/Strings/MemFunctions.h"
 
 #include <Windows.h>
 #include <wtypes.h>
@@ -141,6 +142,10 @@ namespace Sentinel {
             (m_Properties & (ST_BIT(10))) && PathIsDirectoryEmptyA(m_AbsolutePath) ? ST_BIT(12) : m_Properties;
     }
 
+    Sentinel::Bool Path::operator==(const Path& rhs) const noexcept {
+        return strcmp(m_AbsolutePath, rhs.m_AbsolutePath) == 0 && m_Properties == rhs.m_Properties;
+    }
+
     CChar* Path::GetFilenameWithExtension() const {
         CChar* value = PathFindFileNameA(m_AbsolutePath);
         return value;
@@ -155,10 +160,6 @@ namespace Sentinel {
     CChar* Path::GetExtension() const {
         CChar* value = PathFindExtensionA(PathFindFileNameA(m_AbsolutePath));
         return value;
-    }
-
-    CChar* Path::GetDirectoryName() const {
-        return nullptr;
     }
 
     void Filesystem::CreateFolder(const Path& folderpath) {
@@ -221,6 +222,37 @@ namespace Sentinel {
         FindClose(handle);
 
         return subfolders;
+    }
+
+    Vector<Path> Filesystem::GetImmediatePaths(const Path& folderpath) {
+        Vector<Path> paths;
+
+        if (folderpath.IsFolderEmpty()) return paths;
+
+        WIN32_FIND_DATAA findData;
+        std::string path(folderpath.GetAbsolutePath());
+        HANDLE handle = FindFirstFileA((path + "\\*").c_str(), &findData);
+
+        if (handle == INVALID_HANDLE_VALUE) {
+            FindClose(handle);
+            return paths;
+        }
+
+        do {
+            const std::string virtualName(findData.cFileName);
+
+            if (WindowsFilesystemUtils::IsDots(virtualName.c_str())) continue;
+
+            const std::string filePath(path + "\\" + virtualName);
+
+            if (Path(filePath.c_str()).DoesFileExist() || Path(filePath.c_str()).DoesFolderExist())
+                paths.Push_Back(filePath.c_str());
+
+        } while (FindNextFileA(handle, &findData) != 0);
+
+        FindClose(handle);
+
+        return paths;
     }
 
     const Int64 Filesystem::GetFileSize(const Path& filepath) {
@@ -304,6 +336,11 @@ namespace Sentinel {
 
     Bool Filesystem::CopyToPath(const Path& currentpath, const Path& newpath) {
         return CopyFileA(currentpath.GetAbsolutePath(), newpath.GetAbsolutePath(), true);
+    }
+
+    Bool Filesystem::GetParentPath(const Path& currentPath, Char* buffer) {
+        MemFunctions::Memcpy(buffer, currentPath.GetAbsolutePath(), MAX_PATH);
+        return PathRemoveFileSpecA(buffer);
     }
 
 }  // namespace Sentinel

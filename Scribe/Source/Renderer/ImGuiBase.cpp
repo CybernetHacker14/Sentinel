@@ -14,7 +14,8 @@
 #include <IconsFontAwesome6Brands.h>
 #include <IconsMaterialDesignIcons.h>
 
-#include "Icons/Title/SpriteSheet.inl"
+#include "Icons/Spritesheets/TitleBar_SpriteSheet.inl"
+#include "Icons/Spritesheets/ContentBrowserSpriteSheet.inl"
 
 namespace Scribe {
     namespace Rendering {
@@ -80,14 +81,10 @@ namespace Scribe {
 
         ImGuiBase::ImGuiBase(Sentinel::ContextData* context, Window::ScribeWindow* window)
             : m_Context(context), m_Window(window) {
-            m_TexMemAllocator.Allocate(1);
-            m_SceneHierarchyPanel = new Panel::SceneHierarchyPanel();
-            m_ContentBrowserPanel = new Panel::ContentBrowserPanel();
+            m_TexMemAllocator.Allocate(2);
         }
 
         ImGuiBase::~ImGuiBase() {
-            delete m_SceneHierarchyPanel;
-            delete m_ContentBrowserPanel;
             m_TexMemAllocator.DeleteAll();
             m_TexMemAllocator.Deallocate();
         }
@@ -95,14 +92,23 @@ namespace Scribe {
         void ImGuiBase::OnAttach() {
             Sentinel::Texture2DDataImportSettings settings;
 
-            m_SpriteSheetTex = Sentinel::Texture2DAPI::CreateTexture2DData(
+            m_TitlebarSpriteSheetTex = Sentinel::Texture2DAPI::CreateTexture2DData(
                 m_TexMemAllocator,
                 m_Context,
                 settings,
-                SpriteSheet192128Texels,
-                SpriteSheetWidth192,
-                SpriteSheetHeight128,
-                SpriteSheetBPP4);
+                TitleBar_SpriteSheet192128Texels,
+                TitleBar_SpriteSheetWidth192,
+                TitleBar_SpriteSheetHeight128,
+                TitleBar_SpriteSheetBPP4);
+
+            m_ContentBrowserSpriteSheetTex = Sentinel::Texture2DAPI::CreateTexture2DData(
+                m_TexMemAllocator,
+                m_Context,
+                settings,
+                ContentBrowser_SpriteSheet192128Texels,
+                ContentBrowser_SpriteSheetWidth192,
+                ContentBrowser_SpriteSheetHeight128,
+                ContentBrowser_SpriteSheetBPP4);
 
             ImGuiIO& io = ImGui::GetIO();
 
@@ -136,9 +142,14 @@ namespace Scribe {
                 ImGuiBaseUtils::s_BaseFontSize,
                 &icons_config,
                 icons_ranges_mdi);
+
+            m_SceneHierarchyPanel = new Panel::SceneHierarchyPanel();
+            m_ContentBrowserPanel = new Panel::ContentBrowserPanel(m_ContentBrowserSpriteSheetTex);
         }
 
         void ImGuiBase::OnDetach() {
+            delete m_SceneHierarchyPanel;
+            delete m_ContentBrowserPanel;
         }
 
         void ImGuiBase::OnUpdate() {
@@ -223,7 +234,7 @@ namespace Scribe {
             ImGui::Begin("Title_Bar", (bool*)0, flags);
             ImGui::PopStyleVar();
             ImGui::Image(
-                (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex),
+                (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_TitlebarSpriteSheetTex),
                 ImGuiBaseUtils::s_IconSize,
                 ImGuiBaseUtils::s_IconUV0,
                 ImGuiBaseUtils::s_IconUV1);
@@ -238,7 +249,7 @@ namespace Scribe {
 
             if (ImGui::ImageButton(
                     "Minimize",
-                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex),
+                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_TitlebarSpriteSheetTex),
                     ImGuiBaseUtils::s_ControlBtnSize,
                     ImGuiBaseUtils::s_MinimizeUV0,
                     ImGuiBaseUtils::s_MinimizeUV1)) {
@@ -249,7 +260,7 @@ namespace Scribe {
             ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 69, 0});
             if (ImGui::ImageButton(
                     "Maximize_Restore",
-                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex),
+                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_TitlebarSpriteSheetTex),
                     ImGuiBaseUtils::s_ControlBtnSize,
                     m_Window->IsMaximized() ? ImGuiBaseUtils::s_RestoreUV0 : ImGuiBaseUtils::s_MaximizeUV0,
                     m_Window->IsMaximized() ? ImGuiBaseUtils::s_RestoreUV1 : ImGuiBaseUtils::s_MaximizeUV1)) {
@@ -262,7 +273,7 @@ namespace Scribe {
             ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 34, 0});
             if (ImGui::ImageButton(
                     "Close",
-                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex),
+                    (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_TitlebarSpriteSheetTex),
                     ImGuiBaseUtils::s_ControlBtnSize,
                     ImGuiBaseUtils::s_CloseUV0,
                     ImGuiBaseUtils::s_CloseUV1)) {
@@ -279,17 +290,21 @@ namespace Scribe {
 
             ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 104, 32.0f});
             ImGui::Image(
-                (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex),
+                (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_TitlebarSpriteSheetTex),
                 {32.0f, 32.0f},
                 ImGuiBaseUtils::s_HardwareUVMap[(Sentinel::UInt32)info.VendorID].first,
                 ImGuiBaseUtils::s_HardwareUVMap[(Sentinel::UInt32)info.VendorID].second);
 
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", info.Renderer);
+
             ImGui::SetCursorPos({ImGui::GetIO().DisplaySize.x - 69, 32.0f});
             ImGui::Image(
-                (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_SpriteSheetTex),
+                (ImTextureID)Sentinel::Texture2DAPI::GetResource(m_TitlebarSpriteSheetTex),
                 {64.0f, 32.0f},
                 ImGuiBaseUtils::s_APIUVMap[(Sentinel::UInt32)info.APIID].first,
                 ImGuiBaseUtils::s_APIUVMap[(Sentinel::UInt32)info.APIID].second);
+
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", info.Version);
 
             // RenderImGuiTitleBar_RenderInfoPanel();
 
