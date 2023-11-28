@@ -52,12 +52,14 @@ namespace Sentinel {
     }
 
     String& String::operator=(String&& other) noexcept {
+        if (this == nullptr) Set("", 0);
+
         if (this != &other) {
-            m_Data = other.m_Data;
             m_RemainingSize = other.m_RemainingSize;
             m_Empty = other.m_Empty;
             m_SSO = other.m_SSO;
             m_StringViewRefCount = other.m_StringViewRefCount;
+            m_Data = other.m_Data;
 
             if (!other.m_SSO) {
                 other.m_Data.Data.heap.Data = nullptr;

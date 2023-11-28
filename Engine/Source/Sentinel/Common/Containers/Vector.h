@@ -75,9 +75,12 @@ namespace Sentinel {
         }
 
         inline Vector& operator=(Vector&& other) noexcept {
-            m_Data = other.m_Data;
             m_Size = other.m_Size;
             m_Capacity = other.m_Capacity;
+
+            m_Data = (T*)Malloc(sizeof(T) * other.m_Capacity);
+            std::is_trivial<T>::value ? MemFunctions::Memcpy(m_Data, other.m_Data, other.m_Size)
+                                      : VectorUtils::copy_range(other.Begin(), other.End(), m_Data);
 
             return *this;
         }
