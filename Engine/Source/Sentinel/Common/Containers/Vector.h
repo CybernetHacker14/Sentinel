@@ -2,6 +2,7 @@
 
 #include "Sentinel/Common/Core/DataTypes.h"
 #include "Sentinel/Common/Core/Malloc.h"
+#include "Sentinel/Common/Core/Macros.h"
 
 #include <initializer_list>
 

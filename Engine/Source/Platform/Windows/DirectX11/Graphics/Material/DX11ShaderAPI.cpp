@@ -3,6 +3,7 @@
 #ifdef ST_RENDERER_DX11
     #include "Sentinel/Graphics/Material/ShaderAPI.h"
     #include "Sentinel/Graphics/Device/ContextAPI.h"
+    #include "Sentinel/Logging/Log.h"
 
     #include "Platform/Windows/DirectX11/Graphics/Core/DX11Common.h"
 

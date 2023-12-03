@@ -105,8 +105,8 @@ namespace Scribe {
                 m_TexMemAllocator,
                 m_Context,
                 settings,
-                ContentBrowser_SpriteSheet192128Texels,
-                ContentBrowser_SpriteSheetWidth192,
+                ContentBrowser_SpriteSheet256128Texels,
+                ContentBrowser_SpriteSheetWidth256,
                 ContentBrowser_SpriteSheetHeight128,
                 ContentBrowser_SpriteSheetBPP4);
 

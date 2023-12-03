@@ -140,6 +140,15 @@ namespace Sentinel {
 
         m_Properties |=
             (m_Properties & (ST_BIT(10))) && PathIsDirectoryEmptyA(m_AbsolutePath) ? ST_BIT(12) : m_Properties;
+
+        if (IsFile()) {
+            Sentinel::CChar* extension = GetExtension();
+            if (strcmp(extension, ".ttf") == 0) {
+                m_FileType = FileType::FILE_TTF;
+            } else if (strcmp(extension, ".hlsl") == 0) {
+                m_FileType = FileType::FILE_HLSL;
+            }
+        }
     }
 
     Sentinel::Bool Path::operator==(const Path& rhs) const noexcept {
