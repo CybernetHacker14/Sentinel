@@ -25,6 +25,7 @@ IncludeBlocks: Regroup
 IndentPPDirectives: BeforeHash
 IndentWidth: '4'
 IndentWrappedFunctionNames: 'true'
+InsertNewlineAtEOF: 'true'
 Language: Cpp
 NamespaceIndentation: All
 PointerAlignment: Left

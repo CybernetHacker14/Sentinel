@@ -1,8 +1,7 @@
 project "Sandbox"
     kind "ConsoleApp"
-    language "C++"
-    cppdialect "C++11"
-    staticruntime "on"
+    language "C"
+    cdialect "C11"
 
     targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
     objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
@@ -10,24 +9,12 @@ project "Sandbox"
     files
     {
         "Source/**.h",
-        "Source/**.cpp"
-    }
-	
-	defines
-    {
-        "_CRT_SECURE_NO_WARNINGS",
-        "GLFW_INCLUDE_NONE"
+        "Source/**.c",
     }
 
     includedirs
     {
-        "%{IncludeInternalDir.Sentinel_Source}",
-        "%{IncludeExternalDir.glm}",
-		"%{IncludeExternalDir.EASTL}",
-		"%{IncludeExternalDir.EABase}",
-		"%{IncludeExternalDir.GLFW}",
-        "%{IncludeExternalDir.spdlog}",
-		"%{IncludeExternalDir.cereal}"
+        "%{wks.location}/Sentinel/Source/Runtime/_EXPORT"
     }
 
     links
@@ -37,6 +24,12 @@ project "Sandbox"
 
     filter "system:windows"
         systemversion "latest"
+
+        defines
+        {
+            "WIN32_LEAN_AND_MEAN",
+            "_CRT_SECURE_NO_WARNINGS"
+        }
 
     filter "configurations:Debug"
         defines "ST_DEBUG"
