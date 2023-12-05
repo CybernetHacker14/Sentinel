@@ -21,6 +21,8 @@ namespace Scribe {
             // rendering calls
             static Sentinel::Bool s_ComputePathStringsInitFlag = false;
 
+            static Sentinel::Float s_IconSize = 64.0f;
+
             static const ImVec2& s_FolderUV0 {0.00f, 0.0f};
             static const ImVec2& s_FolderUV1 {0.25f, 0.5f};
 
@@ -35,26 +37,6 @@ namespace Scribe {
 
             static const ImVec2& s_OuterPadding {15.0f, 15.0f};
             static const ImVec2& s_CellSpacing {15.0f, 8.0f};
-
-            static const ImVec2& GetIconUV0ForExtension(Sentinel::CChar* extension) {
-                if (strcmp(extension, ".ttf") == 0) {
-                    return s_File_TTFUV0;
-                } else if (strcmp(extension, ".hlsl") == 0) {
-                    return s_File_HLSLUV0;
-                } else {
-                    return s_File_NAUV0;
-                }
-            }
-
-            static const ImVec2& GetIconUV1ForExtension(Sentinel::CChar* extension) {
-                if (strcmp(extension, ".ttf") == 0) {
-                    return s_File_TTFUV1;
-                } else if (strcmp(extension, ".hlsl") == 0) {
-                    return s_File_HLSLUV1;
-                } else {
-                    return s_File_NAUV1;
-                }
-            }
 
             static const std::pair<ImVec2, ImVec2> s_FileIconUVs[] = {
                 {s_File_NAUV0, s_File_NAUV1}, {s_File_TTFUV0, s_File_TTFUV1}, {s_File_HLSLUV0, s_File_HLSLUV1}};
@@ -117,7 +99,8 @@ namespace Scribe {
 
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);
-                ImGui::Text("%s", m_CurrentSelectedPath.GetAbsolutePath());
+
+                DrawProjectPanel_BottomBar();
 
                 ImGui::EndTable();
             }
@@ -126,11 +109,10 @@ namespace Scribe {
         void ContentBrowserPanel::DrawProjectPanel_MenuBar() {
             if (ImGui::BeginTable(
                     "ContentBrowserTable_MenuBar",
-                    2,
+                    3,
                     ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_SizingFixedFit)) {
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);
-
                 {
                     if (ImGui::Button(ICON_FA_FILE_CIRCLE_PLUS)) {}
                     ImGui::SameLine();
@@ -140,7 +122,19 @@ namespace Scribe {
                 }
 
                 ImGui::TableSetColumnIndex(1);
+                {
+                    static Sentinel::Char buf[256];
 
+                    ImGui::PushItemWidth(200);
+                    if (ImGui::InputTextWithHint(
+                            "###ContentBrowserTable_SearchBar",
+                            ICON_FA_MAGNIFYING_GLASS "  Search",
+                            buf,
+                            IM_ARRAYSIZE(buf))) {}
+                    ImGui::PopItemWidth();
+                }
+
+                ImGui::TableSetColumnIndex(2);
                 {
                     ImGui::Text(ICON_FA_DATABASE "  /");
                     ImGui::SameLine();
@@ -166,7 +160,7 @@ namespace Scribe {
         void ContentBrowserPanel::DrawProjectPanel_MiddleSection() {
             if (ImGui::BeginChild(
                     "ContentBrowserTable_MiddleSection",
-                    {ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y - 16.0f},
+                    {ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y - 21.0f},
                     false,
                     ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse)) {
                 ImVec2 start = ImGui::GetCursorPos();
@@ -174,8 +168,10 @@ namespace Scribe {
                 Sentinel::Float width =
                     ImGui::GetContentRegionAvail().x - (ContentBrowserPanelUtils::s_OuterPadding.x * 2);
 
-                Sentinel::UInt32 maxColumns =
-                    ST_MAX((Sentinel::UInt32)(width / (64.0f + ContentBrowserPanelUtils::s_CellSpacing.x)), 1);
+                Sentinel::UInt32 maxColumns = ST_MAX(
+                    (Sentinel::UInt32)(
+                        width / (ContentBrowserPanelUtils::s_IconSize + ContentBrowserPanelUtils::s_CellSpacing.x)),
+                    1);
                 start.x += ContentBrowserPanelUtils::s_OuterPadding.x;
                 start.y += ContentBrowserPanelUtils::s_OuterPadding.y;
 
@@ -191,10 +187,10 @@ namespace Scribe {
                     for (Sentinel::UInt32 column = 0;
                          column < maxColumns && fileIndex < m_CurrentSelectedFolderImmediatePaths.Size();
                          ++column) {
-                        iconPositionX =
-                            start.x + (column * 64.0f) + (column * ContentBrowserPanelUtils::s_CellSpacing.x);
-                        iconPositionY =
-                            start.y + (row * 64.0f) + (row * ContentBrowserPanelUtils::s_CellSpacing.y) + (row * 20.0f);
+                        iconPositionX = start.x + (column * ContentBrowserPanelUtils::s_IconSize) +
+                                        (column * ContentBrowserPanelUtils::s_CellSpacing.x);
+                        iconPositionY = start.y + (row * ContentBrowserPanelUtils::s_IconSize) +
+                                        (row * ContentBrowserPanelUtils::s_CellSpacing.y) + (row * 20.0f);
 
                         ImGui::SetCursorPos({iconPositionX, iconPositionY});
 
@@ -207,7 +203,7 @@ namespace Scribe {
                             ImGui::ImageButtonEx(
                                 id,
                                 (ImTextureID)Sentinel::Texture2DAPI::GetNativeResource(m_SpriteSheetTex),
-                                {64.0f, 64.0f},
+                                {ContentBrowserPanelUtils::s_IconSize, ContentBrowserPanelUtils::s_IconSize},
                                 ContentBrowserPanelUtils::s_FolderUV0,
                                 ContentBrowserPanelUtils::s_FolderUV1,
                                 {0, 0, 0, 0},
@@ -222,16 +218,18 @@ namespace Scribe {
                                 ImGui::OpenPopupEx(m_PopupWindowID, false);
                             }
                         } else {
-                            ImGui::ImageButton(
-                                "TestFile",
+                            ImGui::ImageButtonEx(
+                                id,
                                 (ImTextureID)Sentinel::Texture2DAPI::GetNativeResource(m_SpriteSheetTex),
-                                {64.0f, 64.0f},
+                                {ContentBrowserPanelUtils::s_IconSize, ContentBrowserPanelUtils::s_IconSize},
                                 ContentBrowserPanelUtils::s_FileIconUVs
                                     [(Sentinel::UInt8)m_CurrentSelectedFolderImmediatePaths[fileIndex].GetFileType()]
                                         .first,
                                 ContentBrowserPanelUtils::s_FileIconUVs
                                     [(Sentinel::UInt8)m_CurrentSelectedFolderImmediatePaths[fileIndex].GetFileType()]
-                                        .second);
+                                        .second,
+                                {0, 0, 0, 0},
+                                {1, 1, 1, 1});
 
                             if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
                                 ImGui::OpenPopupEx(m_PopupWindowID, false);
@@ -242,14 +240,15 @@ namespace Scribe {
                         ImGui::PopStyleVar();
 
                         Sentinel::Float size = GImGui->FontSize;
-                        GImGui->FontSize = 15.0f;
+                        GImGui->FontSize = (15.0f * ContentBrowserPanelUtils::s_IconSize) / 64.0f;
 
                         Sentinel::Float offset =
-                            (64.0f -
+                            (ContentBrowserPanelUtils::s_IconSize -
                              ImGui::CalcTextSize(m_CurrentSelectedFolderImmediatePathStrings[fileIndex].C_Str()).x) /
                             2.0f;
 
-                        ImGui::SetCursorPos({iconPositionX + offset, iconPositionY + 67.0f});
+                        ImGui::SetCursorPos(
+                            {iconPositionX + offset, iconPositionY + ContentBrowserPanelUtils::s_IconSize + 3.0f});
                         // ImGui::BeginChild("Test", {64.0f, textHeight}, true);
                         ImGui::Text(m_CurrentSelectedFolderImmediatePathStrings[fileIndex].C_Str());
                         GImGui->FontSize = size;
@@ -283,8 +282,31 @@ namespace Scribe {
             }
         }
 
+        void ContentBrowserPanel::DrawProjectPanel_BottomBar() {
+            if (ImGui::BeginTable(
+                    "ContentBrowserTable_BottomBar",
+                    2,
+                    ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_SizingFixedFit)) {
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+
+                ImGui::PushItemWidth(100.0f);
+                ImGui::SliderFloat(
+                    "###ContentBrowserPanel_IconSizeSlider", &ContentBrowserPanelUtils::s_IconSize, 40.0f, 64.0f, "");
+                ImGui::PopItemWidth();
+
+                ImGui::TableSetColumnIndex(1);
+                ImGui::Text("%s", m_CurrentSelectedPath.GetAbsolutePath());
+
+                ImGui::EndTable();
+            }
+        }
+
         void ContentBrowserPanel::UpdateCurrentSelectedFolderCachedData() {
             m_CurrentSelectedFolderImmediatePaths = Sentinel::Filesystem::GetImmediatePaths(m_CurrentSelectedPath);
+            m_CurrentSelectedFolderButtonStates.Clear();
+            for (Sentinel::UInt32 count = 0; count < m_CurrentSelectedFolderImmediatePaths.Size(); ++count)
+                m_CurrentSelectedFolderButtonStates.Emplace_Back(false);
             ComputeIconLabelStrings();
         }
 
@@ -292,7 +314,7 @@ namespace Scribe {
             m_CurrentSelectedFolderImmediatePathStrings.Clear();
 
             Sentinel::Float size = GImGui->FontSize;
-            GImGui->FontSize = 15.0f;
+            GImGui->FontSize = (15.0f * ContentBrowserPanelUtils::s_IconSize) / 64.0f;
 
             for (Sentinel::UInt32 count = 0; count < m_CurrentSelectedFolderImmediatePaths.Size(); ++count) {
                 std::string buf(m_CurrentSelectedFolderImmediatePaths[count].GetFilenameWithExtension());

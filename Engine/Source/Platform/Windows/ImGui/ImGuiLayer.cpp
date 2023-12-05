@@ -126,6 +126,10 @@ namespace Sentinel {
         colors[ImGuiCol_TitleBg] = ImVec4 {0.15f, 0.1505f, 0.151f, 1.0f};
         colors[ImGuiCol_TitleBgActive] = ImVec4 {0.15f, 0.1505f, 0.151f, 1.0f};
         colors[ImGuiCol_TitleBgCollapsed] = ImVec4 {0.15f, 0.1505f, 0.151f, 1.0f};
+
+        // Slider
+        colors[ImGuiCol_SliderGrab] = ImVec4 {0.38f, 0.3805f, 0.381f, 1.0f};
+        colors[ImGuiCol_SliderGrabActive] = ImVec4 {0.28f, 0.2805f, 0.281f, 1.0f};
     }
 }  // namespace Sentinel
 

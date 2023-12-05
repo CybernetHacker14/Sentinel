@@ -26,6 +26,7 @@ namespace Scribe {
             void DrawProjectPanel_MenuBar();
             void DrawProjectPanel_MiddleSection();
             void DrawProjectPanel_RightClickContextMenu();
+            void DrawProjectPanel_BottomBar();
 
             void UpdateCurrentSelectedFolderCachedData();
             void ComputeIconLabelStrings();
@@ -37,6 +38,7 @@ namespace Scribe {
 
             Sentinel::Vector<Sentinel::Path> m_CurrentSelectedFolderImmediatePaths;
             Sentinel::Vector<Sentinel::String> m_CurrentSelectedFolderImmediatePathStrings;
+            Sentinel::Vector<Sentinel::Bool> m_CurrentSelectedFolderButtonStates;
 
             Sentinel::Vector<Sentinel::Path> m_CurrentSelectedFolderParentHierarchyPaths;
 
