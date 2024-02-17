@@ -190,7 +190,7 @@ namespace Scribe {
                 ICON_FA_BORDER_NONE " Viewport",
                 (bool*)0,
                 ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
-            ImVec2 size = ImGui::GetWindowSize();
+            ImVec2 size = ImGui::GetContentRegionAvail();
             Sentinel::UInt16 width = GetFinalRTWidth();
             Sentinel::UInt16 height = GetFinalRTHeight();
 

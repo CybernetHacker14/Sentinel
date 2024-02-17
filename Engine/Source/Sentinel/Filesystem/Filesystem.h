@@ -2,10 +2,13 @@
 
 #include "Sentinel/Common/Strings/StringView.h"
 #include "Sentinel/Common/Containers/Vector.h"
+#include "Sentinel/Common/Core/Macros.h"
 
 namespace Sentinel {
     // Filesystem I/O functions.
     // WARNING: Avoid too much usage, and mostly aimed for editor functionality
+
+    enum class FileType : Sentinel::UInt8 { FILE_NA = 0, FILE_TTF = 1, FILE_HLSL = 2 };
 
     struct Path {
     public:
@@ -34,6 +37,8 @@ namespace Sentinel {
         inline Bool IsFileEmpty() const { return m_Properties & (ST_BIT(11)); }
         inline Bool IsFolderEmpty() const { return m_Properties & (ST_BIT(12)); }
 
+        inline FileType GetFileType() const { return m_FileType; }
+
         CChar* GetFilenameWithExtension() const;
         CChar* GetFilenameWithoutExtension() const;
         CChar* GetExtension() const;
@@ -49,7 +54,8 @@ namespace Sentinel {
         // 7 - file url, 8 - extension, 9 - file exists, 10 - folder exists, 11 - file empty
         // 12 - folder empty
 
-        UInt64 m_Properties = 0;
+        UInt32 m_Properties = 0;
+        FileType m_FileType = FileType::FILE_NA;
     };
 
     class Filesystem {

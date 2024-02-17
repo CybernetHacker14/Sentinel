@@ -24,8 +24,13 @@ namespace Scribe {
         private:
             void DrawProjectPanel();
             void DrawProjectPanel_MenuBar();
+            void DrawProjectPanel_MiddleSection();
+            void DrawProjectPanel_RightClickContextMenu();
+            void DrawProjectPanel_BottomBar();
 
+            void UpdateCurrentSelectedFolderCachedData();
             void ComputeIconLabelStrings();
+            void GoToPreviousFolder();
 
         private:
             Sentinel::Path m_BaseDirectory {"Assets"};
@@ -33,10 +38,15 @@ namespace Scribe {
 
             Sentinel::Vector<Sentinel::Path> m_CurrentSelectedFolderImmediatePaths;
             Sentinel::Vector<Sentinel::String> m_CurrentSelectedFolderImmediatePathStrings;
+            Sentinel::Vector<Sentinel::Bool> m_CurrentSelectedFolderButtonStates;
+
+            Sentinel::Vector<Sentinel::Path> m_CurrentSelectedFolderParentHierarchyPaths;
+
+            Sentinel::Vector<Sentinel::Path> m_CurrentSelectedPathHierarchyStack;
 
             Sentinel::Float m_LeftPanelCurrentColumnWidth = 200.0f;
 
-            bool contextPanel = false;
+            Sentinel::UInt32 m_PopupWindowID;
 
         private:
             Sentinel::Texture2DData* m_SpriteSheetTex;
