@@ -99,7 +99,7 @@ Sentinel follows the Orthodox C++, or C-flavored C++ paradigm, where not a lot o
 ---
 
 <h3> :film_strip: <ins>Screenshots:</ins></h3>
-<img src="README/test.svg" />
+<img src="README/editor_sc.png" />
 
 ---
 
