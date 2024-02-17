@@ -14,7 +14,8 @@ project "Sandbox"
 
     includedirs
     {
-        "%{wks.location}/Sentinel/Source/Runtime/_EXPORT"
+        "%{wks.location}/Sentinel/Source/Runtime/_EXPORT",
+        "%{VendorIncludes.cglm}"
     }
 
     links

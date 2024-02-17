@@ -7,12 +7,14 @@
 
 #include "Common/Core/DataTypes.h"
 
-typedef struct WindowInterface WindowInterface;
+typedef struct WindowData WindowData;
 
-void Init(WindowInterface* data, CChar* titleBarString);
+void Sentinel_GLFWWindow_Init(WindowData* window, CChar* titleBarString);
 
-void Update();
+void Sentinel_GLFWWindow_Update(WindowData* window);
 
-void Deinit();
+void Sentinel_GLFWWindow_Deinit(WindowData* window);
+
+void Sentinel_GLFWWindow_Resize(WindowData* window, UShort width, UShort height);
 
 #endif  // !WINDOWS_GLFW_GLFWWINDOW_H

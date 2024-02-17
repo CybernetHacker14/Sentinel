@@ -1,5 +1,5 @@
-#ifndef _EXPORT_GRAPHICS_GEOMETRY_GEOMETRYAPI_H
-#define _EXPORT_GRAPHICS_GEOMETRY_GEOMETRYAPI_H
+#ifndef _EXPORT_GRAPHICS_GEOMETRY_GEOMETRYAPI_EXPORT_H
+#define _EXPORT_GRAPHICS_GEOMETRY_GEOMETRYAPI_EXPORT_H
 
 #ifdef _MSC_VER
     #pragma once
@@ -17,4 +17,4 @@ ST_API void Sentinel_GeometryAPI_SubmitIndividualGeometryData(
     unsigned int indexCount,
     void* indices);
 
-#endif  // !_EXPORT_GRAPHICS_GEOMETRY_GEOMETRYAPI_H
+#endif  // !_EXPORT_GRAPHICS_GEOMETRY_GEOMETRYAPI_EXPORT_H

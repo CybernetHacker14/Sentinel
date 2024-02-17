@@ -45,6 +45,10 @@ void Sentinel_FixedSlabAllocator_Allocate(FixedSlabAllocator* allocator, ULLong 
 }
 
 void* Sentinel_FixedSlabAllocator_New(FixedSlabAllocator* allocator, UShort* outIndex) {
+#ifdef ST_DEBUG
+    ST_BREAKPOINT_ASSERT(allocator->free > 0, "Max count reached");
+#endif  // ST_DEBUG
+
     void* addr = (Char*)allocator->startingAddress + (allocator->next * allocator->itemSize);
 
     allocator->allocationBitMask |= ST_BIT64(allocator->next);
@@ -56,11 +60,16 @@ void* Sentinel_FixedSlabAllocator_New(FixedSlabAllocator* allocator, UShort* out
     return addr;
 }
 
-void Sentinel_FixedSlabAllocator_Delete(FixedSlabAllocator* allocator, void* address) {
+void Sentinel_FixedSlabAllocator_Delete(FixedSlabAllocator* allocator, void* address, UShort* outIndex) {
+#ifdef ST_DEBUG
+    ST_BREAKPOINT_ASSERT(allocator->occupied > 0, "Nothing to be deleted");
+#endif  // ST_DEBUG
+
     Sentinel_Memset(address, 0, allocator->itemSize);
 
     UShort position = (UShort)(((Char*)allocator->startingAddress - (Char*)address) / allocator->itemSize);
-    allocator->allocationBitMask &= ~(1ull << position);
+    *outIndex = position;
+    allocator->allocationBitMask &= ~ST_BIT64((ULLong)position);
     allocator->next = GetFirstTrailingNonSetBit(allocator->allocationBitMask);
     allocator->occupied--;
     allocator->free++;

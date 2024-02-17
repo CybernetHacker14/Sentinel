@@ -1,4 +1,5 @@
 #include "stpch.h"
+#include "_EXPORT/Graphics/Material/ShaderData_EXPORT.h"
 #include "_EXPORT/Graphics/RendererAPI_EXPORT.h"
 #include "_EXPORT/Graphics/RendererData_EXPORT.h"
 #include "_EXPORT/Graphics/Texture/RenderTexture2DAPI_EXPORT.h"
@@ -8,6 +9,8 @@
 #include "Graphics/Texture/RenderTexture2D.h"
 
 #include "Window/Window.h"
+
+#include "Logging/Log.h"
 
 #ifdef ST_PLATFORM_WINDOWS
     #include "Graphics/D3D11/Texture/D3D11RenderTexture2D.h"
@@ -78,6 +81,9 @@ ST_API RenderTexture2DData* Sentinel_RenderTexture2DAPI_Create(
 
 ST_API void Sentinel_RenderTexture2DAPI_Destroy(RenderTexture2DData* renderTexture) {
     rT2DAPI.destroy(renderTexture);
+
+    UShort index;
+    Sentinel_FixedSlabAllocator_Delete(&rT2DAllocator, renderTexture, &index);
 }
 
 ST_API void Sentinel_RenderTexture2DAPI_Clear(RenderTexture2DData* renderTexture, float color[4]) {

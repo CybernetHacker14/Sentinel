@@ -1,6 +1,7 @@
 project "glfw"
     kind "StaticLib"
     language "C"
+    cdialect "C11"
 
     targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
     objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
@@ -79,10 +80,10 @@ project "glfw"
             "WIN32_LEAN_AND_MEAN"
         }
 
-filter "configurations:Debug"
-    runtime "Debug"
-    symbols "on"
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "on"
 
-filter "configurations:Release"
-    runtime "Release"
-    optimize "on"
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "on"

@@ -5,89 +5,117 @@
 
 #include "Common/Core/PlatformDetection.h"
 
+#include "Common/Core/Macros.h"
+
 #ifdef ST_PLATFORM_WINDOWS
     #include "GLFW/GLFWWindow.h"
 #endif  // ST_PLATFORM_WINDOWS
 
-static WindowInterface window;
+static WindowData internalWindow;
 
-ST_API void Sentinel_CreateInternalWindow(
-    const char* titleBar, unsigned short width, unsigned short height, WindowMode mode, int resizeable) {
+typedef struct WindowAPI {
+    void (*init)(WindowData *, CChar *);
+    void (*update)(WindowData *);
+    void (*deinit)(WindowData *);
+    void (*resize)(WindowData *, UShort, UShort);
+} WindowAPI;
+
+static WindowAPI windowAPI;
+
+static WindowData *windowData;
+
+ST_API void Sentinel_WindowAPI_CreateInternalWindow(
+    const char *titleBar, unsigned short width, unsigned short height, WindowMode mode, int resizeable) {
 #ifdef ST_PLATFORM_WINDOWS
-    window.init = Init;
-    window.update = Update;
-    window.deinit = Deinit;
+    windowAPI.init = Sentinel_GLFWWindow_Init;
+    windowAPI.update = Sentinel_GLFWWindow_Update;
+    windowAPI.deinit = Sentinel_GLFWWindow_Deinit;
 #endif  // ST_PLATFORM_WINDOWS
 
-    window.Width = width;
-    window.Height = height;
-    window.Mode = mode;
+    windowData = &internalWindow;
 
-    window.Running = 1;
-    window.VSync = 1;
-    window.Transparent = 0;
-    window.Resizable = resizeable;
+    windowData->Width = width;
+    windowData->Height = height;
+    windowData->Mode = mode;
+
+    windowData->Running = 1;
+    windowData->VSync = 1;
+
+    if (resizeable) windowData->Properties |= ST_BIT(0);  // Resizeable
 
     // Right now it's set as NORMAL
     // But it needs to initialized taking into account window.Mode as well
-    window.State = NORMAL;
+    windowData->State = NORMAL;
 
-    window.init(&window, titleBar);
+    windowAPI.init(windowData, titleBar);
 }
 
-ST_API void Sentinel_CreateExternalWindow(
-    const char* titleBar,
+ST_API void Sentinel_WindowAPI_CreateExternalWindow(
+    WindowData *externalWindow,
+    const char *titleBar,
     unsigned short width,
     unsigned short height,
     WindowMode mode,
     int resizeable,
-    void (*initFn)(WindowInterface*, const char*),
-    void (*updateFn)(),
-    void (*deinitFn)()) {
-    window.init = initFn;
-    window.update = updateFn;
-    window.deinit = deinitFn;
+    void (*initFn)(WindowData *, const char *),
+    void (*updateFn)(WindowData *),
+    void (*deinitFn)(WindowData *),
+    void (*resizeFn)(WindowData *, unsigned short, unsigned short)) {
+    windowAPI.init = initFn;
+    windowAPI.update = updateFn;
+    windowAPI.deinit = deinitFn;
+    windowAPI.resize = resizeFn;
 
-    window.Width = width;
-    window.Height = height;
-    window.Mode = mode;
+    windowData = externalWindow;
 
-    window.Running = 1;
-    window.VSync = 1;
-    window.Transparent = 0;
-    window.Resizable = resizeable;
+    windowData->Width = width;
+    windowData->Height = height;
+    windowData->Mode = mode;
+
+    windowData->Running = 1;
+    windowData->VSync = 1;
+
+    if (resizeable) windowData->Properties |= ST_BIT(0);  // Resizeable
 
     // Right now it's set as NORMAL
     // But it needs to initialized taking into account window.Mode as well
-    window.State = NORMAL;
+    windowData->State = NORMAL;
 
-    window.init(&window, titleBar);
+    windowAPI.init(windowData, titleBar);
 }
 
-ST_API int Sentinel_IsWindowRunning() {
-    return window.Running;
+ST_API int Sentinel_WindowAPI_IsWindowRunning() {
+    return windowData->Running;
 }
 
 void Sentinel_Window_OnUpdate() {
-    window.update();
+    windowAPI.update(windowData);
 }
 
-void Sentinel_DestroyWindow() {
-    window.deinit();
+void Sentinel_Window_DestroyWindow() {
+    windowAPI.deinit(windowData);
 }
 
-WindowInterface* Sentinel_GetWindow() {
-    return &window;
+WindowData *Sentinel_Window_GetWindow() {
+    return windowData;
 }
 
-void* Sentinel_Window_GetNativeHandle() {
-    return window.nativeWindowHandle;
+void *Sentinel_Window_GetNativeHandle() {
+    return windowData->native;
 }
 
 UShort Sentinel_Window_GetWidth() {
-    return window.Width;
+    return windowData->Width;
 }
 
 UShort Sentinel_Window_GetHeight() {
-    return window.Height;
+    return windowData->Height;
+}
+
+Int Sentinel_Window_IsWindowResizeable() {
+    return windowData->Properties & ST_BIT(0);
+}
+
+Int Sentinel_Window_GetVSync() {
+    return windowData->VSync;
 }

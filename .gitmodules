@@ -2,3 +2,7 @@
 	path = Sentinel/Vendor/glfw/module
 	url = https://github.com/CybernetHacker14/glfw.git
 	branch = win32-borderless
+[submodule "Sentinel/Vendor/cglm/module"]
+	path = Sentinel/Vendor/cglm/module
+	url = https://github.com/recp/cglm.git
+	branch = master

@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
     Sentinel_Internal_Main_Stage_Startup(Sentinel_Main_Stage_OnStartup);
 
     Sentinel_Internal_Main_Stage_MainLoop_PreBegin(Sentinel_Main_Stage_OnMainLoop_PreBegin);
-    while (Sentinel_IsWindowRunning()) {
+    while (Sentinel_WindowAPI_IsWindowRunning()) {
         Sentinel_Internal_Main_Stage_MainLoop_Begin(Sentinel_Main_Stage_OnMainLoop_Begin);
         Sentinel_Internal_Main_Stage_MainLoop_OnUpdate(Sentinel_Main_Stage_OnMainLoop_OnUpdate);
         Sentinel_Internal_Main_Stage_MainLoop_OnRender(Sentinel_Main_Stage_OnMainLoop_OnRender);

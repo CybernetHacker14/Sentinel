@@ -44,7 +44,7 @@ ST_API void Sentinel_Internal_Main_Stage_MainLoop_End(void (*action)()) {
 ST_API void Sentinel_Internal_Main_Stage_MainLoop_PostEnd(void (*action)()) {
     action();
     Sentinel_Renderer_Deinit();
-    Sentinel_DestroyWindow();
+    Sentinel_Window_DestroyWindow();
 }
 
 ST_API void Sentinel_Internal_Main_Stage_Shutdown(void (*action)()) {

@@ -30,6 +30,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 group "Dependencies"
     include "Premake"
     include "Sentinel/Vendor/glfw"
+    include "Sentinel/Vendor/cglm"
 group ""
 
 -- Include projects

@@ -1,4 +1,6 @@
 #include "stpch.h"
+#include "_EXPORT/Event/EventAPI_EXPORT.h"
+#include "_EXPORT/Event/EventData_EXPORT.h"
 #include "_EXPORT/Graphics/RendererAPI_EXPORT.h"
 #include "_EXPORT/Graphics/RendererData_EXPORT.h"
 #include "_EXPORT/Graphics/Texture/RenderTexture2DAPI_EXPORT.h"
@@ -9,12 +11,15 @@
 #include "Graphics/Device/Swapchain.h"
 #include "Graphics/Texture/RenderTexture2D.h"
 
-#include "Graphics/Buffer/Vertexbuffer.h"
 #include "Graphics/Buffer/Indexbuffer.h"
+#include "Graphics/Buffer/Vertexbuffer.h"
 #include "Graphics/Geometry/Geometry.h"
 #include "Graphics/Material/Shader.h"
 
 #include "Graphics/Output/Viewport.h"
+
+#include "Graphics/Buffer/Constantbuffer.h"
+#include "Graphics/Camera/Camera.h"
 
 #ifdef ST_PLATFORM_WINDOWS
     #include "Graphics/D3D11/D3D11Renderer.h"
@@ -34,6 +39,19 @@ typedef struct RendererAPI {
 static RendererAPI renderAPI;
 
 static RenderTexture2DData* swapchainRT;
+
+static Short onResizeSwapchainIndex;
+
+static Int OnResize(EventType type, EventData data, void* listener) {
+    Sentinel_RenderTexture2DAPI_RenderOutputUnbind(swapchainRT);
+    Sentinel_RenderTexture2DAPI_Destroy(swapchainRT);
+    Sentinel_Swapchain_Resize(data.UInt16[0], data.UInt16[1]);
+    Sentinel_Viewport_Resize(data.UInt16[0], data.UInt16[1]);
+    Sentinel_Viewport_Bind();
+    swapchainRT = Sentinel_RenderTexture2D_CreateFromSwapchain();
+    Sentinel_RenderTexture2DAPI_RenderOutputBind(swapchainRT);
+    return 1;
+}
 
 ST_API void Sentinel_Renderer_Init(RenderingBackend backend) {
     if (backend == D3D11) {
@@ -57,11 +75,16 @@ ST_API void Sentinel_Renderer_Init(RenderingBackend backend) {
     Sentinel_Geometry_Init();
     Sentinel_Vertexbuffer_Init();
     Sentinel_Indexbuffer_Init();
+    Sentinel_Constantbuffer_Init();
 
     Sentinel_RenderTexture2DAPI_RenderOutputBind(swapchainRT);
 
     Sentinel_Viewport_Init(Sentinel_Window_GetWidth(), Sentinel_Window_GetHeight());
     Sentinel_Viewport_Bind();
+
+    Sentinel_Camera_Init();
+
+    Sentinel_EventAPI_RegisterEvent(WindowResize, NULL, OnResize);
 }
 
 ST_API RenderingBackend Sentinel_Renderer_GetBackend() {
@@ -78,6 +101,7 @@ void Sentinel_Renderer_MainLoop_PreBegin() {
 
 void Sentinel_Renderer_MainLoop_Update() {
     renderAPI.update();
+    Sentinel_Camera_OnUpdate();
 }
 
 void Sentinel_Renderer_MainLoop_Render() {
@@ -88,8 +112,11 @@ void Sentinel_Renderer_MainLoop_Render() {
 }
 
 void Sentinel_Renderer_Deinit() {
+    Sentinel_Camera_Deinit();
+
     Sentinel_RenderTexture2DAPI_RenderOutputUnbind(swapchainRT);
 
+    Sentinel_Constantbuffer_Deinit();
     Sentinel_Indexbuffer_Deinit();
     Sentinel_Vertexbuffer_Deinit();
     Sentinel_Geometry_Deinit();

@@ -60,12 +60,12 @@ void Sentinel_D3D11Swapchain_Deinit(SwapchainData* swapchain) {
 
 void Sentinel_D3D11Swapchain_Present(SwapchainData* swapchain) {
     IDXGISwapChain* dxswapchain = (IDXGISwapChain*)(swapchain->native);
-    IDXGISwapChain_Present(dxswapchain, Sentinel_GetWindow()->VSync, 0);
+    IDXGISwapChain_Present(dxswapchain, Sentinel_Window_GetVSync(), 0);
 }
 
 void Sentinel_D3D11Swapchain_Resize(SwapchainData* swapchain, UShort width, UShort height) {
     IDXGISwapChain* dxswapchain = (IDXGISwapChain*)(swapchain->native);
-    IDXGISwapChain_ResizeBuffers(dxswapchain, 0, width, height, DXGI_FORMAT_UNKNOWN, 0);
+    IDXGISwapChain_ResizeBuffers(dxswapchain, 3, width, height, DXGI_FORMAT_UNKNOWN, 0);
 }
 
 #pragma warning(pop)

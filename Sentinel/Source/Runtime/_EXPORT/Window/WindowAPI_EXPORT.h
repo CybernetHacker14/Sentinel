@@ -8,21 +8,23 @@
 #include "../ExportConditional.h"
 
 typedef enum WindowMode WindowMode;
-typedef struct WindowInterface WindowInterface;
+typedef struct WindowData WindowData;
 
-ST_API void Sentinel_CreateInternalWindow(
+ST_API void Sentinel_WindowAPI_CreateInternalWindow(
     const char* titleBar, unsigned short width, unsigned short height, WindowMode mode, int resizeable);
 
-ST_API void Sentinel_CreateExternalWindow(
+ST_API void Sentinel_WindowAPI_CreateExternalWindow(
+    WindowData* externalWindow,
     const char* titleBar,
     unsigned short width,
     unsigned short height,
     WindowMode mode,
     int resizeable,
-    void (*initFn)(WindowInterface*, const char*),
-    void (*updateFn)(),
-    void (*deinitFn)());
+    void (*initFn)(WindowData*, const char*),
+    void (*updateFn)(WindowData*),
+    void (*deinitFn)(WindowData*),
+    void (*resizeFn)(WindowData*, unsigned short, unsigned short));
 
-ST_API int Sentinel_IsWindowRunning();
+ST_API int Sentinel_WindowAPI_IsWindowRunning();
 
 #endif  // !_EXPORT_WINDOW_WINDOWAPI_EXPORT_H

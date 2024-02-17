@@ -61,7 +61,8 @@ void Sentinel_D3D11RenderTexture2D_Destroy(RenderTexture2DData* renderTexture) {
     if (srv) ID3D11ShaderResourceView_Release(srv);
     if (tex) ID3D11Texture2D_Release(tex);
 
-    Sentinel_FixedSlabAllocator_Delete(&rT2DNativeAllocator, renderTexture->native);
+    UShort index;
+    Sentinel_FixedSlabAllocator_Delete(&rT2DNativeAllocator, renderTexture->native, &index);
 }
 
 void Sentinel_D3D11RenderTexture2D_BindRTV(RenderTexture2DData* renderTexture) {

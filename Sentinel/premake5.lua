@@ -18,7 +18,8 @@ project "Sentinel"
     includedirs
     {
         "Source/Runtime",
-        "%{VendorIncludes.glfw}"
+        "%{VendorIncludes.glfw}",
+        "%{VendorIncludes.cglm}"
     }
 
     implibdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
