@@ -7,7 +7,6 @@ from enum import Enum
 
 from SetupPython import PythonConfiguration as PythonRequirements
 from SetupPremake import PremakeConfiguration as PremakeRequirements
-from SetupCMake import CMakeConfiguration as CMakeRequirements
 
 buildSystemList = [
 	'Premake',

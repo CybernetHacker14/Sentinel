@@ -1,13 +1,11 @@
 include "Premake/customization/solution_items.lua"
 include "Premake/customization/clean_project.lua"
 include "Premake/customization/cmdargs.lua"
-include "Premake/customization/shader_file_locations.lua"
-include "Premake/customization/internal_dependencies.lua"
-include "Premake/customization/external_dependencies.lua"
+include "Premake/customization/vendor_includes.lua"
 
 workspace "Sentinel"
     architecture "x86_64"
-    startproject "Scribe"
+    startproject "Sandbox"
 
     configurations
     {
@@ -31,17 +29,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include dependencies
 group "Dependencies"
     include "Premake"
-    include "Engine/Vendor/GLFW"
-    include "Engine/Vendor/cereal"
-    include "Engine/Vendor/imgui"
-    include "Engine/Vendor/flecs"
-    include "Engine/Vendor/minizip"
+    include "Sentinel/Vendor/glfw"
 group ""
 
 -- Include projects
 group "Core Modules"
-    include "Engine"
-    include "Scribe"
+    include "Sentinel"
 group ""
 
 group "Test Modules"
