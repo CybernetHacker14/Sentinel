@@ -1,7 +1,9 @@
 #include "stpch.h"
+#include "_EXPORT/Graphics/Buffer/ConstantbufferAPI_EXPORT.h"
+#include "_EXPORT/Graphics/Buffer/ConstantbufferData_EXPORT.h"
+#include "_EXPORT/Graphics/Material/ShaderData_EXPORT.h"
 #include "_EXPORT/Graphics/RendererAPI_EXPORT.h"
 #include "_EXPORT/Graphics/RendererData_EXPORT.h"
-#include "_EXPORT/Graphics/Material/ShaderData_EXPORT.h"
 #include "Allocator/FixedSlabAllocator.h"
 #include "Graphics/Buffer/Constantbuffer.h"
 
@@ -10,6 +12,8 @@
 #ifdef ST_PLATFORM_WINDOWS
     #include "Graphics/D3D11/Buffer/D3D11Constantbuffer.h"
 #endif  // ST_PLATFORM_WINDOWS
+
+#define MAX_REGISTERED_CONSTANTBUFFERS 64
 
 typedef struct ConstantbufferAPI {
     void (*create)(ConstantbufferData*);
@@ -42,7 +46,8 @@ void Sentinel_Constantbuffer_Deinit() {
     Sentinel_FixedSlabAllocator_Deallocate(&cBufferAllocator);
 }
 
-ConstantbufferData* Sentinel_Constantbuffer_Create(CBufferUsageType usage, UInt slot, ULLong size) {
+ST_API ConstantbufferData* Sentinel_ConstantbufferAPI_Create(
+    CBufferUsageType usage, unsigned int slot, unsigned long long size) {
     UShort index;
     ConstantbufferData* buffer = (ConstantbufferData*)Sentinel_FixedSlabAllocator_New(&cBufferAllocator, &index);
     buffer->usageType = usage;
@@ -54,16 +59,16 @@ ConstantbufferData* Sentinel_Constantbuffer_Create(CBufferUsageType usage, UInt 
     return buffer;
 }
 
-void Sentinel_Constantbuffer_Destroy(ConstantbufferData* cBuffer) {
+ST_API void Sentinel_ConstantbufferAPI_Destroy(ConstantbufferData* cBuffer) {
     cBufferAPI.destroy(cBuffer);
     UShort index;
     Sentinel_FixedSlabAllocator_Delete(&cBufferAllocator, cBuffer, &index);
 }
 
-void Sentinel_Constantbuffer_Bind(ConstantbufferData* cBuffer, ShaderType shaderStage) {
+ST_API void Sentinel_ConstantbufferAPI_Bind(ConstantbufferData* cBuffer, ShaderType shaderStage) {
     cBufferAPI.bind(cBuffer, shaderStage);
 }
 
-void Sentinel_Constantbuffer_SetData(ConstantbufferData* cBuffer, void* data) {
+ST_API void Sentinel_ConstantbufferAPI_SetData(ConstantbufferData* cBuffer, void* data) {
     cBufferAPI.setdata(cBuffer, data);
 }

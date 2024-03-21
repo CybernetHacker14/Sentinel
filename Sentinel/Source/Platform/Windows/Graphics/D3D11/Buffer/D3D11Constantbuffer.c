@@ -1,4 +1,6 @@
 #include "stpch.h"
+#include "_EXPORT/Graphics/Buffer/ConstantbufferAPI_EXPORT.h"
+#include "_EXPORT/Graphics/Buffer/ConstantbufferData_EXPORT.h"
 #include "_EXPORT/Graphics/Material/ShaderData_EXPORT.h"
 #include "Graphics/Buffer/Constantbuffer.h"
 #include "Graphics/D3D11/Buffer/D3D11Constantbuffer.h"

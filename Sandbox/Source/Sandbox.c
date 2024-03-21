@@ -120,6 +120,7 @@ void Sentinel_Main_Stage_OnMainLoop_Begin() {
 }
 
 void Sentinel_Main_Stage_OnMainLoop_OnUpdate() {
+    Sentinel_CameraAPI_OnUpdate(camera);
 }
 
 void Sentinel_Main_Stage_OnMainLoop_OnRender() {

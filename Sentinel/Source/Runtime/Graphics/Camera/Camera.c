@@ -1,4 +1,6 @@
 #include "stpch.h"
+#include "_EXPORT/Graphics/Buffer/ConstantbufferAPI_EXPORT.h"
+#include "_EXPORT/Graphics/Buffer/ConstantbufferData_EXPORT.h"
 #include "_EXPORT/Graphics/Camera/CameraAPI_EXPORT.h"
 #include "_EXPORT/Graphics/Camera/CameraData_EXPORT.h"
 #include "_EXPORT/Graphics/Material/ShaderDATA_EXPORT.h"
@@ -12,6 +14,8 @@
 #include <cglm/clipspace/persp_rh_zo.h>
 
 #define MAX_CAMERAS 8
+
+// Utilities -- Start
 
 // Still temporary, especially the function names
 static const vec3 worldUp = {0.0f, 1.0f, 0.0f};
@@ -75,38 +79,7 @@ static void OrthographicProjectionMatrix(CameraData* camera, mat4 projMatrix) {
 static void (*viewComputePFn[])(CameraData*, mat4) = {PerspectiveViewMatrix, OrthographicViewMatrix};
 static void (*projComputePFn[])(CameraData*, mat4) = {PerspectiveProjectionMatrix, OrthographicProjectionMatrix};
 
-static FixedSlabAllocator cameraAllocator;
-
-static ConstantbufferData* cameraCBuffers[MAX_CAMERAS] = {0};
-
-void Sentinel_Camera_Init() {
-    Sentinel_FixedSlabAllocator_Allocate(&cameraAllocator, sizeof(CameraData), MAX_CAMERAS);
-}
-
-void Sentinel_Camera_Deinit() {
-    CameraData* start = (CameraData*)(cameraAllocator.startingAddress);
-
-    for (UShort i = 0; i < MAX_CAMERAS; ++i)
-        if (cameraCBuffers[i] != NULL) Sentinel_Constantbuffer_Destroy(cameraCBuffers[i]);
-
-    Sentinel_FixedSlabAllocator_DeleteAll(&cameraAllocator);
-    Sentinel_FixedSlabAllocator_Deallocate(&cameraAllocator);
-}
-
-void Sentinel_Camera_OnUpdate() {
-    // TEMP CODE, need to remove
-    CameraData* start = (CameraData*)(cameraAllocator.startingAddress);
-
-    for (UShort i = 0; i < MAX_CAMERAS; ++i) {
-        if (cameraCBuffers[i] != NULL) {
-            Sentinel_Camera_ComputeCameraViewProjectionMatrix(&(start[i]));
-            Sentinel_Constantbuffer_Bind(cameraCBuffers[i], VERTEX);
-            Sentinel_Constantbuffer_SetData(cameraCBuffers[i], start[i].viewProjection);
-        }
-    }
-}
-
-void Sentinel_Camera_ComputeCameraViewProjectionMatrix(CameraData* camera) {
+static void ViewProjectionMatrix(CameraData* camera) {
     mat4 viewMatrix = GLM_MAT4_IDENTITY_INIT;
     viewComputePFn[(Int)(camera->projectionMode)](camera, viewMatrix);
 
@@ -116,17 +89,41 @@ void Sentinel_Camera_ComputeCameraViewProjectionMatrix(CameraData* camera) {
     glm_mat4_mul(viewMatrix, projMatrix, camera->viewProjection);
 }
 
+// \Utilities -- End
+
+static FixedSlabAllocator cameraAllocator;
+
+void Sentinel_Camera_Init() {
+    Sentinel_FixedSlabAllocator_Allocate(&cameraAllocator, sizeof(CameraData), MAX_CAMERAS);
+}
+
+void Sentinel_Camera_Deinit() {
+    CameraData* start = (CameraData*)(cameraAllocator.startingAddress);
+
+    for (UShort i = 0; i < MAX_CAMERAS; ++i)
+        if (start[i].cameraCBuffer != NULL) Sentinel_ConstantbufferAPI_Destroy(start[i].cameraCBuffer);
+
+    Sentinel_FixedSlabAllocator_DeleteAll(&cameraAllocator);
+    Sentinel_FixedSlabAllocator_Deallocate(&cameraAllocator);
+}
+
 ST_API CameraData* Sentinel_CameraAPI_CreateCamera(vec3 position, vec3 eulerRotation) {
     UShort index;
     CameraData* camera = (CameraData*)Sentinel_FixedSlabAllocator_New(&cameraAllocator, &index);
     glm_vec3_copy(camera->position, position);
     glm_vec3_copy(camera->eulerOrientation, eulerRotation);
-    cameraCBuffers[index] = Sentinel_Constantbuffer_Create(DYNAMIC, index, 16 * sizeof(Float));
+    camera->cameraCBuffer = Sentinel_ConstantbufferAPI_Create(DYNAMIC, index, 16 * sizeof(Float));
     return camera;
 }
 
 ST_API void Sentinel_CameraAPI_DeleteCamera(CameraData* camera) {
     UShort index;
     Sentinel_FixedSlabAllocator_Delete(&cameraAllocator, camera, &index);
-    Sentinel_Constantbuffer_Destroy(cameraCBuffers[index]);
+    Sentinel_ConstantbufferAPI_Destroy(camera->cameraCBuffer);
+}
+
+ST_API void Sentinel_CameraAPI_OnUpdate(CameraData* camera) {
+    ViewProjectionMatrix(camera);
+    Sentinel_ConstantbufferAPI_Bind(camera->cameraCBuffer, VERTEX);
+    Sentinel_ConstantbufferAPI_SetData(camera->cameraCBuffer, camera->viewProjection);
 }

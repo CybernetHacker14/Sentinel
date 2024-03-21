@@ -8,6 +8,8 @@
 
 #include "Window/Window.h"
 
+#include "Graphics/Renderer.h"
+
 #include "Graphics/Device/Swapchain.h"
 #include "Graphics/Texture/RenderTexture2D.h"
 
@@ -23,7 +25,6 @@
 
 #ifdef ST_PLATFORM_WINDOWS
     #include "Graphics/D3D11/D3D11Renderer.h"
-    #include "Renderer.h"
 #endif  // ST_PLATFORM_WINDOWS
 
 typedef struct RendererAPI {
@@ -101,7 +102,6 @@ void Sentinel_Renderer_MainLoop_PreBegin() {
 
 void Sentinel_Renderer_MainLoop_Update() {
     renderAPI.update();
-    Sentinel_Camera_OnUpdate();
 }
 
 void Sentinel_Renderer_MainLoop_Render() {
