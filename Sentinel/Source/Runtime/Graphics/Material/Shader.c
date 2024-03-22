@@ -56,4 +56,5 @@ ST_API void Sentinel_ShaderAPI_CreateFromSource(const char* source, unsigned lon
 }
 
 ST_API void Sentinel_ShaderAPI_CreateFromFile(const char* filepath, ShaderType type) {
+    Char* source;
 }
