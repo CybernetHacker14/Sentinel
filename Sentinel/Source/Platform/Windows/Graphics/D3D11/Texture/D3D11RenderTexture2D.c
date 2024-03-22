@@ -4,7 +4,6 @@
 #include "Graphics/D3D11/Device/D3D11Device.h"
 #include "Graphics/D3D11/Texture/D3D11RenderTexture2D.h"
 #include "Graphics/Device/Swapchain.h"
-#include "Graphics/Texture/RenderTexture2D.h"
 
 #define D3D11_NO_HELPERS
 #define CINTERFACE

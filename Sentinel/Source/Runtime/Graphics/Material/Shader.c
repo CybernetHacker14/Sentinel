@@ -1,4 +1,5 @@
 #include "stpch.h"
+#include "_EXPORT/Filesystem/FilesystemAPI_EXPORT.h"
 #include "_EXPORT/Graphics/Material/ShaderAPI_EXPORT.h"
 #include "_EXPORT/Graphics/Material/ShaderData_EXPORT.h"
 #include "_EXPORT/Graphics/RendererAPI_EXPORT.h"
@@ -56,4 +57,18 @@ ST_API void Sentinel_ShaderAPI_CreateFromSource(const char* source, unsigned lon
 }
 
 ST_API void Sentinel_ShaderAPI_CreateFromFile(const char* filepath, ShaderType type) {
+    ULLong bufferSize = 0;
+    Sentinel_FilesystemAPI_ReadTextFileAtPath(filepath, NULL, &bufferSize);
+
+    Char* source = (Char*)Sentinel_Malloc(bufferSize);
+    source[bufferSize] = '\0';
+
+    Sentinel_FilesystemAPI_ReadTextFileAtPath(filepath, source, &bufferSize);
+
+    UShort index = 0;
+    ShaderData* shaderData = (ShaderData*)Sentinel_FixedSlabAllocator_New(&shaderAllocator, &index);
+    shaderData->type = type;
+    shaderAPI.create(shaderData, source, bufferSize);
+
+    Sentinel_Free(source);
 }

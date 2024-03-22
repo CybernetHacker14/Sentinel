@@ -8,4 +8,6 @@
 #define ST_BIT(x)   (1 << x)
 #define ST_BIT64(x) (1ull << x)
 
+#define ST_CHECK_BIT(x, pos) (((x) >> (pos)) & 1)
+
 #endif  // !COMMON_CORE_MACROS_H

@@ -5,6 +5,10 @@
 #include "Graphics/D3D11/Material/D3D11Shader.h"
 #include "Graphics/Material/Shader.h"
 
+#ifdef ST_DEBUG
+    #include "Logging/Log.h"
+#endif  // ST_DEBUG
+
 #define D3D11_NO_HELPERS
 #define CINTERFACE
 #define COBJMACROS
@@ -108,7 +112,7 @@ void Sentinel_D3D11Shader_Create(ShaderData* shader, CChar* source, ULLong lengt
     const void* byteCode;
     ULLong byteCodeSize;
     ID3DBlob* error;
-    D3DCompile(
+    HRESULT result = D3DCompile(
         source,
         length,
         NULL,
@@ -120,6 +124,17 @@ void Sentinel_D3D11Shader_Create(ShaderData* shader, CChar* source, ULLong lengt
         0,
         &code,
         &error);
+
+#ifdef ST_DEBUG
+    if (FAILED(result)) {
+        Char* errorStr = (Char*)ID3D10Blob_GetBufferPointer(error);
+        errorStr[strnlen_s(errorStr, 256) - 1] = '\0';
+
+        ST_TERMINAL_ERROR("%s", errorStr);
+        ID3D10Blob_Release(error);
+    }
+#endif  // ST_DEBUG
+
     byteCode = ID3D10Blob_GetBufferPointer(code);
     byteCodeSize = ID3D10Blob_GetBufferSize(code);
 

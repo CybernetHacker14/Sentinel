@@ -5,6 +5,8 @@
 #include "_EXPORT/Graphics/RendererData_EXPORT.h"
 #include "_EXPORT/Graphics/Texture/RenderTexture2DAPI_EXPORT.h"
 #include "_EXPORT/Graphics/Texture/RenderTexture2DData_EXPORT.h"
+#include "_EXPORT/Graphics/Texture/Texture2DAPI_EXPORT.h"
+#include "_EXPORT/Graphics/Texture/Texture2DData_EXPORT.h"
 
 #include "Window/Window.h"
 
@@ -12,6 +14,7 @@
 
 #include "Graphics/Device/Swapchain.h"
 #include "Graphics/Texture/RenderTexture2D.h"
+#include "Graphics/Texture/Texture2D.h"
 
 #include "Graphics/Buffer/Indexbuffer.h"
 #include "Graphics/Buffer/Vertexbuffer.h"
@@ -77,6 +80,7 @@ ST_API void Sentinel_Renderer_Init(RenderingBackend backend) {
     Sentinel_Vertexbuffer_Init();
     Sentinel_Indexbuffer_Init();
     Sentinel_Constantbuffer_Init();
+    Sentinel_Texture2D_Init();
 
     Sentinel_RenderTexture2DAPI_RenderOutputBind(swapchainRT);
 
@@ -105,7 +109,7 @@ void Sentinel_Renderer_MainLoop_Update() {
 }
 
 void Sentinel_Renderer_MainLoop_Render() {
-    Float clearColor[] = {100.f / 255.f, 149.f / 255.f, 237.f / 255.f, 1.0f};
+    Float clearColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
     Sentinel_RenderTexture2DAPI_Clear(swapchainRT, clearColor);
     renderAPI.render();
     Sentinel_Swapchain_Present();
@@ -116,6 +120,7 @@ void Sentinel_Renderer_Deinit() {
 
     Sentinel_RenderTexture2DAPI_RenderOutputUnbind(swapchainRT);
 
+    Sentinel_Texture2D_Deinit();
     Sentinel_Constantbuffer_Deinit();
     Sentinel_Indexbuffer_Deinit();
     Sentinel_Vertexbuffer_Deinit();

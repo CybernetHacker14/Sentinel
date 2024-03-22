@@ -19,7 +19,8 @@ project "Sentinel"
     {
         "Source/Runtime",
         "%{VendorIncludes.glfw}",
-        "%{VendorIncludes.cglm}"
+        "%{VendorIncludes.cglm}",
+        "%{VendorIncludes.stb}"
     }
 
     implibdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")

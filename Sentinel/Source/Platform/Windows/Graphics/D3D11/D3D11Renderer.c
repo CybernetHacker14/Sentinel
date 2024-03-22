@@ -8,44 +8,6 @@
 #pragma warning(push)
 #pragma warning(disable : 6011)
 
-/*
-static void RenderFrame() {
-    // clear background
-
-    ID3D11DeviceContext_Draw(context, _countof(vertices), 0);
-}
-
-static void RenderResize(int width, int height) {
-    if (windowRT) {
-        ID3D11DeviceContext_OMSetRenderTargets(context, 0, NULL, NULL);
-        ID3D11RenderTargetView_Release(windowRT);
-        windowRT = NULL;
-    }
-
-    IDXGISwapChain_ResizeBuffers(swapchain, 0, width, height, DXGI_FORMAT_UNKNOWN, 0);
-    ID3D11Texture2D* windowBuffer;
-    IDXGISwapChain_GetBuffer(swapchain, 0, &IID_ID3D11Texture2D, (void**)&windowBuffer);
-
-    ID3D11Device_CreateRenderTargetView(device, (ID3D11Resource*)windowBuffer, NULL, &windowRT);
-    ID3D11Texture2D_Release(windowBuffer);
-
-}
-*/
-
-/*
-void RendererD3D11_Init() {
-RenderResize((int)(Sentinel_Window_GetWidth()), (int)(Sentinel_Window_GetHeight()));
-
-{
-    ID3D11DeviceContext_OMSetRenderTargets(context, 1, &windowRT, NULL);
-
-    const UINT stride = sizeof(struct Vertex);
-    const UINT offset = 0;
-    ID3D11DeviceContext_IASetVertexBuffers(context, 0, 1, &vertexBuffer, &stride, &offset);
-}
-}
-*/
-
 void Sentinel_D3D11Renderer_Init() {
     Sentinel_D3D11Device_Init();
 }

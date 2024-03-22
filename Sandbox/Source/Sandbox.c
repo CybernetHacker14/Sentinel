@@ -1,82 +1,49 @@
 #include <EntryPoint.h>
 
+#include <Application/ApplicationAPI_EXPORT.h>
 #include <Window/WindowAPI_EXPORT.h>
 #include <Window/WindowData_EXPORT.h>
-#include <Application/ApplicationAPI_EXPORT.h>
 
+#include <Graphics/Geometry/GeometryAPI_EXPORT.h>
 #include <Graphics/RendererAPI_EXPORT.h>
 #include <Graphics/RendererData_EXPORT.h>
-#include <Graphics/Geometry/GeometryAPI_EXPORT.h>
 
-#include <Graphics/Material/ShaderDATA_EXPORT.h>
 #include <Graphics/Material/ShaderAPI_EXPORT.h>
+#include <Graphics/Material/ShaderDATA_EXPORT.h>
 
-#include <Graphics/Camera/CameraData_EXPORT.h>
 #include <Graphics/Camera/CameraAPI_EXPORT.h>
+#include <Graphics/Camera/CameraData_EXPORT.h>
 
-#include <Event/EventData_EXPORT.h>
+#include <Graphics/Buffer/ConstantbufferAPI_EXPORT.h>
+#include <Graphics/Buffer/ConstantbufferData_EXPORT.h>
+
+#include <Graphics/Texture/Texture2DAPI_EXPORT.h>
+#include <Graphics/Texture/Texture2DData_EXPORT.h>
+
 #include <Event/EventAPI_EXPORT.h>
+#include <Event/EventData_EXPORT.h>
 
 #include <cglm/cglm.h>
 #include <stdlib.h>
 
 struct Vertex {
     float x, y, z;
-    float r, g, b;
+    float u, v;
 };
 
 static struct Vertex vertices[] = {
-    {-3.0f, 3.0f, -7.0f, 1.f, 0.f, 0.f},
-    {-1.0f, 3.0f, -7.0f, 0.f, 1.f, 0.f},
-    {-1.0f, 1.0f, -7.0f, 0.f, 1.f, 0.f},
-    {-3.0f, 1.0f, -7.0f, 0.f, 0.f, 1.f},
-    {1.0f, 1.0f, -5.0f, 1.f, 0.f, 0.f},
-    {3.0f, 1.0f, -5.0f, 0.f, 1.f, 0.f},
-    {3.0f, -1.0f, -5.0f, 0.f, 1.f, 0.f},
-    {1.0f, -1.0f, -5.0f, 0.f, 0.f, 1.f}};
+    {-0.5f, -0.5f, 0.7f, 0.0f, 1.0f},
+    {-0.5f, 0.5f, 0.7f, 0.0f, 0.0f},
+    {0.5f, 0.5f, 0.7f, 1.0f, 0.0f},
+    {0.5f, -0.5f, 0.7f, 1.0f, 1.0f}};
 
-static unsigned int indices[] = {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
-
-static const char d3d11_vShader[] =
-    "#pragma pack_matrix(row_major)                                 \n"
-    "cbuffer Camera: register(b0) {                                 \n"
-    "  float4x4 u_ViewProjection;                                   \n"
-    "}                                                              \n"
-    "                                                               \n"
-    "struct VS_INPUT                                                \n"
-    "{                                                              \n"
-    "  float3 pos : POSITION;                                       \n"
-    "  float3 col : COLOR0;                                         \n"
-    "};                                                             \n"
-    "                                                               \n"
-    "struct PS_INPUT                                                \n"
-    "{                                                              \n"
-    "  float4 pos : SV_POSITION;                                    \n"
-    "  float3 col : COLOR0;                                         \n"
-    "};                                                             \n"
-    "                                                               \n"
-    "PS_INPUT vs(VS_INPUT input)                                    \n"
-    "{                                                              \n"
-    "  PS_INPUT output;                                             \n"
-    "  output.pos = float4(input.pos.xyz, 1.f);                     \n"
-    "  output.col = input.col;                                      \n"
-    "  output.pos = mul(output.pos, u_ViewProjection);              \n"
-    "  return output;                                               \n"
-    "}                                                              \n";
-
-static const char d3d11_pShader[] =
-    "struct PS_INPUT                                \n"
-    "{                                              \n"
-    "  float4 pos : SV_POSITION;                    \n"
-    "  float3 col : COLOR0;                         \n"
-    "};                                             \n"
-    "                                               \n"
-    "float4 ps(PS_INPUT input) : SV_Target          \n"
-    "{                                              \n"
-    "  return float4(input.col, 1.f);               \n"
-    "}                                              \n";
+static unsigned int indices[] = {0, 1, 2, 2, 3, 0};
 
 static CameraData* camera;
+
+static ConstantbufferData* objectColor;
+
+static Texture2DData* texture;
 
 static short onResizeIndex;
 
@@ -95,14 +62,14 @@ void Sentinel_Main_Stage_OnStartup() {
 void Sentinel_Main_Stage_OnMainLoop_PreBegin() {
     Sentinel_Renderer_Init(D3D11);
 
-    Sentinel_ShaderAPI_CreateFromSource(d3d11_vShader, sizeof(d3d11_vShader), VERTEX);
-    Sentinel_ShaderAPI_CreateFromSource(d3d11_pShader, sizeof(d3d11_pShader), PIXEL);
+    Sentinel_ShaderAPI_CreateFromFile("Source/BaseVertexShader.hlsl", VERTEX);
+    Sentinel_ShaderAPI_CreateFromFile("Source/BasePixelShader.hlsl", PIXEL);
 
     Sentinel_GeometryAPI_SubmitIndividualGeometryData(
         sizeof(struct Vertex), _countof(vertices), vertices, sizeof(unsigned int), _countof(indices), indices);
 
     vec3 position = {0.0f, 0.0f, 0.0f};
-    vec3 rotation = {0.0f, 0.0f, 0.0f};
+    vec3 rotation = {0.0f, 0.0f, 1.0f};
     camera = Sentinel_CameraAPI_CreateCamera(position, rotation);
     /*camera->projectionMode = ORTHOGRAPHIC;
     camera->aspectRatio = 800.0f / 600.0f;
@@ -111,9 +78,22 @@ void Sentinel_Main_Stage_OnMainLoop_PreBegin() {
     camera->far = 100.0f;*/
     camera->projectionMode = PERSPECTIVE;
     camera->aspectRatio = 800.0f / 600.0f;
-    camera->perspectiveFov = 45.0f;
-    camera->near = 0.01f;
+    camera->perspectiveFov = glm_rad(90.0f);
+    camera->near = 0.001f;
     camera->far = 1000.0f;
+
+    objectColor = Sentinel_ConstantbufferAPI_Create(DEFAULT, 1, sizeof(vec4));
+    Sentinel_ConstantbufferAPI_Bind(objectColor, VERTEX);
+    // vec4 color = {1.0f, 0.5f, 0.31f, 1.0f};
+    vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+    Sentinel_ConstantbufferAPI_SetData(objectColor, color);
+
+    Texture2DImportSettings settings = {0};
+    settings.ReadWriteEnabled = 0;
+    settings.sRGB = 0;
+    settings.wrapMode = CLAMP;
+    texture = Sentinel_Texture2DAPI_CreateFromFile("Assets/wall.jpg", &settings);
+    Sentinel_Texture2DAPI_Bind(texture, PIXEL, 0);
 }
 
 void Sentinel_Main_Stage_OnMainLoop_Begin() {

@@ -10,8 +10,6 @@
 
 #include "Window/Window.h"
 
-#include "Logging/Log.h"
-
 #ifdef ST_PLATFORM_WINDOWS
     #include "Graphics/D3D11/Texture/D3D11RenderTexture2D.h"
 #endif  // ST_PLATFORM_WINDOWS
@@ -26,7 +24,7 @@ typedef struct RT2DAPI {
     void (*destroy)(RenderTexture2DData*);
     void (*renderbind)(RenderTexture2DData*);
     void (*renderunbind)(RenderTexture2DData*);
-    void (*shaderbind)(RenderTexture2DData*, UShort, ShaderType);
+    void (*shaderbind)(RenderTexture2DData*, ShaderType, UShort);
     void (*shaderunbind)(RenderTexture2DData*);
     void (*clear)(RenderTexture2DData*, Float[4]);
 } RT2DAPI;
@@ -80,6 +78,11 @@ ST_API RenderTexture2DData* Sentinel_RenderTexture2DAPI_Create(
 }
 
 ST_API void Sentinel_RenderTexture2DAPI_Destroy(RenderTexture2DData* renderTexture) {
+    if (renderTexture->swapchainTarget)
+        rT2DAPI.renderunbind(renderTexture);
+    else
+        rT2DAPI.shaderunbind(renderTexture);
+
     rT2DAPI.destroy(renderTexture);
 
     UShort index;
