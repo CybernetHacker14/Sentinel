@@ -35,7 +35,7 @@
 static const vec3 worldUp = {0.0f, 1.0f, 0.0f};
 
 static void PerspectiveViewMatrix(CameraData* camera, mat4 viewMatrix) {
-    vec3 pos = {0.0f, 0.0f, -0.1f};
+    vec3 pos = {0.0f, 0.0f, -1.15f};
     vec3 target = {0.0f, 0.0f, 0.0f};
     glm_lookat_lh(pos, target, worldUp, viewMatrix);
 }
