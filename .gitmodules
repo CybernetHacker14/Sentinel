@@ -6,3 +6,7 @@
 	path = Sentinel/Vendor/cglm/module
 	url = https://github.com/recp/cglm.git
 	branch = master
+[submodule "Sentinel/Vendor/cimgui/module"]
+	path = Sentinel/Vendor/cimgui/module
+	url = https://github.com/CybernetHacker14/cimgui.git
+	branch = docking_inter_dx11
