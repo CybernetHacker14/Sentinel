@@ -20,14 +20,16 @@ project "Sentinel"
         "Source/Runtime",
         "%{VendorIncludes.glfw}",
         "%{VendorIncludes.cglm}",
-        "%{VendorIncludes.stb}"
+        "%{VendorIncludes.stb}",
+        "%{wks.location}/Sentinel/Vendor/cimgui/module"
     }
 
     implibdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 
     links
     {
-        "glfw"
+        "glfw",
+        "cimgui"
     }
 
     filter "system:windows"

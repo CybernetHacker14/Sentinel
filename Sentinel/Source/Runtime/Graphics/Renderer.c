@@ -30,6 +30,15 @@
     #include "Graphics/D3D11/D3D11Renderer.h"
 #endif  // ST_PLATFORM_WINDOWS
 
+#define CIMGUI_USE_GLFW
+#define CIMGUI_USE_DX11
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#define CIMGUI_NO_EXPORT
+#include "cimgui.h"
+#include "generator/output/cimgui_impl.h"
+
+#include <GLFW/glfw3.h>
+
 typedef struct RendererAPI {
     RenderingBackend Backend;
 
@@ -90,6 +99,8 @@ ST_API void Sentinel_Renderer_Init(RenderingBackend backend) {
     Sentinel_Camera_Init();
 
     Sentinel_EventAPI_RegisterEvent(WindowResize, NULL, OnResize);
+
+    ImGui_ImplGlfw_InitForOther((GLFWwindow*)Sentinel_Window_GetNativeHandle(), 0);
 }
 
 ST_API RenderingBackend Sentinel_Renderer_GetBackend() {

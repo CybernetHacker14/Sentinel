@@ -34,14 +34,6 @@ project "cimgui"
         systemversion "latest"
         staticruntime "On"
 
-        files
-        {
-            "module/imgui/backends/imgui_impl_dx11.h",
-            "module/imgui/backends/imgui_impl_glfw.h",
-            "module/imgui/backends/imgui_impl_dx11.cpp",
-            "module/imgui/backends/imgui_impl_glfw.cpp"
-        }
-
     filter "configurations:Debug"
         runtime "Debug"
         symbols "on"

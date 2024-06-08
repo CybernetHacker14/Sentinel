@@ -31,6 +31,7 @@ group "Dependencies"
     include "Premake"
     include "Sentinel/Vendor/glfw"
     include "Sentinel/Vendor/cglm"
+    include "Sentinel/Vendor/cimgui"
 group ""
 
 -- Include projects
