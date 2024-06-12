@@ -8,14 +8,9 @@ project "cimgui"
 
     files
     {
-        "module/cimgui.h",
-        "module/generator/cimgui_impl.h",
         "module/cimgui.cpp",
-        "module/imgui/imconfig.h",
-        "module/imgui/imgui.h",
         "module/imgui/imgui.cpp",
         "module/imgui/imgui_draw.cpp",
-        "module/imgui/imgui_internal.h",
         "module/imgui/imgui_tables.cpp",
         "module/imgui/imgui_widgets.cpp",
         "module/imgui/imstb_rectpack.h",
@@ -33,6 +28,17 @@ project "cimgui"
     filter "system:windows"
         systemversion "latest"
         staticruntime "On"
+
+        files
+        {
+            "module/imgui/backends/imgui_impl_glfw.cpp",
+            "module/imgui/backends/imgui_impl_dx11.cpp"
+        }
+
+        defines
+        {
+            "IMGUI_IMPL_API=extern \"C\" __declspec(dllexport)"
+        }
 
     filter "configurations:Debug"
         runtime "Debug"

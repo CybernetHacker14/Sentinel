@@ -21,7 +21,7 @@ project "Sentinel"
         "%{VendorIncludes.glfw}",
         "%{VendorIncludes.cglm}",
         "%{VendorIncludes.stb}",
-        "%{wks.location}/Sentinel/Vendor/cimgui/module"
+        "%{VendorIncludes.cimgui}"
     }
 
     implibdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
