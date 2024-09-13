@@ -1,6 +1,6 @@
 <table align="center">
     <tr>
-        <td><img align="left" alt="ICON" width="170px" height="170px" src="Engine/Resources/Images/Icon/512.png" /></td>
+        <td><img align="left" alt="ICON" width="170px" src="Engine/Resources/Images/Icon/512.png" /></td>
         <td>
                 <h1 align="center">Sentinel</h1>
                 <h3 align="center">C++14 Game Engine</h3>
