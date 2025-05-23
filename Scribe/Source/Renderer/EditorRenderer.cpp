@@ -84,5 +84,8 @@ namespace Scribe {
             Sentinel::RenderTexture2DAPI::Resize(m_SwapchainRT, width, height);
             Sentinel::RenderTexture2DAPI::Bind(m_SwapchainRT, 1, Sentinel::ShaderType::PIXEL);
         }
+
+        
+
     }  // namespace Rendering
 }  // namespace Scribe

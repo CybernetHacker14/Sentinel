@@ -37,6 +37,9 @@ namespace Scribe {
             /*m_ResizeIndex = Sentinel::EventsAPI::RegisterEvent(
                 Sentinel::EventType::WindowResize, this, ST_BIND_FN(SceneRenderer::OnWindowResize));*/
 
+            m_InputIndex = Sentinel::EventsAPI::RegisterEvent(
+                Sentinel::EventType::KeyRepeat, this, ST_BIND_FN(SceneRenderer::OnKeyPressed));
+
             m_VPortAlloc.Allocate(1);
 
             m_FBufferAlloc.Allocate(1);
@@ -187,9 +190,7 @@ namespace Scribe {
         void SceneRenderer::OnImGuiRender() {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2 {0, 0});
             ImGui::Begin(
-                ICON_FA_BORDER_NONE " Viewport",
-                (bool*)0,
-                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
+                ICON_FA_BORDER_NONE " Viewport", (bool*)0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
             ImVec2 size = ImGui::GetContentRegionAvail();
             Sentinel::UInt16 width = GetFinalRTWidth();
             Sentinel::UInt16 height = GetFinalRTHeight();
@@ -215,5 +216,23 @@ namespace Scribe {
             Sentinel::ViewportAPI::Bind(m_Viewport);
             Sentinel::FramebufferAPI::Resize(m_FBuffer, width, height);
         }
+
+        Sentinel::Bool SceneRenderer::OnKeyPressed(Sentinel::EventType type, Sentinel::EventData data, void* listener) {
+            SceneRenderer* renderer = (SceneRenderer*)listener;
+            renderer->InputReceived(data.UInt16[0]);
+
+            return true;
+        }
+
+        void SceneRenderer::InputReceived(Sentinel::UInt16 key) {
+            Sentinel::KeyCode code = static_cast<Sentinel::KeyCode>(key);
+            if (code == Sentinel::KeyCode::W) m_Camera->SetPositionZ(m_Camera->GetPositionZ() + 0.1f);
+            if (code == Sentinel::KeyCode::S) m_Camera->SetPositionZ(m_Camera->GetPositionZ() - 0.1f);
+            if (code == Sentinel::KeyCode::A) m_Camera->SetPositionX(m_Camera->GetPositionX() + 0.1f);
+            if (code == Sentinel::KeyCode::D) m_Camera->SetPositionX(m_Camera->GetPositionX() - 0.1f);
+            if (code == Sentinel::KeyCode::Q) m_Camera->SetPositionY(m_Camera->GetPositionY() - 0.1f);
+            if (code == Sentinel::KeyCode::Z) m_Camera->SetPositionY(m_Camera->GetPositionY() + 0.1f);
+        }
+
     }  // namespace Rendering
 }  // namespace Scribe

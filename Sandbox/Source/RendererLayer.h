@@ -45,6 +45,9 @@ namespace Sandbox {
             Sentinel::Bool OnWindowResize(Sentinel::EventType type, Sentinel::EventData data, void* listener);
             void Resize(Sentinel::UInt16 width, Sentinel::UInt16 height);
 
+            Sentinel::Bool OnKeyPressed(Sentinel::EventType type, Sentinel::EventData data, void* listener);
+            void InputReceived(Sentinel::UInt16 key);
+
         public:
             Sentinel::ContextData* m_Context;
 
@@ -85,6 +88,7 @@ namespace Sandbox {
 
         private:
             Sentinel::UInt16 m_ResizeIndex = 0;
+            Sentinel::UInt16 m_InputIndex = 0;
 
             glm::mat4 m_ViewProj = glm::mat4(1.0f);
         };

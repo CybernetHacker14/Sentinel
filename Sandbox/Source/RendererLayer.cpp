@@ -16,6 +16,9 @@ namespace Sandbox {
             m_ResizeIndex = Sentinel::EventsAPI::RegisterEvent(
                 Sentinel::EventType::WindowResize, this, ST_BIND_FN(RendererLayer::OnWindowResize));
 
+            m_InputIndex = Sentinel::EventsAPI::RegisterEvent(
+                Sentinel::EventType::KeyPressed, this, ST_BIND_FN(RendererLayer::OnKeyPressed));
+
             m_CtxAlloc.Allocate(1);
             m_SCAlloc.Allocate(1);
             m_VPortAlloc.Allocate(1);
@@ -264,6 +267,18 @@ namespace Sandbox {
             Sentinel::ViewportAPI::Bind(m_Viewport);
             Sentinel::RenderTexture2DAPI::Bind(m_RenderTexture, 1, Sentinel::ShaderType::PIXEL);
             Sentinel::DepthTexture2DAPI::Bind(m_DepthTexture, 2, Sentinel::ShaderType::PIXEL);
+        }
+
+        Sentinel::Bool RendererLayer::OnKeyPressed(Sentinel::EventType type, Sentinel::EventData data, void* listener) {
+            RendererLayer* renderer = (RendererLayer*)listener;
+            renderer->InputReceived(data.UInt16[0]);
+
+            return true;
+        }
+
+        void RendererLayer::InputReceived(Sentinel::UInt16 key) {
+            Sentinel::KeyCode code = static_cast<Sentinel::KeyCode>(key);
+            if (code == Sentinel::KeyCode::W) { m_Camera->SetPositionZ(m_Camera->GetPositionZ() + 0.1f); }
         }
     }  // namespace Rendering
 }  // namespace Sandbox

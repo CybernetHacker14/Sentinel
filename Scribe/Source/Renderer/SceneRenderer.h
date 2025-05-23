@@ -46,6 +46,9 @@ namespace Scribe {
             Sentinel::UInt16 GetFinalRTWidth();
             Sentinel::UInt16 GetFinalRTHeight();
 
+            Sentinel::Bool OnKeyPressed(Sentinel::EventType type, Sentinel::EventData data, void* listener);
+            void InputReceived(Sentinel::UInt16 key);
+
         private:
             Sentinel::Window* m_Window;
 
@@ -81,6 +84,7 @@ namespace Scribe {
             Sentinel::Texture2DData* m_TestTexture = nullptr;
 
             Sentinel::UInt16 m_ResizeIndex = 0;
+            Sentinel::UInt16 m_InputIndex = 0;
             glm::mat4 m_ViewProj = glm::mat4(1.0f);
         };
     }  // namespace Rendering
